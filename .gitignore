@@ -1,0 +1,9 @@
+# Package Files #
+*.jar
+*.war
+*.ear
+/target
+res-*.zip
+
+# vim files
+.*.sw?
