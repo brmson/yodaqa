@@ -18,7 +18,7 @@ useful yet.
 
 ## Design Considerations
 
-See the [High Level Design Notes](docs/HIGHLEVEL.md) document for
+See the [High Level Design Notes](doc/HIGHLEVEL.md) document for
 a brief description of YodaQA's design approach.
 
 ### Package Organization
