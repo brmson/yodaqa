@@ -23,7 +23,7 @@ Each CAS has a CASId feature uniquely describing its origin.
 
 ## Question Reader
 
-The initial phase is a collection reader that acquires question(s),
+The initial, IO phase is a collection reader that acquires question(s),
 creates a **QuestionCAS** with the question as a sofa and passes it on.
 
 ## Question Analysis
@@ -75,5 +75,5 @@ answers.
 
 ## Answer Writer
 
-This phase is a CAS consumer that serializes the **FinalAnswerCAS** to
+This IO phase is a CAS consumer that serializes the **FinalAnswerCAS** to
 whatever output medium (the console, an IRC-connected pipe or whatever).
