@@ -16,6 +16,14 @@ flexible, we believe) architecture compared to OpenQA, though.
 The current version is a work-in-progress snapshot that does nothing
 useful yet.
 
+## Installation Instructions
+
+Quick instructions for setting up, building and running (focused on Debian Wheezy):
+  * We assume that you cloned YodaQA and are now in the directory that contains this README.
+  * ``sudo apt-get install default-jdk maven uima-utils``
+  * ``mvn verify``
+  * ``mvn -q exec:java``
+
 ## Design Considerations
 
 See the [High Level Design Notes](doc/HIGHLEVEL.md) document for

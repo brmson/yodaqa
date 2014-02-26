@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation> 
+  <primitive>true</primitive>
+  <annotatorImplementationName>
+    cz.brmlab.yodaqa.pipeline.AnswerRanker
+  </annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>Answer Ranker</name>
+    <description>NOW: Generate answer object with a copy of SOFA text. TODO: Collects answer candidates (CandidateAnswerCAS instances) and produces a single FinalAnswerCAS.</description>
+    <vendor>brmson</vendor>
+    <version>1.0</version>
+    <typeSystemDescription>
+      <imports>
+        <import name="cz.brmlab.yodaqa.model.FinalAnswerTypes"/>
+      </imports>
+    </typeSystemDescription>
+    <fsIndexCollection>
+      <imports>
+        <import name="cz.brmlab.yodaqa.model.FinalAnswerIndexes"/>
+      </imports>
+    </fsIndexCollection>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs>
+          <type>cz.brmlab.yodaqa.model.FinalAnswer.Answer</type>
+        </outputs>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+</analysisEngineDescription>

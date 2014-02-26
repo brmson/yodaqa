@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="AnswerRanker">
+      <import name="cz.brmlab.yodaqa.pipeline.AnswerRanker"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="InteractiveAnswerPrinter">
+      <import name="cz.brmlab.yodaqa.io.interactive.InteractiveAnswerPrinter"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>YodaQA Pipeline Main Aggregate</name>
+    <description>The complete YodaQA pipeline</description>
+    <flowConstraints>
+      <fixedFlow>
+        <node>AnswerRanker</node>
+        <node>InteractiveAnswerPrinter</node>
+      </fixedFlow>
+    </flowConstraints>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs>
+          <type>cz.brmlab.yodaqa.model.FinalAnswer.Answer</type>
+        </outputs>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+</analysisEngineDescription>
