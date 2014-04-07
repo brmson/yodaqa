@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation> 
+  <primitive>true</primitive>
+  <annotatorImplementationName>
+    cz.brmlab.yodaqa.pipeline.AnswerGenerator
+  </annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>Answer Generator</name>
+    <description>NOW: Generate a bunch of CandidateAnswerCAS objects with segments of SOFA text. TODO: Generate answer candidates (CandidateAnswerCAS instances) from SearchResultCAS instances.</description>
+    <vendor>brmson</vendor>
+    <version>1.0</version>
+    <typeSystemDescription>
+      <imports>
+        <import name="cz.brmlab.yodaqa.model.CandidateAnswerTypes"/>
+      </imports>
+    </typeSystemDescription>
+    <capabilities>
+      <capability>
+        <inputs/>
+	<outputs/>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>false</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>true</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+</analysisEngineDescription>

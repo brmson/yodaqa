@@ -3,6 +3,9 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="AnswerGenerator">
+      <import name="cz.brmlab.yodaqa.pipeline.AnswerGenerator"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="AnswerRanker">
       <import name="cz.brmlab.yodaqa.pipeline.AnswerRanker"/>
     </delegateAnalysisEngine>
@@ -15,6 +18,7 @@
     <description>The complete YodaQA pipeline</description>
     <flowConstraints>
       <fixedFlow>
+        <node>AnswerGenerator</node>
         <node>AnswerRanker</node>
         <node>InteractiveAnswerPrinter</node>
       </fixedFlow>

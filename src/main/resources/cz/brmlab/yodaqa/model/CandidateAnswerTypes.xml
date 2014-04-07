@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>CandidateAnswerTypes</name>
+    <description>CandidateAnswerCAS type system</description>
+    <vendor>yodaqa</vendor>
+    <version>1.0</version>
+    <types>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo</name>
+        <description>Meta-information on the generated candidate answer</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>confidence</name>
+            <description>Confidence of the answer; this is an estimate of the probability that the answer is right</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+    </types>
+  </typeSystemDescription>

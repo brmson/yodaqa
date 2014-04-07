@@ -57,7 +57,7 @@ source.
 We may want to split this phase to a separate search and retrieval
 phases, but it's not clear what the advantage would be yet.
 
-## Candidate Answer
+## Answer Generator
 
 This phase is represented by CAS multipliers that grab a **SearchResultCAS**,
 annotate it and generate some **CandidateAnswerCAS** instances.
