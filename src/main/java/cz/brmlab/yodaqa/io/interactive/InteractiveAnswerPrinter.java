@@ -28,8 +28,11 @@ public class InteractiveAnswerPrinter extends JCasConsumer_ImplBase {
 		FSIndex idx = jcas.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
 		if (answers.hasNext()) {
-			Answer answer = (Answer) answers.next();
-			System.out.println(answer.getText());
+			int i = 1;
+			while (answers.hasNext()) {
+				Answer answer = (Answer) answers.next();
+				System.out.println((i++) + ". " + answer.getText() + " (conf. " + answer.getConfidence() + ")");
+			}
 		} else {
 			System.out.println("No answer found.");
 		}
