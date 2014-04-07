@@ -15,6 +15,11 @@
             <description>Confidence of the answer; this is an estimate of the probability that the answer is right</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>isLast</name>
+            <description>Whether this is the last candidate answer CAS</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
     </types>

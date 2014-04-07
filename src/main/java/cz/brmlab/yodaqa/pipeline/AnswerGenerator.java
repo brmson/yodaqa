@@ -38,15 +38,17 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		JCas jcas = getEmptyJCas();
 		try {
-			jcas.setDocumentText(answers[i++]);
+			jcas.setDocumentText(answers[i]);
 
 			AnswerInfo ai = new AnswerInfo(jcas);
-			ai.setConfidence(1.0 / i);
+			ai.setConfidence(1.0 / (i + 1.0));
+			ai.setIsLast(i == answers.length - 1);
 			ai.addToIndexes();
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
+		i++;
 		return jcas;
 	}
 }
