@@ -7,11 +7,12 @@
   </annotatorImplementationName>
   <analysisEngineMetaData>
     <name>Answer Generator</name>
-    <description>NOW: Generate a bunch of CandidateAnswerCAS objects with segments of SOFA text. TODO: Generate answer candidates (CandidateAnswerCAS instances) from SearchResultCAS instances.</description>
+    <description>NOW: Generate a bunch of CandidateAnswerCAS objects with segments of input QuestionCAS text. TODO: Generate answer candidates (CandidateAnswerCAS instances) from SearchResultCAS instances.</description>
     <vendor>brmson</vendor>
     <version>1.0</version>
     <typeSystemDescription>
       <imports>
+        <import name="cz.brmlab.yodaqa.model.QuestionTypes"/>
         <import name="cz.brmlab.yodaqa.model.CandidateAnswerTypes"/>
       </imports>
     </typeSystemDescription>

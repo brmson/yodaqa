@@ -9,7 +9,7 @@
     <version>1.0</version>
     <typeSystemDescription>
       <imports>
-        <import name="cz.brmlab.yodaqa.model.FinalAnswerTypes.xml"/>
+        <import name="cz.brmlab.yodaqa.model.QuestionTypes.xml"/>
       </imports>
     </typeSystemDescription>
     <capabilities>
