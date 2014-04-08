@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>
+
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="WordTokenizer">
+      <import name="cz.brmlab.yodaqa.annotator.WordTokenizer"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+
+  <flowController key="FixedFlowController">
+    <import name="org.apache.uima.flow.FixedFlowController"/>
+  </flowController>
+
+  <analysisEngineMetaData>
+    <name>Question Analysis Aggregate</name>
+    <description>Annotate the QuestionCAS with analysis.</description>
+
+    <flowConstraints>
+      <fixedFlow>
+        <node>WordTokenizer</node>
+      </fixedFlow>
+    </flowConstraints>
+
+    <capabilities>
+      <capability>
+        <inputs/>
+	<outputs/>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+</analysisEngineDescription>

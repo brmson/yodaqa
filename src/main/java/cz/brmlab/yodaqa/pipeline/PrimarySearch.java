@@ -5,9 +5,12 @@ import org.apache.uima.analysis_component.JCasMultiplier_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.model.NLP.WordToken;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
 /**
@@ -19,8 +22,7 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * with the word wrapped in an "a WORD b" template. */
 
 public class PrimarySearch extends JCasMultiplier_ImplBase {
-	/* Prepared list of words to consider. */
-	String[] words;
+	FSIterator words;
 	int i;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -28,22 +30,23 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		words = jcas.getDocumentText().split(" ");
+		words = jcas.getAnnotationIndex(WordToken.type).iterator();
 		i = 0;
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return i < words.length;
+		return words.hasNext();
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		JCas jcas = getEmptyJCas();
 		try {
-			jcas.setDocumentText("a " + words[i] + " b");
+			WordToken word = (WordToken) words.next();
+			jcas.setDocumentText("a " + word.getCoveredText() + " b");
 
 			ResultInfo ri = new ResultInfo(jcas);
 			ri.setRelevance(1.0 / (i + 1.0));
-			ri.setIsLast(i == words.length - 1);
+			ri.setIsLast(!words.hasNext());
 			ri.addToIndexes();
 		} catch (Exception e) {
 			jcas.release();

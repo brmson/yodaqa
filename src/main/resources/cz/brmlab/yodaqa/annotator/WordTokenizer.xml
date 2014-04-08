@@ -1,35 +1,34 @@
-<?xml version="1.0" encoding="UTF-8" ?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <frameworkImplementation>org.apache.uima.java</frameworkImplementation> 
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
   <annotatorImplementationName>
-    cz.brmlab.yodaqa.pipeline.PrimarySearch
+    cz.brmlab.yodaqa.annotator.WordTokenizer
   </annotatorImplementationName>
   <analysisEngineMetaData>
-    <name>Primary Search</name>
-    <description>Generate search results (SearchResultCAS instances) from a QuestionCAS instance.</description>
+    <name>Simple Word Tokenizer</name>
+    <description>Annotate individual words of a sofa based on a naive whitespace and punctuation tokenization.</description>
     <vendor>brmson</vendor>
     <version>1.0</version>
     <typeSystemDescription>
       <imports>
         <import name="cz.brmlab.yodaqa.model.QuestionTypes"/>
         <import name="cz.brmlab.yodaqa.model.NLPTypes"/>
-        <import name="cz.brmlab.yodaqa.model.SearchResultTypes"/>
       </imports>
     </typeSystemDescription>
     <capabilities>
       <capability>
-        <inputs>
-          <type>cz.brmlab.yodaqa.model.NLP.WordToken</type>
-	</inputs>
-	<outputs/>
+        <inputs/>
+        <outputs>
+          <type>cz.brmlab.yodaqa.model.NLP.Word</type>
+        </outputs>
         <languagesSupported/>
       </capability>
     </capabilities>
     <operationalProperties>
-      <modifiesCas>false</modifiesCas>
+      <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-      <outputsNewCASes>true</outputsNewCASes>
+      <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
   </analysisEngineMetaData>
 </analysisEngineDescription>

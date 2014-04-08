@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>NLPTypes</name>
+    <description>A general collection of natural language annotations that can be used in a variety of CASes.</description>
+    <vendor>yodaqa</vendor>
+    <version>1.0</version>
+    <types>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.NLP.WordToken</name>
+        <description>A generic word token.</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+      </typeDescription>
+    </types>
+  </typeSystemDescription>

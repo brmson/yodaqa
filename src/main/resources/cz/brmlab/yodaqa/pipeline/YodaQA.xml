@@ -4,6 +4,10 @@
   <primitive>false</primitive>
 
   <delegateAnalysisEngineSpecifiers>
+    <!-- InteractiveAnswerReader is referred straight from YodaQAApp. -->
+    <delegateAnalysisEngine key="QuestionAnalysis">
+      <import name="cz.brmlab.yodaqa.pipeline.QuestionAnalysis"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="PrimarySearch">
       <import name="cz.brmlab.yodaqa.pipeline.PrimarySearch"/>
     </delegateAnalysisEngine>
@@ -28,6 +32,7 @@
 
     <flowConstraints>
       <fixedFlow>
+        <node>QuestionAnalysis</node>
         <node>PrimarySearch</node>
         <node>AnswerGenerator</node>
         <node>AnswerRanker</node>
