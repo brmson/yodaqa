@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <collectionReaderDescription  xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>cz.brmlab.yodaqa.io.interactive.InteractiveCollectionReader</implementationName>
+  <implementationName>cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader</implementationName>
   <processingResourceMetaData>
-    <name>Interactive Collection Reader</name>
+    <name>Interactive Question Reader</name>
     <description>Interactively wait for user questions via a prompt.</description>
     <vendor>brmson</vendor>
     <version>1.0</version>

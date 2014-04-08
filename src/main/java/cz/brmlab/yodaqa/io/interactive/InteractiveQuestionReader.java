@@ -19,7 +19,7 @@ import org.apache.uima.util.ProgressImpl;
  * A collection that talks to the user via stdin/stdout, allowing
  * them to ask questions. */
 
-public class InteractiveCollectionReader extends CollectionReader_ImplBase {
+public class InteractiveQuestionReader extends CollectionReader_ImplBase {
 	BufferedReader br;
 
 	private int index;

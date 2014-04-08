@@ -14,7 +14,7 @@ import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
  * A trivial consumer that will extract the final answer and print it
  * on the standard output for the user to "officially" see.
  *
- * Pair this with InteractiveCollectionReader.
+ * Pair this with InteractiveQuestionReader.
  */
 
 public class InteractiveAnswerPrinter extends JCasConsumer_ImplBase {

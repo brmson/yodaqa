@@ -11,7 +11,7 @@ import org.apache.uima.collection.CollectionReader_ImplBase;
 import org.apache.uima.resource.ResourceSpecifier;
 import org.apache.uima.util.XMLInputSource;
 
-import cz.brmlab.yodaqa.io.interactive.InteractiveCollectionReader;
+import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
 
 
 public class YodaQAApp {
@@ -23,7 +23,7 @@ public class YodaQAApp {
 			AnalysisEngine ae = UIMAFramework.produceAnalysisEngine(specifier);
 			CAS cas = ae.newCAS();
 
-			CollectionReader_ImplBase reader = new InteractiveCollectionReader();
+			CollectionReader_ImplBase reader = new InteractiveQuestionReader();
 			reader.initialize();
 			while (reader.hasNext()) {
 				reader.getNext(cas);
