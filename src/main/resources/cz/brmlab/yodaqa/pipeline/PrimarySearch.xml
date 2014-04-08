@@ -3,17 +3,17 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation> 
   <primitive>true</primitive>
   <annotatorImplementationName>
-    cz.brmlab.yodaqa.pipeline.AnswerGenerator
+    cz.brmlab.yodaqa.pipeline.PrimarySearch
   </annotatorImplementationName>
   <analysisEngineMetaData>
-    <name>Answer Generator</name>
-    <description>Generate answer candidates (CandidateAnswerCAS instances) from SearchResultCAS instances.</description>
+    <name>Primary Search</name>
+    <description>Generate search results (SearchResultCAS instances) from a QuestionCAS instance.</description>
     <vendor>brmson</vendor>
     <version>1.0</version>
     <typeSystemDescription>
       <imports>
+        <import name="cz.brmlab.yodaqa.model.QuestionTypes"/>
         <import name="cz.brmlab.yodaqa.model.SearchResultTypes"/>
-        <import name="cz.brmlab.yodaqa.model.CandidateAnswerTypes"/>
       </imports>
     </typeSystemDescription>
     <capabilities>

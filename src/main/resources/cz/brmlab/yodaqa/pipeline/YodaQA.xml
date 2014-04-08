@@ -4,6 +4,9 @@
   <primitive>false</primitive>
 
   <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="PrimarySearch">
+      <import name="cz.brmlab.yodaqa.pipeline.PrimarySearch"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="AnswerGenerator">
       <import name="cz.brmlab.yodaqa.pipeline.AnswerGenerator"/>
     </delegateAnalysisEngine>
@@ -25,6 +28,7 @@
 
     <flowConstraints>
       <fixedFlow>
+        <node>PrimarySearch</node>
         <node>AnswerGenerator</node>
         <node>AnswerRanker</node>
         <node>InteractiveAnswerPrinter</node>

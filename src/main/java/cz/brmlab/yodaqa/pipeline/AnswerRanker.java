@@ -11,6 +11,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 
+import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
 
@@ -36,12 +37,16 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 		Answer answer = new Answer(finalCas);
 		answer.setText(candCas.getDocumentText());
 
-		FSIterator infos = candCas.getJFSIndexRepository().getAllIndexedFS(AnswerInfo.type);
-		if (infos.hasNext()) {
-			AnswerInfo info = (AnswerInfo) infos.next();
-			answer.setConfidence(info.getConfidence());
-			isLast = info.getIsLast();
-		}
+		AnswerInfo ai;
+		ResultInfo ri;
+		FSIterator infos;
+
+		ai = (AnswerInfo) candCas.getJFSIndexRepository().getAllIndexedFS(AnswerInfo.type).next();
+		ri = (ResultInfo) candCas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+
+		answer.setConfidence(ai.getConfidence() * ri.getRelevance());
+		isLast = ai.getIsLast() && ri.getIsLast();
+
 		// System.err.println("AR process: " + answer.getText() + " c " + answer.getConfidence());
 
 		answer.addToIndexes();

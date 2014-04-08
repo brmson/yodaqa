@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>SearchResultTypes</name>
+    <description>SearchResultCAS type system</description>
+    <vendor>yodaqa</vendor>
+    <version>1.0</version>
+    <types>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.ResultInfo</name>
+        <description>Meta-information on the retrieved search result</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>relevance</name>
+            <description>Relevance of the result; a metric between [0,1]</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>isLast</name>
+            <description>Whether this is the last search result</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+    </types>
+  </typeSystemDescription>
