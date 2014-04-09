@@ -5,8 +5,8 @@ import java.lang.Thread;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
-import org.apache.uima.fit.pipeline.SimplePipeline;
 
+import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
@@ -18,8 +18,12 @@ public class YodaQAApp {
 		CollectionReaderDescription reader = createReaderDescription(
 				InteractiveQuestionReader.class);
 
+		/* FIXME: Support for aggregate CASes not yet ready.
 		AnalysisEngineDescription questionAnalysis = createEngineDescription(
 				"cz.brmlab.yodaqa.pipeline.QuestionAnalysis");
+				*/
+		AnalysisEngineDescription questionAnalysis = createEngineDescription(
+				"cz.brmlab.yodaqa.annotator.WordTokenizer");
 		AnalysisEngineDescription primarySearch = createEngineDescription(
 				"cz.brmlab.yodaqa.pipeline.PrimarySearch");
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
@@ -31,7 +35,7 @@ public class YodaQAApp {
 
 		/* XXX: Later, we will want to create an actual flow
 		 * to support scaleout. */
-		SimplePipeline.runPipeline(reader,
+		MultiCASPipeline.runPipeline(reader,
 				questionAnalysis,
 				primarySearch,
 				answerGenerator,
