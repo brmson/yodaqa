@@ -31,14 +31,37 @@ creates a **QuestionCAS** with the question as a sofa and passes it on.
 In this phase, we simply take a **QuestionCAS** and run a bunch of annotators
 on it. Notable types of final featuresets produced by the annotators:
 
-  * "Keyword". (Possibly "Keyphrase".)
-  * "NEAnswerType" with named entity types as features.
-  * We may consider also other answer types than NE-based.
+  * **Clue.** These represent key information stored in the question that is
+    then used in primary search.  E.g. "What was the first book written by
+    Terry Pratchett?" should generate clues "first", "book", "first book"
+    and "Terry Pratchett".
 
-(As is the case in the rest of the flow, multiple annotators may
-concurrently produce the same featuresets.  Also, the annotators
-producing final featuresets may work on top of intermediate featuresets
-produced by other annotators earlier.)
+  * **Focus.** This is the focus point of the sentence where you should
+    be able to place the answer.  In "What was the first book written by
+    Terry Pratchett?", "what" is the focus.  In "The actor starring in Moon?",
+    "the actor" is the focus (though that doesn't work terribly well).
+    Typically, focus would be used by aligning algorithms.
+
+  * **LAT** (Lexical Answer Type). These are words that should be
+    type-coercable to the answer term. E.g. "Who starred in Moon?" should
+    generate LATs "who", "actor", possibly "star".  Candidate answers
+    will be matched against LATs to acquire score.  Focus is typically
+    always also an LAT.
+
+  * **NEAT** (Named Entity Answer Type). These are named entity types that
+    should match named entity types of generated answers.  E.g. "Who
+    starred in Moon?" should generate NEATs "NEperson", "NEactor".
+    Candidate answers will be matched against NEATs to acquire score.
+
+As is the case in the rest of the flow, multiple annotators may
+concurrently produce the same featuresets.  At the same time, not all
+featuresets may be produced, especially in the beginning.
+
+Also, the annotators producing final featuresets may work on top of
+intermediate featuresets produced by other annotators earlier; e.g.,
+tokenization will be done first and reused by anyone else.
+
+See also Lally et al., Question analysis: How Watson reads a clue.
 
 ## Primary Search
 
