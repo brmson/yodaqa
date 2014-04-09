@@ -1,0 +1,1 @@
+classpath*:cz/brmlab/yodaqa/model/*Indexes.xml
