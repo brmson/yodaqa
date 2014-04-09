@@ -3,33 +3,39 @@ package cz.brmlab.yodaqa;
 import java.io.File;
 import java.lang.Thread;
 
-import org.apache.uima.UIMAFramework;
-import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.collection.CollectionReader_ImplBase;
-import org.apache.uima.resource.ResourceSpecifier;
-import org.apache.uima.util.XMLInputSource;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.pipeline.SimplePipeline;
 
 import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
+
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
+import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
 
 public class YodaQAApp {
 	public static void main(String[] args) throws Exception {
-		XMLInputSource in = new XMLInputSource(YodaQAApp.class.getResource("/cz/brmlab/yodaqa/pipeline/YodaQA.xml"));
-		ResourceSpecifier specifier = UIMAFramework.getXMLParser().parseResourceSpecifier(in);
+		CollectionReaderDescription reader = createReaderDescription(
+				InteractiveQuestionReader.class);
 
-		AnalysisEngine ae = UIMAFramework.produceAnalysisEngine(specifier);
-		CAS cas = ae.newCAS();
+		AnalysisEngineDescription questionAnalysis = createEngineDescription(
+				"cz.brmlab.yodaqa.pipeline.QuestionAnalysis");
+		AnalysisEngineDescription primarySearch = createEngineDescription(
+				"cz.brmlab.yodaqa.pipeline.PrimarySearch");
+		AnalysisEngineDescription answerGenerator = createEngineDescription(
+				"cz.brmlab.yodaqa.pipeline.AnswerGenerator");
+		AnalysisEngineDescription answerRanker = createEngineDescription(
+				"cz.brmlab.yodaqa.pipeline.AnswerRanker");
+		AnalysisEngineDescription printer = createEngineDescription(
+				"cz.brmlab.yodaqa.io.interactive.InteractiveAnswerPrinter");
 
-		CollectionReader_ImplBase reader = new InteractiveQuestionReader();
-		reader.initialize();
-		while (reader.hasNext()) {
-			reader.getNext(cas);
-
-			ae.process(cas);
-
-			cas.reset();
-		}
+		/* XXX: Later, we will want to create an actual flow
+		 * to support scaleout. */
+		SimplePipeline.runPipeline(reader,
+				questionAnalysis,
+				primarySearch,
+				answerGenerator,
+				answerRanker,
+				printer);
 	}
 }
