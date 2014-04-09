@@ -6,8 +6,13 @@ import java.lang.Thread;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
 
+import cz.brmlab.yodaqa.annotator.WordTokenizer;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.io.interactive.InteractiveAnswerPrinter;
 import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
+import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
+import cz.brmlab.yodaqa.pipeline.AnswerRanker;
+import cz.brmlab.yodaqa.pipeline.PrimarySearch;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
@@ -23,15 +28,15 @@ public class YodaQAApp {
 				"cz.brmlab.yodaqa.pipeline.QuestionAnalysis");
 				*/
 		AnalysisEngineDescription questionAnalysis = createEngineDescription(
-				"cz.brmlab.yodaqa.annotator.WordTokenizer");
+				WordTokenizer.class);
 		AnalysisEngineDescription primarySearch = createEngineDescription(
-				"cz.brmlab.yodaqa.pipeline.PrimarySearch");
+				PrimarySearch.class);
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
-				"cz.brmlab.yodaqa.pipeline.AnswerGenerator");
+				AnswerGenerator.class);
 		AnalysisEngineDescription answerRanker = createEngineDescription(
-				"cz.brmlab.yodaqa.pipeline.AnswerRanker");
+				AnswerRanker.class);
 		AnalysisEngineDescription printer = createEngineDescription(
-				"cz.brmlab.yodaqa.io.interactive.InteractiveAnswerPrinter");
+				InteractiveAnswerPrinter.class);
 
 		/* XXX: Later, we will want to create an actual flow
 		 * to support scaleout. */
