@@ -1,7 +1,7 @@
 package cz.brmlab.yodaqa.pipeline;
 
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
-import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -26,7 +26,7 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(WordTokenizer.class));
 
 		/* DKPro tokenizer */
-		builder.add(createPrimitiveDescription(BreakIteratorSegmenter.class));
+		builder.add(createPrimitiveDescription(OpenNlpSegmenter.class));
 		/* DKPro pos tagger */
 		builder.add(createPrimitiveDescription(OpenNlpPosTagger.class));
 
