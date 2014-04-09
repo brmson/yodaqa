@@ -15,26 +15,21 @@ import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
 
 
 public class YodaQAApp {
-	public static void main(String[] args) {
-		try {
-			XMLInputSource in = new XMLInputSource(YodaQAApp.class.getResource("/cz/brmlab/yodaqa/pipeline/YodaQA.xml"));
-			ResourceSpecifier specifier = UIMAFramework.getXMLParser().parseResourceSpecifier(in);
+	public static void main(String[] args) throws Exception {
+		XMLInputSource in = new XMLInputSource(YodaQAApp.class.getResource("/cz/brmlab/yodaqa/pipeline/YodaQA.xml"));
+		ResourceSpecifier specifier = UIMAFramework.getXMLParser().parseResourceSpecifier(in);
 
-			AnalysisEngine ae = UIMAFramework.produceAnalysisEngine(specifier);
-			CAS cas = ae.newCAS();
+		AnalysisEngine ae = UIMAFramework.produceAnalysisEngine(specifier);
+		CAS cas = ae.newCAS();
 
-			CollectionReader_ImplBase reader = new InteractiveQuestionReader();
-			reader.initialize();
-			while (reader.hasNext()) {
-				reader.getNext(cas);
+		CollectionReader_ImplBase reader = new InteractiveQuestionReader();
+		reader.initialize();
+		while (reader.hasNext()) {
+			reader.getNext(cas);
 
-				ae.process(cas);
+			ae.process(cas);
 
-				cas.reset();
-			}
-		} catch (Exception e) {
-			System.err.println("YodaQA exception: " + e);
-			Thread.currentThread().dumpStack();
+			cas.reset();
 		}
 	}
 }
