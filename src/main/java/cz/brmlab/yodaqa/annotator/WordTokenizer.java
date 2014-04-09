@@ -24,7 +24,7 @@ public class WordTokenizer extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		Matcher matcher = Pattern.compile("[^ ,.:?!\"']+").matcher(jcas.getDocumentText());
+		Matcher matcher = Pattern.compile("[^ ,.:?!\"'()\\[\\]]+").matcher(jcas.getDocumentText());
 
 		while (matcher.find()) {
 			WordToken token = new WordToken(jcas);
