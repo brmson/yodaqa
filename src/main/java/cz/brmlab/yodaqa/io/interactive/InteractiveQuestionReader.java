@@ -5,10 +5,14 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
+import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
-import org.apache.uima.collection.CollectionReader_ImplBase;
+import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
@@ -17,18 +21,30 @@ import org.apache.uima.util.ProgressImpl;
 
 /**
  * A collection that talks to the user via stdin/stdout, allowing
- * them to ask questions. */
+ * them to ask questions.
+ *
+ * We would like to inhreit from dkpro's ResourceCollectionReaderBase,
+ * but the "Resource" part is a problem here. */
 
-public class InteractiveQuestionReader extends CollectionReader_ImplBase {
+public class InteractiveQuestionReader extends CasCollectionReader_ImplBase {
+	/**
+	 * Name of optional configuration parameter that contains the language
+	 * of questions. This is mandatory as x-unspecified will break e.g. OpenNLP.
+	 */
+	public static final String PARAM_LANGUAGE = ComponentParameters.PARAM_LANGUAGE;
+	@ConfigurationParameter(name = PARAM_LANGUAGE, mandatory = true)
+	private String language;
+
 	BufferedReader br;
 
 	private int index;
 	private String input;
 
 	@Override
-	public void initialize() throws ResourceInitializationException {
-		index = -1;
+	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+		super.initialize(aContext);
 
+		index = -1;
 		br = new BufferedReader(new InputStreamReader(System.in));;
 	}
 
@@ -55,12 +71,19 @@ public class InteractiveQuestionReader extends CollectionReader_ImplBase {
 		return input != null;
 	}
 
+	protected void initCas(JCas jcas) {
+		DocumentMetaData docMetaData = new DocumentMetaData(jcas);
+		docMetaData.setDocumentId(Integer.toString(index));
+		jcas.setDocumentLanguage(language);
+	}
+
 	@Override
 	public void getNext(CAS aCAS) throws CollectionException {
 		if (input == null)
 			acquireInput();
 		try {
 			JCas jcas = aCAS.getJCas();
+			initCas(jcas);
 			jcas.setDocumentText(input);
 		} catch (CASException e) {
 			throw new CollectionException(e);

@@ -21,7 +21,8 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 public class YodaQAApp {
 	public static void main(String[] args) throws Exception {
 		CollectionReaderDescription reader = createReaderDescription(
-				InteractiveQuestionReader.class);
+				InteractiveQuestionReader.class,
+				InteractiveQuestionReader.PARAM_LANGUAGE, "en");
 
 		AnalysisEngineDescription questionAnalysis = QuestionAnalysis.createEngineDescription();
 		AnalysisEngineDescription primarySearch = createEngineDescription(

@@ -26,6 +26,13 @@
 		<developerConnection>scm:git:git@github.com:brmson/yodaqa.git</developerConnection>
 	</scm>
 
+	<repositories>
+		<repository>
+			<id>ukp-oss-model-releases</id>
+			<url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-model-releases-local</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.uima</groupId>
@@ -36,6 +43,31 @@
 			<groupId>org.apache.uima</groupId>
 			<artifactId>uimafit-core</artifactId>
 			<version>2.0.0</version>
+		</dependency>
+
+		<!-- DKPro Core is a set of UIMA wrappers to a variety of
+		     (compatibly licenced) state-of-art NLP toolkits like
+		     OpenNLP etc.  Models are downloaded automatically. -->
+		<!-- For some reason, I can't get this to work: <dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core-asl</artifactId>
+			<version>1.5.0</version>
+			<type>pom</type>
+		</dependency> -->
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.io-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.tokit-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.opennlp-asl</artifactId>
+			<version>1.5.0</version>
 		</dependency>
 	</dependencies>
 
