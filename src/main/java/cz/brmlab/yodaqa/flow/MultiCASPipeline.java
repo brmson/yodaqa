@@ -37,6 +37,8 @@ import org.apache.uima.util.CasCreationUtils;
  * use all or part of it for uimaFIT please feel free to do so without
  * restrictions."
  *
+ * Customized to a degree, e.g. fixed to work with Aggregate AEs.
+ *
  * XXX: This code could probably do with quite a few cleanups. */
 
 public final class MultiCASPipeline {
@@ -70,7 +72,8 @@ public final class MultiCASPipeline {
 
 		List<AnalysisEngine> analysisEngines = new ArrayList<AnalysisEngine>();
 		for( AnalysisEngineDescription analysisEngineDescription : analysisEngineDescriptions ) {
-			analysisEngineDescription.getAnalysisEngineMetaData().setTypeSystem(mergedTypeSystemDescription);
+			if (analysisEngineDescription.isPrimitive())
+				analysisEngineDescription.getAnalysisEngineMetaData().setTypeSystem(mergedTypeSystemDescription);
 			analysisComponentsMetadata.add(analysisEngineDescription.getMetaData());
 
 			AnalysisEngine analysisEngine = UIMAFramework.produceAnalysisEngine(analysisEngineDescription);
