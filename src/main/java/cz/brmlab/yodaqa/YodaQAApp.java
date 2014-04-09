@@ -6,13 +6,13 @@ import java.lang.Thread;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
 
-import cz.brmlab.yodaqa.annotator.WordTokenizer;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.io.interactive.InteractiveAnswerPrinter;
 import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
 import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
 import cz.brmlab.yodaqa.pipeline.AnswerRanker;
 import cz.brmlab.yodaqa.pipeline.PrimarySearch;
+import cz.brmlab.yodaqa.pipeline.QuestionAnalysis;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
@@ -23,12 +23,7 @@ public class YodaQAApp {
 		CollectionReaderDescription reader = createReaderDescription(
 				InteractiveQuestionReader.class);
 
-		/* FIXME: Support for aggregate CASes not yet ready.
-		AnalysisEngineDescription questionAnalysis = createEngineDescription(
-				"cz.brmlab.yodaqa.pipeline.QuestionAnalysis");
-				*/
-		AnalysisEngineDescription questionAnalysis = createEngineDescription(
-				WordTokenizer.class);
+		AnalysisEngineDescription questionAnalysis = QuestionAnalysis.createEngineDescription();
 		AnalysisEngineDescription primarySearch = createEngineDescription(
 				PrimarySearch.class);
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
