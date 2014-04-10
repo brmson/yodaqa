@@ -11,7 +11,9 @@ naturally from this.
 YodaQA is developed as part of the Brmson platform; many of its components
 are or will be based on the work of the good scientists at CMU (bits of
 OpenQA, the Ephyra project).  We follow a significantly different (more
-flexible, we believe) architecture compared to OpenQA, though.
+flexible, we believe) architecture compared to OpenQA, though.  For all
+the NLP logic (including the NLP type system), we lean heavily on the DKPro
+UIMA bindings.
 
 The current version is a work-in-progress snapshot that does nothing
 useful yet.

@@ -59,14 +59,39 @@
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.io-asl</artifactId>
 			<version>1.5.0</version>
 		</dependency>
-		<dependency>
+		<!-- unused now <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
-			<artifactId>de.tudarmstadt.ukp.dkpro.core.tokit-asl</artifactId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.clearnlp-asl</artifactId>
 			<version>1.5.0</version>
-		</dependency>
+		</dependency> -->
+		<!-- unused now <dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.maltparser-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency> -->
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.opennlp-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<!-- unused now <dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.tokit-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency> -->
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.berkeleyparser-gpl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<!-- unused now <dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.matetools-gpl</artifactId>
+			<version>1.5.0</version>
+		</dependency> -->
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl</artifactId>
 			<version>1.5.0</version>
 		</dependency>
 	</dependencies>
