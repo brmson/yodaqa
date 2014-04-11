@@ -36,6 +36,14 @@ on it. Notable types of final featuresets produced by the annotators:
     Terry Pratchett?" should generate clues "first", "book", "first book"
     and "Terry Pratchett".
 
+  * **SV** (Selective Verb). These represent the coordinating verb of the
+    question that "selects" the answer with regard to other clues. E.g.
+    "Who has received the Nobel Prize for Physiology and Medicine?" will
+    have "received" as SV; "When were they born?" will have "born";
+    "How many colors do you need to color a planar graph?" will have "need".
+    SV is one of the primary clues but is found in a special way and
+    might (or might not) be used specially in answer selection.
+
   * **Focus.** This is the focus point of the sentence where you should
     be able to place the answer.  In "What was the first book written by
     Terry Pratchett?", "what" is the focus.  In "The actor starring in Moon?",

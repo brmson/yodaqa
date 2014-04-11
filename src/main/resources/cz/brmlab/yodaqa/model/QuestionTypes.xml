@@ -4,6 +4,21 @@
     <description>QuestionCAS type system</description>
     <vendor>yodaqa</vendor>
     <version>1.0</version>
+    <imports>
+      <import name="desc.type.LexicalUnits"/>
+    </imports>
     <types>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.SV</name>
+        <description>Selective Verb</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>token</name>
+            <description>The corresponding token.</description>
+            <rangeTypeName>de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
     </types>
   </typeSystemDescription>
