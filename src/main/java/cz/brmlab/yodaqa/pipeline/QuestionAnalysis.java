@@ -20,6 +20,7 @@ import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.annotator.WordTokenizer;
+import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
@@ -93,8 +94,10 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(ClearNlpSemanticRoleLabeler.class));
 		*/
 
-		/* Dump the intermediate CAS. */
-		/* builder.add(createPrimitiveDescription(
+
+		/* Some debug dumps of the intermediate CAS. */
+		/* builder.add(createPrimitiveDescription(DumpConstituents.class));
+		builder.add(createPrimitiveDescription(
 			CasDumpWriter.class,
 			CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-qacas.txt")); */
 
