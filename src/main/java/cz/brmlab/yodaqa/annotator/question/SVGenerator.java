@@ -43,10 +43,15 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
 		/* Find the shallowest WH* clause. */
 		Constituent WHc = shallowestByType(sentence, "WH.*");
-		if (WHc == null) return;
 
-		/* Find a coordinating sentence constituent (S, SINV, SQ, ...). */
-		Constituent Sc = siblingNext(WHc);
+		Constituent Sc;
+		if (WHc != null) {
+			/* Find a coordinating sentence constituent (S, SINV, SQ, ...). */
+			Sc = siblingNext(WHc);
+		} else {
+			/* Find any sentence-ish. */
+			Sc = childByType(sentence, "S.*");
+		}
 		if (Sc == null) return;
 
 		/* An immediate child should be a VP; in case of nested VPs,
