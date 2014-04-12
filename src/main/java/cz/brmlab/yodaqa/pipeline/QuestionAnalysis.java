@@ -23,6 +23,7 @@ import cz.brmlab.yodaqa.annotator.WordTokenizer;
 import cz.brmlab.yodaqa.annotator.question.SVGenerator;
 import cz.brmlab.yodaqa.annotator.question.FocusGenerator;
 import cz.brmlab.yodaqa.annotator.question.ClueGenerator;
+import cz.brmlab.yodaqa.annotator.question.LATGenerator;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
@@ -103,6 +104,7 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(SVGenerator.class));
 		builder.add(createPrimitiveDescription(FocusGenerator.class));
 		builder.add(createPrimitiveDescription(ClueGenerator.class));
+		builder.add(createPrimitiveDescription(LATGenerator.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
