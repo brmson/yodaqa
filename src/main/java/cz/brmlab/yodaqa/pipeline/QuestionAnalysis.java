@@ -21,6 +21,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.annotator.WordTokenizer;
 import cz.brmlab.yodaqa.annotator.question.SVGenerator;
+import cz.brmlab.yodaqa.annotator.question.FocusGenerator;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
@@ -98,8 +99,8 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 		/* Okay! Now, we can proceed with our key tasks. */
 
-		/* SV determination: */
 		builder.add(createPrimitiveDescription(SVGenerator.class));
+		builder.add(createPrimitiveDescription(FocusGenerator.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */

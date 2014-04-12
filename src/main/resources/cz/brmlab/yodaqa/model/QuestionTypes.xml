@@ -20,5 +20,12 @@
           </featureDescription>
         </features>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.Focus</name>
+        <description>Question Focus</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+        </features>
+      </typeDescription>
     </types>
   </typeSystemDescription>
