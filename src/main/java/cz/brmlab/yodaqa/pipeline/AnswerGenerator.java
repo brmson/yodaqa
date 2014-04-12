@@ -3,9 +3,6 @@ package cz.brmlab.yodaqa.pipeline;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIndex;
-import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -18,8 +15,8 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * Take an input CAS and generate per-answer CAS instances.
  *
  * So far, this answer generator is super-primitive, just to showcase
- * a CAS multiplier behavior. Just splits the input CAS sofa
- * (the question) by space to individual "answers". */
+ * a CAS multiplier behavior. Just generates two answers from the
+ * input CAS sofa as two 10-character segments. */
 
 public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	JCas src_jcas;
@@ -39,7 +36,10 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		answers = jcas.getDocumentText().split(" ");
+		answers = new String[] {
+			jcas.getDocumentText().substring(0, 10),
+			jcas.getDocumentText().substring(10, 20),
+		};
 		i = 0;
 
 		src_jcas = jcas;

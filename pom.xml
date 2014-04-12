@@ -31,6 +31,10 @@
 			<id>ukp-oss-model-releases</id>
 			<url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-model-releases-local</url>
 		</repository>
+		<repository>
+			<id>oaqa</id>
+			<url>http://mu.lti.cs.cmu.edu:8081/nexus/content/repositories/releases</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -93,6 +97,13 @@
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl</artifactId>
 			<version>1.5.0</version>
+		</dependency>
+
+		<!-- A helpful wrapper for Solr-based search. -->
+		<dependency>
+			<groupId>edu.cmu.lti.oaqa.core.provider</groupId>
+			<artifactId>solr-provider</artifactId>
+			<version>1.0.7</version>
 		</dependency>
 	</dependencies>
 

@@ -1,12 +1,17 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import java.util.Iterator;
+
+import edu.cmu.lti.oaqa.core.provider.solr.SolrWrapper;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIndex;
-import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
@@ -18,57 +23,130 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * Take a question CAS and search for keywords, yielding a search result
  * CAS instance.
  *
- * So far, this "searching" is super-primitive, just to place something
- * dummy in our pipeline.  It just generates one result per clue with
- * the clue as the sofa. */
+ * We just feed all the clues to a Solr search. */
 
 public class PrimarySearch extends JCasMultiplier_ImplBase {
+	/** Number of results to grab and analyze. */
+	public static final String PARAM_HITLIST_SIZE = "hitlist-size";
+	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "10")
+	private int hitListSize;
+
+	/** Whether embedded (internal) or standalone (external) Solr
+	 * instance is to be used. */
+	public static final String PARAM_EMBEDDED = "embedded";
+	@ConfigurationParameter(name = PARAM_EMBEDDED, mandatory = false, defaultValue = "true")
+	protected boolean embedded;
+
+	/** "Core" is the name of Solr database. In case of embedded,
+	 * the pathname to one. */
+	public static final String PARAM_CORE = "core";
+	@ConfigurationParameter(name = PARAM_CORE, mandatory = false, defaultValue = "data/guten")
+	protected String core;
+
+	/** URL to a Solr server if !embedded. */
+	public static final String PARAM_SERVER_URL = "server-url";
+	@ConfigurationParameter(name = PARAM_SERVER_URL, mandatory = false, defaultValue = "http://localhost:8983/solr/")
+	protected String serverUrl;
+
+	protected SolrWrapper Solr;
+
 	JCas src_jcas;
-	FSIterator clues;
+	protected Iterator<SolrDocument> documenti;
 	int i;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+
+		try {
+			this.Solr = new SolrWrapper(serverUrl, null, embedded, core);
+		} catch (Exception e) {
+			throw new ResourceInitializationException(e);
+		}
 	}
 
+	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		clues = jcas.getAnnotationIndex(Clue.type).iterator();
+		src_jcas = jcas;
 		i = 0;
 
-		src_jcas = jcas;
+		String query = formulateQuery(jcas);
+		try {
+			SolrDocumentList documents = Solr.runQuery(query, hitListSize);
+			documenti = documents.iterator();
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
 	}
 
+	@Override
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return clues.hasNext();
+		return documenti.hasNext();
 	}
 
+	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
+		System.err.println("next in");
 		JCas jcas = getEmptyJCas();
 		try {
 			jcas.createView("Question");
 			copyQuestion(src_jcas, jcas.getView("Question"));
 
 			jcas.createView("Result");
-			generateResult(clues, jcas.getView("Result"));
+			generateResult(documenti.next(), jcas.getView("Result"), !documenti.hasNext());
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
+		System.err.println("next out");
 		i++;
 		return jcas;
+	}
+
+	@Override
+	public void collectionProcessComplete() throws AnalysisEngineProcessException {
+		super.collectionProcessComplete();
+		Solr.close();
+	}
+
+
+	protected String formulateQuery(JCas jcas) {
+		StringBuffer result = new StringBuffer();
+		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
+			String keyterm = clue.getCoveredText().replaceAll(" ", "\\\\ ");
+			result.append(keyterm + " ");
+		}
+		String query = result.toString();
+		System.err.println(" QUERY: " + query);
+		return query;
 	}
 
 	protected void copyQuestion(JCas src, JCas jcas) throws Exception {
 		CasCopier.copyCas(src.getCas(), jcas.getCas(), true);
 	}
 
-	protected void generateResult(FSIterator clues, JCas jcas) throws Exception {
-		Clue clue = (Clue) clues.next();
-		jcas.setDocumentText(clue.getCoveredText());
+	protected void generateResult(SolrDocument document, JCas jcas,
+			boolean isLast) throws Exception {
 
+		String id = (String) document.getFieldValue("id");
+		String title = (String) document.getFieldValue("titleText");
+		System.err.println(" FOUND: " + id + " " + (title != null ? title : ""));
+		String text;
+		try {
+			text = Solr.getDocText(id);
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+			return;
+		}
+		System.err.println("doc set");
+		// System.err.println("--8<-- " + text + " --8<--");
+		jcas.setDocumentText(text);
+
+		System.err.println("text set");
 		ResultInfo ri = new ResultInfo(jcas);
-		ri.setRelevance(1.0 / (i + 1.0));
-		ri.setIsLast(!clues.hasNext());
+		ri.setDocumentId(id);
+		ri.setDocumentTitle(title);
+		ri.setRelevance(((Float) document.getFieldValue("score")).floatValue());
+		ri.setIsLast(isLast);
 		ri.addToIndexes();
 	}
 }
