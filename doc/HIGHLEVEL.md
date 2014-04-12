@@ -21,6 +21,9 @@ feel free to further split phases and introduce extra intermediate CASes.
 
 Each CAS has a CASId feature uniquely describing its origin.
 
+Some CASes are carried over to other CASes by the means of generating
+a separate view.
+
 ## Question Reader
 
 The initial, IO phase is a collection reader that acquires question(s),
@@ -78,8 +81,8 @@ This phase is represented by a set of CAS multipliers that take a populated
 
 The sofa of the SearchResultCAS is a retrieved document or passage that is
 fetched by a corpus search based on the question featuresets.  It also contains
-a copy of the QuestionCAS featuresets, and a few extra info like a match degree
-rank.
+a copy of the QuestionCAS featuresets in a Question view, and a few extra info
+like a match degree rank.
 
 Typically, one would have a separate Primary Search AE for each
 engine (Solr, Indri, ...) and instantiated separately for each data
@@ -95,7 +98,8 @@ annotate it and generate some **CandidateAnswerCAS** instances.
 
 The sofa of the CandidateAnswerCAS is, well, the candidate answer (usually one
 word or a few words), plus some features (like a score, hypothesis about the
-type of the answer etc.) and a copy of the question analysis.
+type of the answer etc.) and a copy of the question analysis in the Question
+view.
 
 ## Answer Ranker
 

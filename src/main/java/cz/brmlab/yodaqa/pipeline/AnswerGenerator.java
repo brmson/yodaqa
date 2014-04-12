@@ -34,6 +34,11 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		try {
+			jcas = jcas.getView("Result");
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
 		answers = jcas.getDocumentText().split(" ");
 		i = 0;
 
