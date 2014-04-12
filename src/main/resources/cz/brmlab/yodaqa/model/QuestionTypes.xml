@@ -32,5 +32,17 @@
           </featureDescription>
         </features>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.Clue</name>
+        <description>Question Clue</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>base</name>
+            <description>The corresponding token/constituent.</description>
+            <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
     </types>
   </typeSystemDescription>
