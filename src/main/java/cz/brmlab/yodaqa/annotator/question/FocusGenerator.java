@@ -55,6 +55,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		Focus f = new Focus(jcas);
 		f.setBegin(focus.getBegin());
 		f.setEnd(focus.getEnd());
+		f.setBase(focus);
 		f.addToIndexes();
 	}
 

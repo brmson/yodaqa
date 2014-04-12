@@ -67,7 +67,7 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 		SV sv = new SV(jcas);
 		sv.setBegin(VBt.getBegin());
 		sv.setEnd(VBt.getEnd());
-		sv.setToken(VBt);
+		sv.setBase(VBt);
 		sv.addToIndexes();
 	}
 
