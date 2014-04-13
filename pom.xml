@@ -83,11 +83,11 @@
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.tokit-asl</artifactId>
 			<version>1.5.0</version>
 		</dependency> -->
-		<dependency>
+		<!-- provided locally <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.berkeleyparser-gpl</artifactId>
 			<version>1.5.0</version>
-		</dependency>
+		</dependency> -->
 		<!-- unused now <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.matetools-gpl</artifactId>
@@ -105,11 +105,48 @@
 			<artifactId>solr-provider</artifactId>
 			<version>1.0.7</version>
 		</dependency>
+
+		<!-- Dependencies of berkeleyparser. -->
+		<dependency>
+			<groupId>edu.berkeley.nlp</groupId>
+			<artifactId>berkeleyparser</artifactId>
+			<version>r32</version>
+		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.metadata-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.parameter-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.resources-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.syntax-asl</artifactId>
 			<version>1.5.0</version>
 		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.berkeleyparser-model-parser-en-sm6</artifactId>
+			<version>20100819.1</version>
+		</dependency>
+                <dependency>
+                        <groupId>commons-io</groupId>
+                        <artifactId>commons-io</artifactId>
+                        <version>2.0.1</version>
+                </dependency>
+                <dependency>
+                        <groupId>commons-lang</groupId>
+                        <artifactId>commons-lang</artifactId>
+                        <version>2.6</version>
+                </dependency>
 	</dependencies>
 
 	<build>
