@@ -33,18 +33,17 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas resultsView, passagesView;
+		JCas resultsView;
 		try {
 			resultsView = jcas.getView("Result");
-			passagesView = jcas.getView("Passages");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		src_jcas = passagesView;
+		src_jcas = resultsView;
 		ri = (ResultInfo) resultsView.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
 
-		answers = passagesView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
+		answers = resultsView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
 		i = 0;
 	}
 

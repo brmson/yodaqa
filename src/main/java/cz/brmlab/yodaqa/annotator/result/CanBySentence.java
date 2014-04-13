@@ -18,8 +18,8 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
  * This is just a naive generator for debugging. */
 
 @SofaCapability(
-	inputSofas = { "Passages" },
-	outputSofas = { "Passages" }
+	inputSofas = { "Passages", "Result" },
+	outputSofas = { "Passages", "Result" }
 )
 
 public class CanBySentence extends JCasAnnotator_ImplBase {
@@ -28,14 +28,16 @@ public class CanBySentence extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		JCas passagesView, resultView;
 		try {
-			jcas = jcas.getView("Passages");
+			passagesView = jcas.getView("Passages");
+			resultView = jcas.getView("Result");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
+		for (Sentence sentence : JCasUtil.select(passagesView, Sentence.class)) {
 			System.err.println("ca " + sentence.getCoveredText());
-			CandidateAnswer ca = new CandidateAnswer(jcas);
+			CandidateAnswer ca = new CandidateAnswer(resultView);
 			ca.setBegin(sentence.getBegin());
 			ca.setEnd(sentence.getEnd());
 			ca.setBase(sentence);

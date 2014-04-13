@@ -99,9 +99,10 @@ keep only the sentences that are related to our query and possibly some
 surrounding sentences (and resolving coreferences) etc.
 
 The initial annotator stages do various NLP analysis and passage filtering;
-relevant passages are stored and processed in a Passages view.
-The later annotator stages of this aggregate phase will start spawning
-CandidateAnswer annotations that represent some potential answers.
+relevant passages are stored and processed in a Passages view, further
+views may also be used internally.  The later annotator stages of this
+aggregate phase will start spawning CandidateAnswer annotations that
+represent some potential answers (in the Result view!).
 
 ## Answer Generator
 

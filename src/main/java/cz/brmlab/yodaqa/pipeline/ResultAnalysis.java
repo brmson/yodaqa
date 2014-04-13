@@ -59,8 +59,7 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 		/* Okay! Now, we can proceed with our key tasks. */
 
 		// TODO :-)
-		builder.add(createPrimitiveDescription(CanBySentence.class),
-			CAS.NAME_DEFAULT_SOFA, "Passages");
+		builder.add(createPrimitiveDescription(CanBySentence.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
