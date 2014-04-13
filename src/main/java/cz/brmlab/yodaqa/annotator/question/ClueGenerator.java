@@ -29,6 +29,7 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 public class ClueGenerator extends JCasAnnotator_ImplBase {
 	protected String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
 	protected String CONSTITMATCH = "AD.*|NP|PP|QP";
+	protected String SVBLACKLIST = "be|have|do";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -66,8 +67,12 @@ public class ClueGenerator extends JCasAnnotator_ImplBase {
 		/* Oh, and all SVs are also Clues; they wouldn't be included
 		 * in the constituents harvested above. */
 
-		for (SV sv : JCasUtil.select(jcas, SV.class))
+		for (SV sv : JCasUtil.select(jcas, SV.class)) {
+			/* What was the name... -> "was" is useless as clue. */
+			if (sv.getBase().getLemma().getValue().matches(SVBLACKLIST))
+				continue;
 			addClue(jcas, sv.getBegin(), sv.getEnd(), sv);
+		}
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base) {
