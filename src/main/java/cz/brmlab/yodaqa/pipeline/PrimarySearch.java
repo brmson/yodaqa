@@ -85,11 +85,11 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		System.err.println("next in");
 		JCas jcas = getEmptyJCas();
 		try {
 			jcas.createView("Question");
-			copyQuestion(src_jcas, jcas.getView("Question"));
+			CasCopier copier = new CasCopier(src_jcas.getCas(), jcas.getCas());
+			copyQuestion(copier, src_jcas, jcas.getView("Question"));
 
 			jcas.createView("Result");
 			generateResult(documenti.next(), jcas.getView("Result"), !documenti.hasNext());
@@ -97,7 +97,6 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
-		System.err.println("next out");
 		i++;
 		return jcas;
 	}
@@ -120,8 +119,8 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 		return query;
 	}
 
-	protected void copyQuestion(JCas src, JCas jcas) throws Exception {
-		CasCopier.copyCas(src.getCas(), jcas.getCas(), true);
+	protected void copyQuestion(CasCopier copier, JCas src, JCas jcas) throws Exception {
+		copier.copyCasView(src.getCas(), jcas.getCas(), true);
 	}
 
 	protected void generateResult(SolrDocument document, JCas jcas,
@@ -137,11 +136,10 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 			e.printStackTrace();
 			return;
 		}
-		System.err.println("doc set");
 		// System.err.println("--8<-- " + text + " --8<--");
 		jcas.setDocumentText(text);
+		jcas.setDocumentLanguage("en"); // XXX
 
-		System.err.println("text set");
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id);
 		ri.setDocumentTitle(title);
