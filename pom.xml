@@ -68,6 +68,11 @@
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.clearnlp-asl</artifactId>
 			<version>1.5.0</version>
 		</dependency> -->
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.languagetool-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
 		<!-- unused now <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.maltparser-asl</artifactId>

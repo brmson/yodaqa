@@ -12,6 +12,7 @@ import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
 import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
 import cz.brmlab.yodaqa.pipeline.AnswerRanker;
 import cz.brmlab.yodaqa.pipeline.PrimarySearch;
+import cz.brmlab.yodaqa.pipeline.ResultAnalysis;
 import cz.brmlab.yodaqa.pipeline.QuestionAnalysis;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
@@ -27,6 +28,7 @@ public class YodaQAApp {
 		AnalysisEngineDescription questionAnalysis = QuestionAnalysis.createEngineDescription();
 		AnalysisEngineDescription primarySearch = createEngineDescription(
 				PrimarySearch.class);
+		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
 				AnswerGenerator.class);
 		AnalysisEngineDescription answerRanker = createEngineDescription(
@@ -39,6 +41,7 @@ public class YodaQAApp {
 		MultiCASPipeline.runPipeline(reader,
 				questionAnalysis,
 				primarySearch,
+				resultAnalysis,
 				answerGenerator,
 				answerRanker,
 				printer);

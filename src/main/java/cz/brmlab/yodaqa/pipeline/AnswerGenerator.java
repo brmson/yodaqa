@@ -3,12 +3,14 @@ package cz.brmlab.yodaqa.pipeline;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
 /**
@@ -23,7 +25,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	ResultInfo ri;
 
 	/* Prepared list of answers to return. */
-	String[] answers;
+	FSIterator answers;
 	int i;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -31,34 +33,36 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		JCas resultsView, passagesView;
 		try {
-			jcas = jcas.getView("Result");
+			resultsView = jcas.getView("Result");
+			passagesView = jcas.getView("Passages");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		answers = new String[] {
-			jcas.getDocumentText().substring(0, 10),
-			jcas.getDocumentText().substring(10, 20),
-		};
-		i = 0;
 
-		src_jcas = jcas;
-		ri = (ResultInfo) jcas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+		src_jcas = passagesView;
+		ri = (ResultInfo) resultsView.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+
+		answers = passagesView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
+		i = 0;
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return i < answers.length;
+		return answers.hasNext();
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		JCas jcas = getEmptyJCas();
 		CasCopier copier = new CasCopier(src_jcas.getCas(), jcas.getCas());
 		try {
-			jcas.setDocumentText(answers[i]);
+			CandidateAnswer answer = (CandidateAnswer) answers.next();
+			jcas.setDocumentText(answer.getCoveredText());
+			jcas.setDocumentLanguage(src_jcas.getDocumentLanguage());
 
 			AnswerInfo ai = new AnswerInfo(jcas);
-			ai.setConfidence(1.0 / (i + 1.0));
-			ai.setIsLast(i == answers.length - 1);
+			ai.setConfidence(answer.getConfidence());
+			ai.setIsLast(!answers.hasNext());
 			ai.addToIndexes();
 
 			ResultInfo ri2 = (ResultInfo) copier.copyFs(ri);

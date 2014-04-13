@@ -32,5 +32,22 @@
           </featureDescription>
         </features>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer</name>
+        <description>Candidate Answer</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>confidence</name>
+            <description>Confidence of the answer (not relative to the search result confidence)</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>base</name>
+            <description>The annotation that eventually spawned this answer.</description>
+            <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
     </types>
   </typeSystemDescription>

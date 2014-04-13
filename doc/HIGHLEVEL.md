@@ -91,15 +91,32 @@ source.
 We may want to split this phase to a separate search and retrieval
 phases, but it's not clear what the advantage would be yet.
 
+## Result Analysis
+
+We do a lot of steps similar to the Question Analysis phase, but with the
+**SearchResultCAS** instead.  Generally, we tokenize the search result,
+keep only the sentences that are related to our query and possibly some
+surrounding sentences (and resolving coreferences) etc.
+
+The initial annotator stages do various NLP analysis and passage filtering;
+relevant passages are stored and processed in a Passages view.
+The later annotator stages of this aggregate phase will start spawning
+CandidateAnswer annotations that represent some potential answers.
+
 ## Answer Generator
 
-This phase is represented by CAS multipliers that grab a **SearchResultCAS**,
-annotate it and generate some **CandidateAnswerCAS** instances.
+This phase is a simple CAS multiplier that grabs a **SearchResultCAS**,
+and generates a **CandidateAnswerCAS** instance for each CandidateAnswer
+annotation.
 
 The sofa of the CandidateAnswerCAS is, well, the candidate answer (usually one
 word or a few words), plus some features (like a score, hypothesis about the
-type of the answer etc.) and a copy of the question analysis in the Question
-view.
+type of the answer etc.), a copy of the question analysis in the Question
+view and (maybe) copy of the search result information in the Result view.
+
+There is not much of a point of this intermediate CAS right now, but we
+may insert additional stages here that will analyze candidate answers
+in more depth, produce and consider supporting evidence, etc.
 
 ## Answer Ranker
 
