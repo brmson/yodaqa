@@ -105,6 +105,11 @@
 			<artifactId>solr-provider</artifactId>
 			<version>1.0.7</version>
 		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.syntax-asl</artifactId>
+			<version>1.5.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -154,6 +159,7 @@
 						<configuration>
 							<typeSystemIncludes>
 								<typeSystemInclude>src/main/resources/cz/brmlab/yodaqa/model/*Types.xml</typeSystemInclude>
+								<typeSystemInclude>src/main/resources/desc/type/*.xml</typeSystemInclude>
 							</typeSystemIncludes>
 							<outputDirectory>src/main/java</outputDirectory>
 						</configuration>
