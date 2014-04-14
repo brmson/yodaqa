@@ -1,6 +1,5 @@
 package cz.brmlab.yodaqa.annotator.result;
 
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -11,9 +10,10 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
+import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 /**
- * Create CandidateAnswers simply from whole filtered sentences.
+ * Create CandidateAnswers simply from whole Passages.
  *
  * This is just a naive generator for debugging. */
 
@@ -22,7 +22,7 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 	outputSofas = { "Passages", "Result" }
 )
 
-public class CanBySentence extends JCasAnnotator_ImplBase {
+public class CanByPassage extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -35,12 +35,12 @@ public class CanBySentence extends JCasAnnotator_ImplBase {
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		for (Sentence sentence : JCasUtil.select(passagesView, Sentence.class)) {
-			System.err.println("ca " + sentence.getCoveredText());
+		for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
+			System.err.println("ca " + passage.getCoveredText());
 			CandidateAnswer ca = new CandidateAnswer(resultView);
-			ca.setBegin(sentence.getBegin());
-			ca.setEnd(sentence.getEnd());
-			ca.setBase(sentence);
+			ca.setBegin(passage.getBegin());
+			ca.setEnd(passage.getEnd());
+			ca.setBase(passage);
 			ca.setConfidence(1.0);
 			ca.addToIndexes();
 		}

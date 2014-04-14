@@ -10,7 +10,7 @@ import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.annotator.result.SentenceFilter;
+import cz.brmlab.yodaqa.annotator.result.PassByClue;
 import cz.brmlab.yodaqa.annotator.result.CanBySentence;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
@@ -39,7 +39,7 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 		/* At this point, we can filter the source to keep
 		 * only sentences and tokens we care about: */
-		builder.add(createPrimitiveDescription(SentenceFilter.class));
+		builder.add(createPrimitiveDescription(PassByClue.class));
 
 		/* Constituent features and POS features: */
 		//builder.add(createPrimitiveDescription(BerkeleyParser.class),

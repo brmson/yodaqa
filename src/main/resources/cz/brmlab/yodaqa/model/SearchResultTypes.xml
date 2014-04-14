@@ -33,6 +33,23 @@
         </features>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.Passage</name>
+        <description>Interesting passages of the search result that will be examined in more detail.</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>score</name>
+            <description>Score of the passage regarding relevance likelihood.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>picked</name>
+            <description>Whether this passage has been picked for a more detailed analysis.</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer</name>
         <description>Candidate Answer</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>

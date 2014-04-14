@@ -18,6 +18,7 @@ concerned about the high level analysis flow.
 This is the barebones configuration. In time, we will want to add extra
 stages like Supporting Evidence. It is not set in stone, especially
 feel free to further split phases and introduce extra intermediate CASes.
+Also, parts of it may still be hypothetical or not fully implemented.
 
 Each CAS has a CASId feature uniquely describing its origin.
 
@@ -96,13 +97,32 @@ phases, but it's not clear what the advantage would be yet.
 We do a lot of steps similar to the Question Analysis phase, but with the
 **SearchResultCAS** instead.  Generally, we tokenize the search result,
 keep only the sentences that are related to our query and possibly some
-surrounding sentences (and resolving coreferences) etc.
+surrounding sentences (and resolving coreferences) etc.  Interesting
+sentences are rated based on their relevance, only the most interesting
+ones are filtered and cross-referenced with the question clues and
+answers can be generated from that in a variety of ways.
 
-The initial annotator stages do various NLP analysis and passage filtering;
-relevant passages are stored and processed in a Passages view, further
-views may also be used internally.  The later annotator stages of this
-aggregate phase will start spawning CandidateAnswer annotations that
-represent some potential answers (in the Result view!).
+### Passage Extraction
+
+We extract relevant passages --- sentences that contain some of the clues.
+
+Relevant passages are extracted and covered by a Passage annotation
+in a Passages view (we use a dedicated view to be able to carry over
+just the relevant subset of annotations and thus limit operation of
+NLP analysis annotators like parsers just to this subset).
+
+### Passage Filtering
+
+Passages are ranked by relevance and the most relevant ones are carried
+to a PickedPassages view.
+
+### Answer Extraction
+
+In-depth sentence analysis is done on the remaining passages and candidate
+answers are generated based on this.  (So many approaches are possible;
+for starters, we choose a naive strategy of simply picking the NP clauses
+that are not covered by clues.)  CandidateAnswer annotations (back in
+the Result view!) represent these.
 
 ## Answer Generator
 

@@ -16,10 +16,11 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 /**
- * Remove sentences not matching anything in Question from the Result
- * view in ResultCAS.
+ * Generate Passages from Sentences that contain some Clue in Question
+ * and copy them over to the Passages view.
  *
  * Prospectively, we might want to keep some surrounding sentences,
  * though. */
@@ -30,7 +31,7 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 )
 
 
-public class SentenceFilter extends JCasAnnotator_ImplBase {
+public class PassByClue extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -62,15 +63,23 @@ public class SentenceFilter extends JCasAnnotator_ImplBase {
 				if (!sentence.getCoveredText().contains(clue.getCoveredText()))
 					continue;
 
+				/* Annotate. */
+				Passage passage = new Passage(passagesView);
+				passage.setBegin(sentence.getBegin());
+				passage.setEnd(sentence.getEnd());
+				passage.setScore(1.0); // TODO
+				passage.addToIndexes();
+
 				/* Copy */
 				if (!copier.alreadyCopied(sentence)) {
 					Sentence s2 = (Sentence) copier.copyFs(sentence);
 					s2.addToIndexes();
-				}
-				for (Annotation a : covering.get(sentence)) {
-					if (!copier.alreadyCopied(a)) {
-						Annotation a2 = (Annotation) copier.copyFs(a);
-						a2.addToIndexes();
+
+					for (Annotation a : covering.get(sentence)) {
+						if (!copier.alreadyCopied(a)) {
+							Annotation a2 = (Annotation) copier.copyFs(a);
+							a2.addToIndexes();
+						}
 					}
 				}
 				/* Copying because of a single clue is enough. */
