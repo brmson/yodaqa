@@ -1,5 +1,8 @@
 package cz.brmlab.yodaqa.annotator.result;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -8,7 +11,9 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.descriptor.SofaCapability;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
@@ -49,6 +54,10 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 		pickedPassagesView.setDocumentText(passagesView.getDocumentText());
 		pickedPassagesView.setDocumentLanguage(passagesView.getDocumentLanguage());
 
+		/* Pre-index covering info. */
+		Map<Passage, Collection<Annotation>> covering =
+			JCasUtil.indexCovered(passagesView, Passage.class, Annotation.class);
+
 		/* Just copy over the first N ones. */
 		FSIndex idx = passagesView.getJFSIndexRepository().getIndex("SortedPassages");
 		FSIterator passages = idx.iterator();
@@ -58,6 +67,16 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 			Passage passage = (Passage) passages.next();
 			Passage p2 = (Passage) copier.copyFs(passage);
 			p2.addToIndexes();
+
+			/* Also recursively copy annotations - we need
+			 * to have Sentences in the PickedPassages view
+			 * to run a parser. */
+			for (Annotation a : covering.get(passage)) {
+				if (!copier.alreadyCopied(a)) {
+					Annotation a2 = (Annotation) copier.copyFs(a);
+					a2.addToIndexes();
+				}
+			}
 		}
 	}
 }
