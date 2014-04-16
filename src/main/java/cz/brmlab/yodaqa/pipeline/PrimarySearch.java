@@ -28,7 +28,7 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 public class PrimarySearch extends JCasMultiplier_ImplBase {
 	/** Number of results to grab and analyze. */
 	public static final String PARAM_HITLIST_SIZE = "hitlist-size";
-	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "10")
+	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
 	private int hitListSize;
 
 	/** Whether embedded (internal) or standalone (external) Solr
