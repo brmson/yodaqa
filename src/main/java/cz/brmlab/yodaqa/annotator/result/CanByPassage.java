@@ -40,6 +40,7 @@ public class CanByPassage extends JCasAnnotator_ImplBase {
 			CandidateAnswer ca = new CandidateAnswer(resultView);
 			ca.setBegin(passage.getBegin());
 			ca.setEnd(passage.getEnd());
+			ca.setPassage(passage);
 			ca.setBase(passage);
 			ca.setConfidence(1.0);
 			ca.addToIndexes();

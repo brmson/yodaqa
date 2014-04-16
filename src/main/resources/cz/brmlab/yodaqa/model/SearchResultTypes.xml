@@ -55,6 +55,11 @@
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>passage</name>
+            <description>The passage this answer belongs to.</description>
+            <rangeTypeName>cz.brmlab.yodaqa.model.SearchResult.Passage</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>base</name>
             <description>The annotation that eventually spawned this answer.</description>
             <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
