@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.annotator.result;
 
 import java.util.Collection;
 import java.util.Map;
+import java.lang.Math;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import org.apache.uima.UimaContext;
@@ -58,16 +59,25 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		 * but for now we opt for a trivial O(M*N) approach. */
 		CasCopier copier = new CasCopier(resultView.getCas(), passagesView.getCas());
 		for (Sentence sentence : JCasUtil.select(resultView, Sentence.class)) {
+			/* TODO: Rate clues themselves. */
+			/* TODO: Put clues in a hierarchy so that we don't
+			 * try to match word clues of phrase clues we already
+			 * matched. */
+			int matches = 0;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 				/* Match */
 				if (!sentence.getCoveredText().contains(clue.getCoveredText()))
 					continue;
 
+				matches += clue.getCoveredText().length(); // XXX: rather #ofwords?
+			}
+
+			if (matches > 0) {
 				/* Annotate. */
 				Passage passage = new Passage(passagesView);
 				passage.setBegin(sentence.getBegin());
 				passage.setEnd(sentence.getEnd());
-				passage.setScore(1.0); // TODO
+				passage.setScore(Math.sqrt(matches)); // TODO
 				passage.addToIndexes();
 
 				/* Copy */
@@ -82,8 +92,6 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 						}
 					}
 				}
-				/* Copying because of a single clue is enough. */
-				break;
 			}
 		}
 	}
