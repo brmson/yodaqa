@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <fsIndexCollection xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>SearchResultIndexes</name>
+    <description>SearchResultCAS index structures</description>
+    <vendor>yodaqa</vendor>
+    <version>1.0</version>
+    <fsIndexes>
+      <fsIndexDescription>
+        <label>SortedPassages</label>
+        <typeName>cz.brmlab.yodaqa.model.SearchResult.Passage</typeName>
+        <kind>sorted</kind>
+        <keys>
+          <fsIndexKey>
+            <featureName>score</featureName>
+            <comparator>reverse</comparator>
+          </fsIndexKey>
+        </keys>
+      </fsIndexDescription>
+    </fsIndexes>
+  </fsIndexCollection>

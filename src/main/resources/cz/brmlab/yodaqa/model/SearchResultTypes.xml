@@ -42,11 +42,6 @@
             <description>Score of the passage regarding relevance likelihood.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
-          <featureDescription>
-            <name>picked</name>
-            <description>Whether this passage has been picked for a more detailed analysis.</description>
-            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>

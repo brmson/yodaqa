@@ -18,8 +18,8 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
  * This is just a naive generator for debugging. */
 
 @SofaCapability(
-	inputSofas = { "Passages", "Result" },
-	outputSofas = { "Passages", "Result" }
+	inputSofas = { "PickedPassages", "Result" },
+	outputSofas = { "Result" }
 )
 
 public class CanByPassage extends JCasAnnotator_ImplBase {
@@ -30,7 +30,7 @@ public class CanByPassage extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		JCas passagesView, resultView;
 		try {
-			passagesView = jcas.getView("Passages");
+			passagesView = jcas.getView("PickedPassages");
 			resultView = jcas.getView("Result");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
