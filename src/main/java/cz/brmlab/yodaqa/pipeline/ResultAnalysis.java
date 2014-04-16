@@ -11,7 +11,7 @@ import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.annotator.result.PassByClue;
-import cz.brmlab.yodaqa.annotator.result.CanBySentence;
+import cz.brmlab.yodaqa.annotator.result.CanByPassage;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
@@ -59,7 +59,7 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 		/* Okay! Now, we can proceed with our key tasks. */
 
 		// TODO :-)
-		builder.add(createPrimitiveDescription(CanBySentence.class));
+		builder.add(createPrimitiveDescription(CanByPassage.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
