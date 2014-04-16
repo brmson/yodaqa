@@ -26,8 +26,27 @@ public class YodaQAApp {
 				InteractiveQuestionReader.PARAM_LANGUAGE, "en");
 
 		AnalysisEngineDescription questionAnalysis = QuestionAnalysis.createEngineDescription();
+
+		/* We have two options here - either use a local embedded
+		 * instance based on a solr index in a given local directory,
+		 * or connect to a remote instance (e.g. indexing Wikipedia).
+		 *
+		 * By default, we connect to a remote instance; see README for
+		 * instructions on how to set up your own.  Uncomment the
+		 * code below to use a local solr core instead, again see
+		 * README for instructions on how to obtain an example one. */
+		/*
 		AnalysisEngineDescription primarySearch = createEngineDescription(
-				PrimarySearch.class);
+				PrimarySearch.class,
+				"embedded", true,
+				"core", "data/guten");
+				*/
+		AnalysisEngineDescription primarySearch = createEngineDescription(
+				PrimarySearch.class,
+				"embedded", false,
+				"server-url", "http://pasky.or.cz:8983/solr/",
+				"core", "collection1");
+
 		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
 				AnswerGenerator.class);
