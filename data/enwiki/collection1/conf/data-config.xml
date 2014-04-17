@@ -15,7 +15,14 @@
       <field column="userId"    xpath="/mediawiki/page/revision/contributor/id" />
       <field column="text"      xpath="/mediawiki/page/revision/text" />
       <field column="timestamp" xpath="/mediawiki/page/revision/timestamp" dateTimeFormat="yyyy-MM-dd'T'hh:mm:ss'Z'" />
-      <field column="$skipDoc"  regex="^#REDIRECT .*" replaceWith="true" sourceColName="text"/>
+      <!-- Ignore redirect pages -->
+      <field column="$skipDoc"  regex="^(?i)#REDIRECT.*" replaceWith="true" sourceColName="text"/>
+      <!-- Ignore namespaced pages -->
+      <field column="$skipDoc"  regex="^[^_ ]*:[^_ ].*" replaceWith="true" sourceColName="title"/>
+      <!-- Ignore disambiguation pages -->
+      <!-- Unfortunately, this solution slows the import down by two orders
+	   of magnitude:
+      <field column="$skipDoc"  regex="(?i).*\{\{disambiguation.*" replaceWith="true" sourceColName="text"/> -->
     </entity>
   </document>
 </dataConfig>
