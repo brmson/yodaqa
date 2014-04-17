@@ -1,12 +1,21 @@
 <dataConfig>
   <dataSource type="FileDataSource" encoding="UTF-8" />
+  <script><![CDATA[
+    /* Ignore disambiguation pages. */
+    function skipDisambiguation(row) {
+      if (row.get('text').indexOf('{{disambiguation') >= 0)
+        row.put('$skipDoc', 'true');
+      return row;
+    }
+    ]]></script>
+
   <document>
     <entity name="page"
       processor="XPathEntityProcessor"
       stream="true"
       forEach="/mediawiki/page/"
       url="enwiki/enwiki-20140102-pages-articles.xml"
-      transformer="RegexTransformer,DateFormatTransformer"
+      transformer="RegexTransformer,DateFormatTransformer,script:skipDisambiguation"
       >
       <field column="id"        xpath="/mediawiki/page/id" />
       <field column="title"     xpath="/mediawiki/page/title" />
@@ -23,6 +32,7 @@
       <!-- Unfortunately, this solution slows the import down by two orders
 	   of magnitude:
       <field column="$skipDoc"  regex="(?i).*\{\{disambiguation.*" replaceWith="true" sourceColName="text"/> -->
+      <!-- So instead, we are using skipDisambiguation() above. -->
     </entity>
   </document>
 </dataConfig>
