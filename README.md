@@ -45,7 +45,7 @@ of the United States?"
 
 To set it up, first download the index:
 
-	wget https://github.com/downloads/oaqa/helloqa/guten.tar.gz; mkdir -p data; tar -C data -xf guten.tar.gz
+	wget https://github.com/downloads/oaqa/helloqa/guten.tar.gz; tar -C data -xf guten.tar.gz
 
 Then, you will need to modify the PrimarySearch portion of file
 
@@ -66,19 +66,9 @@ source:
 
   * Download solr (http://www.apache.org/dyn/closer.cgi/lucene/solr/),
     unpack and cd to the ``example/`` subdirectory.
-  * Download and unpack http://pasky.or.cz/dev/brmson/solr-enwiki.zip Solr enwiki
-    import configuration.
-  * Download enwiki dump from http://dumps.wikimedia.org/enwiki/ (you want the
-    ``enwiki-*-pages-articles.xml.bz2`` file), store in the ``enwiki/`` subdirectory.
-    (Its size is many gigabytes!)
-  * ``bunzip2 enwiki/enwiki*.bz2`` (This will take about 40-50 GiB of space and you
-    can go get some coffee.)
-  * Fix the enwiki XML file reference in ``enwiki/collection1/conf/data-import.xml``
-  * Start standalone Solr server: ``java -Dsolr.solr.home=enwiki -jar start.jar``
-  * In your web browser, open http://localhost:8983/solr/ - you should see a fancy page.
-  * In your web browser, open http://localhost:8983/solr/dataimport?command=full-import
-    (this will take 1-2 hours on a moderately fast machine and consume another few tens
-    of gigabytes).
+  * Symlink or copy the ``data/enwiki/`` directory from this repository to the
+    ``example/`` subdirectory; it contains the data import configuration.
+  * Proceed with instructions in ``data/enwiki/README.md``.
 
 You may want to edit the URL in ``src/main/java/cz/brmlab/yodaqa/YodaQAApp.java``.
 

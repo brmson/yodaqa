@@ -1,0 +1,21 @@
+<dataConfig>
+  <dataSource type="FileDataSource" encoding="UTF-8" />
+  <document>
+    <entity name="page"
+      processor="XPathEntityProcessor"
+      stream="true"
+      forEach="/mediawiki/page/"
+      url="enwiki/enwiki-20140102-pages-articles.xml"
+      transformer="RegexTransformer,DateFormatTransformer"
+      >
+      <field column="id"        xpath="/mediawiki/page/id" />
+      <field column="title"     xpath="/mediawiki/page/title" />
+      <field column="revision"  xpath="/mediawiki/page/revision/id" />
+      <field column="user"      xpath="/mediawiki/page/revision/contributor/username" />
+      <field column="userId"    xpath="/mediawiki/page/revision/contributor/id" />
+      <field column="text"      xpath="/mediawiki/page/revision/text" />
+      <field column="timestamp" xpath="/mediawiki/page/revision/timestamp" dateTimeFormat="yyyy-MM-dd'T'hh:mm:ss'Z'" />
+      <field column="$skipDoc"  regex="^#REDIRECT .*" replaceWith="true" sourceColName="text"/>
+    </entity>
+  </document>
+</dataConfig>
