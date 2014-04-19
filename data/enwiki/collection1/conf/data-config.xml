@@ -3,36 +3,31 @@
   <script><![CDATA[
     /* Ignore disambiguation pages. */
     function skipDisambiguation(row) {
-      if (row.get('text').indexOf('{{disambiguation') >= 0)
+      /* This is much better than using RegexTransformer,
+       * as in-text regex matching slows import down by
+       * two orders of magnitude! */
+      // XXX: This is not perfect, catches e.g. [[Anaconda]]
+      if (row.get('text').indexOf('may refer to:') >= 0)
         row.put('$skipDoc', 'true');
       return row;
     }
     ]]></script>
 
   <document>
-    <entity name="page"
+    <entity name="doc"
       processor="XPathEntityProcessor"
       stream="true"
-      forEach="/mediawiki/page/"
-      url="enwiki/enwiki-20140102-pages-articles.xml"
-      transformer="RegexTransformer,DateFormatTransformer,script:skipDisambiguation"
+      forEach="/wikitext/doc"
+      url="enwiki/enwiki-20140102-text.xml"
+      transformer="RegexTransformer,script:skipDisambiguation"
       >
-      <field column="id"        xpath="/mediawiki/page/id" />
-      <field column="title"     xpath="/mediawiki/page/title" />
-      <field column="revision"  xpath="/mediawiki/page/revision/id" />
-      <field column="user"      xpath="/mediawiki/page/revision/contributor/username" />
-      <field column="userId"    xpath="/mediawiki/page/revision/contributor/id" />
-      <field column="text"      xpath="/mediawiki/page/revision/text" />
-      <field column="timestamp" xpath="/mediawiki/page/revision/timestamp" dateTimeFormat="yyyy-MM-dd'T'hh:mm:ss'Z'" />
-      <!-- Ignore redirect pages -->
-      <field column="$skipDoc"  regex="^(?i)#REDIRECT.*" replaceWith="true" sourceColName="text"/>
-      <!-- Ignore namespaced pages -->
-      <field column="$skipDoc"  regex="^[^_ ]*:[^_ ].*" replaceWith="true" sourceColName="title"/>
-      <!-- Ignore disambiguation pages -->
-      <!-- Unfortunately, this solution slows the import down by two orders
-	   of magnitude:
-      <field column="$skipDoc"  regex="(?i).*\{\{disambiguation.*" replaceWith="true" sourceColName="text"/> -->
-      <!-- So instead, we are using skipDisambiguation() above. -->
+      <field column="id"    xpath="/wikitext/doc/@id" />
+      <field column="url"   xpath="/wikitext/doc/@url" />
+      <field column="title" xpath="/wikitext/doc/@title" />
+      <field column="text"  xpath="/wikitext/doc" />
+      <!-- Redirects are skipped in WikiExtractor -->
+      <!-- In-namespace pages are skipped in WikiExtractor -->
+      <!-- Disambiguation pages are skipped by skipDisambiguation() above. -->
     </entity>
   </document>
 </dataConfig>

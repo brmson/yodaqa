@@ -31,15 +31,33 @@ Setup Instructions
 ------------------
 
 We expect this enwiki directory to live in the ``example/`` subdirectory
-of a normal Solr distribution.
+of a normal Solr distribution - copy it over. All the instructions steps
+assume we are in the enwiki directory over there.
+
+First, we get the latest enwiki dump and remove evil things like Mediawiki
+markup, tables, links, categories or redirects, generating a much simpler
+and somewhat smaller dump.  Then, we import this into Solr.
+
+### Plaintext Wikipedia
 
   * Download enwiki dump from [[http://dumps.wikimedia.org/enwiki/]] (you want the
     ``enwiki-*-pages-articles.xml.bz2`` file), store in this directory.
     (Its size is many gigabytes!)
-  * ``bunzip2 enwiki*.bz2`` (This will take about 40-50 GiB of space and you
-    can go get some coffee.)
-  * Fix the enwiki XML file reference in ``collection1/conf/data-config.xml``
-    according to the dump date you downloaded.
+  * Get our version of WikiExtractor by ``git clone https://github.com/brmson/wikipedia-extractor``
+  * Prepare plaintext dump directory by ``mkdir enwiki-text``
+  * Run WikiExtractor on the dump like
+
+	bzcat enwiki*.bz2 | wikipedia-extractor/WikiExtractor.py -o enwiki-text -H -c -x
+
+    (This will take about 10 GiB of space and you can go get some coffee.
+    A lot of coffee - this may run for about 5 hours?)
+  * Create a single XML file by running ``bin/extracted2xml.sh enwiki-text.xml``
+    (ideally adding the date of the dump to the filename).
+
+### Solr Import
+
+  * Revise the enwiki-text XML file reference in ``collection1/conf/data-config.xml``
+    according to the dump date you used.
   * In the parent directory (``example/``), start the standalone Solr server:
     ``java -Dsolr.solr.home=enwiki -jar start.jar``
   * In your web browser, open [[http://localhost:8983/solr/]] - you should see a fancy page.
