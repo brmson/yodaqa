@@ -111,8 +111,8 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	protected String formulateQuery(JCas jcas) {
 		StringBuffer result = new StringBuffer();
 		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
-			String keyterm = clue.getCoveredText().replaceAll(" ", "\\\\ ");
-			result.append(keyterm + " ");
+			String keyterm = clue.getCoveredText();
+			result.append("\"" + keyterm + "\" ");
 		}
 		String query = result.toString();
 		System.err.println(" QUERY: " + query);
