@@ -126,12 +126,12 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	protected void generateResult(SolrDocument document, JCas jcas,
 			boolean isLast) throws Exception {
 
-		String id = (String) document.getFieldValue("id");
+		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
 		System.err.println(" FOUND: " + id + " " + (title != null ? title : ""));
 		String text;
 		try {
-			text = Solr.getDocText(id);
+			text = Solr.getDocText(id.toString());
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 			return;
@@ -141,7 +141,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		ResultInfo ri = new ResultInfo(jcas);
-		ri.setDocumentId(id);
+		ri.setDocumentId(id.toString());
 		ri.setDocumentTitle(title);
 		ri.setRelevance(((Float) document.getFieldValue("score")).floatValue());
 		ri.setIsLast(isLast);
