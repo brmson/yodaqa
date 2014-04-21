@@ -6,7 +6,7 @@ for indexing a full XML dump of the English Wikipedia with Solr.
 
 It is based on the receipe of
 
-	[[http://wiki.apache.org/solr/DataImportHandler#Example:_Indexing_wikipedia]]
+   <http://wiki.apache.org/solr/DataImportHandler#Example:_Indexing_wikipedia>
 
 In addition to the original recipe, we attempt to avoid redirects
 more thoroughly and also evade disambiguation pages, etc.
@@ -24,9 +24,9 @@ and somewhat smaller dump.  Then, we import this into Solr.
 
 ### Plaintext Wikipedia
 
-  * Download enwiki dump from [[http://dumps.wikimedia.org/enwiki/]] (you want the
-    ``enwiki-*-pages-articles.xml.bz2`` file), store in this directory.
-    (Its size is many gigabytes!)
+  * Download the [enwiki dump](http://dumps.wikimedia.org/enwiki/)
+    (you want the ``enwiki-*-pages-articles.xml.bz2`` file),
+    store in this directory.  (Its size is many gigabytes!)
   * Get our version of WikiExtractor by ``git clone https://github.com/brmson/wikipedia-extractor``
   * Prepare plaintext dump directory by ``mkdir enwiki-text``
   * Run WikiExtractor on the dump like
@@ -44,8 +44,8 @@ and somewhat smaller dump.  Then, we import this into Solr.
     according to the dump date you used.
   * In the parent directory (``example/``), start the standalone Solr server:
     ``java -Dsolr.solr.home=enwiki -jar start.jar``
-  * In your web browser, open [[http://localhost:8983/solr/]] - you should see a fancy page.
-  * In your web browser, open [[http://localhost:8983/solr/dataimport?command=full-import]]
+  * In your web browser, open <http://localhost:8983/solr/> - you should see a fancy page.
+  * In your web browser, open <http://localhost:8983/solr/dataimport?command=full-import>
     (this will take 1-2 hours on a moderately fast machine and consume another few tens
     of gigabytes).
 
@@ -69,7 +69,7 @@ The ASF licenses this file to You under the Apache License, Version 2.0
 (the "License"); you may not use this file except in compliance with
 the License.  You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  <http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
