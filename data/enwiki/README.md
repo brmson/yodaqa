@@ -31,7 +31,7 @@ and somewhat smaller dump.  Then, we import this into Solr.
   * Prepare plaintext dump directory by ``mkdir enwiki-text``
   * Run WikiExtractor on the dump like
 
-	bzcat enwiki*.bz2 | wikipedia-extractor/WikiExtractor.py -o enwiki-text -H -c -x
+        bzcat enwiki*.bz2 | wikipedia-extractor/WikiExtractor.py -o enwiki-text -H -c -x
 
     (This will take about 10 GiB of space and you can go get some coffee.
     A lot of coffee - this may run for about 5 hours?)
