@@ -49,6 +49,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		}
 		passagesView.setDocumentText(resultView.getDocumentText());
 		passagesView.setDocumentLanguage(resultView.getDocumentLanguage());
+		int totalLength = resultView.getDocumentText().length();
 
 		/* Pre-index covering info. */
 		Map<Sentence, Collection<Annotation>> covering =
@@ -77,7 +78,17 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				Passage passage = new Passage(passagesView);
 				passage.setBegin(sentence.getBegin());
 				passage.setEnd(sentence.getEnd());
-				passage.setScore(Math.sqrt(matches)); // TODO
+
+				/* Score slowly raises with number of matched
+				 * clues (TODO this, the sqrt() is completely
+				 * arbitrary, and we may overemphasize long
+				 * clues here), and goes down (by at most 1.0)
+				 * with the offset in the document (more
+				 * important things come first). */
+				double score = Math.sqrt(matches);
+				score -= sentence.getBegin() / totalLength;
+				passage.setScore(score);
+
 				passage.addToIndexes();
 
 				/* Copy */
