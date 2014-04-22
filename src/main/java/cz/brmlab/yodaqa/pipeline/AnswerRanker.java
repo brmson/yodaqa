@@ -1,5 +1,11 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -19,14 +25,17 @@ import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
  * Take a set of per-answer CAS and merge them to a final result CAS.
  *
  * So far, this answer ranker is super-primitive, just to showcase
- * a merging CAS multiplier behavior. But it actually does the job. */
+ * a merging CAS multiplier behavior. But it actually does the job.
+ * It also deduplicates answers with the same text. */
 
 public class AnswerRanker extends JCasMultiplier_ImplBase {
+	Map<String, List<Answer>> answersByText;
 	JCas finalCas;
 	boolean isLast;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+		answersByText = new HashMap<String, List<Answer>>();
 		isLast = false;
 	}
 
@@ -35,7 +44,8 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 			finalCas = getEmptyJCas();
 
 		Answer answer = new Answer(finalCas);
-		answer.setText(candCas.getDocumentText());
+		String text = candCas.getDocumentText();
+		answer.setText(text);
 
 		AnswerInfo ai;
 		ResultInfo ri;
@@ -49,7 +59,12 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 
 		// System.err.println("AR process: " + answer.getText() + " c " + answer.getConfidence());
 
-		answer.addToIndexes();
+		List<Answer> answers = answersByText.get(text);
+		if (answers == null) {
+			answers = new LinkedList<Answer>();
+			answersByText.put(text, answers);
+		}
+		answers.add(answer);
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
@@ -60,8 +75,24 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 		if (!isLast)
 			throw new AnalysisEngineProcessException();
 
+		/* Deduplicate Answer objects and index them. */
+		for (Entry<String, List<Answer>> entry : answersByText.entrySet()) {
+			Answer mainAns = null;
+			for (Answer answer : entry.getValue()) {
+				if (mainAns == null) {
+					mainAns = answer;
+					continue;
+				}
+				System.err.println("final merging " + mainAns.getText() + "|" + answer.getText()
+						+ " :: " + mainAns.getConfidence() + ", " + answer.getConfidence());
+				mainAns.setConfidence(mainAns.getConfidence() + answer.getConfidence());
+			}
+			mainAns.addToIndexes();
+		}
+
 		JCas outputCas = finalCas;
 		finalCas = null;
+		answersByText = null;
 		isLast = false;
 		return outputCas;
 	}
