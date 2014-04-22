@@ -51,17 +51,17 @@
         <features>
           <featureDescription>
             <name>confidence</name>
-            <description>Confidence of the answer (not relative to the search result confidence)</description>
+            <description>Confidence of the answer (without regard to the search result confidence)</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
             <name>passage</name>
-            <description>The passage this answer belongs to.</description>
+            <description>The passage this answer belongs to. (Or one of them.)</description>
             <rangeTypeName>cz.brmlab.yodaqa.model.SearchResult.Passage</rangeTypeName>
           </featureDescription>
           <featureDescription>
             <name>base</name>
-            <description>The annotation that eventually spawned this answer.</description>
+            <description>The annotation (or one of them) that eventually spawned this answer.</description>
             <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
           </featureDescription>
         </features>

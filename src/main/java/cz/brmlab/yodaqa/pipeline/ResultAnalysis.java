@@ -11,6 +11,7 @@ import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.annotator.result.CanByNPSurprise;
+import cz.brmlab.yodaqa.annotator.result.CanMergeByText;
 import cz.brmlab.yodaqa.annotator.result.PassByClue;
 import cz.brmlab.yodaqa.annotator.result.CanByPassage;
 import cz.brmlab.yodaqa.annotator.result.PassFilter;
@@ -68,6 +69,13 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 		/* CandidateAnswer from each NP constituent that does not match
 		 * any of the clues - this might actually be useful! */
 		builder.add(createPrimitiveDescription(CanByNPSurprise.class));
+
+
+		/* Finishing touches: */
+
+		/* Merge CandidateAnswer annotations with the same text. */
+		builder.add(createPrimitiveDescription(CanMergeByText.class),
+			CAS.NAME_DEFAULT_SOFA, "Result");
 
 
 		/* Some debug dumps of the intermediate CAS. */
