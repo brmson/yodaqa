@@ -113,6 +113,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
 			String keyterm = clue.getCoveredText();
 			result.append("\"" + keyterm + "\" ");
+			result.append("titleText:\"" + keyterm + "\" ");
 		}
 		String query = result.toString();
 		System.err.println(" QUERY: " + query);
