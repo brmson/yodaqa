@@ -35,6 +35,10 @@ answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
 
+It is also possible to let YodaQA answer many questions at once, e.g. to
+measure the performance; use ``mvn -q exec:java -Ptrecnew`` to feed YodaQA
+the TREC dataset from data/trec/.
+
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
 

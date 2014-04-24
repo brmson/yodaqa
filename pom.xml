@@ -218,5 +218,27 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>trecgs</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals><goal>java</goal></goals>
+							</execution>
+						</executions>
+						<configuration>
+							<mainClass>cz.brmlab.yodaqa.YodaQA_GS</mainClass>
+							<arguments>
+								<argument>data/trec/trecnew-single.tsv</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
