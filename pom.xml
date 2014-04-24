@@ -169,7 +169,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>cz.brmlab.yodaqa.YodaQAApp</mainClass>
+							<mainClass>cz.brmlab.yodaqa.YodaQA_Interactive</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
@@ -212,7 +212,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<mainClass>cz.brmlab.yodaqa.YodaQAApp</mainClass>
+							<mainClass>cz.brmlab.yodaqa.YodaQA_Interactive</mainClass>
 						</configuration>
 					</plugin>
 				</plugins>

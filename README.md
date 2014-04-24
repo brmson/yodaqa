@@ -64,7 +64,7 @@ To set it up, first download the index:
 
 Then, you will need to modify the PrimarySearch portion of file
 
-	src/main/java/cz/brmlab/yodaqa/YodaQAApp.java
+	src/main/java/cz/brmlab/yodaqa/YodaQA_Interactive.java
 
 (follow the instructions in comments - it just involves commenting
 out a piece of code and uncommenting another). Rerun ``mvn verify``.
@@ -85,7 +85,7 @@ source:
     ``example/`` subdirectory; it contains the data import configuration.
   * Proceed with instructions in ``data/enwiki/README.md``.
 
-You may want to edit the URL in ``src/main/java/cz/brmlab/yodaqa/YodaQAApp.java``.
+You may want to edit the URL in ``src/main/java/cz/brmlab/yodaqa/YodaQA_Interactive.java``.
 
 
 ## Design Considerations
