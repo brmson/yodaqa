@@ -24,7 +24,7 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * Pair this with CollectionQuestionReader e.g. on data/trec/.
  *
  * The output format is, tab separated
- * 	QUESTION SCORE ANSWERPCRE CORRECTANSWER TOPANSWERS...
+ * 	ID QUESTION SCORE ANSWERPCRE CORRECTANSWER TOPANSWERS...
  * where SCORE is (1.0 - log(correctrank)/log(#answers))
  */
 
@@ -71,7 +71,8 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			if (match >= 0)
 				score = 1.0 - Math.log(1 + match) / Math.log(i);
 
-			System.out.println(qi.getQuestionText() + "\t" +
+			System.out.println(qi.getQuestionId() + "\t" +
+					qi.getQuestionText() + "\t" +
 					score + "\t" +
 					qi.getAnswerPattern() + "\t" +
 					matchText + "\t" +
@@ -79,7 +80,8 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 
 		} else {
 			/* Special case, no answer found. */
-			System.out.println(qi.getQuestionText() + "\t" +
+			System.out.println(qi.getQuestionId() + "\t" +
+					qi.getQuestionText() + "\t" +
 					"0.0" + "\t" +
 					qi.getAnswerPattern() + "\t.\t");
 		}
