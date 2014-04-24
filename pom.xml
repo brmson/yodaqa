@@ -178,20 +178,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>cz.brmlab.yodaqa.YodaQAApp</mainClass>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.uima</groupId>
 				<artifactId>jcasgen-maven-plugin</artifactId>
 				<version>2.5.0</version>
@@ -210,4 +196,27 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<!-- Really, profiles?! F*** me with a chainsaw :( -->
+	<profiles>
+		<profile>
+			<id>interactive</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals><goal>java</goal></goals>
+							</execution>
+						</executions>
+						<configuration>
+							<mainClass>cz.brmlab.yodaqa.YodaQAApp</mainClass>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

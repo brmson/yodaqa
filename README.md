@@ -24,8 +24,19 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install default-jdk maven uima-utils``
   * ``mvn verify``
-  * ``mvn -q exec:java``
+  * ``mvn -q exec:java -Pinteractive``
 By default, YodaQA will try to connect to a remote Solr core serving Wikipedia; see the section on Data Sources if connection fails.
+
+## Usage
+
+The ``mvn -q exec:java -Pinteractive`` starts YodaQA with the "interactive"
+frontend which offers a prompt and answers questions interactively;
+answer candidates and their confidence score are listed after a while
+(the first question takes a bit longer to answer as the models etc. are
+loaded).
+
+By default, there is a lot of output regarding progress of the answering
+process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
 
 ## Data Sources
 
