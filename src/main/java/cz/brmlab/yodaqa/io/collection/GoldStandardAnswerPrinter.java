@@ -60,7 +60,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 				if (i < topListLen) {
 					toplist[i] = text + ":" + answer.getConfidence();
 				}
-				if (match < 0 && ap.matcher(text).matches()) {
+				if (match < 0 && ap.matcher(text).find()) {
 					match = i;
 					matchText = text;
 				}
