@@ -10,6 +10,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
@@ -21,7 +22,8 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * input CAS sofa as two 10-character segments. */
 
 public class AnswerGenerator extends JCasMultiplier_ImplBase {
-	JCas src_jcas;
+	JCas questionJcas, resultJcas;
+	QuestionInfo qi;
 	ResultInfo ri;
 
 	/* Prepared list of answers to return. */
@@ -33,17 +35,17 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas resultsView;
 		try {
-			resultsView = jcas.getView("Result");
+			questionJcas = jcas.getView("Question");
+			resultJcas = jcas.getView("Result");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		src_jcas = resultsView;
-		ri = (ResultInfo) resultsView.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+		qi = (QuestionInfo) questionJcas.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
+		ri = (ResultInfo) resultJcas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
 
-		answers = resultsView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
+		answers = resultJcas.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
 		i = 0;
 	}
 
@@ -53,18 +55,21 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		JCas jcas = getEmptyJCas();
-		CasCopier copier = new CasCopier(src_jcas.getCas(), jcas.getCas());
+		CasCopier qCopier = new CasCopier(questionJcas.getCas(), jcas.getCas());
+		CasCopier rCopier = new CasCopier(resultJcas.getCas(), jcas.getCas());
 		try {
 			CandidateAnswer answer = (CandidateAnswer) answers.next();
 			jcas.setDocumentText(answer.getCoveredText());
-			jcas.setDocumentLanguage(src_jcas.getDocumentLanguage());
+			jcas.setDocumentLanguage(resultJcas.getDocumentLanguage());
 
 			AnswerInfo ai = new AnswerInfo(jcas);
 			ai.setConfidence(answer.getConfidence() * answer.getPassage().getScore());
 			ai.setIsLast(!answers.hasNext());
 			ai.addToIndexes();
 
-			ResultInfo ri2 = (ResultInfo) copier.copyFs(ri);
+			QuestionInfo qi2 = (QuestionInfo) qCopier.copyFs(qi);
+			qi2.addToIndexes();
+			ResultInfo ri2 = (ResultInfo) rCopier.copyFs(ri);
 			ri2.addToIndexes();
 		} catch (Exception e) {
 			jcas.release();
