@@ -9,14 +9,13 @@ import java.util.Map.Entry;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.util.Level;
+import org.apache.uima.util.CasCopier;
 
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
@@ -29,11 +28,13 @@ import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
  * It also deduplicates answers with the same text. */
 
 public class AnswerRanker extends JCasMultiplier_ImplBase {
+	QuestionInfo qi;
 	Map<String, List<Answer>> answersByText;
 	JCas finalCas;
 	boolean isLast;
 
 	protected void reset() {
+		qi = null;
 		answersByText = new HashMap<String, List<Answer>>();
 		finalCas = null;
 		isLast = false;
@@ -56,6 +57,8 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 		ResultInfo ri;
 		FSIterator infos;
 
+		if (qi == null)
+			qi = (QuestionInfo) candCas.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
 		ai = (AnswerInfo) candCas.getJFSIndexRepository().getAllIndexedFS(AnswerInfo.type).next();
 		ri = (ResultInfo) candCas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
 
@@ -94,6 +97,11 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 			}
 			mainAns.addToIndexes();
 		}
+
+		/* Copy QuestionInfo */
+		CasCopier copier = new CasCopier(qi.getCAS(), finalCas.getCas());
+		QuestionInfo qi2 = (QuestionInfo) copier.copyFs(qi);
+		qi2.addToIndexes();
 
 		JCas outputCas = finalCas;
 		reset();
