@@ -9,6 +9,33 @@
     </imports>
     <types>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.QuestionInfo</name>
+        <description>Meta-information on the asked question</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>source</name>
+            <description>Data source identification</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>questionId</name>
+            <description>ID of the question (specific to data source)</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>questionType</name>
+            <description>Type of question; "factoid", "list" or something else...; of course, this may be empty</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>answerPattern</name>
+            <description>PCRE matching a valid answer; of course, this may be empty if the answer is unknown beforehand</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.SV</name>
         <description>Selective Verb</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>

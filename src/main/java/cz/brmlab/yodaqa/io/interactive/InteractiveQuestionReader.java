@@ -3,9 +3,7 @@ package cz.brmlab.yodaqa.io.interactive;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
@@ -17,6 +15,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
+
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 
 /**
@@ -72,9 +72,12 @@ public class InteractiveQuestionReader extends CasCollectionReader_ImplBase {
 	}
 
 	protected void initCas(JCas jcas) {
-		DocumentMetaData docMetaData = new DocumentMetaData(jcas);
-		docMetaData.setDocumentId(Integer.toString(index));
 		jcas.setDocumentLanguage(language);
+
+		QuestionInfo qInfo = new QuestionInfo(jcas);
+		qInfo.setSource("interactive");
+		qInfo.setQuestionId(Integer.toString(index));
+		qInfo.addToIndexes(jcas);
 	}
 
 	@Override
