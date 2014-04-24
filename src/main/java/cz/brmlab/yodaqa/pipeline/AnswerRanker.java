@@ -33,10 +33,15 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 	JCas finalCas;
 	boolean isLast;
 
+	protected void reset() {
+		answersByText = new HashMap<String, List<Answer>>();
+		finalCas = null;
+		isLast = false;
+	}
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
-		answersByText = new HashMap<String, List<Answer>>();
-		isLast = false;
+		reset();
 	}
 
 	public void process(JCas candCas) throws AnalysisEngineProcessException {
@@ -91,9 +96,7 @@ public class AnswerRanker extends JCasMultiplier_ImplBase {
 		}
 
 		JCas outputCas = finalCas;
-		finalCas = null;
-		answersByText = null;
-		isLast = false;
+		reset();
 		return outputCas;
 	}
 }
