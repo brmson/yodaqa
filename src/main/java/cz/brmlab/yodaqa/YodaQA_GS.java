@@ -16,6 +16,9 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDesc
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDescription;
 
 
+/* FIXME: Massive code duplication of YodaQA_Interactive and YodaQA_GS.
+ * Let's abstract out the processing pipeline later. */
+
 public class YodaQA_GS {
 	public static void main(String[] args) throws Exception {
 		CollectionReaderDescription reader = createReaderDescription(
