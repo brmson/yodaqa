@@ -9,6 +9,7 @@ import de.tudarmstadt.ukp.dkpro.core.berkeleyparser.BerkeleyParser;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MateLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MateParser;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MatePosTagger;
+//import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 //import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
@@ -88,12 +89,27 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpDependencyParser.class));
 		*/
 
+		/* Named Entities: */
+
+		/*
+		// sort of nice but we don't have use for them yet
+		String[] ner_variants = {
+		      "date", "location", "money", "organization",
+		      "percentage", "person", "time"
+		};
+		for (String variant : ner_variants) {
+			builder.add(AnalysisEngineFactory.createEngineDescription(
+				OpenNlpNameFinder.class,
+				OpenNlpNameFinder.PARAM_VARIANT, variant));
+		}
+		// too weak, we need very rich NE set
+		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordNamedEntityRecognizer.class));
+		*/
+
 		/* ...and misc extras: */
 
 		/*
-		// too weak, we need very rich NE set
-		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordNamedEntityRecognizer.class));
-		// also too sparse to be useful
+		// too sparse to be useful
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpSemanticRoleLabeler.class));
 		*/
 
