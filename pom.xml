@@ -234,6 +234,7 @@
 							<mainClass>cz.brmlab.yodaqa.YodaQA_GS</mainClass>
 							<arguments>
 								<argument>data/trec/trecnew-single.tsv</argument>
+								<argument>trecnew-single-out.tsv</argument>
 							</arguments>
 						</configuration>
 					</plugin>

@@ -1,8 +1,11 @@
 package cz.brmlab.yodaqa.io.collection;
 
 import java.util.regex.Pattern;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.Math;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -36,10 +39,35 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 	@ConfigurationParameter(name = PARAM_TOPLISTLEN, mandatory = false, defaultValue = "5")
 	private int topListLen;
 
+	/**
+	 * Number of top answers to show.
+	 */
+	public static final String PARAM_TSVFILE = "TSVFILE";
+	@ConfigurationParameter(name = PARAM_TSVFILE, mandatory = true)
+	private String TSVFile;
+	PrintWriter TSVOutput;
+
 
 	public void initialize(UimaContext context)
 			throws ResourceInitializationException {
 		super.initialize(context);
+
+		try {
+			TSVOutput = new PrintWriter(TSVFile);
+		} catch (IOException io) {
+			throw new ResourceInitializationException(io);
+		}
+	}
+
+	protected void output(String id, String qText, double score,
+			String aPattern, String aMatch, String... toplist)
+	{
+		String[] columns = new String[] { id, qText, Double.toString(score), aPattern, aMatch };
+		columns = (String[]) ArrayUtils.addAll(columns, toplist);
+
+		System.out.println(StringUtils.join(columns, "\t"));
+		TSVOutput.println(StringUtils.join(columns, "\t"));
+		TSVOutput.flush();
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -71,19 +99,13 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			if (match >= 0)
 				score = 1.0 - Math.log(1 + match) / Math.log(i);
 
-			System.out.println(qi.getQuestionId() + "\t" +
-					qi.getQuestionText() + "\t" +
-					score + "\t" +
-					qi.getAnswerPattern() + "\t" +
-					matchText + "\t" +
-					StringUtils.join(toplist, "\t"));
+			output(qi.getQuestionId(), qi.getQuestionText(), score,
+				qi.getAnswerPattern(), matchText, toplist);
 
 		} else {
 			/* Special case, no answer found. */
-			System.out.println(qi.getQuestionId() + "\t" +
-					qi.getQuestionText() + "\t" +
-					"0.0" + "\t" +
-					qi.getAnswerPattern() + "\t.\t");
+			output(qi.getQuestionId(), qi.getQuestionText(), 0.0,
+				qi.getAnswerPattern(), ".");
 		}
 	}
 }

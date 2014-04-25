@@ -17,7 +17,6 @@ Short-Term TODO
 ---------------
 
 Performance measurement basics:
-  * Save GoldStandard measurements to file in addition to stdout
   * Prepare a small 200-question reference set and an evaluation
     script that can be easily run every couple of commits
 

@@ -21,6 +21,12 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 
 public class YodaQA_GS {
 	public static void main(String[] args) throws Exception {
+		if (args.length != 2) {
+			System.err.println("Usage: YodaQA_GS INPUT.TSV OUTPUT.TSV");
+			System.err.println("Measures YodaQA performance on some Gold Standard questions.");
+			System.exit(1);
+		}
+
 		CollectionReaderDescription reader = createReaderDescription(
 				CollectionQuestionReader.class,
 				CollectionQuestionReader.PARAM_TSVFILE, args[0],
@@ -54,7 +60,8 @@ public class YodaQA_GS {
 		AnalysisEngineDescription answerRanker = createEngineDescription(
 				AnswerRanker.class);
 		AnalysisEngineDescription printer = createEngineDescription(
-				GoldStandardAnswerPrinter.class);
+				GoldStandardAnswerPrinter.class,
+				GoldStandardAnswerPrinter.PARAM_TSVFILE, args[1]);
 
 		/* XXX: Later, we will want to create an actual flow
 		 * to support scaleout. */
