@@ -1,6 +1,6 @@
 package cz.brmlab.yodaqa.pipeline;
 
-import de.tudarmstadt.ukp.dkpro.core.berkeleyparser.BerkeleyParser;
+//import de.tudarmstadt.ukp.dkpro.core.berkeleyparser.BerkeleyParser;
 //import de.tudarmstadt.ukp.dkpro.core.clearnlp.ClearNlpDependencyParser;
 //import de.tudarmstadt.ukp.dkpro.core.clearnlp.ClearNlpLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.clearnlp.ClearNlpPosTagger;
@@ -12,9 +12,10 @@ import de.tudarmstadt.ukp.dkpro.core.berkeleyparser.BerkeleyParser;
 //import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 //import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
+//import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordNamedEntityRecognizer;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -52,10 +53,12 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(OpenNlpSegmenter.class));
 
-		/* Constituent features and POS features: */
+		/* POS, lemmas, constituents, dependencies: */
+		// fast, reliable
+		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class));
 
-		// slow startup, but important
-		builder.add(AnalysisEngineFactory.createEngineDescription(BerkeleyParser.class));
+		// slow startup, no dependencies, superseded
+		//builder.add(AnalysisEngineFactory.createEngineDescription(BerkeleyParser.class));
 
 		/* POS features: */
 
@@ -71,7 +74,7 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		/* Lemma features: */
 
 		// fastest and handling numbers correctly:
-		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordLemmatizer.class));
+		//builder.add(AnalysisEngineFactory.createEngineDescription(StanfordLemmatizer.class));
 		/*
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpLemmatizer.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(MateLemmatizer.class));
