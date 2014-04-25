@@ -16,10 +16,6 @@ Apologies if this list is not kept 100% up-to-date all the time.
 Short-Term TODO
 ---------------
 
-Performance measurement basics:
-  * Prepare a small 200-question reference set and an evaluation
-    script that can be easily run every couple of commits
-
 Quality:
   * Some better (naive) question focus identification
   * More question analysis features:
