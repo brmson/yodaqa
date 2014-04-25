@@ -65,8 +65,12 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		String[] columns = new String[] { id, qText, Double.toString(score), aPattern, aMatch };
 		columns = (String[]) ArrayUtils.addAll(columns, toplist);
 
-		System.out.println(StringUtils.join(columns, "\t"));
-		TSVOutput.println(StringUtils.join(columns, "\t"));
+		String output = StringUtils.join(columns, "\t");
+		/* Make sure no newlines were in the questions. */
+		output = output.replace("\n", " ");
+
+		System.out.println(output);
+		TSVOutput.println(output);
 		TSVOutput.flush();
 	}
 
