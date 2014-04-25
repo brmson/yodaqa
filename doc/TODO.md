@@ -17,7 +17,6 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * Some better (naive) question focus identification
   * More question analysis features:
     * Question word
     * Question verb
