@@ -22,7 +22,6 @@ import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.analysis.WordTokenizer;
 import cz.brmlab.yodaqa.analysis.question.SVGenerator;
 import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
 import cz.brmlab.yodaqa.analysis.question.ClueGenerator;
@@ -39,9 +38,6 @@ import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
-
-		/* Our way to tokenize (TODO: to be phased out) */
-		builder.add(AnalysisEngineFactory.createEngineDescription(WordTokenizer.class));
 
 		/* A bunch of DKpro-bound NLP processors (these are
 		 * the giants we stand on the shoulders of) */
