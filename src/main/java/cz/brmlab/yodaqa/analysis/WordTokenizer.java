@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.annotator;
+package cz.brmlab.yodaqa.analysis;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

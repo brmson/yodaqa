@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.annotator.result;
+package cz.brmlab.yodaqa.analysis.result;
 
 import java.util.Collection;
 import java.util.Map;

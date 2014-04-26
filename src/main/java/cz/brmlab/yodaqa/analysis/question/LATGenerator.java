@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.annotator.question;
+package cz.brmlab.yodaqa.analysis.question;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;

@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.annotator.question;
+package cz.brmlab.yodaqa.analysis.question;
 
 import java.util.LinkedList;
 

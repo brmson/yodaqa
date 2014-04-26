@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.annotator.question;
+package cz.brmlab.yodaqa.analysis.question;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;

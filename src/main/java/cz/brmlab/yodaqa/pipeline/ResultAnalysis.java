@@ -10,11 +10,11 @@ import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.annotator.result.CanByNPSurprise;
-import cz.brmlab.yodaqa.annotator.result.CanMergeByText;
-import cz.brmlab.yodaqa.annotator.result.PassByClue;
-import cz.brmlab.yodaqa.annotator.result.CanByPassage;
-import cz.brmlab.yodaqa.annotator.result.PassFilter;
+import cz.brmlab.yodaqa.analysis.result.CanByNPSurprise;
+import cz.brmlab.yodaqa.analysis.result.CanMergeByText;
+import cz.brmlab.yodaqa.analysis.result.PassByClue;
+import cz.brmlab.yodaqa.analysis.result.CanByPassage;
+import cz.brmlab.yodaqa.analysis.result.PassFilter;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 

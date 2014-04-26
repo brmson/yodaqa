@@ -22,11 +22,11 @@ import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.annotator.WordTokenizer;
-import cz.brmlab.yodaqa.annotator.question.SVGenerator;
-import cz.brmlab.yodaqa.annotator.question.FocusGenerator;
-import cz.brmlab.yodaqa.annotator.question.ClueGenerator;
-import cz.brmlab.yodaqa.annotator.question.LATGenerator;
+import cz.brmlab.yodaqa.analysis.WordTokenizer;
+import cz.brmlab.yodaqa.analysis.question.SVGenerator;
+import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
+import cz.brmlab.yodaqa.analysis.question.ClueGenerator;
+import cz.brmlab.yodaqa.analysis.question.LATGenerator;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 
 /**
