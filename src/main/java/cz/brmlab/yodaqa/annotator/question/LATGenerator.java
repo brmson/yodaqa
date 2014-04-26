@@ -12,6 +12,9 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.Question.LAT;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
+
 /**
  * Generate LAT annotations in a QuestionCAS. These are words that should
  * be type-coercable to the answer term. E.g. "Who starred in Moon?" should
@@ -29,16 +32,43 @@ public class LATGenerator extends JCasAnnotator_ImplBase {
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		/* A Focus is also an LAT. */
-		for (Focus focus : JCasUtil.select(jcas, Focus.class))
-			addLAT(jcas, focus.getBegin(), focus.getEnd(), focus);
+		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
+			addFocusLAT(jcas, focus);
+		}
 
-		/* TODO: Also derive an LAT from SV subject nominalization. */
-
-		/* TODO: Also derive an LAT from interesting pieces of the
-		 * WH* constituent. */
+		/* TODO: Also derive an LAT from SV subject nominalization
+		 * using wordnet. */
 	}
 
-	protected void addLAT(JCas jcas, int begin, int end, Annotation base) {
+	protected void addFocusLAT(JCas jcas, Focus focus) {
+		/* Convert focus to its lemma. */
+		Annotation fbase = focus.getBase();
+		Token ftok;
+		if (focus.getTypeIndexID() == NSUBJ.type) {
+			ftok = ((NSUBJ) fbase).getDependent();
+		} else {
+			ftok = (Token) fbase;
+		}
+		String text = ftok.getLemma().getValue();
+
+		/* If focus is the question word, convert to an appropriate
+		 * concept word or give up. */
+		if (text.equals("who") || text.equals("whom")) {
+			text = "person";
+		} else if (text.equals("when")) {
+			text = "time";
+		} else if (text.equals("where")) {
+			text = "location";
+
+		} else if (text.matches("^what|why|how|which|name$")) {
+			System.err.println("?! Skipping focus LAT for ambiguous qlemma " + text);
+			return;
+		}
+
+		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text);
+	}
+
+	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text) {
 		LAT lat = new LAT(jcas);
 		lat.setBegin(begin);
 		lat.setEnd(end);
