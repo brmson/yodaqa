@@ -17,19 +17,15 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * More question analysis features:
-    * Question word
-    * Question verb
-    * Is the focus noun last noun in sentence?
-      (14 is the atomic number of what element?)
-    * Focus dependents
-  * Simple answer type system (in addition to TyCor in future; we can
-    have both and combine them during evaluation); we can use the
-    Taming Text training data
-  * Involve the OpenNLP NamedEntity extractor
-  * Use WordNet to find synsets for (some?) clues
+  * Wordnet based LAT spectrum (specific to general, Wordnet synset)
+  * Generate LATs for CandidateAnswers, apply simple comparison-based
+    type coercion (TyCor)
+  * Use (WordNet) ontology relationships (synsets etc.) to generate
+    extra clues
   * Better passage scoring?
-  * Walk through the QA chapter of Taming Text and add more TODO items. :)
+  * Walk through the QA chapter of Taming Text to verify we are on
+    quality parity. :)
+  * Compare quality with blanqa to ensure quality parity?
 
 Search:
   * Switch to SolrJ
@@ -39,17 +35,18 @@ Long-Term TODO
 --------------
 
 Parsing:
-  * Shallower alternative to BerkeleyParser;
-    * For starters, POS tagging?
-    * Try MSTParser with conll_mcd_order2_0.1.model, KenLM?
   * Take a very good look at the RegEx Link Grammar
     <http://wiki.opencog.org/w/RelEx>
 
 Quality:
-  * Instead of fixed NE categories, use clustering
-  * Type coercion component?
-  * Add structured information sources!
-    * DBPedia, WordNet, FrameNet, Lemon, PATTY, PPDB
+  * Check TyCor on TamingText dataset
+  * Add more structured information sources!
+    * DBPedia, FrameNet, Lemon, PATTY, PPDB
+  * Extend WordNet ontology (so far used for TyCor) with more
+    resources - dkpro lsr or uby
+  * NE chunking, NE-based clues and type coercion, improve NE detection,
+    instead of fixed NE categories use clustering
+    * For starters, involve the OpenNLP NamedEntity extractor
   * Walk through IBM Watson papers and add more TODO items. :)
 
 Performance Measurement:
@@ -60,6 +57,9 @@ Speed:
   * Multi-threaded CAS Processing - a massive boost!  Does this
     strictly require using UIMA-AS or can we do without it?
   * Persistent instances of expensive-to-initialize annotators
+  * Shallower alternative to StanfordParser when parsing results?
+    * For starters, POS tagging?
+    * Try MSTParser with conll_mcd_order2_0.1.model, KenLM?
 
 Interface:
   * Readline interface for the interactive IO?
