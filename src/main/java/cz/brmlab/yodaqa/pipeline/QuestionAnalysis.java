@@ -119,8 +119,8 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 		/* Okay! Now, we can proceed with our key tasks. */
 
-		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusGenerator.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATGenerator.class));
 
