@@ -45,14 +45,16 @@ on it. Notable types of final featuresets produced by the annotators:
     "Who has received the Nobel Prize for Physiology and Medicine?" will
     have "received" as SV; "When were they born?" will have "born";
     "How many colors do you need to color a planar graph?" will have "need".
+    N.B. "Who was the inventor of transistor" will have "inventor"!
     SV is one of the primary clues but is found in a special way and
     might (or might not) be used specially in answer selection.
 
-  * **Focus.** This is the focus point of the sentence where you should
-    be able to place the answer.  In "What was the first book written by
-    Terry Pratchett?", "what" is the focus.  In "The actor starring in Moon?",
-    "the actor" is the focus (though that doesn't work terribly well).
-    Typically, focus would be used by aligning algorithms.
+  * **Focus.** This is the focus point of the sentence indicating the
+    main constraing of a subject of the answer.  In "What was the first book
+    written by Terry Pratchett?", "book" is the focus.  In "The actor starring
+    in Moon?", "actor" is the focus.  In "Who invented the transistor?",
+    "who" will be the focus.  Typically, focus would be used by aligning
+    algorithms and for type coercion.
 
   * **LAT** (Lexical Answer Type). These are words that should be
     type-coercable to the answer term. E.g. "Who starred in Moon?" should
