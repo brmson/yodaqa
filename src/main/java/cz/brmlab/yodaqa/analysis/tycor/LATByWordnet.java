@@ -55,6 +55,10 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 	protected void genDerivedLATs(Map<Synset, LAT> latmap, LAT lat) throws Exception {
 		IndexWord w = JWordnet.getDictionary().lookupIndexWord(POS.NOUN /* XXX */, lat.getText());
+		if (w == null) {
+			System.err.println("?! word " + lat.getText() + " not in Wordnet");
+			return;
+		}
 
 		for (Synset synset : w.getSenses()) {
 			genDerivedSynsets(latmap, lat, synset);
