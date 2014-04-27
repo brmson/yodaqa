@@ -17,7 +17,6 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * Wordnet based LAT spectrum (specific to general)
   * Generate LATs for CandidateAnswers, apply simple comparison-based
     type coercion (TyCor)
   * Generate LATs from meaningful SVs (consider "Who invented

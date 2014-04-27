@@ -76,22 +76,5 @@
           </featureDescription>
         </features>
       </typeDescription>
-      <typeDescription>
-        <name>cz.brmlab.yodaqa.model.Question.LAT</name>
-        <description>Lexical Answer Type</description>
-        <supertypeName>uima.tcas.Annotation</supertypeName>
-        <features>
-          <featureDescription>
-            <name>base</name>
-            <description>The corresponding token/constituent.</description>
-            <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
-          </featureDescription>
-          <featureDescription>
-            <name>text</name>
-            <description>The LAT string; this may not be the same as covered text, e.g. an LAT generated from "who" is a "person".</description>
-            <rangeTypeName>uima.cas.String</rangeTypeName>
-          </featureDescription>
-        </features>
-      </typeDescription>
     </types>
   </typeSystemDescription>

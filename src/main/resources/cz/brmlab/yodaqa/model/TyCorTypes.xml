@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>TyCorTypes</name>
+    <description>Type Coercion type system - assign "lexical types" to expected question answers and candidate answers and allow matching them</description>
+    <vendor>yodaqa</vendor>
+    <version>1.0</version>
+    <types>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.LAT</name>
+	<description>Lexical Answer Type; e.g. "Who was the first king
+		of Bohemia?" can generate LATs "king";
+		"Who invented the transistor?" can generate LATs "person"
+		or "inventor".
+		Some LATs are generated from the question itself while
+		others are derived from other LATs/clues.</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>base</name>
+            <description>The corresponding token/constituent.</description>
+            <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>text</name>
+            <description>The LAT string; this may not be the same as covered text, e.g. an LAT generated from "who" is a "person".</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>specificity</name>
+            <description>A value determining how specific this is; 0 is most specific and progressive negative numbers indicate reduced specificity; in some equations, this value might be an exponent for exponentially decaying specificity. The idea is that "inventor" may get 0, "creator" -1, "person" -5, "entity" -10 or something like that.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>baseLAT</name>
+            <description>If this LAT was derived from another, the original LAT.</description>
+            <rangeTypeName>cz.brmlab.yodaqa.model.TyCor.LAT</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+    </types>
+  </typeSystemDescription>
