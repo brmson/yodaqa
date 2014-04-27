@@ -73,6 +73,7 @@ public class LATGenerator extends JCasAnnotator_ImplBase {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
+		lat.setText(text);
 		lat.addToIndexes();
 	}
 }
