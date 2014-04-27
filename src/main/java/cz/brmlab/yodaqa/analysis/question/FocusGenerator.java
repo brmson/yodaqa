@@ -54,7 +54,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		 */
 		if (focus == null) {
 			for (Token t : JCasUtil.selectCovered(Token.class, sentence)) {
-				if (t.getPos().getPosValue().equals("NN")) {
+				if (t.getPos().getPosValue().matches("^NN")) {
 					focus = t;
 					break;
 				}
