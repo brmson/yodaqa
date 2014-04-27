@@ -20,8 +20,13 @@ Quality:
   * Wordnet based LAT spectrum (specific to general, Wordnet synset)
   * Generate LATs for CandidateAnswers, apply simple comparison-based
     type coercion (TyCor)
+  * Generate LATs from meaningful SVs (consider "Who invented
+    the transistor?" with LAT "person" (Who?) and SV "invent";
+    derivation relations of "invent" include "inventor" which is
+    a hyponym of "person", so generate an LAT!)
   * Use (WordNet) ontology relationships (synsets etc.) to generate
-    extra clues
+    extra clues; consider generating Clues also for CandidateAnswer
+    and matching them similar to TyCor (ClueCor? :-)
   * Better passage scoring?
   * Walk through the QA chapter of Taming Text to verify we are on
     quality parity. :)
