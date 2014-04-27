@@ -137,9 +137,12 @@ word or a few words), plus some features (like a score, hypothesis about the
 type of the answer etc.), a copy of the question analysis in the Question
 view and (maybe) copy of the search result information in the Result view.
 
-There is not much of a point of this intermediate CAS right now, but we
-may insert additional stages here that will analyze candidate answers
-in more depth, produce and consider supporting evidence, etc.
+## Answer Analysis
+
+This phase runs a variety of analytics on the **CandidateAnswerCAS**
+that extracts various features, matches them to the Question view,
+possibly produces and considers supporting evidence, etc.  Confidence
+rating is issued to each answer based on this.
 
 ## Answer Merger
 

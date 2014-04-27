@@ -6,6 +6,7 @@ import org.apache.uima.collection.CollectionReaderDescription;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.io.collection.CollectionQuestionReader;
 import cz.brmlab.yodaqa.io.collection.GoldStandardAnswerPrinter;
+import cz.brmlab.yodaqa.pipeline.AnswerAnalysis;
 import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
 import cz.brmlab.yodaqa.pipeline.AnswerMerger;
 import cz.brmlab.yodaqa.pipeline.PrimarySearch;
@@ -57,6 +58,7 @@ public class YodaQA_GS {
 		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
 				AnswerGenerator.class);
+		AnalysisEngineDescription answerAnalysis = AnswerAnalysis.createEngineDescription();
 		AnalysisEngineDescription answerMerger = createEngineDescription(
 				AnswerMerger.class);
 		AnalysisEngineDescription printer = createEngineDescription(
@@ -70,6 +72,7 @@ public class YodaQA_GS {
 				primarySearch,
 				resultAnalysis,
 				answerGenerator,
+				answerAnalysis,
 				answerMerger,
 				printer);
 	}
