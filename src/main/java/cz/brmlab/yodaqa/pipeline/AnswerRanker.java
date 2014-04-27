@@ -21,11 +21,12 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
 
 /**
- * Take a set of per-answer CAS and merge them to a final result CAS.
+ * Take a set of per-answer CandidateAnswerCAS and merge them to
+ * a FinalAnswerCAS.
  *
- * So far, this answer ranker is super-primitive, just to showcase
- * a merging CAS multiplier behavior. But it actually does the job.
- * It also deduplicates answers with the same text. */
+ * The "ranking" part is actually implicit by UIMA indexes, this
+ * is mainly a merging CAS multiplier that also deduplicates answers
+ * with the same text. */
 
 public class AnswerRanker extends JCasMultiplier_ImplBase {
 	QuestionInfo qi;

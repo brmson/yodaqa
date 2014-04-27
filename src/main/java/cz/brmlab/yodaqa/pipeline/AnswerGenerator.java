@@ -15,11 +15,11 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
 /**
- * Take an input CAS and generate per-answer CAS instances.
+ * Take an input ResultCAS and generate per-answer CandidateAnswerCAS
+ * instances.
  *
- * So far, this answer generator is super-primitive, just to showcase
- * a CAS multiplier behavior. Just generates two answers from the
- * input CAS sofa as two 10-character segments. */
+ * We are a simple CAS multiplier that creates a dedicated CAS for
+ * each to-be-analyzed candidate answer. */
 
 public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	JCas questionJcas, resultJcas;
