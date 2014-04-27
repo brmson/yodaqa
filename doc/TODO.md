@@ -17,7 +17,7 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * Wordnet based LAT spectrum (specific to general, Wordnet synset)
+  * Wordnet based LAT spectrum (specific to general)
   * Generate LATs for CandidateAnswers, apply simple comparison-based
     type coercion (TyCor)
   * Generate LATs from meaningful SVs (consider "Who invented
@@ -27,6 +27,7 @@ Quality:
   * Use (WordNet) ontology relationships (synsets etc.) to generate
     extra clues; consider generating Clues also for CandidateAnswer
     and matching them similar to TyCor (ClueCor? :-)
+  * Take Wordnet synsets into account in LATs
   * Better passage scoring?
   * Walk through the QA chapter of Taming Text to verify we are on
     quality parity. :)
@@ -53,6 +54,9 @@ Quality:
     instead of fixed NE categories use clustering
     * For starters, involve the OpenNLP NamedEntity extractor
   * Walk through IBM Watson papers and add more TODO items. :)
+  * Evidence gathering feedback loops - initially maybe just
+    a single feedback loop for candidate answer evidence gathering,
+    but we may also gather evidence for LATs (and their synsets!) etc.
 
 Performance Measurement:
   * Export full coefficient vectors of candidate answer and answer
