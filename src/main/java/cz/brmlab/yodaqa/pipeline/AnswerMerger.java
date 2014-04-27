@@ -29,16 +29,15 @@ import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
  * with the same text. */
 
 public class AnswerMerger extends JCasMultiplier_ImplBase {
-	QuestionInfo qi;
 	Map<String, List<Answer>> answersByText;
 	JCas finalCas;
-	boolean isLast;
+	boolean isFirst, isLast;
 
 	protected void reset() {
-		qi = null;
 		answersByText = new HashMap<String, List<Answer>>();
 		finalCas = null;
 		isLast = false;
+		isFirst = true;
 	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -58,8 +57,14 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		ResultInfo ri;
 		FSIterator infos;
 
-		if (qi == null)
-			qi = (QuestionInfo) candCas.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
+		if (isFirst) {
+			QuestionInfo qi = (QuestionInfo) candCas.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
+			/* Copy QuestionInfo */
+			CasCopier copier = new CasCopier(candCas.getCas(), finalCas.getCas());
+			QuestionInfo qi2 = (QuestionInfo) copier.copyFs(qi);
+			qi2.addToIndexes();
+			isFirst = false;
+		}
 		ai = (AnswerInfo) candCas.getJFSIndexRepository().getAllIndexedFS(AnswerInfo.type).next();
 		ri = (ResultInfo) candCas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
 
@@ -98,11 +103,6 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 			}
 			mainAns.addToIndexes();
 		}
-
-		/* Copy QuestionInfo */
-		CasCopier copier = new CasCopier(qi.getCAS(), finalCas.getCas());
-		QuestionInfo qi2 = (QuestionInfo) copier.copyFs(qi);
-		qi2.addToIndexes();
 
 		JCas outputCas = finalCas;
 		reset();
