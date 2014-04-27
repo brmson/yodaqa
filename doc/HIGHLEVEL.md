@@ -141,7 +141,7 @@ There is not much of a point of this intermediate CAS right now, but we
 may insert additional stages here that will analyze candidate answers
 in more depth, produce and consider supporting evidence, etc.
 
-## Answer Ranker
+## Answer Merger
 
 Tihs phase is a CAS multiplier that consumes all **CandidateAnswerCAS**,
 ranks them and outputs a single **FinalAnswerCAS** CAS containing the ranked

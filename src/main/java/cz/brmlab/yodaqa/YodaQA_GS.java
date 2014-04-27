@@ -7,7 +7,7 @@ import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.io.collection.CollectionQuestionReader;
 import cz.brmlab.yodaqa.io.collection.GoldStandardAnswerPrinter;
 import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
-import cz.brmlab.yodaqa.pipeline.AnswerRanker;
+import cz.brmlab.yodaqa.pipeline.AnswerMerger;
 import cz.brmlab.yodaqa.pipeline.PrimarySearch;
 import cz.brmlab.yodaqa.pipeline.ResultAnalysis;
 import cz.brmlab.yodaqa.pipeline.QuestionAnalysis;
@@ -57,8 +57,8 @@ public class YodaQA_GS {
 		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
 				AnswerGenerator.class);
-		AnalysisEngineDescription answerRanker = createEngineDescription(
-				AnswerRanker.class);
+		AnalysisEngineDescription answerMerger = createEngineDescription(
+				AnswerMerger.class);
 		AnalysisEngineDescription printer = createEngineDescription(
 				GoldStandardAnswerPrinter.class,
 				GoldStandardAnswerPrinter.PARAM_TSVFILE, args[1]);
@@ -70,7 +70,7 @@ public class YodaQA_GS {
 				primarySearch,
 				resultAnalysis,
 				answerGenerator,
-				answerRanker,
+				answerMerger,
 				printer);
 	}
 }

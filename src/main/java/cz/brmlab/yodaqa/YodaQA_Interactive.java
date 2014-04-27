@@ -7,7 +7,7 @@ import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.io.interactive.InteractiveAnswerPrinter;
 import cz.brmlab.yodaqa.io.interactive.InteractiveQuestionReader;
 import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
-import cz.brmlab.yodaqa.pipeline.AnswerRanker;
+import cz.brmlab.yodaqa.pipeline.AnswerMerger;
 import cz.brmlab.yodaqa.pipeline.PrimarySearch;
 import cz.brmlab.yodaqa.pipeline.ResultAnalysis;
 import cz.brmlab.yodaqa.pipeline.QuestionAnalysis;
@@ -50,8 +50,8 @@ public class YodaQA_Interactive {
 		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();
 		AnalysisEngineDescription answerGenerator = createEngineDescription(
 				AnswerGenerator.class);
-		AnalysisEngineDescription answerRanker = createEngineDescription(
-				AnswerRanker.class);
+		AnalysisEngineDescription answerMerger = createEngineDescription(
+				AnswerMerger.class);
 		AnalysisEngineDescription printer = createEngineDescription(
 				InteractiveAnswerPrinter.class);
 
@@ -62,7 +62,7 @@ public class YodaQA_Interactive {
 				primarySearch,
 				resultAnalysis,
 				answerGenerator,
-				answerRanker,
+				answerMerger,
 				printer);
 	}
 }

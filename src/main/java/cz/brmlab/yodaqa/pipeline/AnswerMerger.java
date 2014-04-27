@@ -28,7 +28,7 @@ import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
  * is mainly a merging CAS multiplier that also deduplicates answers
  * with the same text. */
 
-public class AnswerRanker extends JCasMultiplier_ImplBase {
+public class AnswerMerger extends JCasMultiplier_ImplBase {
 	QuestionInfo qi;
 	Map<String, List<Answer>> answersByText;
 	JCas finalCas;
