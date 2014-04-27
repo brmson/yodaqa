@@ -22,7 +22,7 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * each to-be-analyzed candidate answer. */
 
 public class AnswerGenerator extends JCasMultiplier_ImplBase {
-	JCas questionJcas, resultJcas;
+	JCas questionJcas, resultJcas, pickedPassagesJcas;
 	QuestionInfo qi;
 	ResultInfo ri;
 
@@ -38,6 +38,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		try {
 			questionJcas = jcas.getView("Question");
 			resultJcas = jcas.getView("Result");
+			pickedPassagesJcas = jcas.getView("PickedPassages");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
@@ -45,7 +46,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		qi = (QuestionInfo) questionJcas.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
 		ri = (ResultInfo) resultJcas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
 
-		answers = resultJcas.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
+		answers = pickedPassagesJcas.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
 		i = 0;
 	}
 

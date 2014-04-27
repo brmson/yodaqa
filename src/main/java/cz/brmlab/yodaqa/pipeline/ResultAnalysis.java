@@ -65,7 +65,7 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 		/* Merge CandidateAnswer annotations with the same text. */
 		builder.add(createPrimitiveDescription(CanMergeByText.class),
-			CAS.NAME_DEFAULT_SOFA, "Result");
+			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 
 		/* Some debug dumps of the intermediate CAS. */

@@ -23,7 +23,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 
 @SofaCapability(
 	inputSofas = { "Question", "PickedPassages" },
-	outputSofas = { "Result" }
+	outputSofas = { "PickedPassages" }
 )
 
 public class CanByNPSurprise extends JCasAnnotator_ImplBase {
@@ -32,11 +32,10 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, passagesView, resultView;
+		JCas questionView, passagesView;
 		try {
 			questionView = jcas.getView("Question");
 			passagesView = jcas.getView("PickedPassages");
-			resultView = jcas.getView("Result");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
@@ -57,7 +56,7 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 			/* Surprise! */
 
 			System.err.println("ca " + np.getCoveredText());
-			CandidateAnswer ca = new CandidateAnswer(resultView);
+			CandidateAnswer ca = new CandidateAnswer(passagesView);
 			ca.setBegin(np.getBegin());
 			ca.setEnd(np.getEnd());
 			ca.setPassage(JCasUtil.selectCovering(Passage.class, np).get(0));

@@ -123,8 +123,8 @@ to a PickedPassages view.
 In-depth sentence analysis is done on the remaining passages and candidate
 answers are generated based on this.  (So many approaches are possible;
 for starters, we choose a naive strategy of simply picking the NP clauses
-that are not covered by clues.)  CandidateAnswer annotations (back in
-the Result view!) represent these.
+that are not covered by clues.)  CandidateAnswer annotations (in the
+PickedPassages view!) represent these.
 
 ## Answer Generator
 
