@@ -152,6 +152,13 @@
                         <artifactId>commons-lang</artifactId>
                         <version>2.6</version>
                 </dependency>
+
+		<!-- JWordnet, JWNL -->
+		<dependency>
+			<groupId>net.sf.jwordnet</groupId>
+			<artifactId>jwnl</artifactId>
+			<version>1.4_rc3</version>
+		</dependency>
 	</dependencies>
 
 	<build>

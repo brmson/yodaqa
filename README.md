@@ -23,6 +23,8 @@ useful yet.
 Quick instructions for setting up, building and running (focused on Debian Wheezy):
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install default-jdk maven uima-utils``
+  * Install the Wordnet ontological database:
+	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
   * ``mvn verify``
   * ``mvn -q exec:java -Pinteractive``
 By default, YodaQA will try to connect to a remote Solr core serving Wikipedia; see the section on Data Sources if connection fails.
@@ -109,6 +111,9 @@ as such:
   * cz.brmlab.yodaqa.flow carries UIMA backend tools to execute the pipeline
   * cz.brmlab.yodaqa.io carries I/O modules for question-answer exchange,
     debugging dumps, etc.
+  * cz.brmlab.yodaqa.provider carries wrappers for various data sources
+    and analytical tools that aren't standalone UIMA annotators (e.g.
+    Wordnet); mainly to avoid reinitialization and keep them as singletons
 
 We also carry some sources in the de.tudarmstadt.ukp.dkpro namespace
 and types in the desc namespace; these are just tweaked copies of some
