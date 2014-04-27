@@ -10,7 +10,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.model.Question.Focus;
-import cz.brmlab.yodaqa.model.Question.LAT;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
@@ -44,36 +44,41 @@ public class LATGenerator extends JCasAnnotator_ImplBase {
 		/* Convert focus to its lemma. */
 		Annotation fbase = focus.getBase();
 		Token ftok;
-		if (focus.getTypeIndexID() == NSUBJ.type) {
+		if (fbase.getTypeIndexID() == NSUBJ.type) {
 			ftok = ((NSUBJ) fbase).getDependent();
 		} else {
 			ftok = (Token) fbase;
 		}
 		String text = ftok.getLemma().getValue();
+		double spec = 0.0;
 
 		/* If focus is the question word, convert to an appropriate
 		 * concept word or give up. */
 		if (text.equals("who") || text.equals("whom")) {
 			text = "person";
+			spec--;
 		} else if (text.equals("when")) {
 			text = "time";
+			spec--;
 		} else if (text.equals("where")) {
 			text = "location";
+			spec--;
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			System.err.println("?! Skipping focus LAT for ambiguous qlemma " + text);
 			return;
 		}
 
-		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text);
+		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, spec);
 	}
 
-	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text) {
+	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, double spec) {
 		LAT lat = new LAT(jcas);
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
 		lat.setText(text);
+		lat.setSpecificity(spec);
 		lat.addToIndexes();
 	}
 }
