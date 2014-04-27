@@ -24,7 +24,7 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * each to-be-analyzed candidate answer. */
 
 public class AnswerGenerator extends JCasMultiplier_ImplBase {
-	JCas questionJcas, resultJcas, pickedPassagesJcas;
+	JCas questionView, resultView, pickedPassagesView;
 	QuestionInfo qi;
 	ResultInfo ri;
 
@@ -38,17 +38,17 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		try {
-			questionJcas = jcas.getView("Question");
-			resultJcas = jcas.getView("Result");
-			pickedPassagesJcas = jcas.getView("PickedPassages");
+			questionView = jcas.getView("Question");
+			resultView = jcas.getView("Result");
+			pickedPassagesView = jcas.getView("PickedPassages");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		qi = (QuestionInfo) questionJcas.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
-		ri = (ResultInfo) resultJcas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+		qi = (QuestionInfo) questionView.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
+		ri = (ResultInfo) resultView.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
 
-		answers = pickedPassagesJcas.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
+		answers = pickedPassagesView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
 		i = 0;
 	}
 
@@ -58,13 +58,13 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		JCas jcas = getEmptyJCas();
-		CasCopier qCopier = new CasCopier(questionJcas.getCas(), jcas.getCas());
-		CasCopier rCopier = new CasCopier(resultJcas.getCas(), jcas.getCas());
-		CasCopier pCopier = new CasCopier(pickedPassagesJcas.getCas(), jcas.getCas());
+		CasCopier qCopier = new CasCopier(questionView.getCas(), jcas.getCas());
+		CasCopier rCopier = new CasCopier(resultView.getCas(), jcas.getCas());
+		CasCopier pCopier = new CasCopier(pickedPassagesView.getCas(), jcas.getCas());
 		try {
 			CandidateAnswer answer = (CandidateAnswer) answers.next();
 			jcas.setDocumentText(answer.getCoveredText());
-			jcas.setDocumentLanguage(resultJcas.getDocumentLanguage());
+			jcas.setDocumentLanguage(resultView.getDocumentLanguage());
 
 			AnswerInfo ai = new AnswerInfo(jcas);
 			ai.setConfidence(answer.getConfidence() * answer.getPassage().getScore());
