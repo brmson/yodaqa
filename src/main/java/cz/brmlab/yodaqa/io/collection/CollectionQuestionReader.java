@@ -85,6 +85,7 @@ public class CollectionQuestionReader extends CasCollectionReader_ImplBase {
 		qInfo.setQuestionType(type);
 		qInfo.setQuestionText(text);
 		qInfo.setAnswerPattern(answer);
+		qInfo.setProcBeginTime(System.currentTimeMillis());
 		qInfo.addToIndexes(jcas);
 	}
 

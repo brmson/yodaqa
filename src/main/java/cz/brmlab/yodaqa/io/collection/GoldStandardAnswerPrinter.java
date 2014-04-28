@@ -27,8 +27,9 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * Pair this with CollectionQuestionReader e.g. on data/trec/.
  *
  * The output format is, tab separated
- * 	ID QUESTION SCORE ANSWERPCRE CORRECTANSWER TOPANSWERS...
- * where SCORE is (1.0 - log(correctrank)/log(#answers))
+ * 	ID TIME QUESTION SCORE ANSWERPCRE CORRECTANSWER TOPANSWERS...
+ * where TIME is the processing time in seconds (fractional)
+ * and SCORE is (1.0 - log(correctrank)/log(#answers))
  */
 
 public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
@@ -59,10 +60,11 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		}
 	}
 
-	protected void output(String id, String qText, double score,
+	protected void output(String id, double procTime, String qText, double score,
 			String aPattern, String aMatch, String... toplist)
 	{
-		String[] columns = new String[] { id, qText, Double.toString(score), aPattern, aMatch };
+		String[] columns = new String[] { id, Double.toString(procTime),
+			qText, Double.toString(score), aPattern, aMatch };
 		columns = (String[]) ArrayUtils.addAll(columns, toplist);
 
 		String output = StringUtils.join(columns, "\t");
@@ -77,6 +79,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		QuestionInfo qi = JCasUtil.selectSingle(jcas, QuestionInfo.class);
 		Pattern ap = Pattern.compile(qi.getAnswerPattern());
+		double procTime = (System.currentTimeMillis() - qi.getProcBeginTime()) / 1000.0;
 
 		FSIndex idx = jcas.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
@@ -103,12 +106,12 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			if (match >= 0)
 				score = 1.0 - Math.log(1 + match) / Math.log(i);
 
-			output(qi.getQuestionId(), qi.getQuestionText(), score,
+			output(qi.getQuestionId(), procTime, qi.getQuestionText(), score,
 				qi.getAnswerPattern(), matchText, toplist);
 
 		} else {
 			/* Special case, no answer found. */
-			output(qi.getQuestionId(), qi.getQuestionText(), 0.0,
+			output(qi.getQuestionId(), procTime, qi.getQuestionText(), 0.0,
 				qi.getAnswerPattern(), ".");
 		}
 	}

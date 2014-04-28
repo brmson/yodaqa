@@ -38,6 +38,11 @@
             <description>PCRE matching a valid answer; of course, this may be empty if the answer is unknown beforehand</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>procBeginTime</name>
+            <description>Time of processing start (as returned by System.currentTimeMillis()), for measuring answering speed</description>
+            <rangeTypeName>uima.cas.Long</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>
