@@ -96,7 +96,8 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage(answer.getCAS().getDocumentLanguage());
 
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setConfidence(answer.getConfidence() * answer.getPassage().getScore());
+		ai.setPassageScore(answer.getPassage().getScore());
+		ai.setConfidence(answer.getConfidence());
 		ai.setIsLast(isLast);
 		ai.addToIndexes();
 

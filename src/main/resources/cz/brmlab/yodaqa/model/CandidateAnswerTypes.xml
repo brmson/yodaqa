@@ -11,8 +11,13 @@
         <supertypeName>uima.cas.TOP</supertypeName>
         <features>
           <featureDescription>
+            <name>passageScore</name>
+            <description>Score of the passage that produced this answer</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>confidence</name>
-            <description>Confidence of the answer; this is an estimate of the probability that the answer is right</description>
+            <description>Confidence of the answer (with regard to the originating passage)</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
