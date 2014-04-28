@@ -52,9 +52,7 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 		/* POS, lemmas, constituents, dependencies: */
 		// fast, reliable
-		builder.add(AnalysisEngineFactory.createEngineDescription(
-					StanfordParser.class,
-					StanfordParser.PARAM_MAX_TOKENS, 40)); // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class));
 
 		// slow startup, no dependencies, superseded
 		//builder.add(AnalysisEngineFactory.createEngineDescription(BerkeleyParser.class));
