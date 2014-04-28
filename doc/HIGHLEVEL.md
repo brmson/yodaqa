@@ -60,12 +60,9 @@ on it. Notable types of final featuresets produced by the annotators:
     type-coercable to the answer term. E.g. "Who starred in Moon?" should
     generate LATs "who", "actor", possibly "star".  Candidate answers
     will be matched against LATs to acquire score.  Focus is typically
-    always also an LAT.
-
-  * **NEAT** (Named Entity Answer Type). These are named entity types that
-    should match named entity types of generated answers.  E.g. "Who
-    starred in Moon?" should generate NEATs "NEperson", "NEactor".
-    Candidate answers will be matched against NEATs to acquire score.
+    always also an LAT.  We should also carry information whether the
+    LAT is a specific entity (in question, the-; in answer, a named entity)
+    or generic role (in question, a-; in answer, a wordnet synset word).
 
 As is the case in the rest of the flow, multiple annotators may
 concurrently produce the same featuresets.  At the same time, not all
