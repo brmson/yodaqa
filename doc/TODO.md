@@ -17,6 +17,8 @@ Short-Term TODO
 ---------------
 
 Quality:
+  * NE-based clues and type coercion, for starters involving
+    the OpenNLP NamedEntity extractor providing generic LATs
   * Generate LATs from meaningful SVs (consider "Who invented
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is
@@ -47,9 +49,8 @@ Quality:
     * DBPedia, FrameNet, Lemon, PATTY, PPDB
   * Extend WordNet ontology (so far used for TyCor) with more
     resources - dkpro lsr or uby
-  * NE chunking, NE-based clues and type coercion, improve NE detection,
-    instead of fixed NE categories use clustering
-    * For starters, involve the OpenNLP NamedEntity extractor
+  * More advanced NE extraction, multi-word NEs, label-less LATs
+    via NE clustering
   * Walk through IBM Watson papers and add more TODO items. :)
   * Evidence gathering feedback loops - initially maybe just
     a single feedback loop for candidate answer evidence gathering,
