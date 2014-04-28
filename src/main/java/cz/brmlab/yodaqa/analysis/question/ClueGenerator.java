@@ -28,7 +28,7 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 
 public class ClueGenerator extends JCasAnnotator_ImplBase {
 	protected String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
-	protected String CONSTITMATCH = "AD.*|NP|PP|QP";
+	protected String CONSTITMATCH = "AD.*|NP|QP";
 	protected String SVBLACKLIST = "be|have|do";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -40,9 +40,8 @@ public class ClueGenerator extends JCasAnnotator_ImplBase {
 		 * constituents as keyphrases and content-bearing tokens
 		 * as keywords. The constituents are often nested, so
 		 * we can add all of "the Nobel Prize for Physiology and Medicine",
-		 * "the Nobel Prize", "for Physiology and Medicine",
-		 * "Physiology and Medicine", etc.  (And then the individual
-		 * tokens too.) */
+		 * "the Nobel Prize", "Physiology and Medicine", etc.
+		 * (And then the individual tokens too.) */
 
 		/* This is a DFS over the Constituent tree. */
 		LinkedList<Constituent> lifo = new LinkedList<Constituent>();
