@@ -82,6 +82,9 @@ Janitorial:
     spawning document and id of the originating CAS; this will
     enable tracing full origin of each CAS.
   * Switch from JWNL to JWI which seems to be much nicer to work with?
+  * The type system distinction by pipeline phases does not work well;
+    .tycor is a step in the right direction, but now CandidateAnswerCAS
+    also has Focus from QuestionTypes, which does not fit in .tycor...
 
 Datasets:
   * **NP** Clean up the TREC datasets - weed out questions that
