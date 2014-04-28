@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.pipeline;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -39,9 +40,12 @@ public class AnswerAnalysis /* XXX: extends AggregateBuilder ? */ {
 		 * so tokens, POS, lemmas, constituents and dependencies. */
 
 		/* Determine the focus and LAT of each answer. */
-		builder.add(createPrimitiveDescription(FocusGenerator.class));
-		builder.add(createPrimitiveDescription(LATGenerator.class));
-		builder.add(createPrimitiveDescription(LATByWordnet.class));
+		builder.add(createPrimitiveDescription(FocusGenerator.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		builder.add(createPrimitiveDescription(LATGenerator.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		builder.add(createPrimitiveDescription(LATByWordnet.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 
 		/* Some debug dumps of the intermediate CAS. */

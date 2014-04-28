@@ -45,12 +45,20 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		reset();
 	}
 
-	public void process(JCas candCas) throws AnalysisEngineProcessException {
+	public void process(JCas canCas) throws AnalysisEngineProcessException {
+		JCas canQuestion, canAnswer;
+		try {
+			canQuestion = canCas.getView("Question");
+			canAnswer = canCas.getView("Answer");
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+
 		if (finalCas == null)
 			finalCas = getEmptyJCas();
 
 		Answer answer = new Answer(finalCas);
-		String text = candCas.getDocumentText();
+		String text = canAnswer.getDocumentText();
 		answer.setText(text);
 
 		AnswerInfo ai;
@@ -58,15 +66,15 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		FSIterator infos;
 
 		if (isFirst) {
-			QuestionInfo qi = (QuestionInfo) candCas.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
+			QuestionInfo qi = (QuestionInfo) canQuestion.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
 			/* Copy QuestionInfo */
-			CasCopier copier = new CasCopier(candCas.getCas(), finalCas.getCas());
+			CasCopier copier = new CasCopier(canQuestion.getCas(), finalCas.getCas());
 			QuestionInfo qi2 = (QuestionInfo) copier.copyFs(qi);
 			qi2.addToIndexes();
 			isFirst = false;
 		}
-		ai = (AnswerInfo) candCas.getJFSIndexRepository().getAllIndexedFS(AnswerInfo.type).next();
-		ri = (ResultInfo) candCas.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+		ai = (AnswerInfo) canAnswer.getJFSIndexRepository().getAllIndexedFS(AnswerInfo.type).next();
+		ri = (ResultInfo) canAnswer.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
 
 		answer.setConfidence(ai.getConfidence() * ri.getRelevance());
 		isLast = ai.getIsLast() && ri.getIsLast();

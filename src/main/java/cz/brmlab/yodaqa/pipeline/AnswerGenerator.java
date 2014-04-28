@@ -57,40 +57,18 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
+		CandidateAnswer answer = (CandidateAnswer) answers.next();
+
 		JCas jcas = getEmptyJCas();
-		CasCopier qCopier = new CasCopier(questionView.getCas(), jcas.getCas());
-		CasCopier rCopier = new CasCopier(resultView.getCas(), jcas.getCas());
-		CasCopier pCopier = new CasCopier(pickedPassagesView.getCas(), jcas.getCas());
 		try {
-			CandidateAnswer answer = (CandidateAnswer) answers.next();
-			jcas.setDocumentText(answer.getCoveredText());
-			jcas.setDocumentLanguage(resultView.getDocumentLanguage());
+			jcas.createView("Question");
+			JCas canQuestionView = jcas.getView("Question");
+			copyQuestion(questionView, canQuestionView);
 
-			AnswerInfo ai = new AnswerInfo(jcas);
-			ai.setConfidence(answer.getConfidence() * answer.getPassage().getScore());
-			ai.setIsLast(!answers.hasNext());
-			ai.addToIndexes();
-
-			/* Copy in-answer annotations */
-			int ofs = answer.getBegin();
-			for (Annotation a : JCasUtil.selectCovered(Annotation.class, answer)) {
-				if (a instanceof CandidateAnswer)
-					continue;
-				/* If we already deep-copied the annotation,
-				 * here we get its reference to fix things up.
-				 * XXX: We don't get a chance to remove e.g.
-				 * outside-reaching dependency annotations;
-				 * casCopier is a kind of silly interface. */
-				Annotation a2 = (Annotation) pCopier.copyFs(a);
-				a2.setBegin(a2.getBegin() - ofs);
-				a2.setEnd(a2.getEnd() - ofs);
-				a2.addToIndexes();
-			}
-
-			QuestionInfo qi2 = (QuestionInfo) qCopier.copyFs(qi);
-			qi2.addToIndexes();
-			ResultInfo ri2 = (ResultInfo) rCopier.copyFs(ri);
-			ri2.addToIndexes();
+			jcas.createView("Answer");
+			JCas canAnswerView = jcas.getView("Answer");
+			generateAnswer(answer, canAnswerView, !answers.hasNext());
+			copyResultInfo(resultView, canAnswerView);
 
 		} catch (Exception e) {
 			jcas.release();
@@ -98,5 +76,46 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		}
 		i++;
 		return jcas;
+	}
+
+	protected void copyQuestion(JCas src, JCas dest) throws Exception {
+		CasCopier copier = new CasCopier(src.getCas(), dest.getCas());
+		copier.copyCasView(src.getCas(), dest.getCas(), true);
+	}
+
+	protected void copyResultInfo(JCas src, JCas dest) throws Exception {
+		CasCopier copier = new CasCopier(src.getCas(), dest.getCas());
+
+		ResultInfo ri2 = (ResultInfo) copier.copyFs(ri);
+		ri2.addToIndexes();
+	}
+
+	protected void generateAnswer(CandidateAnswer answer, JCas jcas,
+			boolean isLast) throws Exception {
+		jcas.setDocumentText(answer.getCoveredText());
+		jcas.setDocumentLanguage(answer.getCAS().getDocumentLanguage());
+
+		AnswerInfo ai = new AnswerInfo(jcas);
+		ai.setConfidence(answer.getConfidence() * answer.getPassage().getScore());
+		ai.setIsLast(isLast);
+		ai.addToIndexes();
+
+		CasCopier copier = new CasCopier(answer.getCAS(), jcas.getCas());
+
+		/* Copy in-answer annotations */
+		int ofs = answer.getBegin();
+		for (Annotation a : JCasUtil.selectCovered(Annotation.class, answer)) {
+			if (a instanceof CandidateAnswer)
+				continue;
+			/* If we already deep-copied the annotation,
+			 * here we get its reference to fix things up.
+			 * XXX: We don't get a chance to remove e.g.
+			 * outside-reaching dependency annotations;
+			 * casCopier is a kind of silly interface. */
+			Annotation a2 = (Annotation) copier.copyFs(a);
+			a2.setBegin(a2.getBegin() - ofs);
+			a2.setEnd(a2.getEnd() - ofs);
+			a2.addToIndexes();
+		}
 	}
 }
