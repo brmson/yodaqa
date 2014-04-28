@@ -9,6 +9,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.analysis.answer.FocusGenerator;
 import cz.brmlab.yodaqa.analysis.answer.LATGenerator;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
+import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
@@ -46,6 +47,9 @@ public class AnswerAnalysis /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+
+		/* Perform type coercion. */
+		builder.add(createPrimitiveDescription(LATMatchTyCor.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */

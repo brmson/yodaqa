@@ -17,8 +17,8 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * Generate LATs for CandidateAnswers, apply simple comparison-based
-    type coercion (TyCor)
+  * Assign wordnet-spawned LAT sense generalizations frequency-based
+    likelihoods.
   * Generate LATs from meaningful SVs (consider "Who invented
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is

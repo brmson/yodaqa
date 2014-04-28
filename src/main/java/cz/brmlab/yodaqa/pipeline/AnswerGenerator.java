@@ -98,6 +98,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setPassageScore(answer.getPassage().getScore());
 		ai.setConfidence(answer.getConfidence());
+		ai.setSpecificity(-4); // XXX: just a random default in case of no LAT match, possibly due to no focus
 		ai.setIsLast(isLast);
 		ai.addToIndexes();
 

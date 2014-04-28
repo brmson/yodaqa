@@ -21,6 +21,11 @@
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>specificity</name>
+            <description>Specificity of the answer (based on the LAT matching)</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>isLast</name>
             <description>Whether this is the last candidate answer CAS</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>

@@ -73,7 +73,11 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
 		ResultInfo ri = JCasUtil.selectSingle(canAnswer, ResultInfo.class);
 
-		answer.setConfidence(ai.getConfidence() * ai.getPassageScore() * ri.getRelevance());
+		answer.setConfidence(
+				Math.exp(ai.getSpecificity())
+				* ai.getConfidence()
+				* ai.getPassageScore()
+				* ri.getRelevance());
 		isLast = ai.getIsLast() && ri.getIsLast();
 
 		// System.err.println("AR process: " + answer.getText() + " c " + answer.getConfidence());
