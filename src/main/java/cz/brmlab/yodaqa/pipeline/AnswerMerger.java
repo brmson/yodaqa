@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
-import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
@@ -61,20 +61,17 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		String text = canAnswer.getDocumentText();
 		answer.setText(text);
 
-		AnswerInfo ai;
-		ResultInfo ri;
-		FSIterator infos;
-
 		if (isFirst) {
-			QuestionInfo qi = (QuestionInfo) canQuestion.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
+			QuestionInfo qi = JCasUtil.selectSingle(canQuestion, QuestionInfo.class);
 			/* Copy QuestionInfo */
 			CasCopier copier = new CasCopier(canQuestion.getCas(), finalCas.getCas());
 			QuestionInfo qi2 = (QuestionInfo) copier.copyFs(qi);
 			qi2.addToIndexes();
 			isFirst = false;
 		}
-		ai = (AnswerInfo) canAnswer.getJFSIndexRepository().getAllIndexedFS(AnswerInfo.type).next();
-		ri = (ResultInfo) canAnswer.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+
+		AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
+		ResultInfo ri = JCasUtil.selectSingle(canAnswer, ResultInfo.class);
 
 		answer.setConfidence(ai.getConfidence() * ri.getRelevance());
 		isLast = ai.getIsLast() && ri.getIsLast();

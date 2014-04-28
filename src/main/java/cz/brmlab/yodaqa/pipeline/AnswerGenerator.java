@@ -45,8 +45,8 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		qi = (QuestionInfo) questionView.getJFSIndexRepository().getAllIndexedFS(QuestionInfo.type).next();
-		ri = (ResultInfo) resultView.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type).next();
+		qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
+		ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
 
 		answers = pickedPassagesView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
 		i = 0;
