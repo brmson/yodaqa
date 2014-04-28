@@ -86,7 +86,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				 * with the offset in the document (more
 				 * important things come first). */
 				double score = Math.sqrt(matches);
-				score -= sentence.getBegin() / totalLength;
+				score -= Math.pow((double) sentence.getBegin() / totalLength, 2);
 				passage.setScore(score);
 
 				passage.addToIndexes();
