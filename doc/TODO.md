@@ -17,8 +17,6 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * Assign wordnet-spawned LAT sense generalizations frequency-based
-    likelihoods.
   * Generate LATs from meaningful SVs (consider "Who invented
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is
@@ -75,13 +73,14 @@ Interface:
   * Give context to answers, allow for clarifications and iterative
     conversation.
 
-UIMA Infrastructure:
+Janitorial:
   * Add an origin record to each annotation - which annotator
     produced it? Will be useful when we have multiple possible
     annotation paths.
   * Add a per-CAS singleton containing unique id, id of the
     spawning document and id of the originating CAS; this will
     enable tracing full origin of each CAS.
+  * Switch from JWNL to JWI which seems to be much nicer to work with?
 
 Datasets:
   * **NP** Clean up the TREC datasets - weed out questions that
