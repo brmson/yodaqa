@@ -20,3 +20,7 @@ the answers to a set of 200 trecnew-single questions.  To display
 simple stats on these files, run
 
 	data/eval/tsvout-stats.sh data/eval/trecnew-single200-*.tsv
+
+or, to show all recorded evaluations chronologically, simply
+
+	data/eval/tsvout-stats.sh
