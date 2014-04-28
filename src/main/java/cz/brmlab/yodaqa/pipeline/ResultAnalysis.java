@@ -48,7 +48,9 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(PassFilter.class));
 
 		/* POS, lemmas, constituents, dependencies: */
-		builder.add(createPrimitiveDescription(StanfordParser.class),
+		builder.add(createPrimitiveDescription(
+				StanfordParser.class,
+				StanfordParser.PARAM_MAX_TOKENS, 40), // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 
