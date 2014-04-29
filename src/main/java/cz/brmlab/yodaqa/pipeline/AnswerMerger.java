@@ -74,6 +74,9 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		ResultInfo ri = JCasUtil.selectSingle(canAnswer, ResultInfo.class);
 		isLast = ai.getIsLast() && ri.getIsLast();
 
+		if (canAnswer.getDocumentText() == null)
+			return; // we received a dummy CAS
+
 		Answer answer = new Answer(finalCas);
 		String text = canAnswer.getDocumentText();
 		answer.setText(text);

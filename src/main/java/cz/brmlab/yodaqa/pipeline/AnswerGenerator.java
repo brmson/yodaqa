@@ -53,11 +53,13 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return answers.hasNext();
+		return answers.hasNext() || i == 0;
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		CandidateAnswer answer = (CandidateAnswer) answers.next();
+		CandidateAnswer answer = null;
+		if (answers.hasNext())
+			answer = (CandidateAnswer) answers.next();
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -67,7 +69,15 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
-			generateAnswer(answer, canAnswerView, !answers.hasNext());
+			if (answer != null) {
+				generateAnswer(answer, canAnswerView, !answers.hasNext());
+			} else {
+				/* We will just generate a single dummy CAS
+				 * to avoid flow breakage. */
+				AnswerInfo ai = new AnswerInfo(canAnswerView);
+				ai.setIsLast(true);
+				ai.addToIndexes();
+			}
 			copyResultInfo(resultView, canAnswerView);
 
 		} catch (Exception e) {
