@@ -3,17 +3,15 @@ YodaQA
 
 YodaQA is a Question Answering system built on top of the Apache UIMA
 framework.  It stands for "Yet anOther Deep Answering pipeline" and it
-is inspired by the DeepQA (IBM Watson) papers and the OpenQA framework.
-Its goals are practicality, clean design and maximum simplicity - we
-believe that other nice features like usability for research will flow
-naturally from this.
+is inspired by the DeepQA (IBM Watson) papers.  Its goals are practicality,
+clean design and maximum simplicity - we believe that other nice features
+like usability for research will flow naturally from this.
 
-YodaQA is developed as part of the Brmson platform; many of its components
-are or will be based on the work of the good scientists at CMU (bits of
-OpenQA, the Ephyra project).  We follow a significantly different (more
-flexible, we believe) architecture compared to OpenQA, though.  For all
-the NLP logic (including the NLP type system), we lean heavily on the DKPro
-UIMA bindings.
+YodaQA is developed as part of the Brmson platform.  For all the NLP
+logic (including the NLP type system), we lean heavily on the DKPro
+UIMA bindings; transitively, work like the StanfordParser and Princeton's
+Wordnet is crucial for us.  We also draw some inspiration from the OpenQA
+project and the Taming Text book.
 
 The current version is a work-in-progress snapshot that does nothing
 useful yet.
