@@ -61,10 +61,6 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		if (finalCas == null)
 			finalCas = getEmptyJCas();
 
-		Answer answer = new Answer(finalCas);
-		String text = canAnswer.getDocumentText();
-		answer.setText(text);
-
 		if (isFirst) {
 			QuestionInfo qi = JCasUtil.selectSingle(canQuestion, QuestionInfo.class);
 			/* Copy QuestionInfo */
@@ -76,13 +72,16 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 
 		AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
 		ResultInfo ri = JCasUtil.selectSingle(canAnswer, ResultInfo.class);
+		isLast = ai.getIsLast() && ri.getIsLast();
 
+		Answer answer = new Answer(finalCas);
+		String text = canAnswer.getDocumentText();
+		answer.setText(text);
 		answer.setConfidence(
 				Math.exp(ai.getSpecificity())
 				* ai.getConfidence()
 				* ai.getPassageScore()
 				* ri.getRelevance());
-		isLast = ai.getIsLast() && ri.getIsLast();
 
 		// System.err.println("AR process: " + answer.getText() + " c " + answer.getConfidence());
 
