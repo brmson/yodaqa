@@ -21,6 +21,8 @@ import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.question.SVGenerator;
 import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
@@ -37,6 +39,8 @@ import cz.brmlab.yodaqa.io.debug.DumpConstituents;
  * stages. */
 
 public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
+	final static Logger logger = LoggerFactory.getLogger(QuestionAnalysis.class);
+
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
@@ -124,10 +128,12 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 
 		/* Some debug dumps of the intermediate CAS. */
-		/* builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(
-			CasDumpWriter.class,
-			CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-qacas.txt")); */
+		if (logger.isDebugEnabled()) {
+			builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));
+			builder.add(AnalysisEngineFactory.createEngineDescription(
+				CasDumpWriter.class,
+				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-qacas.txt"));
+		}
 
 		return builder.createAggregateDescription();
 	}

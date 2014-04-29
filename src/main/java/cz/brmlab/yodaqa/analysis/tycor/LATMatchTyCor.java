@@ -9,6 +9,8 @@ import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -19,6 +21,8 @@ import cz.brmlab.yodaqa.model.TyCor.LAT;
  * most specific LAT match. */
 
 public class LATMatchTyCor extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATMatchTyCor.class);
+
 	protected class LATMatch {
 		public LAT lat1, lat2;
 		public double specificity;
@@ -74,12 +78,12 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				bestMatch = match;
 		}
 
-		/* if (bestMatch != null)
-			System.err.println(".. TyCor "
+		if (bestMatch != null)
+			logger.debug(".. TyCor "
 					+ bestMatch.getLat1().getBase().getCoveredText()
 					+ "-" + bestMatch.getLat2().getBase().getCoveredText()
 					+ " LAT " + bestMatch.getLat1().getText()
-					+ " sp. " + bestMatch.getSpecificity()); */
+					+ " sp. " + bestMatch.getSpecificity());
 		return bestMatch;
 	}
 }

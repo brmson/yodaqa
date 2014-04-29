@@ -9,6 +9,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Focus;
 
@@ -25,6 +27,8 @@ import cz.brmlab.yodaqa.model.Question.Focus;
  * or possibly a support for alignment. */
 
 public class FocusGenerator extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(FocusGenerator.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -52,7 +56,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		}
 
 		if (focus == null) {
-			System.err.println("?. No focus in: " + jcas.getDocumentText());
+			logger.info("?. No focus in: " + jcas.getDocumentText());
 			return;
 		}
 

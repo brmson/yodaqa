@@ -9,6 +9,8 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.result.CanByNPSurprise;
 import cz.brmlab.yodaqa.analysis.result.CanMergeByText;
@@ -26,6 +28,8 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveD
  * actually producing some CandiateAnswer annotations. */
 
 public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
+	final static Logger logger = LoggerFactory.getLogger(ResultAnalysis.class);
+
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
@@ -71,9 +75,11 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 
 		/* Some debug dumps of the intermediate CAS. */
-		/* builder.add(createPrimitiveDescription(
-			CasDumpWriter.class,
-			CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-racas.txt")); */
+		if (logger.isDebugEnabled()) {
+			builder.add(createPrimitiveDescription(
+				CasDumpWriter.class,
+				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-racas.txt"));
+		}
 
 		return builder.createAggregateDescription();
 	}

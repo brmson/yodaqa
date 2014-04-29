@@ -8,6 +8,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -26,6 +28,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
  * one simply generates a single LAT from the Focus. */
 
 public class LATGenerator extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATGenerator.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -65,7 +69,7 @@ public class LATGenerator extends JCasAnnotator_ImplBase {
 			spec--;
 
 		} else if (text.matches("^what|why|how|which|name$")) {
-			System.err.println("?! Skipping focus LAT for ambiguous qlemma " + text);
+			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
 			return;
 		}
 

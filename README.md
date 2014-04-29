@@ -43,6 +43,9 @@ the TREC dataset from data/trec/.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
+Alternatively, if things don't go well, try passing an extra parameter
+``-Dorg.slf4j.simpleLogger.defaultLogLevel=debug`` on the mvn commandline,
+or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 
 ## Data Sources
 

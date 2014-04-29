@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.pipeline;
 import java.util.Iterator;
 
 import edu.cmu.lti.oaqa.core.provider.solr.SolrWrapper;
+
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -15,6 +16,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -26,6 +29,8 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * We just feed all the clues to a Solr search. */
 
 public class PrimarySearch extends JCasMultiplier_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(PrimarySearch.class);
+
 	/** Number of results to grab and analyze. */
 	public static final String PARAM_HITLIST_SIZE = "hitlist-size";
 	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
@@ -116,7 +121,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 			result.append("titleText:\"" + keyterm + "\" ");
 		}
 		String query = result.toString();
-		System.err.println(" QUERY: " + query);
+		logger.info(" QUERY: " + query);
 		return query;
 	}
 
@@ -129,7 +134,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
-		System.err.println(" FOUND: " + id + " " + (title != null ? title : ""));
+		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
 		String text;
 		try {
 			text = Solr.getDocText(id.toString());

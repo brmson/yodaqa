@@ -17,6 +17,8 @@ import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.JWordnet;
@@ -27,6 +29,8 @@ import cz.brmlab.yodaqa.provider.JWordnet;
  * with gradually reduced specificity based on hypernymy. */
 
 public class LATByWordnet extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATByWordnet.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -56,7 +60,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	protected void genDerivedLATs(Map<Synset, LAT> latmap, LAT lat) throws Exception {
 		IndexWord w = JWordnet.getDictionary().lookupIndexWord(POS.NOUN /* XXX */, lat.getText());
 		if (w == null) {
-			System.err.println("?! word " + lat.getText() + " not in Wordnet");
+			logger.info("?! word " + lat.getText() + " not in Wordnet");
 			return;
 		}
 

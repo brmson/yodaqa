@@ -12,6 +12,8 @@ import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 
@@ -22,6 +24,8 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
  * to the kept one. */
 
 public class CanMergeByText extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(CanMergeByText.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -52,7 +56,7 @@ public class CanMergeByText extends JCasAnnotator_ImplBase {
 					mainCan.removeFromIndexes();
 					continue;
 				}
-				System.err.println("merging " + mainCan.getCoveredText() + "|" + can.getCoveredText()
+				logger.debug("merging " + mainCan.getCoveredText() + "|" + can.getCoveredText()
 						+ " :: " + mainCan.getConfidence() + ", " + can.getConfidence());
 				mainCan.setConfidence(mainCan.getConfidence() + can.getConfidence());
 				can.removeFromIndexes();

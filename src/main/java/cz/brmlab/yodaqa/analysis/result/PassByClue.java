@@ -15,6 +15,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
@@ -33,6 +35,8 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 
 public class PassByClue extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(PassByClue.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -90,6 +94,8 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				passage.setScore(score);
 
 				passage.addToIndexes();
+
+				logger.debug(passage.getCoveredText() + "   === " + passage.getScore());
 
 				/* Copy */
 				if (!copier.alreadyCopied(sentence)) {

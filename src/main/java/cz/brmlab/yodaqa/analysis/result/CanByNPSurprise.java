@@ -8,6 +8,8 @@ import org.apache.uima.fit.descriptor.SofaCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
@@ -27,6 +29,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 )
 
 public class CanByNPSurprise extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(CanByNPSurprise.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -55,7 +59,7 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 
 			/* Surprise! */
 
-			System.err.println("ca " + np.getCoveredText());
+			logger.info("ca {}", np.getCoveredText());
 			CandidateAnswer ca = new CandidateAnswer(passagesView);
 			ca.setBegin(np.getBegin());
 			ca.setEnd(np.getEnd());

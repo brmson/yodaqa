@@ -14,6 +14,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -29,6 +31,8 @@ import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
  * with the same text. */
 
 public class AnswerMerger extends JCasMultiplier_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(AnswerMerger.class);
+
 	Map<String, List<Answer>> answersByText;
 	JCas finalCas;
 	boolean isFirst, isLast;
@@ -106,7 +110,7 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 					mainAns = answer;
 					continue;
 				}
-				System.err.println("final merging " + mainAns.getText() + "|" + answer.getText()
+				logger.debug("final merging " + mainAns.getText() + "|" + answer.getText()
 						+ " :: " + mainAns.getConfidence() + ", " + answer.getConfidence());
 				mainAns.setConfidence(mainAns.getConfidence() + answer.getConfidence());
 			}

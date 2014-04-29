@@ -8,6 +8,8 @@ import org.apache.uima.fit.descriptor.SofaCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
@@ -23,6 +25,8 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
 )
 
 public class CanByPassage extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(CanByPassage.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -36,7 +40,7 @@ public class CanByPassage extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 		for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
-			System.err.println("ca " + passage.getCoveredText());
+			logger.info("ca {}", passage.getCoveredText());
 			CandidateAnswer ca = new CandidateAnswer(resultView);
 			ca.setBegin(passage.getBegin());
 			ca.setEnd(passage.getEnd());
