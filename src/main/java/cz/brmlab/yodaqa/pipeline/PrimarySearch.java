@@ -2,8 +2,6 @@ package cz.brmlab.yodaqa.pipeline;
 
 import java.util.Iterator;
 
-import edu.cmu.lti.oaqa.core.provider.solr.SolrWrapper;
-
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -21,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+import cz.brmlab.yodaqa.provider.Solr;
 
 /**
  * Take a question CAS and search for keywords, yielding a search result
@@ -53,7 +52,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	@ConfigurationParameter(name = PARAM_SERVER_URL, mandatory = false, defaultValue = "http://localhost:8983/solr/")
 	protected String serverUrl;
 
-	protected SolrWrapper Solr;
+	protected Solr solr;
 
 	JCas src_jcas;
 	protected Iterator<SolrDocument> documenti;
@@ -63,7 +62,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 		super.initialize(aContext);
 
 		try {
-			this.Solr = new SolrWrapper(serverUrl, null, embedded, core);
+			this.solr = new Solr(serverUrl, null, embedded, core);
 		} catch (Exception e) {
 			throw new ResourceInitializationException(e);
 		}
@@ -76,7 +75,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 
 		String query = formulateQuery(jcas);
 		try {
-			SolrDocumentList documents = Solr.runQuery(query, hitListSize);
+			SolrDocumentList documents = solr.runQuery(query, hitListSize);
 			documenti = documents.iterator();
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
@@ -109,7 +108,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
 		super.collectionProcessComplete();
-		Solr.close();
+		solr.close();
 	}
 
 
@@ -137,7 +136,7 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
 		String text;
 		try {
-			text = Solr.getDocText(id.toString());
+			text = solr.getDocText(id.toString());
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 			return;

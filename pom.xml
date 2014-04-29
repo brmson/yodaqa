@@ -31,10 +31,6 @@
 			<id>ukp-oss-model-releases</id>
 			<url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-model-releases-local</url>
 		</repository>
-		<repository>
-			<id>oaqa</id>
-			<url>http://mu.lti.cs.cmu.edu:8081/nexus/content/repositories/releases</url>
-		</repository>
 	</repositories>
 
 	<dependencies>
@@ -104,11 +100,26 @@
 			<version>1.5.0</version>
 		</dependency>
 
-		<!-- A helpful wrapper for Solr-based search. -->
+		<!-- Solr for searching data sources. -->
 		<dependency>
-			<groupId>edu.cmu.lti.oaqa.core.provider</groupId>
-			<artifactId>solr-provider</artifactId>
-			<version>1.0.7</version>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>3.6.0</version> <!-- debian version -->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-core</artifactId>
+			<version>3.6.0</version> <!-- debian version -->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.2.1</version>
 		</dependency>
 
 		<!-- Dependencies of berkeleyparser. -->
