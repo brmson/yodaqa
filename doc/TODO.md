@@ -17,8 +17,11 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * NE-based clues and type coercion, for starters involving
-    the OpenNLP NamedEntity extractor providing generic LATs
+  * Much improved Focus selection by using Asking Point; Pinchuk et al.
+    "Automated focus extraction for question answering over topic maps"
+  * Take Wordnet synsets into account in LATs; annotate NE-based
+    Focus LATs by synsets instead of generic words (to avoid
+    e.g. the date-companion-friend-person chain)
   * Generate LATs from meaningful SVs (consider "Who invented
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is
@@ -26,7 +29,6 @@ Quality:
   * Use (WordNet) ontology relationships (synsets etc.) to generate
     extra clues; consider generating Clues also for CandidateAnswer
     and matching them similar to TyCor (ClueCor? :-)
-  * Take Wordnet synsets into account in LATs
   * Better passage scoring?
   * Walk through the QA chapter of Taming Text to verify we are on
     quality parity. :)

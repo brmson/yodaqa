@@ -9,7 +9,7 @@ package cz.brmlab.yodaqa.pipeline;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MateLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MateParser;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MatePosTagger;
-//import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
+import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 //import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
@@ -95,8 +95,6 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 
 		/* Named Entities: */
 
-		/*
-		// sort of nice but we don't have use for them yet
 		String[] ner_variants = {
 		      "date", "location", "money", "organization",
 		      "percentage", "person", "time"
@@ -106,6 +104,8 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 				OpenNlpNameFinder.class,
 				OpenNlpNameFinder.PARAM_VARIANT, variant));
 		}
+
+		/*
 		// too weak, we need very rich NE set
 		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordNamedEntityRecognizer.class));
 		*/
@@ -123,7 +123,9 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueGenerator.class));
+		/* Prepare LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
+		/* Multiplicate LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class));
 
 

@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.pipeline;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
@@ -56,6 +57,20 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 				StanfordParser.class,
 				StanfordParser.PARAM_MAX_TOKENS, 50), // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+
+		/* Named Entities: */
+
+		String[] ner_variants = {
+		      "date", "location", "money", "organization",
+		      "percentage", "person", "time"
+		};
+		for (String variant : ner_variants) {
+			builder.add(createPrimitiveDescription(
+					OpenNlpNameFinder.class,
+					OpenNlpNameFinder.PARAM_VARIANT, variant),
+				CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+		}
+
 
 
 		/* Okay! Now, we can proceed with our key tasks. */

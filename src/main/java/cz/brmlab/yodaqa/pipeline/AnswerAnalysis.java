@@ -49,6 +49,7 @@ public class AnswerAnalysis /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		builder.add(createPrimitiveDescription(LATByFocus.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Multiplicate LATs */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 

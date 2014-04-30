@@ -11,6 +11,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /**
@@ -26,7 +27,9 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		/* A Focus is also an LAT. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
-			addFocusLAT(jcas, focus);
+			/* ...however, prefer an overlapping named entity. */
+			if (!addNELAT(jcas, focus))
+				addFocusLAT(jcas, focus);
 		}
 	}
 
@@ -43,6 +46,15 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		}
 
 		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, spec);
+	}
+
+	protected boolean addNELAT(JCas jcas, Focus focus) {
+		boolean ne_found = false;
+		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
+			ne_found = true;
+			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), -2.0);
+		}
+		return ne_found;
 	}
 
 	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, double spec) {
