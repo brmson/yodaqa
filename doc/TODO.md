@@ -30,6 +30,9 @@ Quality:
   * Better passage scoring?
   * Walk through the QA chapter of Taming Text to verify we are on
     quality parity. :)
+  * Prefer most specific answers: "When did the shootings at Columbine
+    happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
+    just merge overlaps
   * Compare quality with blanqa to ensure quality parity?
 
 Search:
