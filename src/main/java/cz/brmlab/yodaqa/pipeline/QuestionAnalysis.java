@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.question.SVGenerator;
 import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
 import cz.brmlab.yodaqa.analysis.question.ClueGenerator;
-import cz.brmlab.yodaqa.analysis.question.LATGenerator;
+import cz.brmlab.yodaqa.analysis.question.LATByFocus;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 
@@ -123,7 +123,7 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueGenerator.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(LATGenerator.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class));
 
 

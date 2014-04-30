@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.FocusGenerator;
-import cz.brmlab.yodaqa.analysis.answer.LATGenerator;
+import cz.brmlab.yodaqa.analysis.answer.LATByFocus;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
 
@@ -47,7 +47,7 @@ public class AnswerAnalysis /* XXX: extends AggregateBuilder ? */ {
 		/* Determine the focus and LAT of each answer. */
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		builder.add(createPrimitiveDescription(LATGenerator.class),
+		builder.add(createPrimitiveDescription(LATByFocus.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");

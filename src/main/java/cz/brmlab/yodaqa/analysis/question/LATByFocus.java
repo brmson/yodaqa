@@ -2,7 +2,6 @@ package cz.brmlab.yodaqa.analysis.question;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -27,8 +26,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
  * Prospectively, we will want to add multiple diverse LAT annotators. This
  * one simply generates a single LAT from the Focus. */
 
-public class LATGenerator extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(LATGenerator.class);
+public class LATByFocus extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATByFocus.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);

@@ -18,7 +18,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * answer focus and the result LAT texts should be compatible with Question.LAT
  * but the process of their generation might be different in details. */
 
-public class LATGenerator extends JCasAnnotator_ImplBase {
+public class LATByFocus extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
