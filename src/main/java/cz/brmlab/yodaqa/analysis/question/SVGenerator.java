@@ -51,12 +51,24 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 			/* No Focus means no SV. */
 			return;
 		}
-		if (focus.getTypeIndexID() != NSUBJ.type) {
-			/* NN Focus also means no SV. */
-			return;
+
+		Token v;
+		if (focus.getTypeIndexID() == NSUBJ.type) {
+			/* Make the subject's controlling verb an SV. */
+			v = ((NSUBJ) focus).getGovernor();
+
+		} else if (focus.getTypeIndexID() == Token.type) {
+			if (((Token) focus).getPos().getPosValue().matches("^V.*")) {
+				/* The focus is a verb itself! Make it an SV too. */
+				v = (Token) focus;
+			} else {
+				/* NN or such Focus also means no SV. */
+				return;
+			}
+
+		} else {
+			return; // huh?
 		}
-		NSUBJ nsubj = (NSUBJ) focus;
-		Token v = nsubj.getGovernor();
 
 		/* Ok, we believe this verb is the Selecting Verb. */
 		SV sv = new SV(jcas);

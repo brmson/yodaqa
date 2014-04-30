@@ -17,8 +17,6 @@ Short-Term TODO
 ---------------
 
 Quality:
-  * Much improved Focus selection by using Asking Point; Pinchuk et al.
-    "Automated focus extraction for question answering over topic maps"
   * Take Wordnet synsets into account in LATs; annotate NE-based
     Focus LATs by synsets instead of generic words (to avoid
     e.g. the date-companion-friend-person chain)
