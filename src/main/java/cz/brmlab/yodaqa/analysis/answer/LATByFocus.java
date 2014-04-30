@@ -52,7 +52,11 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		boolean ne_found = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
-			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), -2.0);
+			/* Positive specificity is a bit of a cheat;
+			 * we use it to boost named entities score
+			 * since named entities are awesome answers.
+			 * But XXX: do this in a more consistent way! */
+			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), 1.0);
 		}
 		return ne_found;
 	}
