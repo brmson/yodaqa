@@ -4,6 +4,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.ADVMOD;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DEP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DET;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 
@@ -81,6 +82,17 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 					break;
 				} else if (advmod.getDependent().getPos().getPosValue().matches("^W.*")) {
 					focus = advmod.getDependent();
+					break;
+				}
+			}
+		}
+
+		/* DEP dependencies are also sometimes generated, e.g.
+		 * "What lays blue eggs?" (What / lays) */
+		if (focus == null) {
+			for (DEP dep : JCasUtil.selectCovered(DEP.class, sentence)) {
+				if (dep.getDependent().getPos().getPosValue().matches("^W.*")) {
+					focus = dep.getGovernor();
 					break;
 				}
 			}
