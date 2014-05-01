@@ -17,6 +17,8 @@ Short-Term TODO
 ---------------
 
 Quality:
+  * Treat "name" focus as a proxy for dependent
+  * Forcibly include clue exact title matches in results
   * Take Wordnet synsets into account in LATs; annotate NE-based
     Focus LATs by synsets instead of generic words (to avoid
     e.g. the date-companion-friend-person chain)
