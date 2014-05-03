@@ -32,5 +32,10 @@
           </featureDescription>
         </features>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing</name>
+        <description>A passage on which a parser should be run</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+      </typeDescription>
     </types>
   </typeSystemDescription>

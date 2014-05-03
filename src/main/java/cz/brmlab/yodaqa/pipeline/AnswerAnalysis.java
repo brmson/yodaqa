@@ -8,10 +8,13 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.FindReqParse;
 import cz.brmlab.yodaqa.analysis.answer.FocusGenerator;
 import cz.brmlab.yodaqa.analysis.answer.LATByFocus;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
+
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
@@ -40,9 +43,19 @@ public class AnswerAnalysis /* XXX: extends AggregateBuilder ? */ {
 		 *   an amplifier or an electrically controlled switch
 		 *   The importance of this concept was realised first in the analytic theory of theta functions, and geometrically in the theory of bitangents
 		 * ...so usually it's a simple term plus possibly some
-		 * adjectives, but can be a complex subsentence system.
-		 * In addition, we already have StanfordParser annotations,
-		 * so tokens, POS, lemmas, constituents and dependencies. */
+		 * adjectives, but can be a complex subsentence system. */
+
+		/* In addition, we already have StanfordParser annotations,
+		 * so tokens, POS, lemmas, constituents and dependencies.
+		 * One exception is if the source sentence was too long;
+		 * in that case, rerun StanfordParser just on the answer. */
+		builder.add(createPrimitiveDescription(FindReqParse.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		builder.add(createPrimitiveDescription(
+				StanfordParser.class,
+				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+				StanfordParser.PARAM_ANNOTATIONTYPE_TO_PARSE, "cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing"),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Determine the focus and LAT of each answer. */
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
