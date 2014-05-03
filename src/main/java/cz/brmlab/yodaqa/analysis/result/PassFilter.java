@@ -16,6 +16,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
@@ -33,6 +35,8 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 
 public class PassFilter extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(PassByClue.class);
+
 	/** Number of passages to pick for detailed analysis. */
 	public static final String PARAM_NUM_PICKED = "num-picked";
 	@ConfigurationParameter(name = PARAM_NUM_PICKED, mandatory = false, defaultValue = "3")
@@ -67,6 +71,8 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 			Passage passage = (Passage) passages.next();
 			Passage p2 = (Passage) copier.copyFs(passage);
 			p2.addToIndexes();
+
+			logger.debug(passage.getScore() + " | " + passage.getCoveredText());
 
 			/* Also recursively copy annotations - we need
 			 * to have Sentences in the PickedPassages view

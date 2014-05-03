@@ -95,7 +95,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 
 				passage.addToIndexes();
 
-				logger.debug(passage.getCoveredText() + "   === " + passage.getScore());
+				logger.debug(passage.getScore() + " | " + passage.getCoveredText());
 
 				/* Copy */
 				if (!copier.alreadyCopied(sentence)) {
