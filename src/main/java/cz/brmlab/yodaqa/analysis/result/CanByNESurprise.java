@@ -15,10 +15,10 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
 /**
- * Create CandidateAnswers for all NP constituents (noun phrases) that do not
+ * Create CandidateAnswers for all NEs (named entities) that do not
  * contain supplied clues.
  *
  * This is pretty naive but should generate some useful answers. */
@@ -28,7 +28,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 	outputSofas = { "PickedPassages" }
 )
 
-public class CanByNPSurprise extends JCasAnnotator_ImplBase {
+public class CanByNESurprise extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(CanByNPSurprise.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -43,8 +43,8 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		for (NP np : JCasUtil.select(passagesView, NP.class)) {
-			String text = np.getCoveredText();
+		for (NamedEntity ne : JCasUtil.select(passagesView, NamedEntity.class)) {
+			String text = ne.getCoveredText();
 
 			/* TODO: This can be optimized a lot. */
 			boolean matches = false;
@@ -59,12 +59,12 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 
 			/* Surprise! */
 
-			logger.info("caNP {}", np.getCoveredText());
+			logger.info("caNE {}", ne.getCoveredText());
 			CandidateAnswer ca = new CandidateAnswer(passagesView);
-			ca.setBegin(np.getBegin());
-			ca.setEnd(np.getEnd());
-			ca.setPassage(JCasUtil.selectCovering(Passage.class, np).get(0));
-			ca.setBase(np);
+			ca.setBegin(ne.getBegin());
+			ca.setEnd(ne.getEnd());
+			ca.setPassage(JCasUtil.selectCovering(Passage.class, ne).get(0));
+			ca.setBase(ne);
 			ca.setConfidence(1.0);
 			ca.addToIndexes();
 		}

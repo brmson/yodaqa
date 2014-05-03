@@ -13,6 +13,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.result.CanByNESurprise;
 import cz.brmlab.yodaqa.analysis.result.CanByNPSurprise;
 import cz.brmlab.yodaqa.analysis.result.CanMergeByText;
 import cz.brmlab.yodaqa.analysis.result.PassByClue;
@@ -78,8 +79,11 @@ public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
 		/* CandidateAnswer from each (complete) Passage - just for debugging. */
 		//builder.add(createPrimitiveDescription(CanByPassage.class));
 		/* CandidateAnswer from each NP constituent that does not match
-		 * any of the clues - this might actually be useful! */
+		 * any of the clues. */
 		builder.add(createPrimitiveDescription(CanByNPSurprise.class));
+		/* CandidateAnswer from each named entity that does not match
+		 * any of the clues. */
+		builder.add(createPrimitiveDescription(CanByNESurprise.class));
 
 
 		/* Finishing touches: */
