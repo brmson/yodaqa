@@ -74,6 +74,8 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */
+				canAnswerView.setDocumentText("");
+				canAnswerView.setDocumentLanguage(resultView.getDocumentLanguage());
 				AnswerInfo ai = new AnswerInfo(canAnswerView);
 				ai.setIsLast(true);
 				ai.addToIndexes();

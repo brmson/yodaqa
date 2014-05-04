@@ -36,6 +36,8 @@ public class FindReqParse extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		for (POS pos : JCasUtil.select(jcas, POS.class))
 			return; // ok, already parser
+		if (jcas.getDocumentText().length() == 0)
+			return; // nothing to parse either
 
 		PassageForParsing pfp = new PassageForParsing(jcas);
 		pfp.setBegin(0);
