@@ -70,11 +70,10 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			 * matched. */
 			int matches = 0;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				/* Match */
 				if (!sentence.getCoveredText().contains(clue.getCoveredText()))
 					continue;
-
-				matches += clue.getCoveredText().length(); // XXX: rather #ofwords?
+				/* Match */
+				matches++;
 			}
 
 			if (matches > 0) {
