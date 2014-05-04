@@ -16,9 +16,16 @@ Apologies if this list is not kept 100% up-to-date all the time.
 Short-Term TODO
 ---------------
 
-Quality:
+CandidateAnswer Recall:
   * Treat "name" focus as a proxy for dependent
-  * Forcibly include clue exact title matches in results
+  * No-title document search that suggests the title as an answer
+  * Title-in-clue search; forcibly include the first sentence
+    as a passage? Then we can abolish position-based scoring
+    our current general passage search
+  * Use (WordNet) ontology relationships (synsets etc.) to generate
+    extra clues
+
+FinalAnswer Precision:
   * Take Wordnet synsets into account in LATs; annotate NE-based
     Focus LATs by synsets instead of generic words (to avoid
     e.g. the date-companion-friend-person chain)
@@ -26,16 +33,7 @@ Quality:
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is
     a hyponym of "person", so generate an LAT!)
-  * Use (WordNet) ontology relationships (synsets etc.) to generate
-    extra clues; consider generating Clues also for CandidateAnswer
-    and matching them similar to TyCor (ClueCor? :-)
   * Better passage scoring?
-  * Walk through the QA chapter of Taming Text to verify we are on
-    quality parity. :)
-  * Prefer most specific answers: "When did the shootings at Columbine
-    happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
-    just merge overlaps
-  * Compare quality with blanqa to ensure quality parity?
 
 Search:
   * Switch to SolrJ
@@ -50,6 +48,14 @@ Parsing:
 
 Quality:
   * Check TyCor on TamingText dataset
+  * Consider generating Clues also for CandidateAnswer
+    and matching them similar to TyCor (ClueCor? :-)
+  * Walk through the QA chapter of Taming Text to verify we are on
+    quality parity. :)
+  * Compare quality with blanqa to ensure quality parity?
+  * Prefer most specific answers: "When did the shootings at Columbine
+    happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
+    just merge overlaps
   * Add more structured information sources!
     * DBPedia, FrameNet, Lemon, PATTY, PPDB
   * Extend WordNet ontology (so far used for TyCor) with more
