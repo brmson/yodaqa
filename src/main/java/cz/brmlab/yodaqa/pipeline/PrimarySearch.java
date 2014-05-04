@@ -21,6 +21,8 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.Solr;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+
 /**
  * Take a question CAS and search for keywords, yielding a search result
  * CAS instance.
@@ -115,9 +117,12 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	protected String formulateQuery(JCas jcas) {
 		StringBuffer result = new StringBuffer();
 		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
+			if (!(clue.getBase() instanceof Token))
+				continue;
+			if (result.length() > 0)
+				result.append("AND ");
 			String keyterm = clue.getCoveredText();
-			result.append("\"" + keyterm + "\" ");
-			result.append("titleText:\"" + keyterm + "\" ");
+			result.append("(\"" + keyterm + "\" OR titleText:\"" + keyterm + "\") ");
 		}
 		String query = result.toString();
 		logger.info(" QUERY: " + query);
