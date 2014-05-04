@@ -29,7 +29,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 )
 
 public class CanByNESurprise extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(CanByNPSurprise.class);
+	final Logger logger = LoggerFactory.getLogger(CanByNESurprise.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -43,30 +43,34 @@ public class CanByNESurprise extends JCasAnnotator_ImplBase {
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		for (NamedEntity ne : JCasUtil.select(passagesView, NamedEntity.class)) {
-			String text = ne.getCoveredText();
 
-			/* TODO: This can be optimized a lot. */
-			boolean matches = false;
-			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (text.contains(clue.getCoveredText())) {
-					matches = true;
-					break;
+		for (Passage p: JCasUtil.select(passagesView, Passage.class)) {
+			for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, p)) {
+				String text = ne.getCoveredText();
+
+				/* TODO: This can be optimized a lot. */
+				boolean matches = false;
+				for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
+					if (text.contains(clue.getCoveredText())) {
+						matches = true;
+						break;
+					}
 				}
+				if (matches)
+					continue;
+
+				/* Surprise! */
+
+				logger.info("caNE {}", ne.getCoveredText());
+
+				CandidateAnswer ca = new CandidateAnswer(passagesView);
+				ca.setBegin(ne.getBegin());
+				ca.setEnd(ne.getEnd());
+				ca.setPassage(p);
+				ca.setBase(ne);
+				ca.setConfidence(1.0);
+				ca.addToIndexes();
 			}
-			if (matches)
-				continue;
-
-			/* Surprise! */
-
-			logger.info("caNE {}", ne.getCoveredText());
-			CandidateAnswer ca = new CandidateAnswer(passagesView);
-			ca.setBegin(ne.getBegin());
-			ca.setEnd(ne.getEnd());
-			ca.setPassage(JCasUtil.selectCovering(Passage.class, ne).get(0));
-			ca.setBase(ne);
-			ca.setConfidence(1.0);
-			ca.addToIndexes();
 		}
 	}
 }
