@@ -18,10 +18,13 @@ Short-Term TODO
 
 CandidateAnswer Recall:
   * Treat "name" focus as a proxy for dependent
+  * Place higher weight on named entity (2.0) and LAT (1.5) clues
   * No-title document search that suggests the title as an answer
   * Title-in-clue search; forcibly include the first sentence
     as a passage? Then we can abolish position-based scoring
     our current general passage search
+  * Passage search: Try building an AND-OR tree query based on
+    overlapping clues to prefer but not require phrase matches
   * Use (WordNet) ontology relationships (synsets etc.) to generate
     extra clues
 
