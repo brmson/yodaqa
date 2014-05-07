@@ -24,11 +24,12 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.question.FocusNameProxy;
-import cz.brmlab.yodaqa.analysis.question.SVGenerator;
+import cz.brmlab.yodaqa.analysis.question.ClueBySV;
+import cz.brmlab.yodaqa.analysis.question.ClueByTokenConstituent;
 import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
-import cz.brmlab.yodaqa.analysis.question.ClueGenerator;
+import cz.brmlab.yodaqa.analysis.question.FocusNameProxy;
 import cz.brmlab.yodaqa.analysis.question.LATByFocus;
+import cz.brmlab.yodaqa.analysis.question.SVGenerator;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 
@@ -124,7 +125,11 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusNameProxy.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueGenerator.class));
+
+		/* Generate clues. */
+		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByTokenConstituent.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
+
 		/* Prepare LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
 		/* Multiplicate LATs */

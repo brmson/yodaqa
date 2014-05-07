@@ -14,7 +14,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.Question.Clue;
 
 /**
@@ -23,13 +22,12 @@ import cz.brmlab.yodaqa.model.Question.Clue;
  * the first book written by Terry Pratchett?" should generate clues "first",
  * "book", "first book", "write" and "Terry Pratchett".
  *
- * Prospectively, we will want to add multiple diverse clue annotators. This
- * one is based on interesting Constituent annotations + SV. */
+ * This one creates clues from a bunch of POS-interesting tokens (like nouns,
+ * numbers, etc.) and also interesting constituents like noun phrases. */
 
-public class ClueGenerator extends JCasAnnotator_ImplBase {
+public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 	protected String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
 	protected String CONSTITMATCH = "AD.*|NP|QP";
-	protected String SVBLACKLIST = "be|have|do";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -61,16 +59,6 @@ public class ClueGenerator extends JCasAnnotator_ImplBase {
 				}
 				lifo.add((Constituent) child);
 			}
-		}
-
-		/* Oh, and all SVs are also Clues; they wouldn't be included
-		 * in the constituents harvested above. */
-
-		for (SV sv : JCasUtil.select(jcas, SV.class)) {
-			/* What was the name... -> "was" is useless as clue. */
-			if (sv.getBase().getLemma().getValue().matches(SVBLACKLIST))
-				continue;
-			addClue(jcas, sv.getBegin(), sv.getEnd(), sv);
 		}
 	}
 
