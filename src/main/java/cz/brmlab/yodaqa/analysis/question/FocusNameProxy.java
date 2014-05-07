@@ -1,20 +1,18 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.ADVMOD;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DEP;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DET;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,26 +41,36 @@ public class FocusNameProxy extends JCasAnnotator_ImplBase {
 	}
 
 	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
+		List<Focus> fToDel = new LinkedList<Focus>();
 		for (Focus f : JCasUtil.selectCovered(Focus.class, sentence)) {
 			Token ftok = f.getToken();
 			if (!ftok.getLemma().getValue().equals("name"))
 				continue;
-			processAllGoverned(jcas, sentence, ftok);
+			if (processAllGoverned(jcas, sentence, ftok) > 0) {
+				// remove the original "name" focus, we got
+				// a better one
+				fToDel.add(f);
+			}
 		}
+		for (Focus f : fToDel)
+			f.removeFromIndexes();
 	}
 
-	public void processAllGoverned(JCas jcas, Constituent sentence, Token gov) throws AnalysisEngineProcessException {
+	public int processAllGoverned(JCas jcas, Constituent sentence, Token gov) throws AnalysisEngineProcessException {
+		int numNew = 0;
 		for (Dependency d : JCasUtil.selectCovered(Dependency.class, sentence)) {
 			if (d.getGovernor() != gov)
 				continue;
 			if (d.getDependencyType().equals("prep")) { // - of -
-				processAllGoverned(jcas, sentence, d.getDependent());
+				numNew += processAllGoverned(jcas, sentence, d.getDependent());
 			} else if (d.getDependencyType().equals("det")) { // the -
 				// ignore
 			} else {
 				processProxied(jcas, sentence, d.getDependent());
+				numNew += 1;
 			}
 		}
+		return numNew;
 	}
 
 	public void processProxied(JCas jcas, Constituent sentence, Token proxied) throws AnalysisEngineProcessException {
