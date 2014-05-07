@@ -17,7 +17,6 @@ Short-Term TODO
 ---------------
 
 CandidateAnswer Recall:
-  * Place higher weight on named entity (2.0) and LAT (1.5) clues
   * No-title document search that suggests the title as an answer
   * Title-in-clue search; forcibly include the first sentence
     as a passage? Then we can abolish position-based scoring

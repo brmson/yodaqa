@@ -120,10 +120,13 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 			// constituent clues are too phrasal for use as search keywords
 			if (clue.getBase() instanceof Constituent)
 				continue;
+
+			String keyterm = clue.getCoveredText();
+			Double weight = clue.getWeight();
+
 			if (result.length() > 0)
 				result.append("AND ");
-			String keyterm = clue.getCoveredText();
-			result.append("(\"" + keyterm + "\" OR titleText:\"" + keyterm + "\") ");
+			result.append("(\"" + keyterm + "\" OR titleText:\"" + keyterm + "\")^" + weight + " ");
 		}
 		String query = result.toString();
 		logger.info(" QUERY: " + query);
