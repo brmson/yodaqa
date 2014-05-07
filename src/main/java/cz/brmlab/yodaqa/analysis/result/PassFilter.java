@@ -35,7 +35,7 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 
 public class PassFilter extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(PassByClue.class);
+	final Logger logger = LoggerFactory.getLogger(PassFilter.class);
 
 	/** Number of passages to pick for detailed analysis. */
 	public static final String PARAM_NUM_PICKED = "num-picked";
