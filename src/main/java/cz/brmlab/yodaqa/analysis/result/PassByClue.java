@@ -64,16 +64,15 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		 * but for now we opt for a trivial O(M*N) approach. */
 		CasCopier copier = new CasCopier(resultView.getCas(), passagesView.getCas());
 		for (Sentence sentence : JCasUtil.select(resultView, Sentence.class)) {
-			/* TODO: Rate clues themselves. */
 			/* TODO: Put clues in a hierarchy so that we don't
 			 * try to match word clues of phrase clues we already
 			 * matched. */
-			int matches = 0;
+			double matches = 0;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 				if (!sentence.getCoveredText().matches(".*\\b" + clue.getCoveredText() + "\\b.*"))
 					continue;
 				/* Match */
-				matches++;
+				matches += clue.getWeight();
 			}
 
 			if (matches > 0) {
