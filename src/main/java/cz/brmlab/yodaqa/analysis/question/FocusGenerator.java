@@ -32,7 +32,7 @@ import cz.brmlab.yodaqa.model.Question.Focus;
  * How big is Mars?					big
  * What is the play "West Side Story" based on?		base (???)
  * What color is the top stripe on the U.S. flag?	color
- * What is the name of Ling Ling's mate?		name (?)
+ * What is the name of Ling Ling's mate?		name, mate (!)
  * What did George Washington call his house?		-- (SV:call)
  * Who created the literary character Phineas Fogg?	person (SV:create)
  * In which city would you find the Louvre?		city

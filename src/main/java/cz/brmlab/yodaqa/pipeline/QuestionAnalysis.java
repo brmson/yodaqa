@@ -24,6 +24,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.question.FocusNameProxy;
 import cz.brmlab.yodaqa.analysis.question.SVGenerator;
 import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
 import cz.brmlab.yodaqa.analysis.question.ClueGenerator;
@@ -121,6 +122,7 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		/* Okay! Now, we can proceed with our key tasks. */
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusGenerator.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(FocusNameProxy.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueGenerator.class));
 		/* Prepare LATs */
