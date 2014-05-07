@@ -41,6 +41,7 @@ public class ClueBySV extends JCasAnnotator_ImplBase {
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
+		clue.setWeight(1.0);
 		clue.addToIndexes();
 	}
 }

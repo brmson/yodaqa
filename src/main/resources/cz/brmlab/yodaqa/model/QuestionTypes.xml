@@ -84,6 +84,11 @@
             <description>The corresponding token/constituent.</description>
             <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>weight</name>
+            <description>The more specific, selective or reliable the clue is, the higher weight it should get. Baseline weight is 1.0.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
     </types>
