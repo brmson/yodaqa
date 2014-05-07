@@ -64,8 +64,13 @@
         <features>
           <featureDescription>
             <name>base</name>
-            <description>The corresponding token/constituent.</description>
+            <description>The corresponding token/constituent/dependency/...</description>
             <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>token</name>
+            <description>The corresponding token.</description>
+            <rangeTypeName>de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token</rangeTypeName>
           </featureDescription>
         </features>
       </typeDescription>

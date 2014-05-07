@@ -58,6 +58,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 	}
 
 	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
+		Token focusTok = null;
 		Annotation focus = null;
 
 		/* What -- and Which -- are DET dependencies; the governor
@@ -65,7 +66,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		if (focus == null) {
 			for (DET det : JCasUtil.selectCovered(DET.class, sentence)) {
 				if (det.getDependent().getPos().getPosValue().matches("^W.*")) {
-					focus = det.getGovernor();
+					focusTok = det.getGovernor();
+					focus = focusTok;
 					break;
 				}
 			}
@@ -78,10 +80,12 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			for (ADVMOD advmod : JCasUtil.selectCovered(ADVMOD.class, sentence)) {
 				if (advmod.getDependent().getLemma().getValue().equals("how")
 				    && advmod.getGovernor().getPos().getPosValue().matches("^J.*|R.*")) {
-					focus = advmod.getGovernor();
+					focusTok = advmod.getGovernor();
+					focus = focusTok;
 					break;
 				} else if (advmod.getDependent().getPos().getPosValue().matches("^W.*")) {
-					focus = advmod.getDependent();
+					focusTok = advmod.getDependent();
+					focus = focusTok;
 					break;
 				}
 			}
@@ -92,7 +96,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		if (focus == null) {
 			for (DEP dep : JCasUtil.selectCovered(DEP.class, sentence)) {
 				if (dep.getDependent().getPos().getPosValue().matches("^W.*")) {
-					focus = dep.getGovernor();
+					focusTok = dep.getGovernor();
+					focus = focusTok;
 					break;
 				}
 			}
@@ -104,6 +109,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		 */
 		if (focus == null) {
 			for (NSUBJ nsubj : JCasUtil.selectCovered(NSUBJ.class, sentence)) {
+				focusTok = nsubj.getDependent();
 				focus = nsubj;
 				break;
 			}
@@ -116,7 +122,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		if (focus == null) {
 			for (Token t : JCasUtil.selectCovered(Token.class, sentence)) {
 				if (t.getPos().getPosValue().matches("^NN.*")) {
-					focus = t;
+					focusTok = t;
+					focus = focusTok;
 					break;
 				}
 			}
@@ -131,6 +138,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		f.setBegin(focus.getBegin());
 		f.setEnd(focus.getEnd());
 		f.setBase(focus);
+		f.setToken(focusTok);
 		f.addToIndexes();
 	}
 }

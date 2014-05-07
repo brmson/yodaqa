@@ -47,15 +47,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addFocusLAT(JCas jcas, Focus focus) {
-		/* Convert focus to its lemma. */
-		Annotation fbase = focus.getBase();
-		Token ftok;
-		if (fbase.getTypeIndexID() == NSUBJ.type) {
-			ftok = ((NSUBJ) fbase).getDependent();
-		} else {
-			ftok = (Token) fbase;
-		}
-		String text = ftok.getLemma().getValue();
+		String text = focus.getToken().getLemma().getValue();
 		double spec = 0.0;
 
 		/* If focus is the question word, convert to an appropriate

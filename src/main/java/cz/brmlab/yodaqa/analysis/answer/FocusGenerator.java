@@ -34,6 +34,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		Token focusTok = null;
 		Annotation focus = null;
 
 		/* We do a pretty naive thing - selecting the first noun
@@ -43,15 +44,16 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		if (focus == null) {
 			for (Token t : JCasUtil.select(jcas, Token.class)) {
 				if (t.getPos().getPosValue().matches("^NN.*")) {
-					focus = t;
+					focusTok = t;
 					break;
 				} else if (t.getPos().getPosValue().matches("^RB.*")) {
-					focus = t;
+					focusTok = t;
 				} else if (t.getPos().getPosValue().matches("^JJ.*")) {
-					focus = t;
+					focusTok = t;
 				} else if (t.getPos().getPosValue().matches("^CD.*")) {
-					focus = t;
+					focusTok = t;
 				}
+				focus = focusTok;
 			}
 		}
 
@@ -64,6 +66,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		f.setBegin(focus.getBegin());
 		f.setEnd(focus.getEnd());
 		f.setBase(focus);
+		f.setToken(focusTok);
 		f.addToIndexes();
 	}
 }
