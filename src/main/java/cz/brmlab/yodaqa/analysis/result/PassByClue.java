@@ -70,7 +70,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			 * matched. */
 			int matches = 0;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (!sentence.getCoveredText().contains(clue.getCoveredText()))
+				if (!sentence.getCoveredText().matches(".*\\b" + clue.getCoveredText() + "\\b.*"))
 					continue;
 				/* Match */
 				matches++;
