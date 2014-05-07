@@ -21,7 +21,7 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.Solr;
 
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 
 /**
  * Take a question CAS and search for keywords, yielding a search result
@@ -117,7 +117,8 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	protected String formulateQuery(JCas jcas) {
 		StringBuffer result = new StringBuffer();
 		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
-			if (!(clue.getBase() instanceof Token))
+			// constituent clues are too phrasal for use as search keywords
+			if (clue.getBase() instanceof Constituent)
 				continue;
 			if (result.length() > 0)
 				result.append("AND ");
