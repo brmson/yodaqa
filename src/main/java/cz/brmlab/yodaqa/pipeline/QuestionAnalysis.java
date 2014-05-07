@@ -24,6 +24,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.question.ClueByFocus;
+import cz.brmlab.yodaqa.analysis.question.ClueByNE;
 import cz.brmlab.yodaqa.analysis.question.ClueBySV;
 import cz.brmlab.yodaqa.analysis.question.ClueByTokenConstituent;
 import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
@@ -126,14 +128,16 @@ public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusNameProxy.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
 
-		/* Generate clues. */
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByTokenConstituent.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
-
 		/* Prepare LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
 		/* Multiplicate LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class));
+
+		/* Generate clues; the order is less specific to more specific */
+		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByTokenConstituent.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByFocus.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
