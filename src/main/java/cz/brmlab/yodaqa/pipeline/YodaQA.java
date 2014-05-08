@@ -7,6 +7,8 @@ import org.apache.uima.fit.factory.FlowControllerFactory;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.provider.SolrNamedSource;
+
 /**
  * The main YodaQA pipeline.
  *
@@ -16,31 +18,35 @@ import org.apache.uima.resource.ResourceInitializationException;
  * the consumer). */
 
 public class YodaQA /* XXX: extends AggregateBuilder ? */ {
+	static {
+		try {
+			/* We have two options here - either use a local embedded
+			 * instance based on a solr index in a given local directory,
+			 * or connect to a remote instance (e.g. indexing Wikipedia).
+			 *
+			 * By default, we connect to a remote instance; see README
+			 * for instructions on how to set up your own.  Uncomment
+			 * the guten line below and comment the enwiki one to use
+			 * a local solr core instead, again see README for
+			 * instructions on how to obtain an example one. */
+
+			//SolrNamedSource.register("guten", "data/guten", null);
+			SolrNamedSource.register("enwiki", "collection1", "http://pasky.or.cz:8983/solr/");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("*** Exception caught during SolrNamedSource initialization. ***");
+			System.err.println("You will get a fatal NullPointerException later, but the issue is above.");
+		}
+	}
+
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
 		AnalysisEngineDescription questionAnalysis = QuestionAnalysis.createEngineDescription();
 		builder.add(questionAnalysis);
 
-		/* We have two options here - either use a local embedded
-		 * instance based on a solr index in a given local directory,
-		 * or connect to a remote instance (e.g. indexing Wikipedia).
-		 *
-		 * By default, we connect to a remote instance; see README for
-		 * instructions on how to set up your own.  Uncomment the
-		 * code below to use a local solr core instead, again see
-		 * README for instructions on how to obtain an example one. */
-		/*
 		AnalysisEngineDescription primarySearch = AnalysisEngineFactory.createEngineDescription(
-				PrimarySearch.class,
-				"embedded", true,
-				"core", "data/guten");
-				*/
-		AnalysisEngineDescription primarySearch = AnalysisEngineFactory.createEngineDescription(
-				PrimarySearch.class,
-				"embedded", false,
-				"server-url", "http://pasky.or.cz:8983/solr/",
-				"core", "collection1");
+				PrimarySearch.class);
 		builder.add(primarySearch);
 
 		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();

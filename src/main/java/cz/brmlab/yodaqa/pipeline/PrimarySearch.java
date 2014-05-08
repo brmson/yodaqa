@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.Solr;
+import cz.brmlab.yodaqa.provider.SolrNamedSource;
 
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 
@@ -37,23 +38,6 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
 	private int hitListSize;
 
-	/** Whether embedded (internal) or standalone (external) Solr
-	 * instance is to be used. */
-	public static final String PARAM_EMBEDDED = "embedded";
-	@ConfigurationParameter(name = PARAM_EMBEDDED, mandatory = false, defaultValue = "true")
-	protected boolean embedded;
-
-	/** "Core" is the name of Solr database. In case of embedded,
-	 * the pathname to one. */
-	public static final String PARAM_CORE = "core";
-	@ConfigurationParameter(name = PARAM_CORE, mandatory = false, defaultValue = "data/guten")
-	protected String core;
-
-	/** URL to a Solr server if !embedded. */
-	public static final String PARAM_SERVER_URL = "server-url";
-	@ConfigurationParameter(name = PARAM_SERVER_URL, mandatory = false, defaultValue = "http://localhost:8983/solr/")
-	protected String serverUrl;
-
 	protected Solr solr;
 
 	JCas src_jcas;
@@ -63,11 +47,10 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
-		try {
-			this.solr = new Solr(serverUrl, null, embedded, core);
-		} catch (Exception e) {
-			throw new ResourceInitializationException(e);
-		}
+		/* Eew... well, for now, we just expect that only a single
+		 * Solr source has been registered and grab that one,
+		 * whatever its name (allows easy enwiki/guten switching). */
+		this.solr = SolrNamedSource.get((String) SolrNamedSource.nameSet().toArray()[0]);
 	}
 
 	@Override
@@ -105,12 +88,6 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 		}
 		i++;
 		return jcas;
-	}
-
-	@Override
-	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		super.collectionProcessComplete();
-		solr.close();
 	}
 
 

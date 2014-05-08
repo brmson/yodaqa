@@ -65,7 +65,7 @@ To set it up, first download the index:
 
 	wget https://github.com/downloads/oaqa/helloqa/guten.tar.gz; tar -C data -xf guten.tar.gz
 
-Then, you will need to modify the PrimarySearch portion of file
+Then, you will need to modify the SolrNamedSource portion of file
 
 	src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java
 
