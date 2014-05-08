@@ -1,19 +1,16 @@
 package cz.brmlab.yodaqa.pipeline;
 
-import java.util.Iterator;
-
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.AbstractCas;
-import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.fit.descriptor.SofaCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +22,16 @@ import cz.brmlab.yodaqa.provider.SolrNamedSource;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 
 /**
- * Take a question CAS and search for keywords, yielding a search result
- * CAS instance.
+ * Take a question CAS and search for keywords in the Solr data source.
  *
- * We just feed all the clues to a Solr search. */
+ * We just feed most of the clues to a Solr search. */
 
-public class PrimarySearch extends JCasMultiplier_ImplBase {
+@SofaCapability(
+	inputSofas = { "_InitialView" },
+	outputSofas = { "Search" }
+)
+
+public class PrimarySearch extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(PrimarySearch.class);
 
 	/** Number of results to grab and analyze. */
@@ -38,56 +39,48 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
 	private int hitListSize;
 
+	protected String srcName;
 	protected Solr solr;
 
-	JCas src_jcas;
-	protected Iterator<SolrDocument> documenti;
-	int i;
-
+	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
 		/* Eew... well, for now, we just expect that only a single
 		 * Solr source has been registered and grab that one,
 		 * whatever its name (allows easy enwiki/guten switching). */
-		this.solr = SolrNamedSource.get((String) SolrNamedSource.nameSet().toArray()[0]);
+		this.srcName = (String) SolrNamedSource.nameSet().toArray()[0];
+		this.solr = SolrNamedSource.get(srcName);
 	}
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		src_jcas = jcas;
-		i = 0;
-
-		String query = formulateQuery(jcas);
+		/* First, set up the views. */
 		try {
-			SolrDocumentList documents = solr.runQuery(query, hitListSize);
-			documenti = documents.iterator();
+			jcas.createView("Search");
+		} catch (Exception e) {
+			/* That's ok, the Search view might have been
+			 * already created by a different PrimarySearch. */
+		}
+		JCas questionView, searchView;
+		try {
+			questionView = jcas.getView(CAS.NAME_DEFAULT_SOFA);
+			searchView = jcas.getView("Search");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-	}
 
-	@Override
-	public boolean hasNext() throws AnalysisEngineProcessException {
-		return documenti.hasNext();
-	}
+		String query = formulateQuery(questionView);
 
-	@Override
-	public AbstractCas next() throws AnalysisEngineProcessException {
-		JCas jcas = getEmptyJCas();
+		SolrDocumentList documents;
 		try {
-			jcas.createView("Question");
-			CasCopier copier = new CasCopier(src_jcas.getCas(), jcas.getCas());
-			copyQuestion(copier, src_jcas, jcas.getView("Question"));
-
-			jcas.createView("Result");
-			generateResult(documenti.next(), jcas.getView("Result"), !documenti.hasNext());
+			documents = solr.runQuery(query, hitListSize);
 		} catch (Exception e) {
-			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
-		i++;
-		return jcas;
+
+		for (SolrDocument doc : documents)
+			generateSolrResult(searchView, doc);
 	}
 
 
@@ -110,32 +103,16 @@ public class PrimarySearch extends JCasMultiplier_ImplBase {
 		return query;
 	}
 
-	protected void copyQuestion(CasCopier copier, JCas src, JCas jcas) throws Exception {
-		copier.copyCasView(src.getCas(), jcas.getCas(), true);
-	}
-
-	protected void generateResult(SolrDocument document, JCas jcas,
-			boolean isLast) throws Exception {
-
+	protected void generateSolrResult(JCas jcas, SolrDocument document) {
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
-		String text;
-		try {
-			text = solr.getDocText(id.toString());
-		} catch (SolrServerException e) {
-			e.printStackTrace();
-			return;
-		}
-		// System.err.println("--8<-- " + text + " --8<--");
-		jcas.setDocumentText(text);
-		jcas.setDocumentLanguage("en"); // XXX
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());
 		ri.setDocumentTitle(title);
+		ri.setSource(srcName);
 		ri.setRelevance(((Float) document.getFieldValue("score")).floatValue());
-		ri.setIsLast(isLast);
 		ri.addToIndexes();
 	}
 }

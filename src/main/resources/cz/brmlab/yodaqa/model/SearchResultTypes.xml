@@ -16,6 +16,11 @@
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>source</name>
+            <description>The name of the data source.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>documentId</name>
             <description>ID of the document (specific to data source)</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>

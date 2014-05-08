@@ -76,20 +76,35 @@ See also Lally et al., Question analysis: How Watson reads a clue.
 
 ## Primary Search
 
-This phase is represented by a set of CAS multipliers that take a populated
-**QuestionCAS** on input and produce a bunch of **SearchResultCAS** on output.
+This phase performs searches in a variety of data sources based
+on the question featuresets, creating a new Search view in the **QuestionCAS**
+that contains results of the searches, just in the form of handles, not
+retrieved passages or documents.
 
-The sofa of the SearchResultCAS is a retrieved document or passage that is
-fetched by a corpus search based on the question featuresets.  It also contains
-a copy of the QuestionCAS featuresets in a Question view, and a few extra info
+In the next phase (result generator), these handles are converted
+to separate CASes. We split it to two phases so that we can do
+deduplication of results obtained via various search strategies.
+
+However, in some cases even the actual search might be done in the
+result generator, e.g. for relations stored in structured sources,
+just like in some cases, we actually may store even Passage or actual
+CandidateAnswer featuresets (see below) in the Search view - when
+the search yields very specific short results, e.g. simply document
+titles.  In other words, the Primary Search / Result Generator split
+is kind of flexible, not set in stone.
+
+## Result Generator
+
+This phase is represented by a set of CAS multipliers that take a populated
+**QuestionCAS** on input including search handles and produce a bunch
+of **SearchResultCAS** on output.  The sofa of the SearchResultCAS
+is a retrieved document or passage.  It also contains a copy of the
+QuestionCAS featuresets in a Question view, and a few extra info
 like a match degree rank.
 
-Typically, one would have a separate Primary Search AE for each
+Typically, one would have a separate Result Generator AE for each
 engine (Solr, Indri, ...) and instantiated separately for each data
 source.
-
-We may want to split this phase to a separate search and retrieval
-phases, but it's not clear what the advantage would be yet.
 
 ## Result Analysis
 
