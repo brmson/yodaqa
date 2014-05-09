@@ -97,6 +97,10 @@ Janitorial:
   * Add a per-CAS singleton containing unique id, id of the
     spawning document and id of the originating CAS; this will
     enable tracing full origin of each CAS.
+  * Factor out magic constants and other numeric parameters hardcoded
+    in annotators and make them AE parameters instead; mark them in
+    a unified way that will make it possible to collect and summarize
+    all the tunable parameters.
   * Switch from JWNL to JWI which seems to be much nicer to work with?
   * The type system distinction by pipeline phases does not work well;
     .tycor is a step in the right direction, but now CandidateAnswerCAS
