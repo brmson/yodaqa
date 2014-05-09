@@ -11,29 +11,34 @@ fbetter="$(mktemp)"
 fworse="$(mktemp)"
 flost="$(mktemp)"
 
+showline() {
+	id=$1; q0=$2; g0=$3; s0=$4; s1=$5
+	line=$(echo -e "$id\t$q0\t$g0\t$s0\t$s1")
+	if [ "$(echo "$s1 > $s0" | bc)" = 1 ]; then
+		if [ "$(echo "$s1 == 1" | bc)" = 1 ]; then
+			line="$Tgreen$line$Tdefault"
+		fi
+		if [ "$(echo "$s0 == 0" | bc)" = 1 ]; then
+			echo "$line" >>"$fgained"
+		else
+			echo "$line" >>"$fbetter"
+		fi
+	elif [ "$(echo "$s1 < $s0" | bc)" = 1 ]; then
+		if [ "$(echo "$s0 == 1" | bc)" = 1 ]; then
+			line="$Tred$line$Tdefault"
+		fi
+		if [ "$(echo "$s1 == 0" | bc)" = 1 ]; then
+			echo "$line" >>"$flost"
+		else
+			echo "$line" >>"$fworse"
+		fi
+	fi
+}
+
 # FIXME: The join here will not work on completely missing questions.
 join -t $'\t' "$@" |
 	while IFS=$'\t' read id t0 q0 s0 g0 a0 c00 c10 c20 c30 c40 t1 q1 s1 g1 a1 c01 c11 c21 c31 c41; do
-		line=$(echo -e "$id\t$q0\t$g0\t$s0\t$s1")
-		if [ "$(echo "$s1 > $s0" | bc)" = 1 ]; then
-			if [ "$(echo "$s1 == 1" | bc)" = 1 ]; then
-				line="$Tgreen$line$Tdefault"
-			fi
-			if [ "$(echo "$s0 == 0" | bc)" = 1 ]; then
-				echo "$line" >>"$fgained"
-			else
-				echo "$line" >>"$fbetter"
-			fi
-		elif [ "$(echo "$s1 < $s0" | bc)" = 1 ]; then
-			if [ "$(echo "$s0 == 1" | bc)" = 1 ]; then
-				line="$Tred$line$Tdefault"
-			fi
-			if [ "$(echo "$s1 == 0" | bc)" = 1 ]; then
-				echo "$line" >>"$flost"
-			else
-				echo "$line" >>"$fworse"
-			fi
-		fi
+		showline "$id" "$q0" "$g0" "$s0" "$s1"
 	done
 
 echo "------------------- Gained answer to:"
