@@ -13,6 +13,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 
@@ -26,6 +28,8 @@ import cz.brmlab.yodaqa.model.Question.Clue;
  * numbers, etc.) and also interesting constituents like noun phrases. */
 
 public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(ClueByTokenConstituent.class);
+
 	protected String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
 	protected String CONSTITMATCH = "AD.*|NP|QP";
 
@@ -69,5 +73,6 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		clue.setBase(base);
 		clue.setWeight(1.0);
 		clue.addToIndexes();
+		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getCoveredText());
 	}
 }

@@ -7,6 +7,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 
@@ -22,6 +24,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
  * recognized in the document. */
 
 public class ClueByNE extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(ClueByNE.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -39,5 +43,6 @@ public class ClueByNE extends JCasAnnotator_ImplBase {
 		clue.setBase(base);
 		clue.setWeight(2.0);
 		clue.addToIndexes();
+		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getCoveredText());
 	}
 }
