@@ -24,3 +24,8 @@ simple stats on these files, run
 or, to show all recorded evaluations chronologically, simply
 
 	data/eval/tsvout-stats.sh
+
+To compare two performance measurements question-by-question,
+try running something like:
+
+	data/eval/tsvout-compare.sh data/eval/trecnew-single200-out-0b086cf.tsv data/eval/trecnew-single200-out-1a80ccd.tsv
