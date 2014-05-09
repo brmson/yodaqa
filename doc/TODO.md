@@ -34,6 +34,10 @@ FinalAnswer Precision:
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is
     a hyponym of "person", so generate an LAT!)
+  * If an LAT is found in sentence governing an APPOS dependency,
+    create the dependent as a candidate answer, as in "Who is the
+    brother of Sherlock Holmes?" vs. "His brother, Mycroft, seven
+    years his senior"...
   * Better passage scoring?
 
 Search:
