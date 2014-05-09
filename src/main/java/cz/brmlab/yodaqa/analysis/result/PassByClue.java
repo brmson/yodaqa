@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.analysis.result;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.lang.Math;
 
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
+import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
 /**
  * Generate Passages from Sentences that contain some Clue in Question
@@ -55,6 +57,14 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		passagesView.setDocumentLanguage(resultView.getDocumentLanguage());
 		int totalLength = resultView.getDocumentText().length();
 
+		/* Figure out which clues is the text generally about,
+		 * i.e. contained in the title. */
+		Map<Clue, Boolean> clueIsAbout = new HashMap<Clue, Boolean>();
+		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
+		for (Clue clue : JCasUtil.select(questionView, Clue.class))
+			if (ri.getDocumentTitle().matches(".*\\b" + clue.getCoveredText() + "\\b.*"))
+				clueIsAbout.put(clue, true);
+
 		/* Pre-index covering info. */
 		Map<Sentence, Collection<Annotation>> covering =
 			JCasUtil.indexCovered(resultView, Sentence.class, Annotation.class);
@@ -71,8 +81,20 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 				if (!sentence.getCoveredText().matches(".*\\b" + clue.getCoveredText() + "\\b.*"))
 					continue;
-				/* Match */
-				matches += clue.getWeight();
+				/* Match! */
+
+				double weight = clue.getWeight();
+
+				/* We will want to weight about-clues less than
+				 * others to reduce the noise. If our clues are
+				 * "Bob Marley" and "died", in article about
+				 * "Bob Marley", the sentences talking about
+				 * death are much more important than sentences
+				 * about Marley. */
+				if (clueIsAbout.containsKey(clue))
+					weight /= 4.0;
+
+				matches += weight;
 			}
 
 			if (matches > 0) {
