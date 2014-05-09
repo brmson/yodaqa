@@ -35,10 +35,18 @@ showline() {
 	fi
 }
 
-# FIXME: The join here will not work on completely missing questions.
 join -t $'\t' "$@" |
 	while IFS=$'\t' read id t0 q0 s0 g0 a0 c00 c10 c20 c30 c40 t1 q1 s1 g1 a1 c01 c11 c21 c31 c41; do
 		showline "$id" "$q0" "$g0" "$s0" "$s1"
+	done
+
+join -t $'\t' -v 1 "$@" |
+	while IFS=$'\t' read id t0 q0 s0 g0 a0 c00 c10 c20 c30 c40; do
+		showline "$id" "$q0" "$g0" "$s0" "0.0"
+	done
+join -t $'\t' -v 2 "$@" |
+	while IFS=$'\t' read id t1 q1 s1 g1 a1 c01 c11 c21 c31 c41; do
+		showline "$id" "$q1" "$g1" "0.0" "$s1"
 	done
 
 echo "------------------- Gained answer to:"
