@@ -32,6 +32,9 @@ public class ClueByFocus extends JCasAnnotator_ImplBase {
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		for (Focus f : JCasUtil.select(jcas, Focus.class)) {
+			/* Skip question word focuses (e.g. "Where"). */
+			if (f.getToken().getPos().getPosValue().matches("^W.*"))
+				continue;
 			addClue(jcas, f.getBegin(), f.getEnd(), f);
 		}
 	}
