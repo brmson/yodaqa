@@ -67,6 +67,8 @@ Quality:
     resources - dkpro lsr or uby
   * More advanced NE extraction, multi-word NEs, label-less LATs
     via NE clustering
+  * Preliminary queries before primary search to identify unknown
+    words (e.g. "Berlin" is currently not recognized as NE)
   * Walk through IBM Watson papers and add more TODO items. :)
   * Evidence gathering feedback loops - initially maybe just
     a single feedback loop for candidate answer evidence gathering,
