@@ -57,12 +57,20 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		passagesView.setDocumentLanguage(resultView.getDocumentLanguage());
 		int totalLength = resultView.getDocumentText().length();
 
+		/* Below, we match clues only as whole words (when we are
+		 * looking for "grant", we don't want "vagrant").  However,
+		 * this is suboptimal e.g. in case of "nickname" -> "nicknames"
+		 * or "nickname" -> "nicknamed", and we didn't do lemmatization
+		 * yet. Therefore, as a poor man's fuzzy match, we add an extra
+		 * ".?" after the clue to catch simple English lemma forms (and
+		 * little in terms of false positives). */
+
 		/* Figure out which clues is the text generally about,
 		 * i.e. contained in the title. */
 		Map<Clue, Boolean> clueIsAbout = new HashMap<Clue, Boolean>();
 		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
 		for (Clue clue : JCasUtil.select(questionView, Clue.class))
-			if (ri.getDocumentTitle().matches(".*\\b" + clue.getCoveredText() + "\\b.*"))
+			if (ri.getDocumentTitle().matches(".*\\b" + clue.getCoveredText() + ".?\\b.*"))
 				clueIsAbout.put(clue, true);
 
 		/* Pre-index covering info. */
@@ -79,7 +87,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			 * matched. */
 			double matches = 0;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (!sentence.getCoveredText().matches(".*\\b" + clue.getCoveredText() + "\\b.*"))
+				if (!sentence.getCoveredText().matches(".*\\b" + clue.getCoveredText() + ".?\\b.*"))
 					continue;
 				/* Match! */
 
