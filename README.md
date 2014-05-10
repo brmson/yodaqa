@@ -13,8 +13,9 @@ UIMA bindings; transitively, work like the StanfordParser and Princeton's
 Wordnet is crucial for us.  We also draw some inspiration from the OpenQA
 project and the Taming Text book.
 
-The current version is a work-in-progress snapshot that does nothing
-useful yet.
+The current version is a work-in-progress snapshot that already can answer
+some questions, even though it's embarassingly often wrong; on our test
+corpus, it can currently answer correctly to about 10% of questions.
 
 ## Installation Instructions
 
