@@ -33,43 +33,64 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		super.initialize(aContext);
 	}
 
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		Token focusTok = null;
-		Annotation focus = null;
+	protected class FocusPair {
+		public Token focusTok;
+		public Annotation focus;
 
-		/* We do a pretty naive thing - selecting the first noun
-		 * or the last adverb / adjective / number.  No focus
-		 * if there is neither. */
-
-		if (focus == null) {
-			for (Token t : JCasUtil.select(jcas, Token.class)) {
-				if (t.getPos().getPosValue().matches("^NN.*")) {
-					focusTok = t;
-					focus = focusTok;
-					break;
-				} else if (t.getPos().getPosValue().matches("^RB.*")) {
-					focusTok = t;
-				} else if (t.getPos().getPosValue().matches("^JJ.*")) {
-					focusTok = t;
-				} else if (t.getPos().getPosValue().matches("^CD.*")) {
-					focusTok = t;
-				}
-				focus = focusTok;
-			}
+		public FocusPair(Token focusTok_, Annotation focus_) {
+			focusTok = focusTok_;
+			focus = focus_;
 		}
 
-		if (focus == null) {
+		public Token getFocusTok() { return focusTok; }
+		public Annotation getFocus() { return focus; }
+	}
+
+	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		FocusPair fp = null;
+
+		if (fp == null)
+			fp = fpByPos(jcas);
+
+		if (fp == null) {
 			logger.info("?. No focus in: " + jcas.getDocumentText());
 			return;
 		} else {
-			logger.debug(".. Focus '{}' in: {}", focus.getCoveredText(), jcas.getDocumentText());
+			logger.debug(".. Focus '{}' in: {}", fp.getFocus().getCoveredText(), jcas.getDocumentText());
 		}
 
 		Focus f = new Focus(jcas);
-		f.setBegin(focus.getBegin());
-		f.setEnd(focus.getEnd());
-		f.setBase(focus);
-		f.setToken(focusTok);
+		f.setBegin(fp.getFocus().getBegin());
+		f.setEnd(fp.getFocus().getEnd());
+		f.setBase(fp.getFocus());
+		f.setToken(fp.getFocusTok());
 		f.addToIndexes();
+	}
+
+	/* We do a pretty naive thing - selecting the first noun or
+	 * the last adverb / adjective / number. */
+	protected FocusPair fpByPos(JCas jcas) {
+		Token focusTok = null;
+		Annotation focus = null;
+
+		for (Token t : JCasUtil.select(jcas, Token.class)) {
+			if (t.getPos().getPosValue().matches("^NN.*")) {
+				focusTok = t;
+				focus = focusTok;
+				break;
+			} else if (t.getPos().getPosValue().matches("^RB.*")) {
+				focusTok = t;
+			} else if (t.getPos().getPosValue().matches("^JJ.*")) {
+				focusTok = t;
+			} else if (t.getPos().getPosValue().matches("^CD.*")) {
+				focusTok = t;
+			}
+			focus = focusTok;
+		}
+
+		if (focusTok != null)
+			return new FocusPair(focusTok, focus);
+		else
+			return null;
 	}
 }
