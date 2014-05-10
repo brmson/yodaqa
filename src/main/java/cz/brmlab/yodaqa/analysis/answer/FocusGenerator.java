@@ -45,6 +45,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			for (Token t : JCasUtil.select(jcas, Token.class)) {
 				if (t.getPos().getPosValue().matches("^NN.*")) {
 					focusTok = t;
+					focus = focusTok;
 					break;
 				} else if (t.getPos().getPosValue().matches("^RB.*")) {
 					focusTok = t;
