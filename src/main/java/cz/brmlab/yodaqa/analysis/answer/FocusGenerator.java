@@ -60,6 +60,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		if (focus == null) {
 			logger.info("?. No focus in: " + jcas.getDocumentText());
 			return;
+		} else {
+			logger.debug(".. Focus '{}' in: {}", focus.getCoveredText(), jcas.getDocumentText());
 		}
 
 		Focus f = new Focus(jcas);
