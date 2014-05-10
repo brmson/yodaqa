@@ -1,6 +1,13 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -50,6 +57,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		FocusPair fp = null;
 
 		if (fp == null)
+			fp = fpDepRoot(jcas);
+		if (fp == null)
 			fp = fpByPos(jcas);
 
 		if (fp == null) {
@@ -65,6 +74,43 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		f.setBase(fp.getFocus());
 		f.setToken(fp.getFocusTok());
 		f.addToIndexes();
+	}
+
+	/* Check all dependencies, picking the "pinnacles", i.e.
+	 * tokens that govern some dependencies but aren't governed
+	 * themselves, these might be local roots.  In case of multiple
+	 * pinnacles, the first one is chosen. */
+	protected FocusPair fpDepRoot(JCas jcas) {
+		FocusPair fp = null;
+
+		/* Sometimes, we will get dependencies that reach out of
+		 * the current CandidateAnswerCAS. Therefore, consider
+		 * only governors that have corresponding tokens in our CAS. */
+		Set<Token> tokens = new HashSet<Token>();
+		for (Token t : JCasUtil.select(jcas, Token.class))
+			tokens.add(t);
+
+		SortedSet<Token> governors = new TreeSet<Token>(
+			new Comparator<Token>(){ @Override
+				public int compare(Token t1, Token t2){
+					return t1.getBegin() - t2.getBegin();
+				}
+			});
+		for (Dependency d : JCasUtil.select(jcas, Dependency.class))
+			if (tokens.contains(d.getGovernor()))
+				governors.add(d.getGovernor());
+		for (Dependency d : JCasUtil.select(jcas, Dependency.class))
+			governors.remove(d.getDependent());
+
+		for (Token t : governors) {
+			if (fp != null) {
+				logger.debug("?. Ignoring secondary potential focus '{}' in: {}",
+					t.getCoveredText(), jcas.getDocumentText());
+				continue;
+			}
+			fp = new FocusPair(t, t);
+		}
+		return fp;
 	}
 
 	/* We do a pretty naive thing - selecting the first noun or
