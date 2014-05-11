@@ -63,8 +63,11 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		LATMatch bestMatch = null;
 
 		/* Load LATs from answerView. */
-		for (LAT la : JCasUtil.select(answerView, LAT.class))
-			answerLats.put(la.getText(), la);
+		for (LAT la : JCasUtil.select(answerView, LAT.class)) {
+			LAT la0 = answerLats.get(la.getText());
+			if (la0 == null || la0.getSpecificity() < la.getSpecificity())
+				answerLats.put(la.getText(), la);
+		}
 		if (answerLats.isEmpty())
 			return null;
 
