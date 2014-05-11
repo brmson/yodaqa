@@ -7,6 +7,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -20,6 +22,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * but the process of their generation might be different in details. */
 
 public class LATByFocus extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATByFocus.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -46,6 +50,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		}
 
 		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, spec);
+		logger.debug(".. LAT {} by Focus {}", text, focus.getCoveredText());
 	}
 
 	protected boolean addNELAT(JCas jcas, Focus focus) {
@@ -57,6 +62,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			 * since named entities are awesome answers.
 			 * But XXX: do this in a more consistent way! */
 			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), 1.0);
+			logger.debug(".. LAT {} by NE {}", ne.getValue(), ne.getCoveredText());
 		}
 		return ne_found;
 	}
