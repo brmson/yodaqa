@@ -21,7 +21,7 @@ import cz.brmlab.yodaqa.provider.SolrNamedSource;
  * featureset of the Search view. */
 
 public class ResultGenerator extends JCasMultiplier_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(PrimarySearch.class);
+	final Logger logger = LoggerFactory.getLogger(ResultGenerator.class);
 
 	JCas questionView, searchView;
 

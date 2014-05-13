@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.pipeline.solrfull;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -31,8 +31,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 	outputSofas = { "Search" }
 )
 
-public class PrimarySearch extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(PrimarySearch.class);
+public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(SolrFullPrimarySearch.class);
 
 	/** Number of results to grab and analyze. */
 	public static final String PARAM_HITLIST_SIZE = "hitlist-size";

@@ -9,6 +9,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
+import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.provider.SolrNamedSource;
 
 /**
@@ -47,7 +48,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
 		builder.add(questionAnalysis);
 
-		AnalysisEngineDescription answerProducer = AnswerProducer.createEngineDescription();
+		AnalysisEngineDescription answerProducer = SolrFullAnswerProducer.createEngineDescription();
 		builder.add(answerProducer);
 
 		AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();

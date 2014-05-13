@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.pipeline.solrfull;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -8,20 +8,25 @@ import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.analysis.result.ResultAnalysisAE;
+import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
+import cz.brmlab.yodaqa.pipeline.ResultGenerator;
 
 /**
  * From the QuestionCAS, generate a bunch of CandidateAnswerCAS instances.
  *
  * This is an aggregate AE that will run a particular flow based on primary
  * search, result analysis, passage extraction and generating candidate
- * answers from chosen document passages. */
+ * answers from chosen document passages.
+ *
+ * In this case, the flow is based on processing full results of
+ * a Solr fulltext search. */
 
-public class AnswerProducer /* XXX: extends AggregateBuilder ? */ {
+public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
 		AnalysisEngineDescription primarySearch = AnalysisEngineFactory.createEngineDescription(
-				PrimarySearch.class);
+				SolrFullPrimarySearch.class);
 		builder.add(primarySearch);
 		AnalysisEngineDescription resultGenerator = AnalysisEngineFactory.createEngineDescription(
 				ResultGenerator.class);
