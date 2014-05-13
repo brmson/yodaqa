@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.result;
+package cz.brmlab.yodaqa.analysis.passage;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
@@ -15,14 +15,16 @@ import org.slf4j.LoggerFactory;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 /**
- * Annotate the SearchResultCAS.
+ * Annotate the PickedPassages view of SearchResultCAS with
+ * deep NLP analysis and CandidateAnswer annotations.
  *
  * This is an aggregate AE that will run a variety of annotators on the
- * SearchResultCAS, first preparing it for answer generation and then
- * actually producing some CandiateAnswer annotations. */
+ * SearchResultCAS already trimmed down within the PickedPassages view,
+ * first preparing it for answer generation and then actually producing
+ * some CandiateAnswer annotations. */
 
-public class ResultAnalysisAE /* XXX: extends AggregateBuilder ? */ {
-	final static Logger logger = LoggerFactory.getLogger(ResultAnalysisAE.class);
+public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
+	final static Logger logger = LoggerFactory.getLogger(PassageAnalysisAE.class);
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
@@ -31,19 +33,8 @@ public class ResultAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * the giants we stand on the shoulders of) */
 		/* The mix below corresponds to what we use in
 		 * QuestionAnalysis, refer there for details. */
-
-		/* Token features: */
-		// LanguageToolsSegmenter is the only one capable of dealing
-		// with incomplete sentences e.g. separated by paragraphs etc.
-		builder.add(createPrimitiveDescription(LanguageToolSegmenter.class),
-			CAS.NAME_DEFAULT_SOFA, "Result");
-
-		/* At this point, we can filter the source to keep
-		 * only sentences and tokens we care about: */
-		builder.add(createPrimitiveDescription(PassByClue.class));
-
-		/* Further cut these only to the most interesting N sentences. */
-		builder.add(createPrimitiveDescription(PassFilter.class));
+		/* Our passages are already split to sentences
+		 * and tokenized. */
 
 		/* POS, lemmas, constituents, dependencies: */
 		builder.add(createPrimitiveDescription(
@@ -89,7 +80,7 @@ public class ResultAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		if (logger.isDebugEnabled()) {
 			builder.add(createPrimitiveDescription(
 				CasDumpWriter.class,
-				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-racas.txt"));
+				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-pacas.txt"));
 		}
 
 		return builder.createAggregateDescription();

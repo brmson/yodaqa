@@ -7,7 +7,8 @@ import org.apache.uima.fit.factory.FlowControllerFactory;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.analysis.result.ResultAnalysisAE;
+import cz.brmlab.yodaqa.analysis.passage.PassageAnalysisAE;
+import cz.brmlab.yodaqa.analysis.passextract.PassageExtractorAE;
 import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
 import cz.brmlab.yodaqa.pipeline.ResultGenerator;
 
@@ -32,8 +33,10 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 				ResultGenerator.class);
 		builder.add(resultGenerator);
 
-		AnalysisEngineDescription resultAnalysis = ResultAnalysisAE.createEngineDescription();
-		builder.add(resultAnalysis);
+		AnalysisEngineDescription passageExtractor = PassageExtractorAE.createEngineDescription();
+		builder.add(passageExtractor);
+		AnalysisEngineDescription passageAnalysis = PassageAnalysisAE.createEngineDescription();
+		builder.add(passageAnalysis);
 
 		AnalysisEngineDescription answerGenerator = AnalysisEngineFactory.createEngineDescription(
 				AnswerGenerator.class);

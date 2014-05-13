@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.result;
+package cz.brmlab.yodaqa.analysis.passage;
 
 import java.util.HashMap;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.result;
+package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.result;
+package cz.brmlab.yodaqa.analysis.passage;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
