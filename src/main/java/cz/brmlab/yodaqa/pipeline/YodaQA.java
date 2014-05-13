@@ -45,19 +45,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription questionAnalysis = QuestionAnalysis.createEngineDescription();
 		builder.add(questionAnalysis);
 
-		AnalysisEngineDescription primarySearch = AnalysisEngineFactory.createEngineDescription(
-				PrimarySearch.class);
-		builder.add(primarySearch);
-		AnalysisEngineDescription resultGenerator = AnalysisEngineFactory.createEngineDescription(
-				ResultGenerator.class);
-		builder.add(resultGenerator);
-
-		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();
-		builder.add(resultAnalysis);
-
-		AnalysisEngineDescription answerGenerator = AnalysisEngineFactory.createEngineDescription(
-				AnswerGenerator.class);
-		builder.add(answerGenerator);
+		AnalysisEngineDescription answerProducer = AnswerProducer.createEngineDescription();
+		builder.add(answerProducer);
 
 		AnalysisEngineDescription answerAnalysis = AnswerAnalysis.createEngineDescription();
 		builder.add(answerAnalysis);

@@ -74,7 +74,23 @@ tokenization will be done first and reused by anyone else.
 
 See also Lally et al., Question analysis: How Watson reads a clue.
 
-## Primary Search
+## Answer Production
+
+Based on the question stored and analyzed in the **QuestionCAS**,
+some candidate answers (one in a separate **CandidateAnswerCAS**
+instance) are produced.  This can be done in multiple
+possible flows; the primarily used flow is described below.
+
+Other possible flows include querying a structured database on
+relationships detected in the question, or doing something like
+a primary search, but just using the title of found documents
+as candidate answers directly.
+
+In the future, for the purpose of supporting evidence gathering
+for considered answers, we might want to actually recurse this flow,
+presenting the candidate answer as a true/false question.
+
+### Primary Search
 
 This phase performs searches in a variety of data sources based
 on the question featuresets, creating a new Search view in the **QuestionCAS**
@@ -93,7 +109,7 @@ the search yields very specific short results, e.g. simply document
 titles.  In other words, the Primary Search / Result Generator split
 is kind of flexible, not set in stone.
 
-## Result Generator
+### Result Generator
 
 This phase is represented by a set of CAS multipliers that take a populated
 **QuestionCAS** on input including search handles and produce a bunch
@@ -106,7 +122,7 @@ Typically, one would have a separate Result Generator AE for each
 engine (Solr, Indri, ...) and instantiated separately for each data
 source.
 
-## Result Analysis
+### Result Analysis
 
 We do a lot of steps similar to the Question Analysis phase, but with the
 **SearchResultCAS** instead.  Generally, we tokenize the search result,
@@ -116,7 +132,7 @@ sentences are rated based on their relevance, only the most interesting
 ones are filtered and cross-referenced with the question clues and
 answers can be generated from that in a variety of ways.
 
-### Passage Extraction
+#### Passage Extraction
 
 We extract relevant passages --- sentences that contain some of the clues.
 
@@ -125,12 +141,12 @@ in a Passages view (we use a dedicated view to be able to carry over
 just the relevant subset of annotations and thus limit operation of
 NLP analysis annotators like parsers just to this subset).
 
-### Passage Filtering
+#### Passage Filtering
 
 Passages are ranked by relevance and the most relevant ones are carried
 to a PickedPassages view.
 
-### Answer Extraction
+#### Answer Extraction
 
 In-depth sentence analysis is done on the remaining passages and candidate
 answers are generated based on this.  (So many approaches are possible;
@@ -138,7 +154,7 @@ for starters, we choose a naive strategy of simply picking the NP clauses
 that are not covered by clues.)  CandidateAnswer annotations (in the
 PickedPassages view!) represent these.
 
-## Answer Generator
+### Answer Generator
 
 This phase is a simple CAS multiplier that grabs a **SearchResultCAS**,
 and generates a **CandidateAnswerCAS** instance for each CandidateAnswer
