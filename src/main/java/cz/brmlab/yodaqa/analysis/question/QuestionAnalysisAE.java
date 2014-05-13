@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.analysis.question;
 
 //import de.tudarmstadt.ukp.dkpro.core.berkeleyparser.BerkeleyParser;
 //import de.tudarmstadt.ukp.dkpro.core.clearnlp.ClearNlpDependencyParser;
@@ -24,14 +24,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.question.ClueByFocus;
-import cz.brmlab.yodaqa.analysis.question.ClueByNE;
-import cz.brmlab.yodaqa.analysis.question.ClueBySV;
-import cz.brmlab.yodaqa.analysis.question.ClueByTokenConstituent;
-import cz.brmlab.yodaqa.analysis.question.FocusGenerator;
-import cz.brmlab.yodaqa.analysis.question.FocusNameProxy;
-import cz.brmlab.yodaqa.analysis.question.LATByFocus;
-import cz.brmlab.yodaqa.analysis.question.SVGenerator;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 
@@ -42,8 +34,8 @@ import cz.brmlab.yodaqa.io.debug.DumpConstituents;
  * QuestionCAS, preparing it for the PrimarySearch and AnswerGenerator
  * stages. */
 
-public class QuestionAnalysis /* XXX: extends AggregateBuilder ? */ {
-	final static Logger logger = LoggerFactory.getLogger(QuestionAnalysis.class);
+public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
+	final static Logger logger = LoggerFactory.getLogger(QuestionAnalysisAE.class);
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();

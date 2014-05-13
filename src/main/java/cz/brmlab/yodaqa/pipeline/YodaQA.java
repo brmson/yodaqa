@@ -7,6 +7,8 @@ import org.apache.uima.fit.factory.FlowControllerFactory;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
+import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.provider.SolrNamedSource;
 
 /**
@@ -42,13 +44,13 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
-		AnalysisEngineDescription questionAnalysis = QuestionAnalysis.createEngineDescription();
+		AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
 		builder.add(questionAnalysis);
 
 		AnalysisEngineDescription answerProducer = AnswerProducer.createEngineDescription();
 		builder.add(answerProducer);
 
-		AnalysisEngineDescription answerAnalysis = AnswerAnalysis.createEngineDescription();
+		AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
 		builder.add(answerAnalysis);
 
 		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(

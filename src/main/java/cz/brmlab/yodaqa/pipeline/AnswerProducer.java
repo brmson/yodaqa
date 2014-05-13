@@ -7,6 +7,8 @@ import org.apache.uima.fit.factory.FlowControllerFactory;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.analysis.result.ResultAnalysisAE;
+
 /**
  * From the QuestionCAS, generate a bunch of CandidateAnswerCAS instances.
  *
@@ -25,7 +27,7 @@ public class AnswerProducer /* XXX: extends AggregateBuilder ? */ {
 				ResultGenerator.class);
 		builder.add(resultGenerator);
 
-		AnalysisEngineDescription resultAnalysis = ResultAnalysis.createEngineDescription();
+		AnalysisEngineDescription resultAnalysis = ResultAnalysisAE.createEngineDescription();
 		builder.add(resultAnalysis);
 
 		AnalysisEngineDescription answerGenerator = AnalysisEngineFactory.createEngineDescription(

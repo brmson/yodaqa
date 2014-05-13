@@ -1,8 +1,7 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.analysis.result;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -13,13 +12,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.result.CanByNESurprise;
-import cz.brmlab.yodaqa.analysis.result.CanByNPSurprise;
-import cz.brmlab.yodaqa.analysis.result.CanMergeByText;
-import cz.brmlab.yodaqa.analysis.result.PassByClue;
-import cz.brmlab.yodaqa.analysis.result.CanByPassage;
-import cz.brmlab.yodaqa.analysis.result.PassFilter;
-
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 /**
@@ -29,8 +21,8 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveD
  * SearchResultCAS, first preparing it for answer generation and then
  * actually producing some CandiateAnswer annotations. */
 
-public class ResultAnalysis /* XXX: extends AggregateBuilder ? */ {
-	final static Logger logger = LoggerFactory.getLogger(ResultAnalysis.class);
+public class ResultAnalysisAE /* XXX: extends AggregateBuilder ? */ {
+	final static Logger logger = LoggerFactory.getLogger(ResultAnalysisAE.class);
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();

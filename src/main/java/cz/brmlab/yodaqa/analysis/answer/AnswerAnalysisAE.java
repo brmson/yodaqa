@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.analysis.answer;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.FindReqParse;
-import cz.brmlab.yodaqa.analysis.answer.FocusGenerator;
-import cz.brmlab.yodaqa.analysis.answer.LATByFocus;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
 
@@ -26,8 +24,8 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveD
  * determining its LAT etc. and correlating the results with the Question
  * view to estimate correctness. */
 
-public class AnswerAnalysis /* XXX: extends AggregateBuilder ? */ {
-	final static Logger logger = LoggerFactory.getLogger(AnswerAnalysis.class);
+public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
+	final static Logger logger = LoggerFactory.getLogger(AnswerAnalysisAE.class);
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
