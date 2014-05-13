@@ -25,6 +25,19 @@ Each CAS has a CASId feature uniquely describing its origin.
 Some CASes are carried over to other CASes by the means of generating
 a separate view.
 
+A summary of the pipeline flow:
+  * **Question Reader** loads the question from an input source
+  * **Question Analysis** extracts NLP and QA features from the question text
+  * **Answer Production** generates answers based on the question
+    * Typically, this happens by performing a Primary Search on document
+      corpus (e.g. enwiki) based on question clues, analyzing search result
+      documents, filtering relevant passages from these and generating
+      candidate answers from these passages
+  * **Answer Analysis** scores the candidate answers based on how well they
+    fit the question
+  * **Answer Merger** consolidates the set of scored answers
+  * **Answer Writer** sends the question to an output sink
+
 ## Question Reader
 
 The initial, IO phase is a collection reader that acquires question(s),
