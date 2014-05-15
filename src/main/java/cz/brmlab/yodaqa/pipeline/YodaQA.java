@@ -9,6 +9,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
+import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
+import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.provider.SolrNamedSource;
 
@@ -48,20 +50,50 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
 		builder.add(questionAnalysis);
 
-		AnalysisEngineDescription answerProducer = SolrFullAnswerProducer.createEngineDescription();
+		AnalysisEngineDescription answerProducer = createAnswerProducerDescription();
 		builder.add(answerProducer);
 
 		AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
 		builder.add(answerAnalysis);
 
 		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-				AnswerMerger.class);
+				AnswerMerger.class,
+				AnswerMerger.PARAM_ISLAST_BARRIER, 2);
 		builder.add(answerMerger);
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
 					FixedFlowController.class,
 					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
+
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		return aed;
+	}
+
+	public static AnalysisEngineDescription createAnswerProducerDescription() throws ResourceInitializationException {
+		AggregateBuilder builder = new AggregateBuilder();
+
+		/* The AEs below are all run "in parallel" - not necessarily
+		 * runtime wise, but logically wise with regards to CAS
+		 * multiplication, they all get the QuestionCAS and produce
+		 * CandidateAnswerCASes. */
+
+		/* Since each of these CAS multipliers will eventually produce
+		 * a single CAS marked as "isLast", if you add another one
+		 * here, you must also bump the AnswerMerger parameter
+		 * PARAM_ISLAST_BARRIER. */
+
+		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
+		builder.add(solrFull);
+
+		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
+		builder.add(solrDoc);
+
+		builder.setFlowControllerDescription(
+				FlowControllerFactory.createFlowControllerDescription(
+					FixedParallelFlowController.class,
+					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
