@@ -18,6 +18,7 @@ package cz.brmlab.yodaqa.provider.solr;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
@@ -31,7 +32,7 @@ import org.apache.solr.core.CoreContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class Solr implements Closeable {
+public class Solr implements Closeable {
 	final Logger logger = LoggerFactory.getLogger(Solr.class);
 
 	protected final SolrServer server;
@@ -111,5 +112,58 @@ public final class Solr implements Closeable {
 		if (embedded) {
 			((EmbeddedSolrServer) server).shutdown();
 		}
+	}
+
+
+	public SolrDocumentList runQuery(Collection<SolrTerm> terms, int nResults, SolrQuerySettings settings)
+			throws SolrServerException {
+		return runQuery(terms, nResults, settings, logger);
+	}
+	public SolrDocumentList runQuery(Collection<SolrTerm> terms, int nResults, SolrQuerySettings settings,
+			Logger cLogger) throws SolrServerException {
+		String query = formulateQuery(terms, settings, cLogger);
+		return runQuery(query, nResults);
+	}
+
+	protected String formulateQuery(Collection<SolrTerm> terms, SolrQuerySettings settings, Logger cLogger) {
+		StringBuffer result = new StringBuffer();
+		for (SolrTerm term : terms) {
+			// drop quote characters; more escaping is done in escapeQuery()
+			String keyterm = term.getTermStr().replace("\"", "");
+			result.append("+(");
+			boolean isFirstField = true;
+			for (String prefix : settings.getSearchPrefixes()) {
+				if (!isFirstField)
+					result.append(" OR ");
+				else
+					isFirstField = false;
+				result.append(prefix + "\"" + keyterm + "\"");
+			}
+			result.append(")^" + term.getWeight() + " ");
+		}
+		for (int i = 0; i < settings.getProximityNum(); i++)
+			for (String prefix : settings.getSearchPrefixes())
+				formulateProximityQuery(terms, settings, prefix, result, i);
+		String query = result.toString();
+		cLogger.info(" QUERY: " + query);
+		return query;
+	}
+
+	protected void formulateProximityQuery(Collection<SolrTerm> terms, SolrQuerySettings settings, String prefix, StringBuffer result, int degree) {
+		result.append(" (" + prefix + "\"");
+
+		double sumWeight = 0;
+		for (SolrTerm term : terms) {
+			// drop quote characters; more escaping is done in escapeQuery()
+			String keyterm = term.getTermStr().replace("\"", "");
+			result.append(keyterm + " ");
+			sumWeight += term.getWeight();
+		}
+
+		int finalDist = settings.getProximityBaseDist()
+			* ((int) Math.pow(settings.getProximityBaseFactor(), degree))
+			* terms.size();
+		double finalWeight = (sumWeight / Math.pow(2, degree));
+		result.append("\"~" + finalDist + ")^" + finalWeight);
 	}
 }

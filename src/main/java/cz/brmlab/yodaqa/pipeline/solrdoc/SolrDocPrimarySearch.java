@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline.solrdoc;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.solr.common.SolrDocument;
@@ -21,8 +22,8 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
-
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
+import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
+import cz.brmlab.yodaqa.provider.solr.SolrTerm;
 
 /**
  * From the QuestionCAS, generate a bunch of CandidateAnswerCAS
@@ -37,7 +38,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	/** Number of results to grab and analyze. */
 	public static final String PARAM_HITLIST_SIZE = "hitlist-size";
 	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "20")
-	private int hitListSize;
+	protected int hitListSize;
 
 	/** Number and baseline distance of gradually desensitivized
 	 * proximity searches. Total of proximity-num optional search
@@ -47,14 +48,15 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	 * is sum of individual weights and is successively halved. */
 	public static final String PARAM_PROXIMITY_NUM = "proximity-num";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "2")
-	private int proximityNum;
+	protected int proximityNum;
 	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "2")
-	private int proximityBaseDist;
+	protected int proximityBaseDist;
 	public static final String PARAM_PROXIMITY_BASE_FACTOR = "proximity-base-factor";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
-	private int proximityBaseFactor;
+	protected int proximityBaseFactor;
 
+	protected SolrQuerySettings settings = null;
 	protected String srcName;
 	protected Solr solr;
 
@@ -70,6 +72,9 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		 * whatever its name (allows easy enwiki/guten switching). */
 		this.srcName = (String) SolrNamedSource.nameSet().toArray()[0];
 		this.solr = SolrNamedSource.get(srcName);
+
+		this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
+				new String[]{""});
 	}
 
 
@@ -77,60 +82,15 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		questionView = jcas;
 
-		String query = formulateQuery(questionView);
-
 		SolrDocumentList documents;
 		try {
-			documents = solr.runQuery(query, hitListSize);
+			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
+			Collection<SolrTerm> terms = SolrTerm.cluesToTerms(clues);
+			documents = solr.runQuery(terms, hitListSize, settings, logger);
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 		docIter = documents.iterator();
-	}
-
-	protected String formulateQuery(JCas jcas) {
-		StringBuffer result = new StringBuffer();
-		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
-			// constituent clues are too phrasal for use as search keywords
-			if (clue.getBase() instanceof Constituent)
-				continue;
-
-			String keyterm = clue.getCoveredText();
-			Double weight = clue.getWeight();
-
-			keyterm = keyterm.replace("\"", ""); // drop quote characters; more escaping is done in Solr provider
-			result.append("+(\"" + keyterm + "\")^" + weight + " ");
-		}
-		for (int i = 0; i < proximityNum; i++)
-			formulateProximityQuery(jcas, result, i);
-		String query = result.toString();
-		logger.info(" QUERY: " + query);
-		return query;
-	}
-
-	protected void formulateProximityQuery(JCas jcas, StringBuffer result, int degree) {
-		result.append(" (\"");
-
-		int numTerms = 0;
-		double sumWeight = 0;
-		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
-			// constituent clues are too phrasal for use as search keywords
-			if (clue.getBase() instanceof Constituent)
-				continue;
-
-			String keyterm = clue.getCoveredText();
-			Double weight = clue.getWeight();
-
-			keyterm = keyterm.replace("\"", ""); // drop quote characters; more escaping is done in Solr provider
-			result.append(keyterm + " ");
-
-			numTerms += 1;
-			sumWeight += weight;
-		}
-
-		int finalDist = proximityBaseDist * ((int) Math.pow(proximityBaseFactor, degree)) * numTerms;
-		double finalWeight = (sumWeight / Math.pow(2, degree));
-		result.append("\"~" + finalDist + ")^" + finalWeight);
 	}
 
 
