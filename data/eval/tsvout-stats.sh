@@ -38,4 +38,4 @@ else
 			printf '%s %s %.20s... ' "$commit" "$date" "$subject"
 			showstats "$evaldir"/*-"$commit".tsv
 		done
-fi
+fi | less -F
