@@ -39,6 +39,22 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
 	private int hitListSize;
 
+	/** Number and baseline distance of gradually desensitivized
+	 * proximity searches. Total of proximity-num optional search
+	 * terms are included, covering proximity-base-dist * #of terms
+	 * neighborhood. For each proximity term, the coverage is
+	 * successively multiplied by proximity-base-factor; initial weight
+	 * is sum of individual weights and is successively halved. */
+	public static final String PARAM_PROXIMITY_NUM = "proximity-num";
+	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "2")
+	private int proximityNum;
+	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
+	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "2")
+	private int proximityBaseDist;
+	public static final String PARAM_PROXIMITY_BASE_FACTOR = "proximity-base-factor";
+	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
+	private int proximityBaseFactor;
+
 	protected String srcName;
 	protected Solr solr;
 
@@ -95,13 +111,40 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			Double weight = clue.getWeight();
 
 			keyterm = keyterm.replace("\"", ""); // drop quote characters; more escaping is done in Solr provider
-			if (result.length() > 0)
-				result.append("AND ");
-			result.append("(\"" + keyterm + "\" OR titleText:\"" + keyterm + "\")^" + weight + " ");
+			result.append("+(\"" + keyterm + "\" OR titleText:\"" + keyterm + "\")^" + weight + " ");
+		}
+		for (int i = 0; i < proximityNum; i++) {
+			formulateProximityQuery(jcas, "", result, i);
+			formulateProximityQuery(jcas, "titleText:", result, i);
 		}
 		String query = result.toString();
 		logger.info(" QUERY: " + query);
 		return query;
+	}
+
+	protected void formulateProximityQuery(JCas jcas, String prefixText, StringBuffer result, int degree) {
+		result.append(" (" + prefixText + "\"");
+
+		int numTerms = 0;
+		double sumWeight = 0;
+		for (Clue clue : JCasUtil.select(jcas, Clue.class)) {
+			// constituent clues are too phrasal for use as search keywords
+			if (clue.getBase() instanceof Constituent)
+				continue;
+
+			String keyterm = clue.getCoveredText();
+			Double weight = clue.getWeight();
+
+			keyterm = keyterm.replace("\"", ""); // drop quote characters; more escaping is done in Solr provider
+			result.append(keyterm + " ");
+
+			numTerms += 1;
+			sumWeight += weight;
+		}
+
+		int finalDist = proximityBaseDist * ((int) Math.pow(proximityBaseFactor, degree)) * numTerms;
+		double finalWeight = (sumWeight / Math.pow(2, degree));
+		result.append("\"~" + finalDist + ")^" + finalWeight);
 	}
 
 	protected void generateSolrResult(JCas jcas, SolrDocument document) {
