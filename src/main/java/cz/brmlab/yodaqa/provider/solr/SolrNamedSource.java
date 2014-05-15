@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.provider;
+package cz.brmlab.yodaqa.provider.solr;
 
 import java.util.HashMap;
 import java.util.Map;

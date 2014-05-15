@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package cz.brmlab.yodaqa.provider;
+package cz.brmlab.yodaqa.provider.solr;
 
 import java.io.Closeable;
 import java.util.ArrayList;

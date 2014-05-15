@@ -12,7 +12,7 @@ import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
-import cz.brmlab.yodaqa.provider.SolrNamedSource;
+import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 /**
  * The main YodaQA pipeline.

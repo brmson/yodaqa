@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
-import cz.brmlab.yodaqa.provider.SolrNamedSource;
+import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 /**
  * Take a question CAS and multiply it to a CAS instance for each SolrResult

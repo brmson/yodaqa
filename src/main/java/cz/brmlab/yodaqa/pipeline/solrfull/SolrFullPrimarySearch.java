@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
-import cz.brmlab.yodaqa.provider.Solr;
-import cz.brmlab.yodaqa.provider.SolrNamedSource;
+import cz.brmlab.yodaqa.provider.solr.Solr;
+import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 
