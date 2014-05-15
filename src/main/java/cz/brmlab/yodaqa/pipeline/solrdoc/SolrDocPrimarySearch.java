@@ -36,7 +36,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 
 	/** Number of results to grab and analyze. */
 	public static final String PARAM_HITLIST_SIZE = "hitlist-size";
-	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
+	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "20")
 	private int hitListSize;
 
 	protected String srcName;
