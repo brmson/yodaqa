@@ -10,6 +10,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -33,15 +34,24 @@ import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
 public class AnswerMerger extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(AnswerMerger.class);
 
+	/** Number of CASes marked as isLast required to encounter before
+	 * the final merging is performed.  When multiple independent CAS
+	 * multipliers are generating CASes, they each eventually produce
+	 * one with an isLast marker. */
+	public static final String PARAM_ISLAST_BARRIER = "islast-barrier";
+	@ConfigurationParameter(name = PARAM_ISLAST_BARRIER, mandatory = false, defaultValue = "1")
+	protected int isLastBarrier;
+
 	Map<String, List<Answer>> answersByText;
 	JCas finalCas;
-	boolean isFirst, isLast;
+	boolean isFirst;
+	int isLast;
 
 	protected void reset() {
 		answersByText = new HashMap<String, List<Answer>>();
 		finalCas = null;
-		isLast = false;
 		isFirst = true;
+		isLast = 0;
 	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -72,7 +82,7 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 
 		AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
 		ResultInfo ri = JCasUtil.selectSingle(canAnswer, ResultInfo.class);
-		isLast = ai.getIsLast() && ri.getIsLast();
+		isLast += (ai.getIsLast() && ri.getIsLast() ? 1 : 0);
 
 		if (canAnswer.getDocumentText() == null)
 			return; // we received a dummy CAS
@@ -97,11 +107,11 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return isLast;
+		return isLast >= isLastBarrier;
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		if (!isLast)
+		if (isLast < isLastBarrier)
 			throw new AnalysisEngineProcessException();
 
 		/* Deduplicate Answer objects and index them. */
