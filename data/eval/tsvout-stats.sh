@@ -31,7 +31,7 @@ if [ "$#" -gt 0 ]; then
 
 else
 	# List all commits that have recorded evaluation
-	evaldir=$(dirname "$0")
+	evaldir=$(dirname "$0")/tsv
 	commits=$(echo "$evaldir"/*.tsv | sed 's/[^ ]*-\([^.]*\).tsv/\1/g')
 	git log --no-walk --pretty='tformat:%h %ad %s' --date=short $commits |
 		while read commit date subject; do
