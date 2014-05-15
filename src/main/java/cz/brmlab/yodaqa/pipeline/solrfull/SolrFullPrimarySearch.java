@@ -94,6 +94,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			String keyterm = clue.getCoveredText();
 			Double weight = clue.getWeight();
 
+			keyterm = keyterm.replace("\"", ""); // drop quote characters; more escaping is done in Solr provider
 			if (result.length() > 0)
 				result.append("AND ");
 			result.append("(\"" + keyterm + "\" OR titleText:\"" + keyterm + "\")^" + weight + " ");
