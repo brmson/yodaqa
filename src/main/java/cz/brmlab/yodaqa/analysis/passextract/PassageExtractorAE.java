@@ -21,7 +21,12 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveD
 public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 	final static Logger logger = LoggerFactory.getLogger(PassageExtractorAE.class);
 
-	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
+	/* passSelection parameter values */
+	public static final int PARAM_PASS_SEL_BYCLUE = 0;
+	public static final int PARAM_PASS_SEL_FIRST = 1;
+
+	public static AnalysisEngineDescription createEngineDescription(int passSelection)
+			throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
 		/* Token features: */
@@ -33,7 +38,14 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		/* At this point, we can filter the source to keep
 		 * only sentences and tokens we care about: */
 		builder.add(createPrimitiveDescription(PassSetup.class));
-		builder.add(createPrimitiveDescription(PassByClue.class));
+		switch (passSelection) {
+		case PARAM_PASS_SEL_BYCLUE:
+			builder.add(createPrimitiveDescription(PassByClue.class));
+			break;
+		case PARAM_PASS_SEL_FIRST:
+			builder.add(createPrimitiveDescription(PassFirst.class));
+			break;
+		}
 
 		/* Further cut these only to the most interesting N sentences. */
 		builder.add(createPrimitiveDescription(PassFilter.class));

@@ -58,7 +58,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
 				AnswerMerger.class,
-				AnswerMerger.PARAM_ISLAST_BARRIER, 2);
+				AnswerMerger.PARAM_ISLAST_BARRIER, 3);
 		builder.add(answerMerger);
 
 		builder.setFlowControllerDescription(
