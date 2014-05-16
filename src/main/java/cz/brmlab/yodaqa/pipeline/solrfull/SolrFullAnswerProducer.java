@@ -27,10 +27,12 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		AggregateBuilder builder = new AggregateBuilder();
 
 		AnalysisEngineDescription primarySearch = AnalysisEngineFactory.createEngineDescription(
-				SolrFullPrimarySearch.class);
+				SolrFullPrimarySearch.class,
+				SolrFullPrimarySearch.PARAM_RESULT_INFO_ORIGIN, "cz.brmlab.yodaqa.pipeline.solrfull.fulltext");
 		builder.add(primarySearch);
 		AnalysisEngineDescription resultGenerator = AnalysisEngineFactory.createEngineDescription(
-				ResultGenerator.class);
+				ResultGenerator.class,
+				ResultGenerator.PARAM_RESULT_INFO_ORIGIN, "cz.brmlab.yodaqa.pipeline.solrfull.fulltext");
 		builder.add(resultGenerator);
 
 		AnalysisEngineDescription passageExtractor = PassageExtractorAE.createEngineDescription();

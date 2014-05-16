@@ -7,6 +7,7 @@ import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
@@ -23,10 +24,17 @@ import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 public class ResultGenerator extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(ResultGenerator.class);
 
+	/** Origin field of ResultInfo. If set, ResultInfo annotations
+	 * with different origin are ignored. */
+	public static final String PARAM_RESULT_INFO_ORIGIN = "result-info-origin";
+	@ConfigurationParameter(name = PARAM_RESULT_INFO_ORIGIN, mandatory = false)
+	protected String resultInfoOrigin;
+
 	JCas questionView, searchView;
 
 	/* Prepared list of results to return. */
 	FSIterator results;
+	ResultInfo nextResult;
 	int i;
 
 	@Override
@@ -44,17 +52,19 @@ public class ResultGenerator extends JCasMultiplier_ImplBase {
 		}
 
 		results = searchView.getJFSIndexRepository().getAllIndexedFS(ResultInfo.type);
+		getNextResult();
 		i = 0;
 	}
 
 	@Override
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return results.hasNext();
+		return nextResult != null;
 	}
 
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		ResultInfo ri = (ResultInfo) results.next();
+		ResultInfo ri = nextResult;
+		getNextResult();
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -64,13 +74,24 @@ public class ResultGenerator extends JCasMultiplier_ImplBase {
 
 			jcas.createView("Result");
 			CasCopier rcopier = new CasCopier(searchView.getCas(), jcas.getView("Result").getCas());
-			fillResult(rcopier, ri, jcas.getView("Result"), !results.hasNext());
+			fillResult(rcopier, ri, jcas.getView("Result"), (nextResult == null));
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
 		i++;
 		return jcas;
+	}
+
+	protected void getNextResult() {
+		nextResult = null;
+		while (results.hasNext()) {
+			ResultInfo ri = (ResultInfo) results.next();
+			if (resultInfoOrigin != null && !ri.getOrigin().equals(resultInfoOrigin))
+				continue;
+			nextResult = ri;
+			return;
+		}
 	}
 
 

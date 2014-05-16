@@ -139,6 +139,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setSource(srcName);
 		ri.setRelevance(((Float) doc.getFieldValue("score")).floatValue());
 		ri.setIsLast(isLast);
+		ri.setOrigin("cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocPrimarySearch");
 		ri.addToIndexes();
 
 		AnswerInfo ai = new AnswerInfo(jcas);

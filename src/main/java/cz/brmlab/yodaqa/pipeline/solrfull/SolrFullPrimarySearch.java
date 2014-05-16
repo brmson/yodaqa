@@ -67,6 +67,12 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name = PARAM_CLUES_ALL_REQUIRED, mandatory = false, defaultValue = "true")
 	protected boolean cluesAllRequired;
 
+	/** Origin field of ResultInfo. This can be used to fetch different
+	 * ResultInfos in different CAS flow branches. */
+	public static final String PARAM_RESULT_INFO_ORIGIN = "result-info-origin";
+	@ConfigurationParameter(name = PARAM_RESULT_INFO_ORIGIN, mandatory = false, defaultValue = "cz.brmlab.yodaqa.pipeline.solrfull.SolrFullPrimarySearch")
+	protected String resultInfoOrigin;
+
 	protected SolrQuerySettings settings = null;
 	protected String srcName;
 	protected Solr solr;
@@ -130,6 +136,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		ri.setDocumentTitle(title);
 		ri.setSource(srcName);
 		ri.setRelevance(((Float) document.getFieldValue("score")).floatValue());
+		ri.setOrigin(resultInfoOrigin);
 		ri.addToIndexes();
 	}
 }

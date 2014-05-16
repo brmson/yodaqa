@@ -35,6 +35,11 @@
             <description>Whether this is the last search result</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>origin</name>
+            <description>Originating annotator name</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>
