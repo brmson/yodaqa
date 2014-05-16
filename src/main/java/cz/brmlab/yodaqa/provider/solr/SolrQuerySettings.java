@@ -4,14 +4,17 @@ public class SolrQuerySettings {
 	protected int proximityNum;
 	protected int proximityBaseDist, proximityBaseFactor;
 	protected String[] searchFields;
+	protected boolean cluesAllRequired;
 
 	/* searchField "" means document body; searchField "titleText"
 	 * means the title. */
-	public SolrQuerySettings(int proximityNum_, int proximityBaseDist_, int proximityBaseFactor_, String[] searchFields_) {
+	public SolrQuerySettings(int proximityNum_, int proximityBaseDist_, int proximityBaseFactor_, String[] searchFields_,
+			boolean cluesAllRequired_) {
 		proximityNum = proximityNum_;
 		proximityBaseDist = proximityBaseDist_;
 		proximityBaseFactor = proximityBaseFactor_;
 		searchFields = searchFields_;
+		cluesAllRequired = cluesAllRequired_;
 	}
 
 	/**
@@ -49,5 +52,12 @@ public class SolrQuerySettings {
 			prefixes[i] = field != "" ? field + ":" : "";
 		}
 		return prefixes;
+	}
+
+	/**
+	 * @return the cluesAllRequired
+	 */
+	public boolean areCluesAllRequired() {
+		return cluesAllRequired;
 	}
 }

@@ -57,6 +57,11 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
 	protected int proximityBaseFactor;
 
+	/** Make all clues required to be present. */
+	public static final String PARAM_CLUES_ALL_REQUIRED = "clues-all-required";
+	@ConfigurationParameter(name = PARAM_CLUES_ALL_REQUIRED, mandatory = false, defaultValue = "true")
+	protected boolean cluesAllRequired;
+
 	protected SolrQuerySettings settings = null;
 	protected String srcName;
 	protected Solr solr;
@@ -72,7 +77,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		this.solr = SolrNamedSource.get(srcName);
 
 		this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
-				new String[]{"", "titleText"});
+				new String[]{"", "titleText"}, cluesAllRequired);
 	}
 
 	@Override

@@ -74,7 +74,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		this.solr = SolrNamedSource.get(srcName);
 
 		this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
-				new String[]{""});
+				new String[]{""}, true);
 	}
 
 
