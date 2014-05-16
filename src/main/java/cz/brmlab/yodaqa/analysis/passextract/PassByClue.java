@@ -48,13 +48,10 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		try {
 			questionView = jcas.getView("Question");
 			resultView = jcas.getView("Result");
-			jcas.createView("Passages");
 			passagesView = jcas.getView("Passages");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		passagesView.setDocumentText(resultView.getDocumentText());
-		passagesView.setDocumentLanguage(resultView.getDocumentLanguage());
 		int totalLength = resultView.getDocumentText().length();
 
 		/* Below, we match clues only as whole words (when we are

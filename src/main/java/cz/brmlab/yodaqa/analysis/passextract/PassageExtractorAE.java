@@ -32,6 +32,7 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* At this point, we can filter the source to keep
 		 * only sentences and tokens we care about: */
+		builder.add(createPrimitiveDescription(PassSetup.class));
 		builder.add(createPrimitiveDescription(PassByClue.class));
 
 		/* Further cut these only to the most interesting N sentences. */
