@@ -57,6 +57,11 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
 	protected int proximityBaseFactor;
 
+	/** Search full text of articles in addition to their titles. */
+	public static final String PARAM_SEARCH_FULL_TEXT = "search-full-text";
+	@ConfigurationParameter(name = PARAM_SEARCH_FULL_TEXT, mandatory = false, defaultValue = "true")
+	protected boolean searchFullText;
+
 	/** Make all clues required to be present. */
 	public static final String PARAM_CLUES_ALL_REQUIRED = "clues-all-required";
 	@ConfigurationParameter(name = PARAM_CLUES_ALL_REQUIRED, mandatory = false, defaultValue = "true")
@@ -76,8 +81,13 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		this.srcName = (String) SolrNamedSource.nameSet().toArray()[0];
 		this.solr = SolrNamedSource.get(srcName);
 
-		this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
-				new String[]{"", "titleText"}, cluesAllRequired);
+		if (searchFullText) {
+			this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
+					new String[]{"", "titleText"}, cluesAllRequired);
+		} else {
+			this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
+					new String[]{"titleText"}, cluesAllRequired);
+		}
 	}
 
 	@Override
