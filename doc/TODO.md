@@ -26,10 +26,6 @@ FinalAnswer Precision:
   * Take Wordnet synsets into account in LATs; annotate NE-based
     Focus LATs by synsets instead of generic words (to avoid
     e.g. the date-companion-friend-person chain)
-  * Generate LATs from meaningful SVs (consider "Who invented
-    the transistor?" with LAT "person" (Who?) and SV "invent";
-    derivation relations of "invent" include "inventor" which is
-    a hyponym of "person", so generate an LAT!)
   * If an LAT is found in sentence governing an APPOS dependency,
     create the dependent as a candidate answer, as in "Who is the
     brother of Sherlock Holmes?" vs. "His brother, Mycroft, seven
@@ -37,6 +33,11 @@ FinalAnswer Precision:
   * Better passage scoring?
 
 Search:
+  * Merge duplicate clues with the same text
+  * Generate Clues, LATs from meaningful SVs (consider "Who invented
+    the transistor?" with LAT "person" (Who?) and SV "invent";
+    derivation relations of "invent" include "inventor" which is
+    a hyponym of "person", so generate an LAT!)
   * Switch to SolrJ
   * SpanQuery?
 
@@ -54,6 +55,8 @@ Quality:
   * Walk through the QA chapter of Taming Text to verify we are on
     quality parity. :)
   * Compare quality with blanqa to ensure quality parity?
+  * Perform spellcheck on the question or just clues:
+    "When did Alexandra Graham Bell invent the telephone?"
   * Prefer most specific answers: "When did the shootings at Columbine
     happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
     just merge overlaps
