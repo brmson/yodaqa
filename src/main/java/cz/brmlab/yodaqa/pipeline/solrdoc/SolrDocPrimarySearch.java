@@ -62,6 +62,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 
 	protected JCas questionView;
 	protected Iterator<SolrDocument> docIter;
+	protected int i;
 
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -91,17 +92,18 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 		docIter = documents.iterator();
+		i = 0;
 	}
 
 
 	@Override
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return docIter.hasNext();
+		return docIter.hasNext() || i == 0;
 	}
 
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		SolrDocument doc = docIter.next();
+		SolrDocument doc = docIter.hasNext() ? docIter.next() : null;
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -111,11 +113,16 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
-			documentToAnswer(canAnswerView, doc, !docIter.hasNext());
+			if (doc != null) {
+				documentToAnswer(canAnswerView, doc, !docIter.hasNext());
+			} else {
+				dummyAnswer(canAnswerView);
+			}
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
+		i++;
 		return jcas;
 	}
 
@@ -147,6 +154,26 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setConfidence(1.0); // XXX
 		ai.setSpecificity(-4); // XXX: just a random default in case of no LAT match, possibly due to no focus
 		ai.setIsLast(isLast);
+		ai.addToIndexes();
+	}
+
+	protected void dummyAnswer(JCas jcas) throws Exception {
+		/* We will just generate a single dummy CAS
+		 * to avoid flow breakage. */
+		jcas.setDocumentText("");
+		jcas.setDocumentLanguage("en"); // XXX
+
+		ResultInfo ri = new ResultInfo(jcas);
+		ri.setDocumentTitle("");
+		ri.setOrigin("cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocPrimarySearch");
+		ri.setIsLast(true);
+		ri.addToIndexes();
+
+		AnswerInfo ai = new AnswerInfo(jcas);
+		ai.setPassageScore(0.0);
+		ai.setConfidence(0.0);
+		ai.setSpecificity(0);
+		ai.setIsLast(true);
 		ai.addToIndexes();
 	}
 }

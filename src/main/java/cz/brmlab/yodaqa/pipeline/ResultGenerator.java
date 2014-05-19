@@ -58,7 +58,7 @@ public class ResultGenerator extends JCasMultiplier_ImplBase {
 
 	@Override
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return nextResult != null;
+		return nextResult != null || i == 0;
 	}
 
 	@Override
@@ -73,8 +73,21 @@ public class ResultGenerator extends JCasMultiplier_ImplBase {
 			copyQuestion(qcopier, questionView, jcas.getView("Question"));
 
 			jcas.createView("Result");
-			CasCopier rcopier = new CasCopier(searchView.getCas(), jcas.getView("Result").getCas());
-			fillResult(rcopier, ri, jcas.getView("Result"), (nextResult == null));
+			JCas resultView = jcas.getView("Result");
+			CasCopier rcopier = new CasCopier(searchView.getCas(), resultView.getCas());
+			if (ri != null) {
+				fillResult(rcopier, ri, resultView, (nextResult == null));
+			} else {
+				/* We will just generate a single dummy CAS
+				 * to avoid flow breakage. */
+				resultView.setDocumentText("");
+				resultView.setDocumentLanguage(questionView.getDocumentLanguage());
+				ri = new ResultInfo(resultView);
+				ri.setDocumentTitle("");
+				ri.setOrigin("cz.brmlab.yodaqa.pipeline.ResultGenerator");
+				ri.setIsLast(true);
+				ri.addToIndexes();
+			}
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
