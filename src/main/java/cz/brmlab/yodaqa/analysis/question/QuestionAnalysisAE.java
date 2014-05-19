@@ -9,7 +9,6 @@ package cz.brmlab.yodaqa.analysis.question;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MateLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MateParser;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MatePosTagger;
-import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 //import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
+import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 /**
  * Annotate the QuestionCAS.
@@ -90,16 +90,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		*/
 
 		/* Named Entities: */
-
-		String[] ner_variants = {
-		      "date", "location", "money", "organization",
-		      "percentage", "person", "time"
-		};
-		for (String variant : ner_variants) {
-			builder.add(AnalysisEngineFactory.createEngineDescription(
-				OpenNlpNameFinder.class,
-				OpenNlpNameFinder.PARAM_VARIANT, variant));
-		}
+		builder.add(OpenNlpNamedEntities.createEngineDescription());
 
 		/*
 		// too weak, we need very rich NE set

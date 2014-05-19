@@ -9,8 +9,9 @@ import org.apache.uima.fit.factory.FlowControllerFactory;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
+
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
-import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
 /**
@@ -46,17 +47,8 @@ public class SolrDocAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Named Entities: */
-
-		String[] ner_variants = {
-		      "date", "location", "money", "organization",
-		      "percentage", "person", "time"
-		};
-		for (String variant : ner_variants) {
-			builder.add(AnalysisEngineFactory.createEngineDescription(
-					OpenNlpNameFinder.class,
-					OpenNlpNameFinder.PARAM_VARIANT, variant),
-				CAS.NAME_DEFAULT_SOFA, "Answer");
-		}
+		builder.add(OpenNlpNamedEntities.createEngineDescription(),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(

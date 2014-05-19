@@ -1,7 +1,6 @@
 package cz.brmlab.yodaqa.analysis.passage;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
-import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -11,6 +10,8 @@ import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
@@ -43,18 +44,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		/* Named Entities: */
-
-		String[] ner_variants = {
-		      "date", "location", "money", "organization",
-		      "percentage", "person", "time"
-		};
-		for (String variant : ner_variants) {
-			builder.add(createPrimitiveDescription(
-					OpenNlpNameFinder.class,
-					OpenNlpNameFinder.PARAM_VARIANT, variant),
-				CAS.NAME_DEFAULT_SOFA, "PickedPassages");
-		}
-
+		builder.add(OpenNlpNamedEntities.createEngineDescription(),
+			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 
 		/* Okay! Now, we can proceed with our key tasks. */
