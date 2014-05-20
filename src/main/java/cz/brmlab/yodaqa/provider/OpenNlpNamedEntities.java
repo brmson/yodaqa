@@ -14,8 +14,8 @@ public class OpenNlpNamedEntities {
 		AggregateBuilder builder = new AggregateBuilder();
 
 		String[] ner_variants = {
-		      "date", "location", "money", "organization",
-		      "percentage", "person", "time"
+			"date", "location", "money", "organization",
+			"percentage", "person", "time"
 		};
 		for (String variant : ner_variants) {
 			builder.add(AnalysisEngineFactory.createEngineDescription(
