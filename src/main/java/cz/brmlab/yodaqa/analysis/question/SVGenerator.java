@@ -12,6 +12,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.Question.SV;
@@ -30,6 +32,8 @@ import cz.brmlab.yodaqa.model.Question.SV;
  * annotations. */
 
 public class SVGenerator extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(SVGenerator.class);
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -76,5 +80,6 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 		sv.setEnd(v.getEnd());
 		sv.setBase(v);
 		sv.addToIndexes();
+		logger.debug("SV: {}", sv.getCoveredText());
 	}
 }
