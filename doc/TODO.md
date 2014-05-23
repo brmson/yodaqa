@@ -33,7 +33,6 @@ FinalAnswer Precision:
   * Better passage scoring?
 
 Search:
-  * Merge duplicate clues with the same text
   * Generate Clues, LATs from meaningful SVs (consider "Who invented
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is
