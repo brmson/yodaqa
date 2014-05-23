@@ -25,19 +25,13 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 public class ClueBySV extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(ClueBySV.class);
 
-	protected String SVBLACKLIST = "be|have|do";
-
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		for (SV sv : JCasUtil.select(jcas, SV.class)) {
-			/* What was the name... -> "was" is useless as clue. */
-			if (sv.getBase().getLemma().getValue().matches(SVBLACKLIST))
-				continue;
+		for (SV sv : JCasUtil.select(jcas, SV.class))
 			addClue(jcas, sv.getBegin(), sv.getEnd(), sv);
-		}
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base) {

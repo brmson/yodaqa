@@ -34,6 +34,8 @@ import cz.brmlab.yodaqa.model.Question.SV;
 public class SVGenerator extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(SVGenerator.class);
 
+	protected String SVBLACKLIST = "be|have|do";
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -74,6 +76,13 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 			return; // huh?
 		}
 
+		/* What was the name... -> "was" is useless as clue.
+		 * Ignore over-generic verbs. */
+		if (isAux(v)) {
+			logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
+			return;
+		}
+
 		/* Ok, we believe this verb is the Selecting Verb. */
 		SV sv = new SV(jcas);
 		sv.setBegin(v.getBegin());
@@ -81,5 +90,11 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 		sv.setBase(v);
 		sv.addToIndexes();
 		logger.debug("SV: {}", sv.getCoveredText());
+	}
+
+	protected boolean isAux(Token v) {
+		/* What was the name... -> "was" is useless for us.
+		 * Ignore over-generic verbs. */
+		return v.getLemma().getValue().matches(SVBLACKLIST);
 	}
 }
