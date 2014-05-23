@@ -35,18 +35,21 @@ showline() {
 	fi
 }
 
-join -t $'\t' "$@" |
-	while IFS=$'\t' read id t0 q0 s0 g0 a0 c00 c10 c20 c30 c40 t1 q1 s1 g1 a1 c01 c11 c21 c31 c41; do
-		showline "$id" "$q0" "$g0" "$s0" "$s1"
+case "$1" in *ovt*) gcol0=7;; *) gcol0=5;; esac
+case "$2" in *ovt*) gcol1=7;; *) gcol1=5;; esac
+
+join -t $'\t' -o 1.1,1.3,1.$gcol0,1.2,2.2,1.4,2.4 "$@" |
+	while IFS=$'\t' read id q g t0 t1 s0 s1; do
+		showline "$id" "$q" "$g" "$s0" "$s1"
 	done
 
-join -t $'\t' -v 1 "$@" |
-	while IFS=$'\t' read id t0 q0 s0 g0 a0 c00 c10 c20 c30 c40; do
-		showline "$id" "$q0" "$g0" "$s0" "0.0"
+join -t $'\t' -o 1.1,1.3,1.$gcol0,1.2,1.4 -v 1 "$@" |
+	while IFS=$'\t' read id q g t0 s0; do
+		showline "$id" "$q" "$g" "$s0" "0.0"
 	done
-join -t $'\t' -v 2 "$@" |
-	while IFS=$'\t' read id t1 q1 s1 g1 a1 c01 c11 c21 c31 c41; do
-		showline "$id" "$q1" "$g1" "0.0" "$s1"
+join -t $'\t' -o 2.1,2.3,2.$gcol1,2.2,2.4 -v 2 "$@" |
+	while IFS=$'\t' read id q g t1 s1; do
+		showline "$id" "$q" "$g" "0.0" "$s1"
 	done
 
 echo "------------------- Gained answer to:"
