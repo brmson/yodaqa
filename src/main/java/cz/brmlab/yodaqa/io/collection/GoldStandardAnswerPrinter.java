@@ -27,9 +27,10 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * Pair this with CollectionQuestionReader e.g. on data/trec/.
  *
  * The output format is, tab separated
- * 	ID TIME QUESTION SCORE ANSWERPCRE CORRECTANSWER TOPANSWERS...
- * where TIME is the processing time in seconds (fractional)
- * and SCORE is (1.0 - log(correctrank)/log(#answers))
+ * 	ID TIME QUESTION SCORE RANK NRANKS ANSWERPCRE CORRECTANSWER TOPANSWERS...
+ * where TIME is the processing time in seconds (fractional),
+ * SCORE is (1.0 - log(correctrank)/log(#answers)), RANK is
+ * the corretrank and NRANKS is #answers.
  */
 
 public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
@@ -37,7 +38,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 	 * Number of top answers to show.
 	 */
 	public static final String PARAM_TOPLISTLEN = "TOPLISTLEN";
-	@ConfigurationParameter(name = PARAM_TOPLISTLEN, mandatory = false, defaultValue = "5")
+	@ConfigurationParameter(name = PARAM_TOPLISTLEN, mandatory = false, defaultValue = "15")
 	private int topListLen;
 
 	/**
@@ -60,11 +61,13 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		}
 	}
 
-	protected void output(String id, double procTime, String qText, double score,
+	protected void output(String id, double procTime, String qText,
+			double score, int rank, int nranks,
 			String aPattern, String aMatch, String... toplist)
 	{
-		String[] columns = new String[] { id, Double.toString(procTime),
-			qText, Double.toString(score), aPattern, aMatch };
+		String[] columns = new String[] { id, Double.toString(procTime), qText,
+			Double.toString(score), Integer.toString(rank), Integer.toString(nranks),
+			aPattern, aMatch };
 		columns = (String[]) ArrayUtils.addAll(columns, toplist);
 
 		String output = StringUtils.join(columns, "\t");
@@ -106,12 +109,14 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			if (match >= 0)
 				score = 1.0 - Math.log(1 + match) / Math.log(i);
 
-			output(qi.getQuestionId(), procTime, qi.getQuestionText(), score,
+			output(qi.getQuestionId(), procTime, qi.getQuestionText(),
+				score, match, i,
 				qi.getAnswerPattern(), matchText, toplist);
 
 		} else {
 			/* Special case, no answer found. */
-			output(qi.getQuestionId(), procTime, qi.getQuestionText(), 0.0,
+			output(qi.getQuestionId(), procTime, qi.getQuestionText(),
+				0.0, 0, 0,
 				qi.getAnswerPattern(), ".");
 		}
 	}
