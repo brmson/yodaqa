@@ -68,8 +68,10 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 				/* The focus is a verb itself! Make it an SV too. */
 				v = (Token) focus;
 			} else {
-				/* NN or such Focus also means no SV. */
-				return;
+				/* Take the first non-blacklisted verb. */
+				v = getFirstVerb(sentence);
+				if (v == null)
+					return;
 			}
 
 		} else {
@@ -90,6 +92,17 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 		sv.setBase(v);
 		sv.addToIndexes();
 		logger.debug("SV: {}", sv.getCoveredText());
+	}
+
+	protected Token getFirstVerb(Constituent sentence) {
+		for (Token v : JCasUtil.selectCovered(Token.class, sentence)) {
+			if (!v.getPos().getPosValue().matches("^V.*"))
+				continue;
+			if (isAux(v))
+				continue;
+			return v;
+		}
+		return null;
 	}
 
 	protected boolean isAux(Token v) {
