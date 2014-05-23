@@ -121,6 +121,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByFocus.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySubject.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
