@@ -36,3 +36,8 @@ To compare two performance measurements question-by-question,
 try running something like:
 
 	data/eval/tsvout-compare.sh data/eval/tsv/trecnew-single200-out-0b086cf.tsv data/eval/tsv/trecnew-single200-out-1a80ccd.tsv
+
+To show statistics based on amount of questions sporting the
+correct answer at a given rank, run:
+
+	data/eval/tsvout-rank.sh data/eval/tsv/trecnew-single200-out-0b086cf.tsv
