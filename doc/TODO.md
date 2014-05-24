@@ -17,8 +17,8 @@ Short-Term TODO
 ---------------
 
 CandidateAnswer Recall:
-  * Passage search: Try building an AND-OR tree query based on
-    overlapping clues to prefer but not require phrase matches
+  * Generate and print a question interpretation summary
+  * Multi-tiered clues for passage search; required and optional
   * Use (WordNet) ontology relationships (synsets etc.) to generate
     extra clues
 
@@ -30,15 +30,12 @@ FinalAnswer Precision:
     create the dependent as a candidate answer, as in "Who is the
     brother of Sherlock Holmes?" vs. "His brother, Mycroft, seven
     years his senior"...
-  * Better passage scoring?
 
 Search:
   * Generate Clues, LATs from meaningful SVs (consider "Who invented
     the transistor?" with LAT "person" (Who?) and SV "invent";
     derivation relations of "invent" include "inventor" which is
     a hyponym of "person", so generate an LAT!)
-  * Switch to SolrJ
-  * SpanQuery?
 
 Long-Term TODO
 --------------
@@ -57,6 +54,7 @@ CandidateAnswer Recall Quality:
   * Add more structured information sources!
     * DBPedia, FrameNet, Lemon, PATTY, PPDB
   * More advanced NE extraction, multi-word NEs
+  * Use SpanQuery for more accurate Solr IE
 
 FinalAnswer Precision Quality:
   * Consider generating Clues also for CandidateAnswer
@@ -97,6 +95,7 @@ Interface:
     conversation.
 
 Janitorial:
+  * Switch to SolrJ
   * Add an origin record to each annotation - which annotator
     produced it? Will be useful when we have multiple possible
     annotation paths.
