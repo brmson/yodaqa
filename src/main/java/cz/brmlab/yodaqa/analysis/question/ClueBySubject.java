@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 
 /**
@@ -30,7 +32,13 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		for (NSUBJ subj : JCasUtil.select(jcas, NSUBJ.class)) {
+		for (ROOT sentence : JCasUtil.select(jcas, ROOT.class)) {
+			processSentence(jcas, sentence);
+		}
+	}
+
+	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
+		for (NSUBJ subj : JCasUtil.selectCovered(NSUBJ.class, sentence)) {
 			/* Skip question word focuses (e.g. "Who"). */
 			if (subj.getDependent().getPos().getPosValue().matches("^W.*"))
 				continue;
