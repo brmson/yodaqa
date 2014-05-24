@@ -1,5 +1,7 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import java.util.List;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -10,8 +12,10 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.TreeUtil;
 import cz.brmlab.yodaqa.model.Question.Clue;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
@@ -39,19 +43,34 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 
 	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
 		for (NSUBJ subj : JCasUtil.selectCovered(NSUBJ.class, sentence)) {
+			Token stok = subj.getDependent();
+
 			/* Skip question word focuses (e.g. "Who"). */
-			if (subj.getDependent().getPos().getPosValue().matches("^W.*"))
+			if (stok.getPos().getPosValue().matches("^W.*"))
 				continue;
-			addClue(jcas, subj.getBegin(), subj.getEnd(), subj);
+
+			/* If the subject governs an object, e.g.
+			 * "Holmes' name" or "capital of Argentina",
+			 * switch the subject to "Holmes" and "Argentina"
+			 * and keep the original only with lower priority. */
+			List<Token> objDeps = TreeUtil.getAllGoverned(jcas, sentence, stok, "pobj|poss");
+			if (!objDeps.isEmpty()) {
+				for (Token objDep : objDeps)
+					addClue(jcas, objDep.getBegin(), objDep.getEnd(), objDep, 2.0);
+
+				addClue(jcas, subj.getBegin(), subj.getEnd(), subj, 1.0);
+			} else {
+				addClue(jcas, subj.getBegin(), subj.getEnd(), subj, 2.5);
+			}
 		}
 	}
 
-	protected void addClue(JCas jcas, int begin, int end, Annotation base) {
+	protected void addClue(JCas jcas, int begin, int end, Annotation base, double weight) {
 		Clue clue = new Clue(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
-		clue.setWeight(2.5);
+		clue.setWeight(weight);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getCoveredText());
 	}
