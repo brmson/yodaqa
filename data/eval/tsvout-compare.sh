@@ -35,6 +35,11 @@ showline() {
 	fi
 }
 
+evaldir=$(dirname "$0")/tsv
+file1="$1"; case "$file1" in *.tsv) ;; *) file1="$(echo "$evaldir/"*"-${file1}.tsv")";; esac
+file2="$2"; case "$file2" in *.tsv) ;; *) file2="$(echo "$evaldir/"*"-${file2}.tsv")";; esac
+set "$file1" "$file2"
+
 case "$1" in *ovt*) gcol0=7;; *) gcol0=5;; esac
 case "$2" in *ovt*) gcol1=7;; *) gcol1=5;; esac
 

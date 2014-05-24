@@ -33,9 +33,10 @@ or, to show all recorded evaluations chronologically, simply
 	data/eval/tsvout-stats.sh
 
 To compare two performance measurements question-by-question,
-try running something like:
+try running something like (in either style):
 
 	data/eval/tsvout-compare.sh data/eval/tsv/trecnew-single200-out-0b086cf.tsv data/eval/tsv/trecnew-single200-out-1a80ccd.tsv
+	data/eval/tsvout-compare.sh 0b086cf 1a80ccd
 
 To show statistics based on amount of questions sporting the
 correct answer at a given rank, run:
