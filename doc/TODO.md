@@ -47,32 +47,38 @@ Parsing:
   * Take a very good look at the RegEx Link Grammar
     <http://wiki.opencog.org/w/RelEx>
 
-Quality:
-  * Check TyCor on TamingText dataset
-  * Consider generating Clues also for CandidateAnswer
-    and matching them similar to TyCor (ClueCor? :-)
-  * Walk through the QA chapter of Taming Text to verify we are on
-    quality parity. :)
-  * Compare quality with blanqa to ensure quality parity?
+Question Analysis Quality:
+  * Preliminary queries before primary search to identify unknown
+    words (e.g. "Berlin" is currently not recognized as NE)
   * Perform spellcheck on the question or just clues:
     "When did Alexandra Graham Bell invent the telephone?"
+
+CandidateAnswer Recall Quality:
+  * Add more structured information sources!
+    * DBPedia, FrameNet, Lemon, PATTY, PPDB
+  * More advanced NE extraction, multi-word NEs
+
+FinalAnswer Precision Quality:
+  * Consider generating Clues also for CandidateAnswer
+    and matching them similar to TyCor (ClueCor? :-)
   * Prefer most specific answers: "When did the shootings at Columbine
     happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
     just merge overlaps
-  * Add more structured information sources!
-    * DBPedia, FrameNet, Lemon, PATTY, PPDB
   * Extend WordNet ontology (so far used for TyCor) with more
     resources - dkpro lsr or uby
-  * More advanced NE extraction, multi-word NEs, label-less LATs
-    via NE clustering
-  * Preliminary queries before primary search to identify unknown
-    words (e.g. "Berlin" is currently not recognized as NE)
+  * Label-less LATs via NE clustering
+
+General Quality:
+  * Walk through the QA chapter of Taming Text to verify we are on
+    feature parity. :)
   * Walk through IBM Watson papers and add more TODO items. :)
   * Evidence gathering feedback loops - initially maybe just
     a single feedback loop for candidate answer evidence gathering,
     but we may also gather evidence for LATs (and their synsets!) etc.
 
 Performance Measurement:
+  * Check TyCor on TamingText dataset
+  * Compare quality with blanqa to ensure quality parity?
   * Export full coefficient vectors of candidate answer and answer
     ranking, use that for parameter learning
 
