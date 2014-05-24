@@ -63,12 +63,11 @@ public class FocusNameProxy extends JCasAnnotator_ImplBase {
 				continue;
 			if (d.getDependencyType().equals("prep")) { // - of -
 				numNew += processAllGoverned(jcas, sentence, d.getDependent());
-			} else if (d.getDependencyType().equals("det")) { // the -
-				// ignore
-			} else {
+			} else if (d.getDependencyType().equals("pobj")
+				   || d.getDependencyType().equals("poss")) {
 				processProxied(jcas, sentence, d.getDependent());
 				numNew += 1;
-			}
+			} // else det: "the" name, amod: "last" name, ...
 		}
 		return numNew;
 	}
