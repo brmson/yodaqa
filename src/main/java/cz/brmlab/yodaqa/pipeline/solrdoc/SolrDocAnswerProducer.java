@@ -12,6 +12,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
 /**
@@ -40,10 +41,14 @@ public class SolrDocAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(LanguageToolSegmenter.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
-		/* POS, lemmas, constituents, dependencies: */
+		/* POS, constituents, dependencies: */
 		builder.add(AnalysisEngineFactory.createEngineDescription(
 				StanfordParser.class,
 				StanfordParser.PARAM_MAX_TOKENS, 50), // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+
+		/* Lemma features: */
+		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordLemmatizer.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Named Entities: */

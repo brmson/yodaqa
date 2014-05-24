@@ -11,6 +11,7 @@ package cz.brmlab.yodaqa.analysis.question;
 //import de.tudarmstadt.ukp.dkpro.core.matetools.MatePosTagger;
 //import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordNamedEntityRecognizer;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
@@ -50,7 +51,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(OpenNlpSegmenter.class));
 
-		/* POS, lemmas, constituents, dependencies: */
+		/* POS, constituents, dependencies: */
 		// fast, reliable
 		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class));
 
@@ -71,7 +72,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Lemma features: */
 
 		// fastest and handling numbers correctly:
-		//builder.add(AnalysisEngineFactory.createEngineDescription(StanfordLemmatizer.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordLemmatizer.class));
 		/*
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpLemmatizer.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(MateLemmatizer.class));
