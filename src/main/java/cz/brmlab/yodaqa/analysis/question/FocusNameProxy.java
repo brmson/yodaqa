@@ -17,6 +17,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.TreeUtil;
 import cz.brmlab.yodaqa.model.Question.Focus;
 
 /**
@@ -46,7 +47,10 @@ public class FocusNameProxy extends JCasAnnotator_ImplBase {
 			Token ftok = f.getToken();
 			if (!ftok.getLemma().getValue().equals("name"))
 				continue;
-			if (processAllGoverned(jcas, sentence, ftok) > 0) {
+			List<Token> objDeps = TreeUtil.getAllGoverned(jcas, sentence, ftok, "pobj|poss");
+			if (!objDeps.isEmpty()) {
+				for (Token objDep : objDeps)
+					processProxied(jcas, sentence, objDep);
 				// remove the original "name" focus, we got
 				// a better one
 				fToDel.add(f);
@@ -54,22 +58,6 @@ public class FocusNameProxy extends JCasAnnotator_ImplBase {
 		}
 		for (Focus f : fToDel)
 			f.removeFromIndexes();
-	}
-
-	public int processAllGoverned(JCas jcas, Constituent sentence, Token gov) throws AnalysisEngineProcessException {
-		int numNew = 0;
-		for (Dependency d : JCasUtil.selectCovered(Dependency.class, sentence)) {
-			if (d.getGovernor() != gov)
-				continue;
-			if (d.getDependencyType().equals("prep")) { // - of -
-				numNew += processAllGoverned(jcas, sentence, d.getDependent());
-			} else if (d.getDependencyType().equals("pobj")
-				   || d.getDependencyType().equals("poss")) {
-				processProxied(jcas, sentence, d.getDependent());
-				numNew += 1;
-			} // else det: "the" name, amod: "last" name, ...
-		}
-		return numNew;
 	}
 
 	public void processProxied(JCas jcas, Constituent sentence, Token proxied) throws AnalysisEngineProcessException {
