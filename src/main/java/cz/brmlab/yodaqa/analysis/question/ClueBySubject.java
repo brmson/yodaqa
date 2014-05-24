@@ -25,7 +25,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
  * a clue generated. */
 
 public class ClueBySubject extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(ClueByFocus.class);
+	final Logger logger = LoggerFactory.getLogger(ClueBySubject.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);

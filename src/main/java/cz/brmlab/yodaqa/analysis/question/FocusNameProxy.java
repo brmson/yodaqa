@@ -29,7 +29,7 @@ import cz.brmlab.yodaqa.model.Question.Focus;
  * preposition. */
 
 public class FocusNameProxy extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(FocusGenerator.class);
+	final Logger logger = LoggerFactory.getLogger(FocusNameProxy.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
