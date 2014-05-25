@@ -12,7 +12,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
+import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
 /**
@@ -48,7 +48,7 @@ public class SolrDocAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Lemma features: */
-		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordLemmatizer.class),
+		builder.add(AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Named Entities: */

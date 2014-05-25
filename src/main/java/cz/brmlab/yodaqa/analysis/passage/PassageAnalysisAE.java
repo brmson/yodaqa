@@ -1,7 +1,6 @@
 package cz.brmlab.yodaqa.analysis.passage;
 
-import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
+import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -45,7 +44,7 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		/* Lemma features: */
-		builder.add(createPrimitiveDescription(StanfordLemmatizer.class),
+		builder.add(createPrimitiveDescription(LanguageToolLemmatizer.class),
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		/* Named Entities: */
