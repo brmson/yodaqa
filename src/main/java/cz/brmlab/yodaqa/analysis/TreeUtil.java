@@ -19,7 +19,8 @@ public class TreeUtil {
 		for (Dependency d : JCasUtil.selectCovered(Dependency.class, sentence)) {
 			if (d.getGovernor() != gov)
 				continue;
-			if (d.getDependencyType().equals("prep")) { // - of -
+			if (d.getDependencyType().equals("prep") // dkpro < 1.7.0 "- of -"
+			    || d.getDependencyType().equals("prep_of")) { // - of -
 				list.addAll(getAllGoverned(jcas, sentence, d.getDependent(), typeMatch));
 			} else if (d.getDependencyType().matches(typeMatch)) {
 				list.add(d.getDependent());
