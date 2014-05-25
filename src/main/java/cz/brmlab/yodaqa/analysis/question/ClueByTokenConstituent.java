@@ -54,13 +54,16 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		while (!lifo.isEmpty()) {
 			Constituent c = lifo.poll();
 			if (c.getConstituentType().matches(CONSTITMATCH))
-				addClue(new CluePhrase(jcas), c.getBegin(), c.getEnd(), c);
+				/* <1.0 so that we slightly prefer tokens,
+				 * usable even for fulltext search, when
+				 * merging clues. */
+				addClue(new CluePhrase(jcas), c.getBegin(), c.getEnd(), c, 0.99);
 
 			for (FeatureStructure child : c.getChildren().toArray()) {
 				if (!(child instanceof Constituent)) {
 					Token t = (Token) child;
 					if (t.getPos().getPosValue().matches(TOKENMATCH))
-						addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t);
+						addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t, 1.0);
 					continue;
 				}
 				lifo.add((Constituent) child);
@@ -68,11 +71,11 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addClue(Clue clue, int begin, int end, Annotation base) {
+	protected void addClue(Clue clue, int begin, int end, Annotation base, double weight) {
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
-		clue.setWeight(1.0);
+		clue.setWeight(weight);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getCoveredText());
 	}
