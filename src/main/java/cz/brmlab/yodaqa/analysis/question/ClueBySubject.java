@@ -58,7 +58,7 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 			List<Token> objDeps = TreeUtil.getAllGoverned(jcas, sentence, stok, "pobj|poss");
 			if (!objDeps.isEmpty()) {
 				for (Token objDep : objDeps)
-					addClue(new ClueSubject(jcas), objDep.getBegin(), objDep.getEnd(), objDep, 2.0);
+					addClue(new ClueSubject(jcas), objDep.getBegin(), objDep.getEnd(), objDep, 2.5);
 
 				addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 1.0);
 			} else {
