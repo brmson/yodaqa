@@ -62,15 +62,23 @@ public class CluesMergeByText extends JCasAnnotator_ImplBase {
 				if (mainClue == null) {
 					mainClue = clue;
 				} else if (mainClue.getWeight() <= clue.getWeight()) {
-					logger.debug("subduing " + mainClue.getCoveredText() + "|" + clue.getCoveredText()
-							+ " :: " + mainClue.getWeight() + ", " + clue.getWeight());
+					subdueInfo(mainClue, clue);
 					mainClue = clue;
 				} else {
-					logger.debug("subduing " + clue.getCoveredText() + "|" + mainClue.getCoveredText()
-							+ " :: " + clue.getWeight() + ", " + mainClue.getWeight());
+					subdueInfo(clue, mainClue);
 				}
 			}
 			mainClue.addToIndexes();
 		}
+	}
+
+	protected void subdueInfo(Clue subdued, Clue subduing) {
+		logger.debug("subduing {}({}:{}) <| {}({}:{})",
+			subdued.getCoveredText(),
+			subdued.getType().getShortName(),
+			subdued.getWeight(),
+			subduing.getCoveredText(),
+			subduing.getType().getShortName(),
+			subduing.getWeight());
 	}
 }
