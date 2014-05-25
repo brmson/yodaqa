@@ -10,10 +10,12 @@ import cz.brmlab.yodaqa.model.Question.CluePhrase;
 public class SolrTerm {
 	protected String termStr;
 	protected double weight;
+	protected boolean required;
 
-	public SolrTerm(String termStr_, double weight_) {
+	public SolrTerm(String termStr_, double weight_, boolean required_) {
 		termStr = termStr_;
 		weight = weight_;
+		required = required_;
 	}
 
 	/**
@@ -30,6 +32,13 @@ public class SolrTerm {
 		return weight;
 	}
 
+	/**
+	 * @return the required
+	 */
+	public boolean isRequired() {
+		return required;
+	}
+
 	/** Convert Clue annotations to SolrTerm objects. Ignores some
 	 * clues that aren't very good as keywords. */
 	public static List<SolrTerm> cluesToTerms(Collection<Clue> clues) {
@@ -41,7 +50,7 @@ public class SolrTerm {
 
 			String keyterm = clue.getCoveredText();
 			Double weight = clue.getWeight();
-			SolrTerm term = new SolrTerm(keyterm, weight);
+			SolrTerm term = new SolrTerm(keyterm, weight, true /* FIXME */);
 			terms.add(term);
 		}
 

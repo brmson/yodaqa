@@ -130,7 +130,7 @@ public class Solr implements Closeable {
 		for (SolrTerm term : terms) {
 			// drop quote characters; more escaping is done in escapeQuery()
 			String keyterm = term.getTermStr().replace("\"", "");
-			if (settings.areCluesAllRequired())
+			if (term.isRequired() && settings.areCluesAllRequired())
 				result.append("+");
 			result.append("(");
 			boolean isFirstField = true;
