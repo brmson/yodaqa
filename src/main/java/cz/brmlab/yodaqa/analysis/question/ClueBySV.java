@@ -10,8 +10,9 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueSV;
+import cz.brmlab.yodaqa.model.Question.SV;
 
 /**
  * Generate Clue annotations in a QuestionCAS. These represent key information
@@ -35,7 +36,7 @@ public class ClueBySV extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base) {
-		Clue clue = new Clue(jcas);
+		Clue clue = new ClueSV(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueNE;
 
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
@@ -37,7 +38,7 @@ public class ClueByNE extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base) {
-		Clue clue = new Clue(jcas);
+		Clue clue = new ClueNE(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);

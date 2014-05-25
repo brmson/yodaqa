@@ -74,9 +74,10 @@
           </featureDescription>
         </features>
       </typeDescription>
+
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.Clue</name>
-        <description>Question Clue</description>
+        <description>Question Clue. A collection of clues is what supports search for answer-bearing passages. This is a base type that is never directly instantiated, though; subtypes representing various kinds of clues are.</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
         <features>
           <featureDescription>
@@ -90,6 +91,41 @@
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
         </features>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueToken</name>
+        <description>Clue based on interesting-looking tokens (e.g. nouns). These are the weakest form of clues, just as circumstantial evidence.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.CluePhrase</name>
+        <description>Clue based on interesting-looking sub-phrases (e.g. noun constituents). These are also very weak clues.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueSV</name>
+        <description>Clue based on SV (selection verb). Helpful but not crucial (esp. not for document titles).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueNE</name>
+        <description>Clue based on NE (named entity). Basically a stronger variant of ClueToken/CluePhrase.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueFocus</name>
+        <description>Clue based on the focus word. Often indicates the kind of the result, but may be too generic; e.g. "book", "person", "capital", "tall", "when"...</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueSubject</name>
+        <description>Clue based on the question subject. "When was Einstein born?" has SV "born", focus "when", but the subject is "Einstein". This is the most important clue, if it exists.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueSubjectAux</name>
+        <description>Clue based on the question subject's auxiliaries.  Sometimes, the subject is not a grammatical subject but its attachment; this then complements it, a less important clue.  "What is the name of Holmes' brother?" has subject "brother" and "name" remains a SubjectAux.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
       </typeDescription>
     </types>
   </typeSystemDescription>

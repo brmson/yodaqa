@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.TreeUtil;
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueSubject;
+import cz.brmlab.yodaqa.model.Question.ClueSubjectAux;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
@@ -56,17 +58,16 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 			List<Token> objDeps = TreeUtil.getAllGoverned(jcas, sentence, stok, "pobj|poss");
 			if (!objDeps.isEmpty()) {
 				for (Token objDep : objDeps)
-					addClue(jcas, objDep.getBegin(), objDep.getEnd(), objDep, 2.0);
+					addClue(new ClueSubject(jcas), objDep.getBegin(), objDep.getEnd(), objDep, 2.0);
 
-				addClue(jcas, subj.getBegin(), subj.getEnd(), subj, 1.0);
+				addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 1.0);
 			} else {
-				addClue(jcas, subj.getBegin(), subj.getEnd(), subj, 2.5);
+				addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 2.5);
 			}
 		}
 	}
 
-	protected void addClue(JCas jcas, int begin, int end, Annotation base, double weight) {
-		Clue clue = new Clue(jcas);
+	protected void addClue(Clue clue, int begin, int end, Annotation base, double weight) {
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);

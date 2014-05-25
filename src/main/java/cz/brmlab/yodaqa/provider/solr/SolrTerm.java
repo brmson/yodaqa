@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
-
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
+import cz.brmlab.yodaqa.model.Question.CluePhrase;
 
 public class SolrTerm {
 	protected String termStr;
@@ -36,8 +35,8 @@ public class SolrTerm {
 	public static List<SolrTerm> cluesToTerms(Collection<Clue> clues) {
 		List<SolrTerm> terms = new ArrayList<SolrTerm>(clues.size());
 		for (Clue clue : clues) {
-			// constituent clues are too phrasal for use as search keywords
-			if (clue.getBase() instanceof Constituent)
+			// phrases suck as search keywords
+			if (clue instanceof CluePhrase)
 				continue;
 
 			String keyterm = clue.getCoveredText();

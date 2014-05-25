@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.CluePhrase;
+import cz.brmlab.yodaqa.model.Question.ClueToken;
 
 /**
  * Generate Clue annotations in a QuestionCAS. These represent key information
@@ -52,13 +54,13 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		while (!lifo.isEmpty()) {
 			Constituent c = lifo.poll();
 			if (c.getConstituentType().matches(CONSTITMATCH))
-				addClue(jcas, c.getBegin(), c.getEnd(), c);
+				addClue(new CluePhrase(jcas), c.getBegin(), c.getEnd(), c);
 
 			for (FeatureStructure child : c.getChildren().toArray()) {
 				if (!(child instanceof Constituent)) {
 					Token t = (Token) child;
 					if (t.getPos().getPosValue().matches(TOKENMATCH))
-						addClue(jcas, t.getBegin(), t.getEnd(), t);
+						addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t);
 					continue;
 				}
 				lifo.add((Constituent) child);
@@ -66,8 +68,7 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addClue(JCas jcas, int begin, int end, Annotation base) {
-		Clue clue = new Clue(jcas);
+	protected void addClue(Clue clue, int begin, int end, Annotation base) {
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
