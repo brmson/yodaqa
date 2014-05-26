@@ -5,10 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
-import cz.brmlab.yodaqa.model.Question.ClueNE;
 import cz.brmlab.yodaqa.model.Question.CluePhrase;
-import cz.brmlab.yodaqa.model.Question.ClueSV;
-import cz.brmlab.yodaqa.model.Question.ClueSubject;
 
 public class SolrTerm {
 	protected String termStr;
@@ -53,9 +50,7 @@ public class SolrTerm {
 
 			String keyterm = clue.getCoveredText();
 			Double weight = clue.getWeight();
-			SolrTerm term = new SolrTerm(keyterm, weight,
-					(clue instanceof ClueNE) || (clue instanceof ClueSV) || (clue instanceof ClueSubject)
-				);
+			SolrTerm term = new SolrTerm(keyterm, weight, true /* FIXME */);
 			terms.add(term);
 		}
 
