@@ -51,19 +51,7 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 			if (stok.getPos().getPosValue().matches("^W.*"))
 				continue;
 
-			/* If the subject governs an object, e.g.
-			 * "Holmes' name" or "capital of Argentina",
-			 * switch the subject to "Holmes" and "Argentina"
-			 * and keep the original only with lower priority. */
-			List<Token> objDeps = TreeUtil.getAllGoverned(jcas, sentence, stok, "pobj|poss");
-			if (!objDeps.isEmpty()) {
-				for (Token objDep : objDeps)
-					addClue(new ClueSubject(jcas), objDep.getBegin(), objDep.getEnd(), objDep, 2.5);
-
-				addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 1.0);
-			} else {
-				addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 2.5);
-			}
+			addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 2.5);
 		}
 	}
 
