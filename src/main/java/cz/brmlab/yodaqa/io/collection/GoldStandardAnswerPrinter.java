@@ -81,7 +81,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		QuestionInfo qi = JCasUtil.selectSingle(jcas, QuestionInfo.class);
-		Pattern ap = Pattern.compile(qi.getAnswerPattern());
+		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		double procTime = (System.currentTimeMillis() - qi.getProcBeginTime()) / 1000.0;
 
 		FSIndex idx = jcas.getJFSIndexRepository().getIndex("SortedAnswers");
