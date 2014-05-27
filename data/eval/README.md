@@ -42,3 +42,19 @@ To show statistics based on amount of questions sporting the
 correct answer at a given rank, run:
 
 	data/eval/tsvout-rank.sh data/eval/tsv/trecnew-single200-out-0b086cf.tsv
+
+Analysis
+--------
+
+We are analyzing questions that failed recall in the analysis/
+subdirectory.  Systematic analysis is important especially for
+headroom (potential improvement) estimation of features that
+we can focus on next.  When updating to a new revision, you can
+reuse previous analysis results, e.g.:
+
+	cd data/eval
+	analysis-update.pl tsv/trecnew-single200-ovt-7b2a3f9.tsv \
+		<analysis/recall-trecnew-single200-ovt-184ebbb.txt \
+		>analysis/recall-trecnew-single200-ovt-7b2a3f9.txt
+
+See the top of that scripts for some extra notes.
