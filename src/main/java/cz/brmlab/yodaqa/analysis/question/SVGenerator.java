@@ -34,7 +34,9 @@ import cz.brmlab.yodaqa.model.Question.SV;
 public class SVGenerator extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(SVGenerator.class);
 
-	protected String SVBLACKLIST = "be|have|do";
+	// Unfortunately, it seems our lemmatizer doesn't handle contractions
+	// and verb forms? XXX: We should just roll our own lemmatizer
+	protected String SVBLACKLIST = "be|have|do|'s|'re|'d|'ve|doe|has";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
