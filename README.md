@@ -14,8 +14,10 @@ Wordnet is crucial for us.  We also draw some inspiration from the OpenQA
 project and the Taming Text book.
 
 The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarassingly often wrong; on our test
-corpus, it can currently answer correctly to about 10% of questions.
+some questions, even though it's embarassingly often wrong; on our training
+corpus, it can currently answer correctly to about 10% of questions (about
+28.5% of questions have the correct answer in top three and 32% in top five;
+64% of questions have the correct answer suggested at all).
 
 ## Installation Instructions
 
