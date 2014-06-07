@@ -1,21 +1,26 @@
 YodaQA
 ======
 
-YodaQA is a Question Answering system built on top of the Apache UIMA
-framework.  It stands for "Yet anOther Deep Answering pipeline" and it
-is inspired by the DeepQA (IBM Watson) papers.  Its goals are practicality,
-clean design and maximum simplicity - we believe that other nice features
-like usability for research will flow naturally from this.
+YodaQA is an open source Question Answering system using on-the-fly
+Information Extraction from various data sources (mainly enwiki).
+Its goals are practicality and extensible design - it is not a purely
+research project, even though we aim to develop YodaQA with appropriate
+scientific rigor.  Right now, it is focused on answering factoid
+questions and not optimized for speed at all; in the future, we hope
+to add some deductive capabilities and include "personal assistant"
+style conversation capabilities.
 
-YodaQA is developed as part of the Brmson platform.  For all the NLP
-logic (including the NLP type system), we lean heavily on the DKPro
-UIMA bindings; transitively, work like the StanfordParser and Princeton's
-Wordnet is crucial for us.  We also draw some inspiration from the OpenQA
-project and the Taming Text book.
+YodaQA stands for "Yet anOther Deep Answering pipeline" and the system is
+inspired by the DeepQA (IBM Watson) papers.  It is built on top of the Apache
+UIMA and developed as part of the Brmson platform.  For all the NLP logic
+(including the NLP type system), we lean heavily on the DKPro UIMA bindings;
+transitively, work like the StanfordParser and Princeton's Wordnet is crucial
+for us.  We also draw some inspiration from the OpenQA project and the Taming
+Text book.
 
 The current version is a work-in-progress snapshot that already can answer
 some questions, even though it's embarassingly often wrong; on our training
-corpus, it can currently answer correctly to about 10% of questions (about
+corpus, it can currently answer correctly to about 12% of questions (about
 28.5% of questions have the correct answer in top three and 32% in top five;
 64% of questions have the correct answer suggested at all).
 
