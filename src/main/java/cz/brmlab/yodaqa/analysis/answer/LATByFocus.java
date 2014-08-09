@@ -40,7 +40,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 	protected void addFocusLAT(JCas jcas, Focus focus) {
 		/* Convert focus to its lemma. */
 		Token ftok = focus.getToken();
-		String text = ftok.getLemma().getValue();
+		String text = ftok.getLemma().getValue().toLowerCase();
 		double spec = 0.0;
 
 		/* Focus may be a number... */

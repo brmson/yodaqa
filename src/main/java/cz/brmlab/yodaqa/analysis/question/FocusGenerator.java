@@ -78,7 +78,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		 * governing token then (if it's an actual adverb). */
 		if (focus == null) {
 			for (ADVMOD advmod : JCasUtil.selectCovered(ADVMOD.class, sentence)) {
-				if (advmod.getDependent().getLemma().getValue().equals("how")
+				if (advmod.getDependent().getLemma().getValue().toLowerCase().equals("how")
 				    && advmod.getGovernor().getPos().getPosValue().matches("^J.*|R.*")) {
 					focusTok = advmod.getGovernor();
 					focus = focusTok;

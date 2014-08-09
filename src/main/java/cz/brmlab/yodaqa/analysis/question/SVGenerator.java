@@ -110,6 +110,6 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 	protected boolean isAux(Token v) {
 		/* What was the name... -> "was" is useless for us.
 		 * Ignore over-generic verbs. */
-		return v.getLemma().getValue().matches(SVBLACKLIST);
+		return v.getLemma().getValue().toLowerCase().matches(SVBLACKLIST);
 	}
 }

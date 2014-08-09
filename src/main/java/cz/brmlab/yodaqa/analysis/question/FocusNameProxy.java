@@ -45,7 +45,7 @@ public class FocusNameProxy extends JCasAnnotator_ImplBase {
 		List<Focus> fToDel = new LinkedList<Focus>();
 		for (Focus f : JCasUtil.selectCovered(Focus.class, sentence)) {
 			Token ftok = f.getToken();
-			if (!ftok.getLemma().getValue().equals("name"))
+			if (!ftok.getLemma().getValue().toLowerCase().equals("name"))
 				continue;
 			List<Token> objDeps = TreeUtil.getAllGoverned(jcas, sentence, ftok, "pobj|poss");
 			if (!objDeps.isEmpty()) {

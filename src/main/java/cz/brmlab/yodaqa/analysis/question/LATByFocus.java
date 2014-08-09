@@ -1,5 +1,7 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import java.util.regex.Pattern;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -47,7 +49,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addFocusLAT(JCas jcas, Focus focus) {
-		String text = focus.getToken().getLemma().getValue();
+		String text = focus.getToken().getLemma().getValue().toLowerCase();
 		double spec = 0.0;
 
 		/* If focus is the question word, convert to an appropriate
@@ -87,5 +89,6 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		lat.setText(text);
 		lat.setSpecificity(spec);
 		lat.addToIndexes();
+		logger.debug("new LAT by {}: <<{}>>", base.getType().getShortName(), text);
 	}
 }
