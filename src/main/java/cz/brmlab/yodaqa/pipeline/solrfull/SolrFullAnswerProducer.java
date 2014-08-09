@@ -8,7 +8,6 @@ import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.analysis.passage.PassageAnalysisAE;
-import cz.brmlab.yodaqa.analysis.passextract.PassFirst;
 import cz.brmlab.yodaqa.analysis.passextract.PassageExtractorAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
@@ -21,8 +20,8 @@ import cz.brmlab.yodaqa.pipeline.ResultGenerator;
  * search, result analysis, passage extraction and generating candidate
  * answers from chosen document passages.
  *
- * In this case, the flow is based on processing full results of
- * a Solr fulltext search. */
+ * In this case, the flow is based on processing fulltext results of
+ * a Solr search. */
 
 public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
