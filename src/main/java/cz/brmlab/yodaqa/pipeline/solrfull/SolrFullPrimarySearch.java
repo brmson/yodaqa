@@ -129,13 +129,14 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	protected void generateSolrResult(JCas jcas, SolrDocument document) {
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
-		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
+		double score = ((Float) document.getFieldValue("score")).floatValue();
+		logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());
 		ri.setDocumentTitle(title);
 		ri.setSource(srcName);
-		ri.setRelevance(((Float) document.getFieldValue("score")).floatValue());
+		ri.setRelevance(score);
 		ri.setOrigin(resultInfoOrigin);
 		ri.addToIndexes();
 	}
