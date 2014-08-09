@@ -124,6 +124,8 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByFocus.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySubject.class));
+		/* Convert some syntactic clues to concept clues */
+		builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class));
 		/* Merge any duplicate clues */
 		builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
 
