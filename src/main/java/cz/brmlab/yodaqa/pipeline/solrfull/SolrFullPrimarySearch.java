@@ -1,6 +1,9 @@
 package cz.brmlab.yodaqa.pipeline.solrfull;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -17,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
@@ -24,7 +28,8 @@ import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
 import cz.brmlab.yodaqa.provider.solr.SolrTerm;
 
 /**
- * Take a question CAS and search for keywords in the Solr data source.
+ * Take a question CAS and search for keywords (or already resolved pageIDs)
+ * in the Solr data source.
  *
  * We just feed most of the clues to a Solr search. */
 
@@ -113,7 +118,29 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		/* Make sure we aren't processing any document twice in our
+		 * sequence of searches below. */
+		Collection<Integer> visitedIDs = new TreeSet<Integer>();
+
+		/* Run a search for concept clues (pageID)
+		 * if they weren't included above. */
+
 		SolrDocumentList documents;
+		try {
+			Collection<ClueConcept> concepts = JCasUtil.select(questionView, ClueConcept.class);
+			Collection<Integer> IDs = conceptsToIDs(concepts);
+			documents = solr.runIDQuery(IDs, hitListSize /* XXX: should we even limit this? */, logger);
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+
+		for (SolrDocument doc : documents) {
+			visitedIDs.add((Integer) doc.getFieldValue("id"));
+			generateSolrResult(searchView, doc);
+		}
+
+		/* Run a search for text clues. */
+
 		try {
 			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
 			Collection<SolrTerm> terms = SolrTerm.cluesToTerms(clues);
@@ -122,8 +149,22 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		for (SolrDocument doc : documents)
+		for (SolrDocument doc : documents) {
+			Integer docID = (Integer) doc.getFieldValue("id");
+			if (visitedIDs.contains(docID)) {
+				logger.info(" REDUNDANT: " + docID);
+				continue;
+			}
+			visitedIDs.add(docID);
 			generateSolrResult(searchView, doc);
+		}
+	}
+
+	protected List<Integer> conceptsToIDs(Collection<ClueConcept> concepts) {
+		List<Integer> terms = new ArrayList<Integer>(concepts.size());
+		for (ClueConcept concept : concepts)
+			terms.add(concept.getPageID());
+		return terms;
 	}
 
 	protected void generateSolrResult(JCas jcas, SolrDocument document) {
