@@ -168,4 +168,19 @@ public class Solr implements Closeable {
 		double finalWeight = (sumWeight / Math.pow(2, degree));
 		result.append("\"~" + finalDist + ")^" + finalWeight);
 	}
+
+	public SolrDocumentList runIDQuery(Collection<Integer> IDs, int nResults,
+			Logger cLogger) throws SolrServerException {
+		String query = formulateIDQuery(IDs, cLogger);
+		return runQuery(query, nResults);
+	}
+
+	protected String formulateIDQuery(Collection<Integer> IDs, Logger cLogger) {
+		StringBuffer result = new StringBuffer();
+		for (Integer ID : IDs)
+			result.append("id:" + ID + " ");
+		String query = result.toString();
+		cLogger.info(" QUERY: " + query);
+		return query;
+	}
 }
