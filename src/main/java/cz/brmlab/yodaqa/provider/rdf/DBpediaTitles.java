@@ -36,6 +36,13 @@ public class DBpediaTitles extends CachedJenaLookup {
 
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title) {
+		/* XXX: Case-insensitive search via SPARQL turns out
+		 * to be surprisingly tricky.  Cover 90% of all cases
+		 * by force-capitalizing the first letter in the sought
+		 * after title. */
+		boolean wasCapitalized = Character.toUpperCase(title.charAt(0)) == title.charAt(0);
+		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
+
 		title = title.replaceAll("\"", "\\\"");
 		List<Literal[]> rawResults = rawQuery(
 			"{\n" +
@@ -65,7 +72,14 @@ public class DBpediaTitles extends CachedJenaLookup {
 
 		List<Article> results = new ArrayList<Article>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
-			results.add(new Article(rawResult[0].getInt(), rawResult[1].getString()));
+			String label = rawResult[1].getString();
+			/* Undo capitalization if the label isn't all-caps
+			 * and the original title wasn't capitalized either.
+			 * Otherwise, all our terms will end up all-caps,
+			 * a silly thing. */
+			if (!wasCapitalized && (Character.toUpperCase(label.charAt(1)) != label.charAt(1)))
+				label = Character.toLowerCase(label.charAt(0)) + label.substring(1);
+			results.add(new Article(rawResult[0].getInt(), label));
 		}
 		return results;
 
