@@ -53,6 +53,10 @@ Alternatively, if things don't go well, try passing an extra parameter
 ``-Dorg.slf4j.simpleLogger.defaultLogLevel=debug`` on the mvn commandline,
 or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 
+Sometimes, Java may find itself short on memory; don't try to run YodaQA
+on systems with less than 8GB RAM.  Anyhow, you may need to invoke it as
+``MAVEN_OPTS="-Xms2048m -Xmx4500m" mvn -q exec:java ...``.
+
 ## Data Sources
 
 YodaQA uses Solr fulltext indexing framework as a data source, either
