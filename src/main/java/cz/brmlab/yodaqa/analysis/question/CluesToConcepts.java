@@ -77,16 +77,21 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				continue;
 
 			/* Yay, got one! */
+			DBpediaTitles.Article a = results.get(0);
 
-			/* Now remove all the covered clues. */
-			clue.removeFromIndexes();
+			/* Now remove all the covered clues - except the source
+			 * clue if we got a synonym via a redirect. */
+			/* TODO: Mark the clues as alternatives so that we
+			 * don't require both during full-text search. */
+			if (clue.getLabel().toLowerCase().equals(a.getLabel().toLowerCase())) {
+				clue.removeFromIndexes();
+			}
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
 				clueSub.removeFromIndexes();
 				cluesByLen.remove(clueSub);
 			}
 
 			/* Make a fresh clue. */
-			DBpediaTitles.Article a = results.get(0);
 			addClue(resultView, clue.getBegin(), clue.getEnd(),
 				clue.getBase(), clue.getWeight(),
 				a.getPageID(), a.getLabel());
