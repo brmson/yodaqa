@@ -106,6 +106,20 @@ source:
 
 You may want to edit the URL in ``src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java``.
 
+### DBpedia Data Source
+
+Aside of using unstructured enwiki text indexed in solr as data source,
+we are now also capable of using some of RDF data extraced from enwiki
+by DBpedia.  We actually don't use it as semantic database (i.e. infobox
+data and such) so far, but just for enwiki pages metadata --- lookup by
+exact title string match (sort of named entity recognition, already linked
+to page id we can use to fetch the page from solr) and redirect walking.
+
+By default, we rely on the public DBpedia SPARQL endpoint, but it is prone
+to outages and we shouldn't use it too heavily anyway.  Instrutions for
+setup of local DBpedia SPARQL endpoint are work-in-progress in
+``data/dbpedia/README.md``.
+
 
 ## Design Considerations
 
