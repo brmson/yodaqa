@@ -69,7 +69,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Check the clues in turn, starting by the longest - do they
 		 * correspond to enwiki articles? */
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
-			List<DBpediaTitles.Article> results = dbp.query(clue.getCoveredText());
+			List<DBpediaTitles.Article> results = dbp.query(clue.getCoveredText(), logger);
 			if (results.isEmpty())
 				continue;
 
@@ -99,6 +99,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		clue.setPageID(pageID);
 		clue.setLabel(label);
 		clue.addToIndexes();
-		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getCoveredText());
+		logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
 }

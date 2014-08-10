@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import org.slf4j.Logger;
+
 /** A wrapper around DBpedia "Titles" dataset that maps titles to
  * Wikipedia articles. The main point of using this is to find out
  * whether an article with the given title (termed also "label")
@@ -35,7 +37,7 @@ public class DBpediaTitles extends CachedJenaLookup {
 	}
 
 	/** Query for a given title, returning a set of articles. */
-	public List<Article> query(String title) {
+	public List<Article> query(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
 		 * by force-capitalizing the first letter in the sought
@@ -44,7 +46,7 @@ public class DBpediaTitles extends CachedJenaLookup {
 		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
 
 		title = title.replaceAll("\"", "\\\"");
-		List<Literal[]> rawResults = rawQuery(
+		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
 			"  ?res rdfs:label \"" + title + "\"@en.\n" +
@@ -67,7 +69,9 @@ public class DBpediaTitles extends CachedJenaLookup {
 			"FILTER ( !regex(str(?y), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			 // output only english labels, thankyouverymuch
 			"FILTER ( LANG(?label) = 'en' )\n" +
-			"",
+			"";
+		//logger.debug("executing sparql query: {}", rawQueryStr);
+		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "pageID", "label" });
 
 		List<Article> results = new ArrayList<Article>(rawResults.size());
@@ -79,6 +83,7 @@ public class DBpediaTitles extends CachedJenaLookup {
 			 * a silly thing. */
 			if (!wasCapitalized && (Character.toUpperCase(label.charAt(1)) != label.charAt(1)))
 				label = Character.toLowerCase(label.charAt(0)) + label.substring(1);
+			logger.debug("DBpedia {}: [[{}]]", title, label);
 			results.add(new Article(rawResult[0].getInt(), label));
 		}
 		return results;
