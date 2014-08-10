@@ -69,7 +69,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Check the clues in turn, starting by the longest - do they
 		 * correspond to enwiki articles? */
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
-			List<DBpediaTitles.Article> results = dbp.query(clue.getCoveredText(), logger);
+			List<DBpediaTitles.Article> results = dbp.query(clue.getLabel(), logger);
 			if (results.isEmpty())
 				continue;
 

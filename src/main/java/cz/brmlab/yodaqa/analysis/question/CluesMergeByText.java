@@ -42,7 +42,7 @@ public class CluesMergeByText extends JCasAnnotator_ImplBase {
 
 		/* Put all Clues in a text-addressed map. */
 		for (Clue clue : JCasUtil.select(resultView, Clue.class)) {
-			String text = clue.getCoveredText();
+			String text = clue.getLabel();
 			List<Clue> clues = cluesByText.get(text);
 			if (clues == null) {
 				clues = new LinkedList<Clue>();
@@ -74,10 +74,10 @@ public class CluesMergeByText extends JCasAnnotator_ImplBase {
 
 	protected void subdueInfo(Clue subdued, Clue subduing) {
 		logger.debug("subduing {}({}:{}) <| {}({}:{})",
-			subdued.getCoveredText(),
+			subdued.getLabel(),
 			subdued.getType().getShortName(),
 			subdued.getWeight(),
-			subduing.getCoveredText(),
+			subduing.getLabel(),
 			subduing.getType().getShortName(),
 			subduing.getWeight());
 	}

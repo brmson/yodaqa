@@ -48,7 +48,7 @@ public class SolrTerm {
 			if (clue instanceof CluePhrase)
 				continue;
 
-			String keyterm = clue.getCoveredText();
+			String keyterm = clue.getLabel();
 			Double weight = clue.getWeight();
 			SolrTerm term = new SolrTerm(keyterm, weight, true /* FIXME */);
 			terms.add(term);

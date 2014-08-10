@@ -49,7 +49,7 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 			/* TODO: This can be optimized a lot. */
 			boolean matches = false;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (text.endsWith(clue.getCoveredText())) {
+				if (text.endsWith(clue.getLabel())) {
 					matches = true;
 					break;
 				}

@@ -43,7 +43,8 @@ public class ClueByNE extends JCasAnnotator_ImplBase {
 		clue.setEnd(end);
 		clue.setBase(base);
 		clue.setWeight(2.0);
+		clue.setLabel(clue.getCoveredText());
 		clue.addToIndexes();
-		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getCoveredText());
+		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
 	}
 }
