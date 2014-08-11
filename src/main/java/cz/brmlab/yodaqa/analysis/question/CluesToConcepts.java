@@ -22,7 +22,6 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.Question.ClueNE;
 import cz.brmlab.yodaqa.model.Question.CluePhrase;
-import cz.brmlab.yodaqa.model.Question.ClueToken;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
 
 /**
@@ -62,8 +61,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 					return -(l1 - l2); // from largest length
 				}
 			});
-		for (Clue clue : JCasUtil.select(resultView, ClueToken.class))
-			cluesByLen.add(clue);
 		for (Clue clue : JCasUtil.select(resultView, CluePhrase.class))
 			cluesByLen.add(clue);
 		for (Clue clue : JCasUtil.select(resultView, ClueNE.class))
