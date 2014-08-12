@@ -154,17 +154,22 @@ public class Solr implements Closeable {
 	protected void formulateProximityQuery(Collection<SolrTerm> terms, SolrQuerySettings settings, String prefix, StringBuffer result, int degree) {
 		result.append(" (" + prefix + "\"");
 
+		int n_terms = 0;
 		double sumWeight = 0;
 		for (SolrTerm term : terms) {
+			// ignore optional terms in proximity queries
+			if (!term.isRequired())
+				continue;
 			// drop quote characters; more escaping is done in escapeQuery()
 			String keyterm = term.getTermStr().replace("\"", "");
 			result.append(keyterm + " ");
 			sumWeight += term.getWeight();
+			n_terms += 1;
 		}
 
 		int finalDist = settings.getProximityBaseDist()
 			* ((int) Math.pow(settings.getProximityBaseFactor(), degree))
-			* terms.size();
+			* n_terms;
 		double finalWeight = (sumWeight / Math.pow(2, degree));
 		result.append("\"~" + finalDist + ")^" + finalWeight);
 	}
