@@ -47,6 +47,7 @@ public class ClueByFocus extends JCasAnnotator_ImplBase {
 		clue.setBase(base);
 		clue.setWeight(1.5);
 		clue.setLabel(clue.getCoveredText());
+		clue.setIsReliable(true);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
 	}

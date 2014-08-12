@@ -42,6 +42,7 @@ public class ClueBySV extends JCasAnnotator_ImplBase {
 		clue.setBase(base);
 		clue.setWeight(1.0);
 		clue.setLabel(clue.getCoveredText());
+		clue.setIsReliable(true);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
 	}

@@ -50,7 +50,8 @@ public class SolrTerm {
 
 			String keyterm = clue.getLabel();
 			Double weight = clue.getWeight();
-			SolrTerm term = new SolrTerm(keyterm, weight, true /* FIXME */);
+			boolean isRequired = clue.getIsReliable();
+			SolrTerm term = new SolrTerm(keyterm, weight, isRequired);
 			terms.add(term);
 		}
 

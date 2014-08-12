@@ -95,6 +95,11 @@
             <description>Text of the clue.  Mostly, this is the same as getCoveredText() output, but some clues may expand or contract abbreviations, or in case of synsets or redirects, the name of the concept may be different (e.g. Wikipedia page title; "spacecraft" is covered, but an additional clue for "spaceship" is generated).</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>isReliable</name>
+            <description>Whether the clue label is reliable, i.e. can be used as a _required_ term during a search query.</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>

@@ -77,6 +77,7 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		clue.setBase(base);
 		clue.setWeight(weight);
 		clue.setLabel(clue.getCoveredText());
+		clue.setIsReliable(true);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
 	}
