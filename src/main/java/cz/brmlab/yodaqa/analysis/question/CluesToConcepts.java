@@ -87,10 +87,25 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				cluesByLen.remove(clueSub);
 			}
 
-			/* Make a fresh clue. */
+			/* Maybe the concept clue has a different label than
+			 * the original wording in question text.  That can
+			 * be a useful hint, but is also pretty unreliable;
+			 * be it for suffixes in parentheses " (band)" or
+			 * that "The ancient city" resolves to "King's Field
+			 * IV" etc.
+			 *
+			 * Therefore, in that case we will still create the
+			 * concept clue with redirect target, but also set
+			 * the flag @reworded which will make this reworded
+			 * text *optional* during full-text search and keep
+			 * the original text (required during search) within
+			 * a new ClueNE annotation. */
+			boolean reworded = ! clue.getLabel().toLowerCase().equals(a.getLabel().toLowerCase());
+
+			/* Make a fresh concept clue. */
 			addClue(resultView, clue.getBegin(), clue.getEnd(),
 				clue.getBase(), clue.getWeight(),
-				a.getPageID(), a.getLabel());
+				a.getPageID(), a.getLabel(), !reworded);
 
 			/* Make also an NE clue with always the original text
 			 * as label. */
@@ -99,12 +114,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * entity. And we need a new clue since we removed all
 			 * sub-clues and the original clue might have been just
 			 * a CluePhrase that gets ignored during search. */
-			addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-				clue, clue.getWeight());
+			if (reworded)
+				addNEClue(resultView, clue.getBegin(), clue.getEnd(),
+					clue, clue.getWeight());
 		}
 	}
 
-	protected void addClue(JCas jcas, int begin, int end, Annotation base, double weight, int pageID, String label) {
+	protected void addClue(JCas jcas, int begin, int end, Annotation base, double weight, int pageID, String label, boolean isReliable) {
 		ClueConcept clue = new ClueConcept(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
@@ -112,10 +128,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		clue.setWeight(weight + 0.1); // ensure precedence during merge
 		clue.setPageID(pageID);
 		clue.setLabel(label);
-		/* Concept clues are optional since their
-		 * labels are unreliable. "The ancient city"
-		 * resolves to "King's Field IV" etc. */
-		clue.setIsReliable(false);
+		clue.setIsReliable(isReliable);
 		clue.addToIndexes();
 		logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
