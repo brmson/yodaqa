@@ -103,7 +103,10 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		clue.setWeight(weight + 0.1); // ensure precedence during merge
 		clue.setPageID(pageID);
 		clue.setLabel(label);
-		clue.setIsReliable(true);
+		/* Concept clues are optional since their
+		 * labels are unreliable. "The ancient city"
+		 * resolves to "King's Field IV" etc. */
+		clue.setIsReliable(false);
 		clue.addToIndexes();
 		logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
