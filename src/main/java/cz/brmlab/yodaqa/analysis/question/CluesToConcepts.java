@@ -76,14 +76,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			/* Yay, got one! */
 			DBpediaTitles.Article a = results.get(0);
 
-			/* Now remove all the covered clues - except the source
-			 * clue if we got a synonym via a redirect. */
+			/* Now remove all the covered sub-clues. */
 			/* TODO: Mark the clues as alternatives so that we
 			 * don't require both during full-text search. */
-			if (clue.getLabel().toLowerCase().equals(a.getLabel().toLowerCase())) {
-				clue.removeFromIndexes();
-			}
+			clue.removeFromIndexes();
+			cluesByLen.remove(clue);
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
+				logger.debug("Concept {} subduing {} {}", a.getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
 				clueSub.removeFromIndexes();
 				cluesByLen.remove(clueSub);
 			}
@@ -92,6 +91,16 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			addClue(resultView, clue.getBegin(), clue.getEnd(),
 				clue.getBase(), clue.getWeight(),
 				a.getPageID(), a.getLabel());
+
+			/* Make also an NE clue with always the original text
+			 * as label. */
+			/* A presence of wiki page with the text as a title is
+			 * a fair evidence that this is actually a named
+			 * entity. And we need a new clue since we removed all
+			 * sub-clues and the original clue might have been just
+			 * a CluePhrase that gets ignored during search. */
+			addNEClue(resultView, clue.getBegin(), clue.getEnd(),
+				clue, clue.getWeight());
 		}
 	}
 
@@ -109,5 +118,17 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		clue.setIsReliable(false);
 		clue.addToIndexes();
 		logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
+	}
+
+	protected void addNEClue(JCas jcas, int begin, int end, Annotation base, double weight) {
+		ClueNE clue = new ClueNE(jcas);
+		clue.setBegin(begin);
+		clue.setEnd(end);
+		clue.setBase(base);
+		clue.setWeight(weight + 0.1); // ensure precedence during merge
+		clue.setLabel(clue.getCoveredText());
+		clue.setIsReliable(true);
+		clue.addToIndexes();
+		logger.debug("new(NE) by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
 }
