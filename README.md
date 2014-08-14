@@ -20,9 +20,10 @@ Text book.
 
 The current version is a work-in-progress snapshot that already can answer
 some questions, even though it's embarassingly often wrong; on our training
-corpus, it can currently answer correctly to about 12% of questions (about
-28.5% of questions have the correct answer in top three and 32% in top five;
-64% of questions have the correct answer suggested at all).
+corpus, while 67% of questions have the correct answer *suggested* in the
+process, it can currently choose the correct answer for about 14.5% of
+questions (but 27.5% of questions have the correct answer in top three and
+34.5% in top five).
 
 ## Installation Instructions
 
