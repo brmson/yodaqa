@@ -41,7 +41,7 @@ try running something like (in either style):
 To show statistics based on amount of questions sporting the
 correct answer at a given rank, run:
 
-	data/eval/tsvout-rank.sh data/eval/tsv/trecnew-single200-out-0b086cf.tsv
+	data/eval/tsvout-ranks.sh data/eval/tsv/trecnew-single200-ovt-3b46430.tsv
 
 Analysis
 --------
