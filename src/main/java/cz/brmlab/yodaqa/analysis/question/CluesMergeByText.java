@@ -61,6 +61,11 @@ public class CluesMergeByText extends JCasAnnotator_ImplBase {
 				clue.removeFromIndexes();
 				if (mainClue == null) {
 					mainClue = clue;
+				} else if (!mainClue.getIsReliable() && clue.getIsReliable()) {
+					subdueInfo(mainClue, clue);
+					mainClue = clue;
+				} else if (mainClue.getIsReliable() && !clue.getIsReliable()) {
+					subdueInfo(clue, mainClue);
 				} else if (mainClue.getWeight() <= clue.getWeight()) {
 					subdueInfo(mainClue, clue);
 					mainClue = clue;
