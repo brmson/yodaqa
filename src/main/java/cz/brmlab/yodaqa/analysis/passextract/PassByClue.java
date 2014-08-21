@@ -111,9 +111,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				/* Score slowly raises with number of matched
 				 * clues (TODO this, the sqrt() is completely
 				 * arbitrary, and we may overemphasize long
-				 * clues here), and goes down
-				 * with the offset in the document (more
-				 * important things come first). */
+				 * clues here). */
 				double score = Math.sqrt(matches);
 				passage.setScore(score);
 
