@@ -70,6 +70,10 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		 * correspond to enwiki articles? */
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
 			List<DBpediaTitles.Article> results = dbp.query(clue.getLabel(), logger);
+			/* Leading "The" may be optional, e.g. "6-day war". */
+			if (results.isEmpty()
+			    && clue.getLabel().toLowerCase().startsWith("the "))
+				results = dbp.query(clue.getLabel().substring(4), logger);
 			if (results.isEmpty())
 				continue;
 

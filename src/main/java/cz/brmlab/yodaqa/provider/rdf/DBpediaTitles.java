@@ -87,10 +87,6 @@ public class DBpediaTitles extends CachedJenaLookup {
 			results.add(new Article(rawResult[0].getInt(), label));
 		}
 
-		/* Leading "The" may be optional, e.g. "6-day war". */
-		if (results.isEmpty() && title.startsWith("The "))
-			return query(title.substring(4), logger);
-
 		return results;
 
 		/*
