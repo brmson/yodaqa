@@ -123,7 +123,7 @@ setup of local DBpedia SPARQL endpoint are work-in-progress in
 ``data/dbpedia/README.md``.
 
 
-## Design Considerations
+## Development Notes
 
 See the [High Level Design Notes](doc/HIGHLEVEL.md) document for
 a brief description of YodaQA's design approach.
