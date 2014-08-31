@@ -42,11 +42,18 @@
           </featureDescription>
         </features>
       </typeDescription>
+
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.SearchResult.Passage</name>
         <description>Interesting passages of the search result that will be examined in more detail.</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
         <features>
+          <featureDescription>
+            <name>features</name>
+            <description>A set of features of this passage. Unmatched features need not be present, and order does not matter. Duplicates are also perfectly normal (e.g. multiple matching clues will generate copies of a feature) and are summed together.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.SearchResult.PassageFeature</elementType>
+          </featureDescription>
           <featureDescription>
             <name>score</name>
             <description>Score of the passage regarding relevance likelihood.</description>
@@ -54,6 +61,41 @@
           </featureDescription>
         </features>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.PassageFeature</name>
+        <description>A feature matched on a particular passage. This type is for sub-classing to particular features.</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>value</name>
+            <description>Feature value. Unmatched features are assumed 0. Ideally, the feature value should be in the interval of [0,1], but this is not enforced.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <!-- N.B. for the time being, new types must be also added to a list in
+           src/main/java/cz/brmlab/yodaqa/analysis/passextract/PassageFV.java -->
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.PF_ClueMatch</name>
+        <description>Passage Feature: A clue matched. Value is fixed to 1.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.SearchResult.PassageFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight</name>
+        <description>Passage Feature: A clue matched. Value is the (solr-used) weight of the clue.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.SearchResult.PassageFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueMatch</name>
+        <description>Passage Feature: An "about" clue matched (i.e. a clue that also matches the document title; suggests lower signal). Value is fixed to 1.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.SearchResult.PassageFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueWeight</name>
+        <description>Passage Feature: An "about" clue matched (i.e. a clue that also matches the document title; suggests lower signal). Value is the (solr-used) weight of the clue.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.SearchResult.PassageFeature</supertypeName>
+      </typeDescription>
+
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer</name>
         <description>Candidate Answer</description>

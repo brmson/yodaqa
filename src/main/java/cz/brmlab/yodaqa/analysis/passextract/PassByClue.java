@@ -1,16 +1,20 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.lang.Math;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.SofaCapability;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -20,7 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.SearchResult.PF_ClueMatch;
+import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
+import cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueMatch;
+import cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueWeight;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
+import cz.brmlab.yodaqa.model.SearchResult.PassageFeature;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
 /**
@@ -52,7 +61,6 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		int totalLength = resultView.getDocumentText().length();
 
 		/* Below, we match clues only as whole words (when we are
 		 * looking for "grant", we don't want "vagrant").  However,
@@ -79,16 +87,16 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		 * but for now we opt for a trivial O(M*N) approach. */
 		CasCopier copier = new CasCopier(resultView.getCas(), passagesView.getCas());
 		for (Sentence sentence : JCasUtil.select(resultView, Sentence.class)) {
+			List<PassageFeature> features = new LinkedList<PassageFeature>();
+			String featureStr = "";
+
 			/* TODO: Put clues in a hierarchy so that we don't
 			 * try to match word clues of phrase clues we already
 			 * matched. */
-			double matches = 0;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 				if (!sentence.getCoveredText().matches("(?i).*\\b" + clue.getLabel() + "(.|ed|ing)?\\b.*"))
 					continue;
 				/* Match! */
-
-				double weight = clue.getWeight();
 
 				/* We will want to weight about-clues less than
 				 * others to reduce the noise. If our clues are
@@ -96,28 +104,34 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				 * "Bob Marley", the sentences talking about
 				 * death are much more important than sentences
 				 * about Marley. */
-				if (clueIsAbout.containsKey(clue))
-					weight /= 4.0;
-
-				matches += weight;
+				try {
+					if (clueIsAbout.containsKey(clue)) {
+						clueFeatures(passagesView, features, PF_AboutClueMatch.class, PF_AboutClueWeight.class, clue);
+						featureStr += "a";
+					} else {
+						clueFeatures(passagesView, features, PF_ClueMatch.class, PF_ClueWeight.class, clue);
+						featureStr += "m";
+					}
+				} catch (InstantiationException e) {
+					throw new AnalysisEngineProcessException(e);
+				} catch (IllegalAccessException e) {
+					throw new AnalysisEngineProcessException(e);
+				} catch (InvocationTargetException e) {
+					throw new AnalysisEngineProcessException(e);
+				} catch (NoSuchMethodException e) {
+					throw new AnalysisEngineProcessException(e);
+				}
 			}
 
-			if (matches > 0) {
+			if (!features.isEmpty()) {
 				/* Annotate. */
 				Passage passage = new Passage(passagesView);
 				passage.setBegin(sentence.getBegin());
 				passage.setEnd(sentence.getEnd());
-
-				/* Score slowly raises with number of matched
-				 * clues (TODO this, the sqrt() is completely
-				 * arbitrary, and we may overemphasize long
-				 * clues here). */
-				double score = Math.sqrt(matches);
-				passage.setScore(score);
-
+				passage.setFeatures(FSCollectionFactory.createFSArray(jcas, features));
 				passage.addToIndexes();
 
-				logger.debug(passage.getScore() + " | " + passage.getCoveredText());
+				logger.debug(featureStr + " | " + passage.getCoveredText());
 
 				/* Copy */
 				if (!copier.alreadyCopied(sentence)) {
@@ -133,5 +147,21 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				}
 			}
 		}
+	}
+
+	protected void clueFeatures(JCas jcas, List<PassageFeature> features,
+			Class<? extends PassageFeature> matchFeature,
+			Class<? extends PassageFeature> weightFeature,
+			Clue clue)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		PassageFeature matchF = matchFeature.getConstructor(JCas.class).newInstance(jcas);
+		matchF.setValue(1.0);
+		matchF.addToIndexes();
+		features.add(matchF);
+
+		PassageFeature weightF = weightFeature.getConstructor(JCas.class).newInstance(jcas);
+		weightF.setValue(clue.getWeight());
+		weightF.addToIndexes();
+		features.add(weightF);
 	}
 }
