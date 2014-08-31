@@ -152,3 +152,11 @@ We also carry some sources in the de.tudarmstadt.ukp.dkpro namespace
 and types in the desc namespace; these are just tweaked copies of some
 DKPro upstream classes that contain bugfixes we require - we expect to
 get rid of them with the next upstream releases.
+
+### Machine Learning
+
+Some stages of the QA pipeline use machine learning for scoring snippets
+(passages, answers) to pick those which deserve further consideration.
+Models should be re-trained every time a non-trivial change in the
+pipeline is made.  For details on managing this, please refer to
+doc/ML.md.
