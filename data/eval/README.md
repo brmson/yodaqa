@@ -15,6 +15,35 @@ is too many of them at this point.  They are archived at
 
 and they should be stored in the data/eval/tsv/ directory.
 
+Datasets
+--------
+
+Due to various constraints, the datasets we use for day-to-day development
+are pitifully small.  We hope to improve the situation in the future but
+we have to do with this for now.
+
+Currently, we have two designated datasets:
+
+  * Testing dataset: Consists of the first 200 questions of the trecnew-single
+    dataset (data/trec/trecnew-single200.tsv).  We use this dataset for primary
+    development, detailed performance analysis and general benchmarking.
+  * Training dataset: Consists of the second 200 questions of the trecnew-single
+    dataset (data/trec/trecnew-single400.tsv).  We (will) use this dataset
+    for training machine learning algorithms.
+
+We have some spare questions in the trecnew-single dataset.  We hope to use
+these in the future for a verification dataset - a master benchmark with
+questions blind to the developers (we should never look at them, only at the
+summary results) and run only at well defined intervals (i.e. not driving
+day-to-day development and feature acceptance).
+
+However, before setting this up, the TREC datasets should be cleaned up
+from wrong and ambiguous answers and categorized (e.g. to enwiki-easy - should
+be possible to text mine -, enwiki-deducible - human could deduce this with
+just enwiki -, and enwiki-no - impossible to answer without external sources).
+Ideally, humans should be doing all stages of evaluation instead of just
+using regex matches, as time by time an unconcieved legitimate answer pops up.
+
 Tools
 -----
 
