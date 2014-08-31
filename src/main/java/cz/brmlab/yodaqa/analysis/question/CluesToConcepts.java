@@ -69,13 +69,17 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Check the clues in turn, starting by the longest - do they
 		 * correspond to enwiki articles? */
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
-			List<DBpediaTitles.Article> results = dbp.query(clue.getLabel(), logger);
+			String clueLabel = clue.getLabel();
+
+			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			/* Leading "The" may be optional, e.g. "6-day war".
 			 * But make sure the rest is still multi-word. */
 			if (results.isEmpty()
-			    && clue.getLabel().toLowerCase().startsWith("the ")
-			    && clue.getLabel().substring(4).contains(" "))
-				results = dbp.query(clue.getLabel().substring(4), logger);
+			    && clueLabel.toLowerCase().startsWith("the ")
+			    && clueLabel.substring(4).contains(" ")) {
+				clueLabel = clueLabel.substring(4);
+				results = dbp.query(clueLabel, logger);
+			}
 			if (results.isEmpty())
 				continue;
 
@@ -106,7 +110,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * text *optional* during full-text search and keep
 			 * the original text (required during search) within
 			 * a new ClueNE annotation. */
-			boolean reworded = ! clue.getLabel().toLowerCase().equals(a.getLabel().toLowerCase());
+			boolean reworded = ! clueLabel.toLowerCase().equals(a.getLabel().toLowerCase());
 
 			/* Make a fresh concept clue. */
 			addClue(resultView, clue.getBegin(), clue.getEnd(),
