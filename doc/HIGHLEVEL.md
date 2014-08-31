@@ -159,6 +159,10 @@ NLP analysis annotators like parsers just to this subset).
 Passages are ranked by relevance and the most relevant ones are carried
 to a PickedPassages view.
 
+The ranking is based on score that is computed from various features
+and based on machine learned classifier (that prefers passages matching
+the correct answer regex).
+
 #### Answer Extraction
 
 In-depth sentence analysis is done on the remaining passages and candidate
@@ -181,9 +185,12 @@ view and (maybe) copy of the search result information in the Result view.
 ## Answer Analysis
 
 This phase runs a variety of analytics on the **CandidateAnswerCAS**
-that extracts various features, matches them to the Question view,
-possibly produces and considers supporting evidence, etc.  Confidence
-rating is issued to each answer based on this.
+that extract various features, match them to the Question view,
+possibly produce and consider supporting evidence, etc.
+
+Confidence rating is issued to each answer based on features generated
+during the analysis.  The rating score is computed by a machine learned
+classifier.
 
 ## Answer Merger
 
