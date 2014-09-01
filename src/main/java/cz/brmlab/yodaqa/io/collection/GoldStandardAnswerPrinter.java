@@ -61,13 +61,17 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		}
 	}
 
-	protected void output(String id, double procTime, String qText,
+	protected void output(QuestionInfo qi, double procTime,
 			double score, int rank, int nranks,
-			String aPattern, String aMatch, String... toplist)
+			String aMatch, String... toplist)
 	{
-		String[] columns = new String[] { id, Double.toString(procTime), qText,
-			Double.toString(score), Integer.toString(rank), Integer.toString(nranks),
-			aPattern, aMatch };
+		String[] columns = new String[] {
+			qi.getQuestionId(), Double.toString(procTime),
+			qi.getQuestionText(),
+			Double.toString(score),
+			Integer.toString(rank), Integer.toString(nranks),
+			qi.getAnswerPattern(), aMatch,
+		};
 		columns = (String[]) ArrayUtils.addAll(columns, toplist);
 
 		String output = StringUtils.join(columns, "\t");
@@ -109,15 +113,11 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			if (match >= 0)
 				score = 1.0 - Math.log(1 + match) / Math.log(i);
 
-			output(qi.getQuestionId(), procTime, qi.getQuestionText(),
-				score, match, i,
-				qi.getAnswerPattern(), matchText, toplist);
+			output(qi, procTime, score, match, i, matchText, toplist);
 
 		} else {
 			/* Special case, no answer found. */
-			output(qi.getQuestionId(), procTime, qi.getQuestionText(),
-				0.0, 0, 0,
-				qi.getAnswerPattern(), ".");
+			output(qi, procTime, 0.0, 0, 0, ".");
 		}
 	}
 }
