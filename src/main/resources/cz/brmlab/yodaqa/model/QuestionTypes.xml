@@ -43,6 +43,26 @@
             <description>Time of processing start (as returned by System.currentTimeMillis()), for measuring answering speed</description>
             <rangeTypeName>uima.cas.Long</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>passE_scored</name>
+            <description>PassExtract statistics: Number of scored passages</description>
+            <rangeTypeName>uima.cas.Integer</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>passE_gsscored</name>
+            <description>PassExtract statistics: Number of scored passages that match answerPattern</description>
+            <rangeTypeName>uima.cas.Integer</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>passE_picked</name>
+            <description>PassExtract statistics: Number of picked passages</description>
+            <rangeTypeName>uima.cas.Integer</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>passE_gspicked</name>
+            <description>PassExtract statistics: Number of picked passages that match answerPattern</description>
+            <rangeTypeName>uima.cas.Integer</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>

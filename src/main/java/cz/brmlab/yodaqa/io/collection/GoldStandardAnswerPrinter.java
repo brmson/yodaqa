@@ -71,6 +71,10 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			Double.toString(score),
 			Integer.toString(rank), Integer.toString(nranks),
 			qi.getAnswerPattern(), aMatch,
+			Integer.toString(qi.getPassE_scored()),
+			Integer.toString(qi.getPassE_gsscored()),
+			Integer.toString(qi.getPassE_picked()),
+			Integer.toString(qi.getPassE_gspicked()),
 		};
 		columns = (String[]) ArrayUtils.addAll(columns, toplist);
 

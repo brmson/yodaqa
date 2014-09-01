@@ -39,11 +39,13 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		 * only sentences and tokens we care about: */
 		builder.add(createPrimitiveDescription(PassSetup.class));
 		switch (passSelection) {
+
 		case PARAM_PASS_SEL_BYCLUE:
 			builder.add(createPrimitiveDescription(PassByClue.class));
 			builder.add(createPrimitiveDescription(PassScoreSimple.class),
 				CAS.NAME_DEFAULT_SOFA, "Passages");
 			break;
+
 		case PARAM_PASS_SEL_FIRST:
 			builder.add(createPrimitiveDescription(PassFirst.class));
 			break;
@@ -52,6 +54,9 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		/* Finally cut these only to the most interesting N sentences
 		 * and copy these over to new view PickedPassages. */
 		builder.add(createPrimitiveDescription(PassFilter.class));
+
+		if (passSelection == PARAM_PASS_SEL_BYCLUE)
+			builder.add(createPrimitiveDescription(PassGSHook.class));
 
 		return builder.createAggregateDescription();
 	}

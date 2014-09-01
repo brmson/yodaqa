@@ -18,6 +18,7 @@ gold standard measurements, but passing an extra mvn commandline option
 	-Dcz.brmlab.yodaqa.mltraining=1
 
 will make YodaQA generate detailed feature vector records for training
-of models.
+of models in file ``training-passextract.tsv`` (in the current working
+directory, typically the project root).
 
-The rest is TODO now.
+The rest is TODO for now.
