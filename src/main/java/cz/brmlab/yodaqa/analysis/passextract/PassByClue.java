@@ -67,7 +67,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		Map<Clue, Boolean> clueIsAbout = new HashMap<Clue, Boolean>();
 		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
 		for (Clue clue : JCasUtil.select(questionView, Clue.class))
-			if (ri.getDocumentTitle().matches("(?i).*\\b" + clue.getLabel() + "(.|ed|ing)?\\b.*"))
+			if (ri.getDocumentTitle().matches("(?i).*\\b\\Q" + clue.getLabel() + "\\E(.|ed|ing)?\\b.*"))
 				clueIsAbout.put(clue, true);
 
 		/* Pre-index covering info. */
@@ -84,7 +84,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			 * matched. */
 			double matches = 0;
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (!sentence.getCoveredText().matches("(?i).*\\b" + clue.getLabel() + "(.|ed|ing)?\\b.*"))
+				if (!sentence.getCoveredText().matches("(?i).*\\b\\Q" + clue.getLabel() + "\\E(.|ed|ing)?\\b.*"))
 					continue;
 				/* Match! */
 
