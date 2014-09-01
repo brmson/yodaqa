@@ -51,7 +51,7 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 		}
 
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
-		if (qi.getAnswerPattern() == "")
+		if (qi.getAnswerPattern() == null)
 			return; // nothing to do, no gold standard
 		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
