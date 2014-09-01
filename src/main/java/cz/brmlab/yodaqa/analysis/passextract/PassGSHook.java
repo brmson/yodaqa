@@ -106,7 +106,7 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 			sb.append("\t");
 		}
 
-		sb.append(isMatch);
+		sb.append(isMatch ? 1 : 0);
 		trainFile.println(sb.toString());
 		trainFile.flush();
 	}
