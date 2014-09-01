@@ -29,8 +29,18 @@ public class PassScoreSimple extends JCasAnnotator_ImplBase {
 		super.initialize(aContext);
 	}
 
+	protected class PassScore {
+		Passage passage;
+		double score;
+
+		public PassScore(Passage passage_, double score_) {
+			passage = passage_;
+			score = score_;
+		}
+	}
+
 	public void process(JCas passagesView) throws AnalysisEngineProcessException {
-		List<Passage> passages = new LinkedList<Passage>();
+		List<PassScore> passages = new LinkedList<PassScore>();
 
 		for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
 			PassageFV fv = new PassageFV(passage);
@@ -40,14 +50,15 @@ public class PassScoreSimple extends JCasAnnotator_ImplBase {
 			assert(clueWeight_i >= 0 && aboutClueWeight_i >= 0);
 
 			double score = fv.getValues()[clueWeight_i] + 0.25 * fv.getValues()[aboutClueWeight_i];
-			passage.setScore(score);
-			passages.add(passage);
+			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
+			passages.add(new PassScore(passage, score));
 		}
 
 		/* Reindex the touched passages. */
-		for (Passage passage : passages) {
-			passage.removeFromIndexes();
-			passage.addToIndexes();
+		for (PassScore ps : passages) {
+			ps.passage.removeFromIndexes();
+			ps.passage.setScore(ps.score);
+			ps.passage.addToIndexes();
 		}
 	}
 }
