@@ -25,7 +25,9 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 public abstract class CachedJenaLookup {
 	/* XXX: In theory, we should have an extra class in the hierachy
 	 * with these DBpedia specific defaults */
-	protected String service = "http://dbpedia.org/sparql";
+	/* Replace this value with http://dbpedia.org/sparql to use the
+	 * public DBpedia SPARQL endpoint. */
+	protected String service = "http://pasky.or.cz:8890/sparql";
 	protected String prefixes =
 		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
 		"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" +

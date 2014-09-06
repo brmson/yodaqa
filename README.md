@@ -117,10 +117,14 @@ data and such) so far, but just for enwiki pages metadata --- lookup by
 exact title string match (sort of named entity recognition, already linked
 to page id we can use to fetch the page from solr) and redirect walking.
 
-By default, we rely on the public DBpedia SPARQL endpoint, but it is prone
-to outages and we shouldn't use it too heavily anyway.  Instrutions for
-setup of local DBpedia SPARQL endpoint are work-in-progress in
-``data/dbpedia/README.md``.
+By default, we rely on a DBpedia-3.9 SPARQL endpoint running on the author's
+computer.  In case it is offline, you can try to switch it to the public
+DBpedia SPARQL endpoint, though it is prone to outages and we shouldn't use
+it too heavily anyway.  Simply edit the ``service`` attribute value in file
+``src/main/java/cz/brmlab/yodaqa/provider/rdf/CachedJenaLookup.java``.
+
+Detailed instrutions for setup of local DBpedia SPARQL endpoint can be found
+in ``data/dbpedia/README.md``.
 
 
 ## Development Notes
