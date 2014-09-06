@@ -66,7 +66,7 @@ public class DBpediaTitles extends CachedJenaLookup {
 			 // ignore the redundant (A) entries (that are redirects)
 			"FILTER ( !BOUND(?redirTarget) )\n" +
 			 // weed out categories and other in-namespace junk
-			"FILTER ( !regex(str(?y), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
+			"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			 // output only english labels, thankyouverymuch
 			"FILTER ( LANG(?label) = 'en' )\n" +
 			"";
