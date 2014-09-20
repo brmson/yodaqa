@@ -85,6 +85,11 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 			for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
 				dumpPassageFV(passage, ap.matcher(passage.getCoveredText()).find());
 			}
+
+			if (trainFile != null) {
+				trainFile.println("");
+				trainFile.flush();
+			}
 		}
 	}
 
