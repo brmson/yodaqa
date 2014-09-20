@@ -1,16 +1,16 @@
 DBpedia SPARQL Endpoint
 =======================
 
-By default, we use the public SPARQL endpoint at
+By default, we use the author's personal instance of DBpedia running
+on his home computer.  So it follows that it may be offline time by
+time.
 
-	http://dbpedia.org/sparql
+Alternatively, we could (and had in the past) use the public SPARQL endpoint
+at http://dbpedia.org/sparql for our DBpedia queries, however time by time
+it would get stuck at HTTP 502 status even for hours.
 
-for our DBpedia queries, however this won't do long-term.  To set up
-your own, you need to first download the set of DBpedia data files
+To set up your own, you need to first download the set of DBpedia data files
 and set up a RDF database on top of them.
-
-These instructions are just a sketch for now, we didn't finish this
-yet because the public endpoint stopped throwing HTTP 502 errors at us. ;)
 
 Download Data Files
 ===================
@@ -56,4 +56,4 @@ seems to be a good reference.
 
 Now, check ``/var/lib/virtuoso/db/virtuoso.log`` for errors,
 and edit ``src/main/java/cz/brmlab/yodaqa/provider/rdf/CachedJenaLookup.java``
-changing default value of the ``service`` attribute.  It might work.
+changing default value of the ``service`` attribute.  It should work.
