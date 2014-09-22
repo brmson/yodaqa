@@ -24,7 +24,7 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * A consumer that displays the top answers in context of the asked
  * question and expected true answer provided as gold standard.
  *
- * Pair this with CollectionQuestionReader e.g. on data/trec/.
+ * Pair this with CollectionQuestionReader e.g. on data/eval/.
  *
  * The output format is, tab separated
  * 	ID TIME QUESTION SCORE RANK NRANKS ANSWERPCRE CORRECTANSWER TOPANSWERS...

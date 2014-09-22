@@ -271,8 +271,8 @@
 						<configuration>
 							<mainClass>cz.brmlab.yodaqa.YodaQA_GS</mainClass>
 							<arguments>
-								<argument>data/trec/trecnew-single.tsv</argument>
-								<argument>trecnew-single-out.tsv</argument>
+								<argument>data/eval/curated-test.tsv</argument>
+								<argument>curated-test.tsv</argument>
 							</arguments>
 						</configuration>
 					</plugin>
