@@ -72,7 +72,7 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 
 		/* Some debug dumps of the intermediate CAS. */
-		if (logger.isDebugEnabled()) {
+		if (false) {//logger.isDebugEnabled()) {
 			builder.add(createPrimitiveDescription(
 				CasDumpWriter.class,
 				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-pacas.txt"));

@@ -46,8 +46,8 @@ loaded).
 
 It is also possible to let YodaQA answer many questions at once, e.g. to
 measure the performance; use ``mvn -q exec:java -Ptrecgs`` to feed YodaQA
-the TREC dataset from data/trec/.  (See also data/eval/README.md for more
-details, there is a convenient wrapper script.)
+the curated testing dataset from data/eval/.  (See also data/eval/README.md
+for more details, and a convenient wrapper script ``curated-measure.sh``.)
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.

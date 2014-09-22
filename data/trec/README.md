@@ -8,19 +8,34 @@ the de-facto standard benchmark data for QA systems:
 
 This directory contains some download and format conversion scripts
 (run ``trec-setup.sh`` to download TREC datasets for several years
-and produce some easy-to-process TSV files) and also two reference
-TREC-based datasets:
+and produce some easy-to-process TSV files) and also the reference
+(mostly) TREC-based datasets:
 
   * ``trecnew-all.tsv`` contains ID, type, question and answer PCRE
     for questions coming from TREC 11 and 12 (years 2002, 2003),
     which appear to be the most mature and corpus-agnostic sets.
 
-  * ``trecnew-single.tsv`` is a subset of the above that contains
-    only questions that have just a single matching answer.
+  * ``trecnew-all-comments.txt`` contains curation notes for the
+    questions - basically analysis of questions that are deemed
+    as unapplicable for being too source-specific, with inaccurate
+    answer pattern or that is unanswerable, plus notes about changes
+    made to the dataset
 
-Note that the datasets might be slightly customized or modified,
-they are more than 10 years old after all; consult the git logs
-to check this.
+  * ``trecnew-curated.tsv`` is a version of the ``trecnew-all.tsv``
+    with all the changes described in comments.txt applied, i.e.
+    updated answer patterns, some questions reworder and quite a few
+    removed altogether
+
+  * ``irc-curated.tsv`` is not really a TREC but a set of questions
+    that have been asked in early 2014 on the #brmson freenode IRC
+    channel (where a BlanQA implementation was running for a time),
+    with duplicates and non-questions removed and the rest curated
+    similarly to the trecnew dataset; they generally go in slightly
+    different directions, sometimes are intentionally trivial and
+    contain no mention of sports
+
+Note that historically (up to early Sep 2014), we used slightly
+different dataset arrangement.  Refer to the git history if you need.
 
 Origin and Licencing
 --------------------
