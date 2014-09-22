@@ -45,7 +45,7 @@ answer candidates and their confidence score are listed after a while
 loaded).
 
 It is also possible to let YodaQA answer many questions at once, e.g. to
-measure the performance; use ``mvn -q exec:java -Ptrecgs`` to feed YodaQA
+measure the performance; use ``mvn -q exec:java -Ptsvgs`` to feed YodaQA
 the curated testing dataset from data/eval/.  (See also data/eval/README.md
 for more details, and a convenient wrapper script ``curated-measure.sh``.)
 

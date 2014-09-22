@@ -257,7 +257,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>trecgs</id>
+			<id>tsvgs</id>
 			<build>
 				<plugins>
 					<plugin>
