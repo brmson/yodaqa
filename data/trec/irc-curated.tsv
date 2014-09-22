@@ -1,0 +1,110 @@
+10000	factoid	How high is Mt. Everest?	29,?029\s*('|f(ee|oo)?t)|8,?848\s*m
+10001	factoid	How many Platonic solids do we have?	\b5\b|five
+10002	factoid	How many bombs were detonated in 2005 in London?	four|\b4\b
+10003	factoid	How many children did Maria Theresa have?	sixteen|\b16\b
+10004	factoid	How many colors do you need to color a planar graph?	four|\b4\b
+10005	factoid	How many pieces are there in a dozen?	\b12\b|twelve
+10006	factoid	How old did Jesus die?	\b33\b|thirty-three
+10007	factoid	In what city the first nuclear bomb exploded?	Hiroshima
+10008	factoid	What color is the computer which beat Kasparov at chess in 1997?	blue
+10009	factoid	What color is the sky?	blue
+10010	factoid	What currency is used in Christiania?	L[oø]n
+10011	factoid	What currency is used in Ukraine?	UAH|hryvnia
+10012	factoid	What did James Watson and Francis Crick discover?	DNA|deoxyribonucleic
+10013	factoid	What does Tardis stand for?	Time and Relative Dimension in Space
+10014	factoid	What is Albert Einstein's surname?	Einstein
+10015	factoid	What is capital city of Russia?	Moscow
+10016	factoid	What is the capital city of Ukraine?	Kiev
+10017	factoid	What is the capital of Laos?	Vientiane
+10018	factoid	What is the color of blood?	red
+10019	factoid	What is the color of pea?	green|yellow
+10020	factoid	What is the color of pee?	yellow|golden
+10021	factoid	What is the critical mass of Plutonium?	\b(9|10)(\.[0-9]*)?\s*k(ilo)?g
+10022	factoid	What is the density of gold?	\b19\.3.*cm|\b19,?3.*kg
+10023	factoid	What is the density of water?	\b(1|0\.9.*)\s*g|\b(1,?000|9.*)\s*kg
+10024	factoid	What is the first derivative of x^2?	2\s*.?\s*x
+10025	factoid	What is the highest mountain in the Czech Republic?	Sne[zž]ka
+10026	factoid	What is the name of the computer which beat Kasparov at chess in 1997?	Deep Blue
+10027	factoid	What is the name of the longest running soap opera TV series?	Coronation Street
+10028	factoid	What is the name of the second Beatles album?	Second Album
+10029	factoid	What is the proton number of neon?	\b10\b|ten
+10030	factoid	What language is spoken in Latin America?	((spanish|portuguese).*){2}
+10031	factoid	When did Maria Theresa die?	1780
+10032	factoid	When is christmas?	Dec.*\b2[45]\b
+10033	factoid	When was Declaration of Independence signed?	1776
+10034	factoid	When was Google founded?	1998
+10035	factoid	When was Maria Theresa born?	1717
+10036	factoid	When was the first of the International Mathematical Olympiads held?	1959
+10037	factoid	When was the first commercially successful steam engine invented?	1698|1712
+10038	factoid	When was Watt's steam engine invented?	1765|177[46]
+10039	factoid	Where was Declaration of Independence signed?	Philadelphia
+10040	factoid	Where was the first atomic bomb detonated?	White Sands|New Mexico
+10041	factoid	Where was the first of the International Mathematical Olympiads held?	Romania
+10042	factoid	Which space shuttle exploded?	((Columbia|Challenger).*){2}
+10043	factoid	Who discovered polarography?	Heyrovsk[yý]
+10044	factoid	Who discovered the structure of DNA?	((Watson|Crick).*){2}
+10045	factoid	Who invented bitcoin?	Nakamoto
+10046	factoid	Who is author of cryptonomicon?	Stephenson
+10047	factoid	Who is the author of Neuromancer?	Gibson
+10048	factoid	Who played Frodo in Lord of The Rings?	Wood
+10049	factoid	Who received the Nobel Prize in Physiology or Medicine in 1962?	((Crick|Watson|Wilkins).*){3}
+10050	factoid	Who wrote "Strange Case of Dr Jekyll and Mr Hyde" ?	Stevenson
+10051	factoid	Who wrote Pirate Jenny?	Weill
+10052	factoid	What is the chemical formula of methane?	C.*H.*4
+10053	factoid	chemical symbol of ethylene ?	C.*2.*H.*4
+10054	factoid	how deep is marianas trench?	10[.,]?([89][0-9][0-9])\s*(k|kilo)?m|6,?[89][0-9][0-9]\s*mi|3[56],?[0-9]{3}\s*(f(ee|oo)?t|')
+10055	factoid	how did hitler die?	suicide|ballistic|shoo?t
+10056	factoid	how did stalin die?	stroke|cerebral hemorrhage
+10057	factoid	how long are spaghetti?	(25|30|50)\s*c(enti)?m|(10|12|20)\s*("|in)
+10058	factoid	how long does light travel from sun to earth?	(49[0-9]|50[0-9])\s*s|8.*min
+10059	factoid	how long is the day?	24\s*h|86,?400\s*s
+10060	factoid	how many countries are in european union?	\b2[78]\b
+10061	factoid	how many generations are in Gospel of Matthew's version of the Genealogy of Jesus?	\b4[01]\b
+10062	factoid	how many lines per page are in Gutenberg bible?	\b42\b
+10063	factoid	how many months are in a year?	\b12\b|twelve
+10064	factoid	how much is 1+1?	\b2\b|two
+10065	factoid	how much is 41+1?	\b42\b|fourty-two
+10066	factoid	in which country was google founded?	\bU(nited|\.)?\s*S(tates|\.)?\b
+10067	factoid	in which country was microsoft founded?	\bU(nited|\.)?\s*S(tates|\.)?\b
+10068	factoid	in which country was osama bin laden killed?	Pakistan
+10069	factoid	what can mandrills at the Colchester Zoo do?	cover.*eye
+10070	factoid	what is capital city of czech republic?	Prague|Praha
+10071	factoid	what is the answer to ultimate question of life, universe and everything?	\b42\b|fourty-two
+10072	factoid	what is the atomic number of Uranium?	\b92\b
+10073	factoid	what is the atomic number of molybdenum?	\b42\b
+10074	factoid	what is the critical angle of rainbow?	\b48\b
+10075	factoid	what is the inode number of the root directory in the reiser4 file system?	-1\b
+10076	factoid	what is the lowest prime number?	\b2\b
+10077	factoid	what is the moon of jupiter?	((Io|Europa|Ganymede|Callisto).*){4}
+10078	factoid	what is the moon of mars?	((Phobos|Deimos).*){2}
+10079	factoid	what is the most lethal poison?	botulin
+10080	factoid	what is the name of Kirk's starship?	Enterprise
+10081	factoid	what is the name of the Doctor's wife in the long eunning BBC TV series Doctor Who.	River Song
+10082	factoid	what is the name of the ninth episode of the seventh season of the animated television series Family Guy?	The Juice is Loose
+10083	factoid	what is the national anthem of czech republic?	Kde domov m[uů]j|Where is my home
+10084	factoid	what is the national anthem of usa?	The Star-Spangled Banner
+10085	factoid	what is the nearest planet to the sun?	Mercury
+10086	factoid	what is the sixteenth episode of the sixth season of the science fiction television series The X-Files?	Alpha
+10087	factoid	what language is used by nltk?	Python
+10088	factoid	what number is considered unlucky in Japanese culture?	four|\b4\b
+10089	factoid	when did the biggest underground terror attack happen?	2005
+10090	factoid	when did vikings colonize greenland?	\b98[0-9]\b|10th century
+10091	factoid	when was Voyager 1 launched?	1977
+10092	factoid	where is Løn used?	Christiania
+10093	factoid	where is kiev ?	Ukraine|\bUA\b
+10094	factoid	where was jesus born?, 	Bethlehem
+10095	factoid	where you can find pyramids?	Egypt
+10096	factoid	which is the central region of the anterior part of the hand?	palm
+10097	factoid	which natural number immediately follows 41 and precedes 43?	\b42\b|fourty.?two
+10098	factoid	which number corresponds to * in ASCII?	\b42\b|0x2a
+10099	factoid	who are the inventors of the first transistor?	((Bardeen|Shockley|Brattain).*){3}
+10100	factoid	who discovered transposable elements - transposons?	McClintock
+10101	factoid	who invented dynamite ?	Alfred Nobel
+10102	factoid	who invented the tesla coil?	Nikola Tesla
+10103	factoid	who is Barrack Obama?	president.*U.*S|U.*S.*president
+10104	factoid	who is the author of Sherlock Holmes?	Doyle
+10105	factoid	who is the author of the TV series BBC Sherlock?	((Gatiss|Moffat).*){2}
+10106	factoid	who portrays the twelfth doctor in BBC TV series Doctor Who?	Peter Capaldi
+10107	factoid	who received the Nobel Prize for Physiology and Medicine in the year 2012?	((Gurdon|Yamanaka).*){2}
+10108	factoid	who received the Nobel Prize for Physiology and Medicine in the year 2013?	((Rothman|Schekman|S[uü]dhof).*){3}
+10109	factoid	who wrote ender's game?	Orson.*Card
