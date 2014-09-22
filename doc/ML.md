@@ -19,6 +19,7 @@ gold standard measurements, but passing an extra mvn commandline option
 
 will make YodaQA generate detailed feature vector records for training
 of models in file ``training-passextract.tsv`` (in the current working
-directory, typically the project root).
+directory, typically the project root).  In "train" mode, the script
+``data/eval/curated-measure.sh`` will automatically enable mltraining.
 
 The rest is TODO for now.
