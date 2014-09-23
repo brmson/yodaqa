@@ -90,7 +90,7 @@
 2360	factoid	What is the gift for the 20th anniversary? 	china|platinum
 1651	factoid	What is another name for the North Star? 	Polaris
 10056	factoid	how did stalin die?	stroke|cerebral hemorrhage
-1981	factoid	How long is the Great Barrier Reef? 	1,?((200|250|400)\s*miles?|(2,?000|2,?300)\s*(km|kilometers)
+1981	factoid	How long is the Great Barrier Reef? 	1,?(200|250|400)\s*miles?|(2,?000|2,?300)\s*(km|kilometers)
 1463	factoid	What is the North Korean national anthem? 	Patriotic Song|Aegukka
 1521	factoid	What year did Ellis Island open its doors to immigrants? 	1892
 1797	factoid	How did Adolf Hitler die? 	committed suicide

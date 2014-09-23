@@ -711,7 +711,7 @@ Here it goes:
 1980	factoid	How far is the moon from Earth in miles? 	221,456( miles?)|221,662|222,000 miles|250 , 000 miles|252,711 miles
 	AMEND - 221,456( miles?)|221,662|222,000 miles|250 , 000 miles|252,711 miles|238,?900
 1981	factoid	How long is the Great Barrier Reef? 	1 , 250-mile-long|1\s?,?2\s?(00|50)\s?\-?\s?miles?|2,?000 km
-	AMEND - 1,?((200|250|400)\s*miles?|(2,?000|2,?300)\s*(km|kilometers)
+	AMEND - 1,?(200|250|400)\s*miles?|(2,?000|2,?300)\s*(km|kilometers)
 1982	factoid	What movie won the Academy Award for best picture in 1989? 	Driving Miss Daisy
 1983	factoid	When was Lyndon B. Johnson president? 	1963 ?- ?69
 	AMEND - 1963.*69
