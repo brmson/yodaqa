@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 showstats() {
 	tsvout="$1"
@@ -36,7 +36,10 @@ else
 	commits=$(echo "$evaldir"/*.tsv | sed 's/[^ ]*-\([^.]*\).tsv/\1/g')
 	git log --no-walk --pretty='tformat:%h %ad %s' --date=short $commits |
 		while read commit date subject; do
-			printf '%s %s %.20s... ' "$commit" "$date" "$subject"
-			showstats "$evaldir"/*-"$commit".tsv
+			for file in "$evaldir"/*-"$commit".tsv; do
+				name="${file##*/}"; name="$(echo "$name" | cut -d- -f2)"
+				printf '% 5s %s %s %.20s... ' "${name:0:5}" "$commit" "$date" "$subject"
+				showstats "$file"
+			done
 		done
 fi | less -F
