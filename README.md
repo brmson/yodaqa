@@ -162,4 +162,4 @@ Some stages of the QA pipeline use machine learning for scoring snippets
 (passages, answers) to pick those which deserve further consideration.
 Models should be re-trained every time a non-trivial change in the
 pipeline is made.  For details on managing this, please refer to
-doc/ML.md.
+data/ml/README.md.

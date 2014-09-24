@@ -22,7 +22,7 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
  * A GoldStandard hook in the process of passage extraction.  We scan all the
  * passages, match them against the answerPattern and collect statistics.
  * Furthermore, we dump model training data if that is enabled on the
- * commandline (see doc/ML.md). */
+ * commandline (see data/ml/README.md). */
 
 @SofaCapability(
 	inputSofas = { "Question", "Passages", "PickedPassages" },
