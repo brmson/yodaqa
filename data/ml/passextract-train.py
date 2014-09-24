@@ -27,7 +27,7 @@ import numpy.random as random
 
 
 num_rounds = 20
-test_portion = 1.0/3
+test_portion = 1.0/4
 num_picked = 3  # Keep in sync with PassFilter num-picked parameter
 
 
