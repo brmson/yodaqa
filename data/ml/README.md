@@ -55,7 +55,9 @@ in 84.6% of cases, while the simple classifier will do so in 85%.
 Possible reasons:
   * We optimize for individual classification, not classification
     within a set of passages of a document.
-  * Too few features, and they are corelated.
+  * Too few (in addition, corellated) features.  For example, matched
+    clue types (noun, noun phrase, named entity, ...) could be useful
+    extra features.
 
 Answer Scoring
 --------------
