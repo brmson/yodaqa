@@ -54,8 +54,6 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Okay! Now, we can proceed with our key tasks. */
 
-		/* CandidateAnswer from each (complete) Passage - just for debugging. */
-		//builder.add(createPrimitiveDescription(CanByPassage.class));
 		/* CandidateAnswer from each NP constituent that does not match
 		 * any of the clues. */
 		builder.add(createPrimitiveDescription(CanByNPSurprise.class));
