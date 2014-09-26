@@ -146,10 +146,10 @@ public class AnswerFV {
 			 * than a brute-force if. */
 			if (features.get(i) == AF_Occurences.class) {
 				values[i] += a2values[i];
-			} /* XXX for compatibility else {
+			} else {
 				if (a2values[i] > values[i])
 					values[i] = a2values[i];
-			} */
+			}
 		}
 	}
 
