@@ -20,6 +20,12 @@
             <description>Confidence of the answer; this is an estimate of the probability that the answer is right</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>features</name>
+            <description>A set of features of this answer, see CandidateAnswerTypes.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
+          </featureDescription>
         </features>
       </typeDescription>
     </types>

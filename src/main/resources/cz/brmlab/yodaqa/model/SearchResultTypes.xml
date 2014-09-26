@@ -102,9 +102,10 @@
         <supertypeName>uima.tcas.Annotation</supertypeName>
         <features>
           <featureDescription>
-            <name>confidence</name>
-            <description>Confidence of the answer (without regard to the search result confidence)</description>
-            <rangeTypeName>uima.cas.Double</rangeTypeName>
+            <name>features</name>
+	    <description>A set of features of this answer, see CandidateAnswerTypes.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
           </featureDescription>
           <featureDescription>
             <name>passage</name>

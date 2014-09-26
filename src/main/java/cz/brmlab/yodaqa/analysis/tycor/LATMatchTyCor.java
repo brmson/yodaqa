@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -12,6 +13,9 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
@@ -54,7 +58,15 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		LATMatch match = matchLATs(questionView, answerView);
 		if (match != null) {
 			AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
-			ai.setSpecificity(match.getSpecificity());
+			AnswerFV fv = new AnswerFV(ai);
+			fv.setFeature(AF_SpWordNet.class, Math.exp(match.getSpecificity()));
+
+			for (FeatureStructure af : ai.getFeatures().toArray())
+				((AnswerFeature) af).removeFromIndexes();
+			ai.removeFromIndexes();
+
+			ai.setFeatures(fv.toFSArray(answerView));
+			ai.addToIndexes();
 		}
 	}
 

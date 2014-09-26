@@ -11,6 +11,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
@@ -107,10 +108,12 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		jcas.setDocumentText(answer.getCoveredText());
 		jcas.setDocumentLanguage(answer.getCAS().getDocumentLanguage());
 
+		/* Grab answer features */
+		AnswerFV srcFV = new AnswerFV(answer);
+
+		/* Generate the AnswerInfo singleton */
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setPassageScore(answer.getPassage().getScore());
-		ai.setConfidence(answer.getConfidence());
-		ai.setSpecificity(-4); // XXX: just a random default in case of no LAT match, possibly due to no focus
+		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.addToIndexes();
 

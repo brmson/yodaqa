@@ -17,6 +17,11 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -149,10 +154,13 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setOrigin("cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocPrimarySearch");
 		ri.addToIndexes();
 
+		AnswerFV fv = new AnswerFV();
+		fv.setFeature(AF_Occurences.class, 1.0);
+		fv.setFeature(AF_ResultScore.class, ri.getRelevance());
+		fv.setFeature(AF_PassageScore.class, 2.0); // XXX
+		fv.setFeature(AF_OriginDocTitle.class, 1.0);
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setPassageScore(2.0); // XXX
-		ai.setConfidence(1.0); // XXX
-		ai.setSpecificity(-4); // XXX: just a random default in case of no LAT match, possibly due to no focus
+		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.addToIndexes();
 	}
@@ -170,9 +178,6 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.addToIndexes();
 
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setPassageScore(0.0);
-		ai.setConfidence(0.0);
-		ai.setSpecificity(0);
 		ai.setIsLast(true);
 		ai.addToIndexes();
 	}

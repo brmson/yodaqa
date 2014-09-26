@@ -18,6 +18,7 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
@@ -42,13 +43,28 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 	@ConfigurationParameter(name = PARAM_ISLAST_BARRIER, mandatory = false, defaultValue = "1")
 	protected int isLastBarrier;
 
-	Map<String, List<Answer>> answersByText;
+	protected class AnswerFeatures {
+		Answer answer;
+		AnswerFV fv;
+
+		public AnswerFeatures(Answer answer_, AnswerFV fv_) {
+			answer = answer_;
+			fv = fv_;
+		}
+
+		/** * @return the answer */
+		public Answer getAnswer() { return answer; }
+		/** * @return the fv */
+		public AnswerFV getFV() { return fv; }
+	}
+
+	Map<String, List<AnswerFeatures>> answersByText;
 	JCas finalCas;
 	boolean isFirst;
 	int isLast;
 
 	protected void reset() {
-		answersByText = new HashMap<String, List<Answer>>();
+		answersByText = new HashMap<String, List<AnswerFeatures>>();
 		finalCas = null;
 		isFirst = true;
 		isLast = 0;
@@ -87,23 +103,20 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		if (canAnswer.getDocumentText() == null)
 			return; // we received a dummy CAS
 
+		AnswerFV fv = new AnswerFV(ai);
 		Answer answer = new Answer(finalCas);
 		String text = canAnswer.getDocumentText();
 		answer.setText(text);
-		answer.setConfidence(
-				Math.exp(ai.getSpecificity())
-				* ai.getConfidence()
-				* ai.getPassageScore()
-				* ri.getRelevance());
+		answer.setConfidence(ai.getConfidence());
 
 		// System.err.println("AR process: " + answer.getText() + " c " + answer.getConfidence());
 
-		List<Answer> answers = answersByText.get(text);
+		List<AnswerFeatures> answers = answersByText.get(text);
 		if (answers == null) {
-			answers = new LinkedList<Answer>();
+			answers = new LinkedList<AnswerFeatures>();
 			answersByText.put(text, answers);
 		}
-		answers.add(answer);
+		answers.add(new AnswerFeatures(answer, fv));
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
@@ -115,17 +128,22 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 			throw new AnalysisEngineProcessException();
 
 		/* Deduplicate Answer objects and index them. */
-		for (Entry<String, List<Answer>> entry : answersByText.entrySet()) {
+		for (Entry<String, List<AnswerFeatures>> entry : answersByText.entrySet()) {
 			Answer mainAns = null;
-			for (Answer answer : entry.getValue()) {
+			AnswerFV mainFV = null;
+			for (AnswerFeatures af : entry.getValue()) {
+				Answer answer = af.getAnswer();
 				if (mainAns == null) {
 					mainAns = answer;
+					mainFV = af.getFV();
 					continue;
 				}
 				logger.debug("final merging " + mainAns.getText() + "|" + answer.getText()
 						+ " :: " + mainAns.getConfidence() + ", " + answer.getConfidence());
 				mainAns.setConfidence(mainAns.getConfidence() + answer.getConfidence());
+				mainFV.merge(af.getFV());
 			}
+			mainAns.setFeatures(mainFV.toFSArray(finalCas));
 			mainAns.addToIndexes();
 		}
 

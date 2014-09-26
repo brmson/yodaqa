@@ -13,7 +13,10 @@ import cz.brmlab.yodaqa.model.SearchResult.PassageFeature;
 
 /**
  * A Passage feature vector.  I.e. a single, fixed array where each index
- * represents one feature and the indices are stable between passages. */
+ * represents one feature and the indices are stable between passages.
+ *
+ * XXX: Make this much more similar to AnswerFV; possibly with a common
+ * base class too. */
 
 
 public class PassageFV {

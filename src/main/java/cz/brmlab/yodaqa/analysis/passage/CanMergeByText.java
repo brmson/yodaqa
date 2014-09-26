@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -15,6 +16,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 
 /**
@@ -50,17 +53,23 @@ public class CanMergeByText extends JCasAnnotator_ImplBase {
 				continue;
 
 			CandidateAnswer mainCan = null;
+			AnswerFV mainCanFV = null;
 			for (CandidateAnswer can : entry.getValue()) {
 				if (mainCan == null) {
 					mainCan = can;
+					mainCanFV = new AnswerFV(mainCan);
+					for (FeatureStructure af : mainCan.getFeatures().toArray())
+						((AnswerFeature) af).removeFromIndexes();
 					mainCan.removeFromIndexes();
 					continue;
 				}
-				logger.debug("merging " + mainCan.getCoveredText() + "|" + can.getCoveredText()
-						+ " :: " + mainCan.getConfidence() + ", " + can.getConfidence());
-				mainCan.setConfidence(mainCan.getConfidence() + can.getConfidence());
+				logger.debug("merging " + mainCan.getCoveredText() + "|" + can.getCoveredText());
+				mainCanFV.merge(new AnswerFV(can));
+				for (FeatureStructure af : can.getFeatures().toArray())
+					((AnswerFeature) af).removeFromIndexes();
 				can.removeFromIndexes();
 			}
+			mainCan.setFeatures(mainCanFV.toFSArray(resultView));
 			mainCan.addToIndexes();
 		}
 	}

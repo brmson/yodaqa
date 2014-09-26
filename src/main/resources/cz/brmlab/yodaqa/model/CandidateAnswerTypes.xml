@@ -11,18 +11,14 @@
         <supertypeName>uima.cas.TOP</supertypeName>
         <features>
           <featureDescription>
-            <name>passageScore</name>
-            <description>Score of the passage that produced this answer</description>
-            <rangeTypeName>uima.cas.Double</rangeTypeName>
+            <name>features</name>
+            <description>A set of features of this answer. Unmatched features should simply not be present, and order does not matter. Duplicates should NOT appear.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
           </featureDescription>
           <featureDescription>
             <name>confidence</name>
-            <description>Confidence of the answer (with regard to the originating passage)</description>
-            <rangeTypeName>uima.cas.Double</rangeTypeName>
-          </featureDescription>
-          <featureDescription>
-            <name>specificity</name>
-            <description>Specificity of the answer (based on the LAT matching)</description>
+            <description>Confidence of the answer - its score for ranking among other answers, computed from features</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
@@ -32,10 +28,62 @@
           </featureDescription>
         </features>
       </typeDescription>
+
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing</name>
         <description>A passage on which a parser should be run</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
       </typeDescription>
+
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</name>
+        <description>A feature matched on this answer. This type is for sub-classing to particular features.</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>value</name>
+            <description>Feature value. Unmatched features are assumed 0. Ideally, the feature value should be in the interval of [0,1], but this is not enforced.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <!-- N.B. for the time being, new types must be also added to a list in
+           src/main/java/cz/brmlab/yodaqa/analysis/answer/AnswerFV.java -->
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences</name>
+        <description>Answer Feature: Number of times this answer has been generated</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore</name>
+        <description>Answer Feature: Score (by solr) of the result that produced the supporting passage</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore</name>
+        <description>Answer Feature: Score of the passage that produced this answer</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP</name>
+        <description>Answer Feature: 1 if the origin of this answer is a noun phrase parsed in a passage</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE</name>
+        <description>Answer Feature: 1 if the origin of this answer is a named entity matched in a passage (TODO: also distinguish the type of matched named entity?)</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle</name>
+        <description>Answer Feature: 1 if the origin of this answer is a document title</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet</name>
+        <description>Answer Feature: Specificity measured as WordNet graph exp(-distance), i.e. 1 is perfect match, 1/e is very specific, ..., 1/e^4 is already very non-specific</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+
     </types>
   </typeSystemDescription>

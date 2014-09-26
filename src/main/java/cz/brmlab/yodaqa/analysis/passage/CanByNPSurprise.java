@@ -1,19 +1,30 @@
 package cz.brmlab.yodaqa.analysis.passage;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.SofaCapability;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
+import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 
@@ -24,7 +35,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
  * This is pretty naive but should generate some useful answers. */
 
 @SofaCapability(
-	inputSofas = { "Question", "PickedPassages" },
+	inputSofas = { "Question", "Result", "PickedPassages" },
 	outputSofas = { "PickedPassages" }
 )
 
@@ -36,9 +47,10 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, passagesView;
+		JCas questionView, resultView, passagesView;
 		try {
 			questionView = jcas.getView("Question");
+			resultView = jcas.getView("Result");
 			passagesView = jcas.getView("PickedPassages");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
@@ -60,12 +72,20 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 			/* Surprise! */
 
 			logger.info("caNP {}", np.getCoveredText());
+
+			Passage p = JCasUtil.selectCovering(Passage.class, np).get(0);
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF_Occurences.class, 1.0);
+			fv.setFeature(AF_PassageScore.class, p.getScore());
+			fv.setFeature(AF_ResultScore.class, JCasUtil.selectSingle(resultView, ResultInfo.class).getRelevance());
+			fv.setFeature(AF_OriginNP.class, 1.0);
+
 			CandidateAnswer ca = new CandidateAnswer(passagesView);
 			ca.setBegin(np.getBegin());
 			ca.setEnd(np.getEnd());
-			ca.setPassage(JCasUtil.selectCovering(Passage.class, np).get(0));
+			ca.setPassage(p);
 			ca.setBase(np);
-			ca.setConfidence(1.0);
+			ca.setFeatures(fv.toFSArray(passagesView));
 			ca.addToIndexes();
 		}
 	}

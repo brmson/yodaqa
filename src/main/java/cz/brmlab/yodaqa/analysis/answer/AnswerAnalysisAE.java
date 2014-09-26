@@ -17,7 +17,7 @@ import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 /**
- * Annotate the CandidateAnswerCAS.
+ * Annotate the CandidateAnswerCAS, eventually producing various features.
  *
  * This is an aggregate AE that will run a variety of annotators on the
  * CandidateAnswerCAS, running possibly more detailed linguistic analysis,
@@ -66,6 +66,18 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));
+
+		/* Compute answer score (confidence) from the various
+		 * features amassed so far. */
+		/* XXX: This is the *WRONG* time to do it.  TODO: Make
+		 * an aggregate AE following up AnswerMerger that will
+		 * do this when all answers are available. We'll also
+		 * want to rename FinalAnswerCAS to something like
+		 * AnswerHitlistCAS etc. to make things more general. */
+		builder.add(createPrimitiveDescription(AnswerScoreSimple.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+
+		builder.add(createPrimitiveDescription(AnswerGSHook.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
