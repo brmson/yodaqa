@@ -82,6 +82,7 @@ To show statistics based on amount of questions sporting the
 correct answer at a given rank, run:
 
 	data/eval/tsvout-ranks.sh data/eval/tsv/curated-train-ovt-3b46430.tsv
+	data/eval/tsvout-rankgraph.sh data/eval/tsv/curated-train-ovt-3b46430.tsv
 
 Analysis
 --------

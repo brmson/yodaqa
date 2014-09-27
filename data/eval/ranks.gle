@@ -1,0 +1,39 @@
+include "shape.gle"
+include "graphutil.gle"
+
+size 10 7
+
+set texlabels 1
+
+begin graph
+   scale auto
+   title  "Answer Ranks"
+
+   xtitle "\#Answer"
+   xticks lstyle 2
+   ! xaxis min 1 max 200
+   ! xplaces 29 55 69 105 134 200
+   ! xnames "29" "55" "69" "105" "134" "200"
+
+   ytitle "Rank"
+   yaxis log min 1 max 250 nticks 50 grid
+   yticks lstyle 2
+   ysubticks off
+   yplaces 1 3 5 10 25 50 100 200
+   ynames "1" "3" "5" "10" "25" "50" "100" "200"
+
+   data "ranks.dat"
+   let d1 = d1+1
+
+   key background gray5
+   begin layer 300
+      fill d1,x2 color rgba255(0,255,0,160)
+      d1 line color blue
+   end layer
+end graph
+
+! graph_vline 29 1 250
+! graph_vline 55 1 250
+! graph_vline 69 1 250
+! graph_vline 105 1 250
+! graph_vline 134 1 250
