@@ -61,12 +61,12 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String mltraining = System.getProperty("cz.brmlab.yodaqa.mltraining");
 		if (mltraining != null && mltraining.equals("1")) {
 			for (AnswerInfo ai : JCasUtil.select(answerView, AnswerInfo.class)) {
-				dumpAnswerFV(ai, ap.matcher(answerView.getDocumentText()).find());
+				dumpAnswerFV(qi.getQuestionId(), ai, ap.matcher(answerView.getDocumentText()).find());
 			}
 		}
 	}
 
-	protected void dumpAnswerFV(AnswerInfo ai, boolean isMatch) {
+	protected void dumpAnswerFV(String qid, AnswerInfo ai, boolean isMatch) {
 		/* First, open the output file. */
 		if (trainFile == null) {
 			try {
@@ -79,6 +79,8 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		AnswerFV fv = new AnswerFV(ai);
 
 		StringBuilder sb = new StringBuilder();
+		sb.append(qid);
+		sb.append("\t");
 		for (double value : fv.getValues()) {
 			sb.append(value);
 			sb.append("\t");
