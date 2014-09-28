@@ -55,13 +55,13 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore</name>
-        <description>Answer Feature: Score (by solr) of the result that produced the supporting passage</description>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore</name>
+        <description>Answer Feature: Log-score (by solr) of the result that produced the supporting passage</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore</name>
-        <description>Answer Feature: Score of the passage that produced this answer</description>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore</name>
+        <description>Answer Feature: Log-score of the passage that produced this answer</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>

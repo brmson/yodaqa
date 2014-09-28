@@ -15,8 +15,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
@@ -36,7 +36,7 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 public class AnswerFV {
 	public static ArrayList<Class<? extends AnswerFeature>> features;
 	public static String labels[] = {
-		"occurences", "resultScore", "passageScore",
+		"occurences", "resultLogScore", "passageLogScore",
                 "originNP", "originNE", "originDocTitle",
                 "spWordNet",
 	};
@@ -50,8 +50,8 @@ public class AnswerFV {
 		if (features == null) {
 			features = new ArrayList<Class<? extends AnswerFeature>>();
 			features.add(AF_Occurences.class);
-			features.add(AF_ResultScore.class);
-			features.add(AF_PassageScore.class);
+			features.add(AF_ResultLogScore.class);
+			features.add(AF_PassageLogScore.class);
 			features.add(AF_OriginNP.class);
 			features.add(AF_OriginNE.class);
 			features.add(AF_OriginDocTitle.class);

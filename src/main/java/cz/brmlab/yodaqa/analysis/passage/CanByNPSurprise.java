@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
@@ -76,8 +76,8 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 			Passage p = JCasUtil.selectCovering(Passage.class, np).get(0);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF_Occurences.class, 1.0);
-			fv.setFeature(AF_PassageScore.class, p.getScore());
-			fv.setFeature(AF_ResultScore.class, JCasUtil.selectSingle(resultView, ResultInfo.class).getRelevance());
+			fv.setFeature(AF_PassageLogScore.class, Math.log(1 + p.getScore()));
+			fv.setFeature(AF_ResultLogScore.class, Math.log(1 + JCasUtil.selectSingle(resultView, ResultInfo.class).getRelevance()));
 			fv.setFeature(AF_OriginNP.class, 1.0);
 
 			CandidateAnswer ca = new CandidateAnswer(passagesView);

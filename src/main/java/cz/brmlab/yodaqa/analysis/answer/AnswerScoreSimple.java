@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 
@@ -54,16 +54,16 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 			else
 				specificity = Math.exp(-4);
 
-			double passageScore = 0;
-			if (fv.isFeatureSet(AF_PassageScore.class))
-				passageScore = fv.getFeatureValue(AF_PassageScore.class);
+			double passageLogScore = 0;
+			if (fv.isFeatureSet(AF_PassageLogScore.class))
+				passageLogScore = fv.getFeatureValue(AF_PassageLogScore.class);
 			else if (fv.getFeatureValue(AF_OriginDocTitle.class) > 0.0)
-				passageScore = 2;
+				passageLogScore = Math.log(1 + 2);
 
 			double score = specificity
 				* fv.getFeatureValue(AF_Occurences.class)
-				* passageScore
-				* fv.getFeatureValue(AF_ResultScore.class);
+				* passageLogScore
+				* fv.getFeatureValue(AF_ResultLogScore.class);
 			answers.add(new AnswerScore(ai, score));
 		}
 
