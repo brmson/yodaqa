@@ -78,8 +78,11 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			if (l2 != null) {
 				/* Ok, already exists. Try to raise
 				 * specificity if possible. */
-				if (l2.getSpecificity() < spec)
+				if (l2.getSpecificity() < spec) {
 					l2.setSpecificity(spec);
+					l2.setBase(lat.getBase());
+					l2.setBaseLAT(lat);
+				}
 				continue;
 			}
 
