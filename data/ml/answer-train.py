@@ -27,7 +27,7 @@ import numpy as np
 import numpy.random as random
 
 
-num_rounds = 5
+num_rounds = 20
 test_portion = 1.0/4
 num_picked = 5  # Our aim is to get our to the top N here
 
