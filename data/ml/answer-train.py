@@ -147,7 +147,9 @@ def measure(scorer, answersets, could_picked):
 def simple_score(fvset):
     specificity = fvset[:, 6]
     specificity[specificity == 0.0] = math.exp(-4)
-    score = specificity * fvset[:, 0] * np.exp(fvset[:, 1]) * np.exp(fvset[:, 2])
+    passage_score = fvset[:, 2]
+    passage_score[fvset[:, 5] > 0.0] = 2
+    score = specificity * fvset[:, 0] * fvset[:, 1] * passage_score
     return score
 
 

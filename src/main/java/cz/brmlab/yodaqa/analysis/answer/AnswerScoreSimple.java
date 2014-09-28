@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
@@ -52,9 +53,16 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 				specificity = fv.getFeatureValue(AF_SpWordNet.class);
 			else
 				specificity = Math.exp(-4);
+
+			double passageScore = 0;
+			if (fv.isFeatureSet(AF_PassageScore.class))
+				passageScore = fv.getFeatureValue(AF_PassageScore.class);
+			else if (fv.getFeatureValue(AF_OriginDocTitle.class) > 0.0)
+				passageScore = 2;
+
 			double score = specificity
 				* fv.getFeatureValue(AF_Occurences.class)
-				* fv.getFeatureValue(AF_PassageScore.class)
+				* passageScore
 				* fv.getFeatureValue(AF_ResultScore.class);
 			answers.add(new AnswerScore(ai, score));
 		}

@@ -157,7 +157,6 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerFV fv = new AnswerFV();
 		fv.setFeature(AF_Occurences.class, 1.0);
 		fv.setFeature(AF_ResultScore.class, ri.getRelevance());
-		fv.setFeature(AF_PassageScore.class, 2.0); // XXX
 		fv.setFeature(AF_OriginDocTitle.class, 1.0);
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
