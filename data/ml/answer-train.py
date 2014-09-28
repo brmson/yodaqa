@@ -149,7 +149,8 @@ def simple_score(fvset):
     specificity[specificity == 0.0] = math.exp(-4)
     passage_score = fvset[:, 2 * 2]
     passage_score[fvset[:, 5 * 2] > 0.0] = 2
-    score = specificity * fvset[:, 0 * 2] * fvset[:, 1 * 2] * passage_score
+    ne_bonus = np.exp(fvset[:, 4 * 2])
+    score = specificity * ne_bonus * fvset[:, 0 * 2] * fvset[:, 1 * 2] * passage_score
     return score
 
 
