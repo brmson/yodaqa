@@ -37,7 +37,7 @@ public class AnswerFV {
 	public static ArrayList<Class<? extends AnswerFeature>> features;
 	public static String labels[] = {
 		"occurences", "resultScore", "passageScore",
-                "originNP", "originNE", "originDoCTitle",
+                "originNP", "originNE", "originDocTitle",
                 "spWordNet",
 	};
 
