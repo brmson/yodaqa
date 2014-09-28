@@ -46,7 +46,6 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		/* Focus may be a number... */
 		if (ftok.getPos().getPosValue().matches("^CD")) {
 			text = "quantity";
-			spec -= 2;
 		}
 
 		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, spec);

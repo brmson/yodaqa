@@ -56,13 +56,10 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		 * concept word or give up. */
 		if (text.equals("who") || text.equals("whom")) {
 			text = "person";
-			spec--;
 		} else if (text.equals("when")) {
 			text = "time";
-			spec--;
 		} else if (text.equals("where")) {
 			text = "location";
-			spec--;
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
