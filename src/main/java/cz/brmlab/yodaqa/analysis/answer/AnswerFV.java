@@ -41,8 +41,8 @@ public class AnswerFV {
                 "spWordNet",
 	};
 
-	public double values[]; // the feature value
-	public boolean isSet[]; // whether the feature is set
+	protected double values[]; // the feature value
+	protected boolean isSet[]; // whether the feature is set
 
 	public AnswerFV() {
 		/* This is a huge mess - seems like static initializer of
@@ -89,6 +89,8 @@ public class AnswerFV {
 	}
 
 
+	/** Return a list of values. Note that for model input, you should
+	 * rather use getFV(). */
 	public double[] getValues() {
 		return values;
 	}
@@ -103,6 +105,23 @@ public class AnswerFV {
 
 	public static int featureIndex(Class<? extends AnswerFeature> f) {
 		return features.indexOf(f);
+	}
+
+
+	/** Produce a feature vector. For each value, this vector includes:
+	 *
+	 * - the feature value, as set
+	 * - indicator element that is 0 if the feature is set, 1 otherwise
+	 *   (so that omission of a feature can be taken as a signal by itself)
+	 *
+	 * More may appear in the future. */
+	public double[] getFV() {
+		double[] fv = new double[labels.length * 2];
+		for (int i = 0; i < labels.length; i++) {
+			fv[i*2] = values[i];
+			fv[i*2 + 1] = isSet[i] ? 0.0 : 1.0;
+		}
+		return fv;
 	}
 
 

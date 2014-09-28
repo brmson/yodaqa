@@ -81,7 +81,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		StringBuilder sb = new StringBuilder();
 		sb.append(qid);
 		sb.append("\t");
-		for (double value : fv.getValues()) {
+		for (double value : fv.getFV()) {
 			sb.append(value);
 			sb.append("\t");
 		}

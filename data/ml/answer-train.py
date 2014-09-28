@@ -87,11 +87,11 @@ def load_answers(f):
 
         # First item is occurences; skip dummy answers representing
         # no occurences
-        if fv[0] < 1.0:
+        if fv[0 * 2] < 1.0:
             continue
 
-        fv[1] = math.log(1.0 + fv[1])
-        fv[2] = math.log(1.0 + fv[2])
+        fv[1 * 2] = math.log(1.0 + fv[1 * 2])
+        fv[2 * 2] = math.log(1.0 + fv[2 * 2])
 
         if qid != qid_last:
             if len(fv_set) > 0:
@@ -145,11 +145,11 @@ def measure(scorer, answersets, could_picked):
 
 # AnswerScoreSimple-alike scoring for performance comparison
 def simple_score(fvset):
-    specificity = fvset[:, 6]
+    specificity = fvset[:, 6 * 2]
     specificity[specificity == 0.0] = math.exp(-4)
-    passage_score = fvset[:, 2]
-    passage_score[fvset[:, 5] > 0.0] = 2
-    score = specificity * fvset[:, 0] * fvset[:, 1] * passage_score
+    passage_score = fvset[:, 2 * 2]
+    passage_score[fvset[:, 5 * 2] > 0.0] = 2
+    score = specificity * fvset[:, 0 * 2] * fvset[:, 1 * 2] * passage_score
     return score
 
 
