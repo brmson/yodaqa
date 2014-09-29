@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.passage;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,6 +72,11 @@ public class CanMergeByText extends JCasAnnotator_ImplBase {
 			}
 			mainCan.setFeatures(mainCanFV.toFSArray(resultView));
 			mainCan.addToIndexes();
+		}
+
+		/* Debug print for all CandidateAnswers. */
+		for (CandidateAnswer can : JCasUtil.select(resultView, CandidateAnswer.class)) {
+			logger.debug(can.getCoveredText() + " -- " + Arrays.toString((new AnswerFV(can)).getValues()));
 		}
 	}
 }
