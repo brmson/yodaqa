@@ -22,11 +22,11 @@ import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
-import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
+import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
 /**
  * Take a set of per-answer CandidateAnswerCAS and merge them to
- * a FinalAnswerCAS.
+ * an AnswerHitlistCAS.
  *
  * The "ranking" part is actually implicit by UIMA indexes, this
  * is mainly a merging CAS multiplier that also deduplicates answers

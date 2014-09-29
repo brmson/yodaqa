@@ -195,11 +195,11 @@ classifier.
 ## Answer Merger
 
 Tihs phase is a CAS multiplier that consumes all **CandidateAnswerCAS**,
-ranks them and outputs a single **FinalAnswerCAS** CAS containing the ranked
+ranks them and outputs a single **AnswerHitlistCAS** CAS containing the ranked
 list of answers (with confidence scores), possibly also adding some combined
 answers.
 
 ## Answer Writer
 
-This IO phase is a CAS consumer that serializes the **FinalAnswerCAS** to
+This IO phase is a CAS consumer that serializes the **AnswerHitlistCAS** to
 whatever output medium (the console, an IRC-connected pipe or whatever).

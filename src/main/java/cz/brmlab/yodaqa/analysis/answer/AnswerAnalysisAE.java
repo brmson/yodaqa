@@ -71,9 +71,7 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * features amassed so far. */
 		/* XXX: This is the *WRONG* time to do it.  TODO: Make
 		 * an aggregate AE following up AnswerMerger that will
-		 * do this when all answers are available. We'll also
-		 * want to rename FinalAnswerCAS to something like
-		 * AnswerHitlistCAS etc. to make things more general. */
+		 * do this when all answers are available. */
 		builder.add(createPrimitiveDescription(AnswerScoreSimple.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 

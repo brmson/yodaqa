@@ -8,7 +8,7 @@ import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
+import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
 /**
  * A trivial consumer that will extract the final answer and print it

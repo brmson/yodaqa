@@ -75,7 +75,7 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 
 		/* Reindex the touched answer info(s). */
 		/* XXX: This is somewhat more complex than it needs to be
-		 * but later we will do this in FinalAnswer view where we
+		 * but later we will do this in AnswerHitlist view where we
 		 * will have many Answer objects. */
 		for (AnswerScore as : answers) {
 			as.ai.removeFromIndexes();

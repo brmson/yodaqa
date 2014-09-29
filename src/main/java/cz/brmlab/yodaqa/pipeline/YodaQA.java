@@ -19,8 +19,8 @@ import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
  *
  * This is an aggregate AE that will run all stages of a pipeline
  * that takes a fresh QuestionCAS on its input (from a collection
- * reader) and produces a cooked FinalAnswerCAS on its output (for
- * the consumer). */
+ * reader) and produces a AnswerHitlistCAS with final answer ranking
+ * on its output (for the consumer). */
 
 public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	static {

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
   <fsIndexCollection xmlns="http://uima.apache.org/resourceSpecifier">
-    <name>FinalAnswerIndexes</name>
-    <description>FinalAnswerCAS index structures</description>
+    <name>AnswerHitlistIndexes</name>
+    <description>AnswerHitlistCAS index structures</description>
     <vendor>yodaqa</vendor>
     <version>1.0</version>
     <fsIndexes>
       <fsIndexDescription>
         <label>SortedAnswers</label>
-        <typeName>cz.brmlab.yodaqa.model.FinalAnswer.Answer</typeName>
+        <typeName>cz.brmlab.yodaqa.model.AnswerHitlist.Answer</typeName>
         <kind>sorted</kind>
         <keys>
           <fsIndexKey>

@@ -17,7 +17,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import cz.brmlab.yodaqa.model.FinalAnswer.Answer;
+import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 /**
