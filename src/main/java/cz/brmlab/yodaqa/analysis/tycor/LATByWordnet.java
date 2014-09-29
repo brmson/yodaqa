@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 import cz.brmlab.yodaqa.provider.JWordnet;
 
 /**
@@ -42,7 +43,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			lats.add(lat);
 
 		/* Generate derived LATs. */
-		Map<Synset, LAT> latmap = new HashMap<Synset, LAT>();
+		Map<Synset, WordnetLAT> latmap = new HashMap<Synset, WordnetLAT>();
 		/* TODO: Populate with existing LATs for deduplication. */
 		for (LAT lat : lats) {
 			try {
@@ -53,11 +54,11 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		}
 
 		/* Add the remaining LATs. */
-		for (LAT lat : latmap.values())
+		for (WordnetLAT lat : latmap.values())
 			lat.addToIndexes();
 	}
 
-	protected void genDerivedLATs(Map<Synset, LAT> latmap, LAT lat) throws Exception {
+	protected void genDerivedLATs(Map<Synset, WordnetLAT> latmap, LAT lat) throws Exception {
 		IndexWord w = JWordnet.getDictionary().lookupIndexWord(POS.NOUN /* XXX */, lat.getText());
 		if (w == null) {
 			logger.info("?! word " + lat.getText() + " not in Wordnet");
@@ -69,12 +70,12 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void genDerivedSynsets(Map<Synset, LAT> latmap, LAT lat, Synset synset) throws Exception {
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, Synset synset) throws Exception {
 		for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
 			Synset synset2 = (Synset) t;
 			double spec = lat.getSpecificity() - 1;
 
-			LAT l2 = latmap.get(synset2);
+			WordnetLAT l2 = latmap.get(synset2);
 			if (l2 != null) {
 				/* Ok, already exists. Try to raise
 				 * specificity if possible. */
@@ -87,13 +88,14 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			}
 
 			/* New LAT. */
-			l2 = new LAT(lat.getCAS().getJCas());
+			l2 = new WordnetLAT(lat.getCAS().getJCas());
 			l2.setBegin(lat.getBegin());
 			l2.setEnd(lat.getEnd());
 			l2.setBase(lat.getBase());
 			l2.setBaseLAT(lat);
 			l2.setText(synset2.getWord(0).getLemma());
 			l2.setSpecificity(spec);
+			l2.setIsHierarchical(true);
 			latmap.put(synset2, l2);
 
 			/* ...and recurse. */

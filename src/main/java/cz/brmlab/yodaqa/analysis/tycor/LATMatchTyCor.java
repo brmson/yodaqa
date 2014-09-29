@@ -18,6 +18,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /**
  * Estimate answer specificity in CandidateAnswerCAS via type coercion
@@ -76,6 +77,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 
 		/* Load LATs from answerView. */
 		for (LAT la : JCasUtil.select(answerView, LAT.class)) {
+			if (la.getIsHierarchical() && !(la instanceof WordnetLAT))
+				continue;
 			LAT la0 = answerLats.get(la.getText());
 			if (la0 == null || la0.getSpecificity() < la.getSpecificity())
 				answerLats.put(la.getText(), la);
@@ -85,6 +88,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 
 		/* Match LATs from questionView. */
 		for (LAT lq : JCasUtil.select(questionView, LAT.class)) {
+			if (lq.getIsHierarchical() && !(lq instanceof WordnetLAT))
+				continue;
 			LAT la = answerLats.get(lq.getText());
 			if (la == null)
 				continue;
