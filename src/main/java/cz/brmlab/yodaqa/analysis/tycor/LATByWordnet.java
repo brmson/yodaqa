@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import net.didion.jwnl.data.IndexWord;
+import net.didion.jwnl.data.IndexWordSet;
 import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.PointerTarget;
 import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.Synset;
+import net.didion.jwnl.data.Word;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -59,13 +61,41 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	}
 
 	protected void genDerivedLATs(Map<Synset, WordnetLAT> latmap, LAT lat) throws Exception {
-		IndexWord w = JWordnet.getDictionary().lookupIndexWord(POS.NOUN /* XXX */, lat.getText());
-		if (w == null) {
+		/* TODO: Use pos information from the parser?
+		 * Currently, we just assume a noun and the rest is
+		 * a fallback path that derives the noun.
+		 * (Typically: How hot is the sun? -> hotness) */
+
+		IndexWordSet ws = JWordnet.getDictionary().lookupAllIndexWords(lat.getText());
+		if (ws == null || ws.size() == 0) {
 			logger.info("?! word " + lat.getText() + " not in Wordnet");
 			return;
 		}
 
-		for (Synset synset : w.getSenses()) {
+		IndexWord wnoun = ws.getIndexWord(POS.NOUN);
+		if (wnoun != null) {
+			/* Got a noun right away. */
+			genDerivedSynsets(latmap, lat, wnoun);
+			return;
+		}
+
+		boolean foundNoun = false;
+		for (IndexWord w : ws.getIndexWordArray()) {
+			/* Try to derive a noun. */
+			for (Synset synset : w.getSenses()) {
+				for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
+					Word noun = (Word) t;
+					foundNoun = true;
+					genDerivedSynsets(latmap, lat, noun.getSynset());
+				}
+			}
+		}
+		if (!foundNoun)
+			logger.info("?! word " + lat.getText() + " in Wordnet as non-noun but derived from no noun");
+	}
+
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, IndexWord wnoun) throws Exception {
+		for (Synset synset : wnoun.getSenses()) {
 			genDerivedSynsets(latmap, lat, synset);
 		}
 	}
