@@ -119,5 +119,23 @@
           </featureDescription>
         </features>
       </typeDescription>
+
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.QuestionLATMatch</name>
+        <description>Match of a question LAT; this is data for essentially a super-rough TyCor that expects the type word near the answer text.</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>baseToken</name>
+            <description>The matched passage token.</description>
+            <rangeTypeName>de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>baseLAT</name>
+            <description>The matched question LAT.</description>
+            <rangeTypeName>cz.brmlab.yodaqa.model.TyCor.LAT</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
     </types>
   </typeSystemDescription>

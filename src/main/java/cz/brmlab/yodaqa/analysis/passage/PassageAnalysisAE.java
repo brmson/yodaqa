@@ -51,6 +51,9 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(OpenNlpNamedEntities.createEngineDescription(),
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
+		/* Question LAT Text Matches: */
+		builder.add(createPrimitiveDescription(MatchQuestionLATs.class));
+
 
 		/* Okay! Now, we can proceed with our key tasks. */
 

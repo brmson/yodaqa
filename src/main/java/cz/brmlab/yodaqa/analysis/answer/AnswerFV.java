@@ -18,6 +18,9 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -39,6 +42,7 @@ public class AnswerFV {
 		"occurences", "resultLogScore", "passageLogScore",
                 "originNP", "originNE", "originDocTitle",
                 "spWordNet",
+		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 	};
 
 	protected double values[]; // the feature value
@@ -56,6 +60,9 @@ public class AnswerFV {
 			features.add(AF_OriginNE.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_SpWordNet.class);
+			features.add(AF_TyCorPassageSp.class);
+			features.add(AF_TyCorPassageDist.class);
+			features.add(AF_TyCorPassageInside.class);
 		}
 
 		values = new double[labels.length];

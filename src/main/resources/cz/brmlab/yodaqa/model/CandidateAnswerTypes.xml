@@ -79,6 +79,21 @@
         <description>Answer Feature: Specificity measured as WordNet graph exp(-distance), i.e. 1 is perfect match, 1/e is very specific, ..., 1/e^4 is already very non-specific</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp</name>
+        <description>Answer Feature: Nearby match of a question LAT within the answer-bearing passage; this value carries the specificity of the question LAT, weighed by the word exp-inverse-distance from the answer (see below).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist</name>
+        <description>Answer Feature: Nearby match of a question LAT within the answer-bearing passage; this value carries exp-inverse-distance in characters between the LAT word and the answer segment, with 1 being that the LAT is one of the answer words or just nearby.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside</name>
+        <description>Answer Feature: Nearby match of a question LAT within the answer-bearing passage; this value is 1.0 if the LAT word match is actually within the answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
 
     </types>
   </typeSystemDescription>
