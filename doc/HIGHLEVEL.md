@@ -192,12 +192,16 @@ Confidence rating is issued to each answer based on features generated
 during the analysis.  The rating score is computed by a machine learned
 classifier.
 
-## Answer Merger
+## Answer Merge-and-Score
 
-Tihs phase is a CAS multiplier that consumes all **CandidateAnswerCAS**,
-ranks them and outputs a single **AnswerHitlistCAS** CAS containing the ranked
-list of answers (with confidence scores), possibly also adding some combined
-answers.
+This phase begins with a CAS multiplier that consumes all the analyzed
+**CandidateAnswerCAS** instances and pours everything down to a single
+**AnswerHitlistCAS** CAS.  Within this CAS, identical or similar answers
+are merged or combined and then the answers are scored (by estimated
+probability of being correct) and ranked (by their score).
+
+In the future, the above might be iterated and possibly the iterations
+interleaved with extra steps like evidence gathering.
 
 ## Answer Writer
 

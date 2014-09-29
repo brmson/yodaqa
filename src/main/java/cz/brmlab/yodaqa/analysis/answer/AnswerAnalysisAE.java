@@ -67,16 +67,6 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));
 
-		/* Compute answer score (confidence) from the various
-		 * features amassed so far. */
-		/* XXX: This is the *WRONG* time to do it.  TODO: Make
-		 * an aggregate AE following up AnswerMerger that will
-		 * do this when all answers are available. */
-		builder.add(createPrimitiveDescription(AnswerScoreSimple.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
-
-		builder.add(createPrimitiveDescription(AnswerGSHook.class));
-
 
 		/* Some debug dumps of the intermediate CAS. */
 		if (false) {//logger.isDebugEnabled()) {

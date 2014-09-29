@@ -17,11 +17,6 @@
             <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
           </featureDescription>
           <featureDescription>
-            <name>confidence</name>
-            <description>Confidence of the answer - its score for ranking among other answers, computed from features</description>
-            <rangeTypeName>uima.cas.Double</rangeTypeName>
-          </featureDescription>
-          <featureDescription>
             <name>isLast</name>
             <description>Whether this is the last candidate answer CAS</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>

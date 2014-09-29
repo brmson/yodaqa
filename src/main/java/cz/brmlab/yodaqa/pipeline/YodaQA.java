@@ -8,6 +8,7 @@ import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
+import cz.brmlab.yodaqa.analysis.answer.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
@@ -56,10 +57,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
 		builder.add(answerAnalysis);
 
-		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-				AnswerMerger.class,
-				AnswerMerger.PARAM_ISLAST_BARRIER, 3);
-		builder.add(answerMerger);
+		AnalysisEngineDescription answerMergeAndScore = createAnswerMergeAndScoreDescription();
+		builder.add(answerMergeAndScore);
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
@@ -94,6 +93,27 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 				FlowControllerFactory.createFlowControllerDescription(
 					FixedParallelFlowController.class,
 					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
+
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		return aed;
+	}
+
+	public static AnalysisEngineDescription createAnswerMergeAndScoreDescription() throws ResourceInitializationException {
+		AggregateBuilder builder = new AggregateBuilder();
+
+		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+				AnswerMerger.class,
+				AnswerMerger.PARAM_ISLAST_BARRIER, 3);
+		builder.add(answerMerger);
+
+		AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
+		builder.add(answerScoring);
+
+		builder.setFlowControllerDescription(
+				FlowControllerFactory.createFlowControllerDescription(
+					FixedFlowController.class,
+					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);

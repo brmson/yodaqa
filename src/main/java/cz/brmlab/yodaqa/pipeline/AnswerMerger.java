@@ -28,9 +28,7 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
  * Take a set of per-answer CandidateAnswerCAS and merge them to
  * an AnswerHitlistCAS.
  *
- * The "ranking" part is actually implicit by UIMA indexes, this
- * is mainly a merging CAS multiplier that also deduplicates answers
- * with the same text. */
+ * We also deduplicate answers with identical text. */
 
 public class AnswerMerger extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(AnswerMerger.class);
@@ -107,9 +105,8 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		Answer answer = new Answer(finalCas);
 		String text = canAnswer.getDocumentText();
 		answer.setText(text);
-		answer.setConfidence(ai.getConfidence());
 
-		// System.err.println("AR process: " + answer.getText() + " c " + answer.getConfidence());
+		// System.err.println("AR process: " + answer.getText());
 
 		List<AnswerFeatures> answers = answersByText.get(text);
 		if (answers == null) {
@@ -138,9 +135,7 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 					mainFV = af.getFV();
 					continue;
 				}
-				logger.debug("final merging " + mainAns.getText() + "|" + answer.getText()
-						+ " :: " + mainAns.getConfidence() + ", " + answer.getConfidence());
-				mainAns.setConfidence(mainAns.getConfidence() + answer.getConfidence());
+				logger.debug("hitlist merge " + mainAns.getText() + "|" + answer.getText());
 				mainFV.merge(af.getFV());
 			}
 			mainAns.setFeatures(mainFV.toFSArray(finalCas));

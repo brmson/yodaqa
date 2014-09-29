@@ -18,12 +18,13 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
 /**
- * Annotate Answer view with score based on the present AnswerFeatures.
- * This particular implementation contains an extremely simple ad hoc
- * score computation that we have historically used. */
+ * Annotate the AnswerHitlistCAS Answer FSes with score based on the
+ * present AnswerFeatures.  This particular implementation contains
+ * an extremely simple ad hoc score computation that we have
+ * historically used. */
 
 
 public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
@@ -34,20 +35,20 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 	}
 
 	protected class AnswerScore {
-		AnswerInfo ai;
-		double score;
+		public Answer a;
+		public double score;
 
-		public AnswerScore(AnswerInfo ai_, double score_) {
-			ai = ai_;
+		public AnswerScore(Answer a_, double score_) {
+			a = a_;
 			score = score_;
 		}
 	}
 
-	public void process(JCas answerView) throws AnalysisEngineProcessException {
+	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		List<AnswerScore> answers = new LinkedList<AnswerScore>();
 
-		for (AnswerInfo ai : JCasUtil.select(answerView, AnswerInfo.class)) {
-			AnswerFV fv = new AnswerFV(ai);
+		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
+			AnswerFV fv = new AnswerFV(a);
 
 			double specificity;
 			if (fv.isFeatureSet(AF_SpWordNet.class))
@@ -70,17 +71,14 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 				* fv.getFeatureValue(AF_Occurences.class)
 				* passageLogScore
 				* fv.getFeatureValue(AF_ResultLogScore.class);
-			answers.add(new AnswerScore(ai, score));
+			answers.add(new AnswerScore(a, score));
 		}
 
 		/* Reindex the touched answer info(s). */
-		/* XXX: This is somewhat more complex than it needs to be
-		 * but later we will do this in AnswerHitlist view where we
-		 * will have many Answer objects. */
 		for (AnswerScore as : answers) {
-			as.ai.removeFromIndexes();
-			as.ai.setConfidence(as.score);
-			as.ai.addToIndexes();
+			as.a.removeFromIndexes();
+			as.a.setConfidence(as.score);
+			as.a.addToIndexes();
 		}
 	}
 }
