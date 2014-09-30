@@ -222,13 +222,12 @@ if __name__ == "__main__":
         # AnswerScoreSimple-alike scoring for performance comparison
         (simple_any_picked, simple_all_picked) = measure(simple_score, test_answersets, could_picked)
 
-        print("(testset) perans acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl = %.3f/%.3f, perq avail %.3f, any good picked = [%.3f], simple %.3f" %
+        print("(testset) perans acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl = [%.3f]/%.3f, perq avail %.3f, any good picked = %.3f, simple %.3f" %
               (accuracy, prec, recall, f2, prec70, recall70, avail_to_pick, cfier_any_picked, simple_any_picked))
 
-        # Our decisive factor is proportion of answersets where at least
-        # one picked answer is correct.  FIXME: Also actually
-        # try to maximize that in the predictor.
-        score = cfier_any_picked
+        # Our decisive factor is proportion of answers that are correctly
+        # estimated as good on the 70% confidence level.
+        score = prec70
         if score > best[1]:
             best = (cfier, score, fv_test, class_test)
 
