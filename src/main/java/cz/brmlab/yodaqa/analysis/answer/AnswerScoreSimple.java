@@ -44,33 +44,38 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 		}
 	}
 
+	public static double scoreAnswer(Answer a) {
+		AnswerFV fv = new AnswerFV(a);
+
+		double specificity;
+		if (fv.isFeatureSet(AF_SpWordNet.class))
+			specificity = fv.getFeatureValue(AF_SpWordNet.class);
+		else
+			specificity = Math.exp(-4);
+
+		double passageLogScore = 0;
+		if (fv.isFeatureSet(AF_PassageLogScore.class))
+			passageLogScore = fv.getFeatureValue(AF_PassageLogScore.class);
+		else if (fv.getFeatureValue(AF_OriginDocTitle.class) > 0.0)
+			passageLogScore = Math.log(1 + 2);
+
+		double neBonus = 0;
+		if (fv.isFeatureSet(AF_OriginNE.class))
+			neBonus = 1;
+
+		double score = specificity
+			* Math.exp(neBonus)
+			* fv.getFeatureValue(AF_Occurences.class)
+			* passageLogScore
+			* fv.getFeatureValue(AF_ResultLogScore.class);
+		return score;
+	}
+
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		List<AnswerScore> answers = new LinkedList<AnswerScore>();
 
 		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
-			AnswerFV fv = new AnswerFV(a);
-
-			double specificity;
-			if (fv.isFeatureSet(AF_SpWordNet.class))
-				specificity = fv.getFeatureValue(AF_SpWordNet.class);
-			else
-				specificity = Math.exp(-4);
-
-			double passageLogScore = 0;
-			if (fv.isFeatureSet(AF_PassageLogScore.class))
-				passageLogScore = fv.getFeatureValue(AF_PassageLogScore.class);
-			else if (fv.getFeatureValue(AF_OriginDocTitle.class) > 0.0)
-				passageLogScore = Math.log(1 + 2);
-
-			double neBonus = 0;
-			if (fv.isFeatureSet(AF_OriginNE.class))
-				neBonus = 1;
-
-			double score = specificity
-				* Math.exp(neBonus)
-				* fv.getFeatureValue(AF_Occurences.class)
-				* passageLogScore
-				* fv.getFeatureValue(AF_ResultLogScore.class);
+			double score = scoreAnswer(a);
 			answers.add(new AnswerScore(a, score));
 		}
 
