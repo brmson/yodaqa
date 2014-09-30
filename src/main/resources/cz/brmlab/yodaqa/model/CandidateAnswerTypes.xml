@@ -99,6 +99,21 @@
         <description>Answer Feature: A score as determined by our good old original simple scoring routine that uses just a handful of naive features.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus</name>
+        <description>Answer Feature: Boolean value whether the LAT is just the answer focus.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocusProxy</name>
+        <description>Answer Feature: Boolean value whether the LAT is indirectly determined by the answer focus (e.g. "number" for a numerical value).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE</name>
+        <description>Answer Feature: Boolean value whether the LAT is the kind of named entity recognized.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
 
     </types>
   </typeSystemDescription>

@@ -11,6 +11,9 @@ import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocusProxy;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE;
@@ -45,6 +48,7 @@ public class AnswerFV {
                 "spWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
+		"LATFocus", "LATFocusProxy", "LATNE",
 	};
 
 	protected double values[]; // the feature value
@@ -66,6 +70,9 @@ public class AnswerFV {
 			features.add(AF_TyCorPassageDist.class);
 			features.add(AF_TyCorPassageInside.class);
 			features.add(AF_SimpleScore.class);
+			features.add(AF_LATFocus.class);
+			features.add(AF_LATFocusProxy.class);
+			features.add(AF_LATNE.class);
 		}
 
 		values = new double[labels.length];
