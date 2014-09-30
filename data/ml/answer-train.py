@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
         # Train the model
 
-        cfier = linear_model.LogisticRegression(class_weight='auto', dual=False, fit_intercept=True, intercept_scaling=1e6)
+        cfier = linear_model.LogisticRegression(class_weight='auto', dual=False, fit_intercept=True)
         cfier.fit(fv_train, class_train)
 
         # Test the model
