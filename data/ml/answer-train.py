@@ -76,10 +76,16 @@ class AnswerSet:
 def load_answers(f):
     answersets = []
 
+    labels = None
+
     fv_set = []
     class_set = []
     qid_last = 0
     for line in f:
+        if labels is None:
+            labels = line.split()[1:-1]
+            continue
+
         # Line is qid \t f0 \t f1 \t ... \t fN \t class
         fv = [float(x) for x in line.split()]
         qid = int(fv.pop(0))
@@ -102,7 +108,7 @@ def load_answers(f):
 
     if len(fv_set) > 0:
         answersets.append(AnswerSet(fv_set, class_set))
-    return answersets
+    return (answersets, labels)
 
 
 def sets_by_idx(answersets, idx_set):
@@ -151,8 +157,13 @@ def simple_score(fvset):
     return score
 
 
+def dump_weights(weights, labels):
+    for i in range(len(weights[0])):
+        print('%20s %.4f' % (labels[i], weights[0][i]))
+
+
 if __name__ == "__main__":
-    answersets = load_answers(sys.stdin)
+    (answersets, labels) = load_answers(sys.stdin)
 
     best = (None, -1)
 
@@ -222,6 +233,8 @@ if __name__ == "__main__":
 
     print("Best is " + str(best))
     print(best[0].coef_, best[0].intercept_)
+
+    dump_weights(best[0].coef_, labels)
 
     if False:
         (cfier, _, fv_test, class_test) = best

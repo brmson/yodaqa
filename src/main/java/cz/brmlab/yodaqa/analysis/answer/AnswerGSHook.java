@@ -59,6 +59,17 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			} catch (IOException io) {
 				io.printStackTrace();
 			}
+
+			StringBuilder sb = new StringBuilder();
+			sb.append("qid");
+			sb.append("\t");
+			for (String label : AnswerFV.getFVLabels()) {
+				sb.append(label);
+				sb.append("\t");
+			}
+			sb.append("isMatch");
+			trainFile.println(sb.toString());
+			trainFile.flush();
 		}
 
 		AnswerFV fv = new AnswerFV(a);

@@ -131,6 +131,17 @@ public class AnswerFV {
 		return fv;
 	}
 
+	/** Produce a label vector corresponding to the feature vector,
+	 * as returned by getFV(). */
+	public static String[] getFVLabels() {
+		String[] FVlabels = new String[labels.length * 2];
+		for (int i = 0; i < labels.length; i++) {
+			FVlabels[i*2] = "@" + labels[i];
+			FVlabels[i*2 + 1] = "!" + labels[i];
+		}
+		return FVlabels;
+	}
+
 
 	/** Set a given feature to a value.  Return whether the feature
 	 * has already been set before. */
