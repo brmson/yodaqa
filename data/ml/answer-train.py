@@ -164,6 +164,7 @@ def dump_weights(weights, labels):
 
 if __name__ == "__main__":
     (answersets, labels) = load_answers(sys.stdin)
+    print('%d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
 
     best = (None, -1)
 
