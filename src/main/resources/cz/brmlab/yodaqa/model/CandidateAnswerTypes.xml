@@ -94,6 +94,11 @@
         <description>Answer Feature: Nearby match of a question LAT within the answer-bearing passage; this value is 1.0 if the LAT word match is actually within the answer.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SimpleScore</name>
+        <description>Answer Feature: A score as determined by our good old original simple scoring routine that uses just a handful of naive features.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
 
     </types>
   </typeSystemDescription>

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -17,7 +18,9 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SimpleScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
 /**
@@ -82,7 +85,19 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 		/* Reindex the touched answer info(s). */
 		for (AnswerScore as : answers) {
 			as.a.removeFromIndexes();
-			as.a.setConfidence(as.score);
+
+			/* If we used this as true scorer... */
+			// as.a.setConfidence(as.score);
+
+			/* ...but instead we just add it as an extra feature
+			 * for a more complex scorer. */
+			AnswerFV fv = new AnswerFV(as.a);
+			fv.setFeature(AF_SimpleScore.class, as.score);
+
+			for (FeatureStructure af : as.a.getFeatures().toArray())
+				((AnswerFeature) af).removeFromIndexes();
+			as.a.setFeatures(fv.toFSArray(jcas));
+
 			as.a.addToIndexes();
 		}
 	}
