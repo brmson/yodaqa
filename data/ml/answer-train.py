@@ -90,9 +90,6 @@ def load_answers(f):
         if fv[0 * 2] < 1.0:
             continue
 
-        fv[1 * 2] = math.log(1.0 + fv[1 * 2])
-        fv[2 * 2] = math.log(1.0 + fv[2 * 2])
-
         if qid != qid_last:
             if len(fv_set) > 0:
                 answersets.append(AnswerSet(fv_set, class_set))
