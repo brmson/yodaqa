@@ -23,7 +23,7 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
 
 public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(AnswerScoreSimple.class);
+	final Logger logger = LoggerFactory.getLogger(AnswerScoreLogistic.class);
 
 	/** The weights of individual elements of the FV.  These weights
 	 * are output by data/ml/train-answer.py as this:
