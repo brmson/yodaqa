@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
@@ -60,10 +62,14 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		boolean qNoWordnetLAT = JCasUtil.select(questionView, WordnetLAT.class).isEmpty();
+		boolean aNoWordnetLAT = JCasUtil.select(answerView, WordnetLAT.class).isEmpty();
 		LATMatch match = matchLATs(questionView, answerView);
+
+		AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
+		AnswerFV fv = new AnswerFV(ai);
+
 		if (match != null) {
-			AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
-			AnswerFV fv = new AnswerFV(ai);
 			fv.setFeature(AF_SpWordNet.class, Math.exp(match.getSpecificity()));
 			if (match.lat1.getSpecificity() == 0)
 				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
@@ -71,14 +77,20 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
 			if (match.getSpecificity() == 0 && fv.isFeatureSet(AF_LATFocus.class))
 				fv.setFeature(AF_TyCorXHitAFocus.class, 1.0);
+		}
 
+		if (qNoWordnetLAT)
+			fv.setFeature(AF_LATQNoWordNet.class, 1.0);
+		if (aNoWordnetLAT)
+			fv.setFeature(AF_LATANoWordNet.class, 1.0);
+
+		if (ai.getFeatures() != null)
 			for (FeatureStructure af : ai.getFeatures().toArray())
 				((AnswerFeature) af).removeFromIndexes();
-			ai.removeFromIndexes();
+		ai.removeFromIndexes();
 
-			ai.setFeatures(fv.toFSArray(answerView));
-			ai.addToIndexes();
-		}
+		ai.setFeatures(fv.toFSArray(answerView));
+		ai.addToIndexes();
 	}
 
 	protected LATMatch matchLATs(JCas questionView, JCas answerView) throws AnalysisEngineProcessException {

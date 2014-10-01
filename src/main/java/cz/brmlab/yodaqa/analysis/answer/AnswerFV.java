@@ -11,9 +11,11 @@ import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocusProxy;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE;
@@ -48,7 +50,7 @@ public class AnswerFV {
 	public static String labels[] = {
 		"occurences", "resultLogScore", "passageLogScore",
                 "originNP", "originNE", "originDocTitle",
-                "spWordNet",
+                "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
 		"LATFocus", "LATFocusProxy", "LATNE",
@@ -70,6 +72,8 @@ public class AnswerFV {
 			features.add(AF_OriginNE.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_SpWordNet.class);
+			features.add(AF_LATQNoWordNet.class);
+			features.add(AF_LATANoWordNet.class);
 			features.add(AF_TyCorPassageSp.class);
 			features.add(AF_TyCorPassageDist.class);
 			features.add(AF_TyCorPassageInside.class);
