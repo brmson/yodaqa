@@ -80,6 +80,21 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit</name>
+        <description>Answer Feature: Question LAT is direct hypernyme of the answer LAT.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit</name>
+        <description>Answer Feature: Answer LAT is direct hypernyme of the question LAT.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorXHitAFocus</name>
+        <description>Answer Feature: Answer and question LAT match exactly and answer LAT is the plain focus (LATFocus feature set). That is a strong hint that this is a TyCor false positive.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp</name>
         <description>Answer Feature: Nearby match of a question LAT within the answer-bearing passage; this value carries the specificity of the question LAT, weighed by the word exp-inverse-distance from the answer (see below).</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

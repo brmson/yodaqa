@@ -14,7 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorXHitAFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -61,6 +65,12 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
 			AnswerFV fv = new AnswerFV(ai);
 			fv.setFeature(AF_SpWordNet.class, Math.exp(match.getSpecificity()));
+			if (match.lat1.getSpecificity() == 0)
+				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
+			if (match.lat2.getSpecificity() == 0)
+				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
+			if (match.getSpecificity() == 0 && fv.isFeatureSet(AF_LATFocus.class))
+				fv.setFeature(AF_TyCorXHitAFocus.class, 1.0);
 
 			for (FeatureStructure af : ai.getFeatures().toArray())
 				((AnswerFeature) af).removeFromIndexes();

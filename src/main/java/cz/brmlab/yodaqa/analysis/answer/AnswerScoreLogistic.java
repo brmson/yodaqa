@@ -41,6 +41,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		 0.20342337,  0.08307843,  0.20342337,  0.37166926, -0.10370862,
 		 0.08163508,  0.        ,  0.70315325, -0.43519261,  0.69678887,
 		-0.42882823,  0.12024469, -1.79032655,
+		0, 0,  0, 0,  0, 0,
 	};
 	public static double intercept = 0.26796064;
 

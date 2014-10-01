@@ -25,6 +25,9 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorXHitAFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -49,6 +52,7 @@ public class AnswerFV {
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
 		"LATFocus", "LATFocusProxy", "LATNE",
+		"tyCorSpQHit", "tyCorSpAHit", "tyCorXHitAFocus",
 	};
 
 	protected double values[]; // the feature value
@@ -73,6 +77,9 @@ public class AnswerFV {
 			features.add(AF_LATFocus.class);
 			features.add(AF_LATFocusProxy.class);
 			features.add(AF_LATNE.class);
+			features.add(AF_TyCorSpQHit.class);
+			features.add(AF_TyCorSpAHit.class);
+			features.add(AF_TyCorXHitAFocus.class);
 		}
 
 		values = new double[labels.length];
