@@ -19,7 +19,11 @@ will make YodaQA generate detailed feature vector records for training
 of models (training-*.tsv in the current working directory, typically
 the project root).  If you use the ``data/eval/curated-measure.sh``
 script, you are all set - in the "train" mode, it will automatically
-enable mltraining.
+enable generation of training data, which is stored in ``data/ml/tsv``;
+our archive of this data (to be stored in that directory) for various
+commits is available at
+
+	http://pasky.or.cz/dev/brmson/yodaqa-ml/
 
 After this data is accumulated, the training procedure is specific
 for each model.
