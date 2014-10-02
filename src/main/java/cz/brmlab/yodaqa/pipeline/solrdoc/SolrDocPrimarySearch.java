@@ -21,9 +21,13 @@ import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
@@ -118,7 +122,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
 			if (doc != null) {
-				documentToAnswer(canAnswerView, doc, !docIter.hasNext());
+				documentToAnswer(canAnswerView, doc, !docIter.hasNext(), questionView);
 			} else {
 				dummyAnswer(canAnswerView);
 			}
@@ -136,7 +140,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected void documentToAnswer(JCas jcas, SolrDocument doc,
-			boolean isLast) throws Exception {
+			boolean isLast, JCas questionView) throws Exception {
 		Integer id = (Integer) doc.getFieldValue("id");
 		String title = (String) doc.getFieldValue("titleText");
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
@@ -157,6 +161,17 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(AF_Occurences.class, 1.0);
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(AF_OriginDocTitle.class, 1.0);
+
+		LAT containedLAT = titleContainsLAT(title, questionView);
+		if (containedLAT != null) {
+			/* Okay, our answer contains a LAT.
+			 * Create the appropriate "passage TyCor"
+			 * features. */
+			fv.setFeature(AF_TyCorPassageInside.class, 1.0);
+			fv.setFeature(AF_TyCorPassageDist.class, 1.0);
+			fv.setFeature(AF_TyCorPassageSp.class, Math.exp(containedLAT.getSpecificity()));
+		}
+
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(isLast);
@@ -178,5 +193,24 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setIsLast(true);
 		ai.addToIndexes();
+	}
+
+	protected LAT titleContainsLAT(String title, JCas questionView) {
+		LAT bestQlat = null;
+		for (LAT qlat : JCasUtil.select(questionView, LAT.class)) {
+			String text = qlat.getText().toLowerCase();
+			String textalt = qlat.getCoveredText().toLowerCase();
+
+			if (!title.toLowerCase().contains(text) && !title.toLowerCase().contains(textalt))
+				continue;
+
+			/* We have a match! But keep just the
+			 * most specific LAT match within the
+			 * passage. */
+			if (bestQlat != null && bestQlat.getSpecificity() > qlat.getSpecificity())
+				continue;
+			bestQlat = qlat;
+		}
+		return bestQlat;
 	}
 }
