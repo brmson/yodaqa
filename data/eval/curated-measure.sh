@@ -6,7 +6,7 @@ type="$1"
 args=
 case $type in
 	test) ;;
-	train) args=-Dcz.brmlab.yodaqa.mltraining=1;;
+	train) args="-Dcz.brmlab.yodaqa.train_passextract=training-passextract.tsv -Dcz.brmlab.yodaqa.train_answer=training-answer.tsv";;
 	*) echo "Usage: curated-measure.sh {test,train}" >&2; exit 1;;
 esac
 

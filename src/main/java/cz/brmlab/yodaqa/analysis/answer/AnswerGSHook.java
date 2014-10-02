@@ -23,7 +23,6 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
  * if that is enabled on the commandline (see data/ml/README.md). */
 
 public class AnswerGSHook extends JCasAnnotator_ImplBase {
-	protected static String trainFileName = "training-answer.tsv";
 	PrintWriter trainFile;
 
 	final Logger logger = LoggerFactory.getLogger(AnswerGSHook.class);
@@ -43,15 +42,15 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
 		/* Possibly dump model training data. */
-		String mltraining = System.getProperty("cz.brmlab.yodaqa.mltraining");
-		if (mltraining != null && mltraining.equals("1")) {
+		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer");
+		if (trainFileName != null && !trainFileName.isEmpty()) {
 			for (Answer a : JCasUtil.select(jcas, Answer.class)) {
-				dumpAnswerFV(qi.getQuestionId(), a, ap.matcher(a.getText()).find());
+				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, ap.matcher(a.getText()).find());
 			}
 		}
 	}
 
-	protected void dumpAnswerFV(String qid, Answer a, boolean isMatch) {
+	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch) {
 		/* First, open the output file. */
 		if (trainFile == null) {
 			try {

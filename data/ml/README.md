@@ -11,9 +11,9 @@ Right now, we consider machine learned models in two cases:
 
 In general, to train models, we first need to gather training data.
 We run YodaQA with the tsvgs frontend like during gold standard measurements,
-but passing an extra mvn commandline option
+but passing extra mvn commandline options
 
-	-Dcz.brmlab.yodaqa.mltraining=1
+	-Dcz.brmlab.yodaqa.train_passextract=training-passextract.tsv -Dcz.brmlab.yodaqa.train_answer=training-answer.tsv
 
 will make YodaQA generate detailed feature vector records for training
 of models (training-*.tsv in the current working directory, typically
@@ -27,7 +27,7 @@ for each model.
 Passage Extraction
 ------------------
 
-We currently use a four-elemnt FV representing number and total weight
+We currently use a four-element FV representing number and total weight
 of normal clues and "about" clues (that also match the document title,
 i.e. would yield many false positives).  A passage has positive class
 (1) if the answer regex matches within.
