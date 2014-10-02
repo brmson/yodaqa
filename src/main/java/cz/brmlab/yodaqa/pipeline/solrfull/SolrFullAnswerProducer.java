@@ -96,6 +96,11 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createTitleInCluePassageProducerDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
+		/* XXX: In SolrFullPrimarySearch, when generating features,
+		 * we assume that PARAM_SEARCH_FULL_TEXT always corresponds
+		 * to passage PARAM_PASS_SEL_FIRST and title-in-clue search.
+		 * If more variations are created, we will need to adjust
+		 * feature generation. */
 		AnalysisEngineDescription primarySearch = AnalysisEngineFactory.createEngineDescription(
 				SolrFullPrimarySearch.class,
 				SolrFullPrimarySearch.PARAM_RESULT_INFO_ORIGIN, "cz.brmlab.yodaqa.pipeline.solrfull.titleInClue",

@@ -60,6 +60,16 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg</name>
+        <description>Answer Feature: 1 if the origin of this answer is an in-document passage</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst</name>
+        <description>Answer Feature: 1 if the origin of this answer is the first passage of document (often a blurb packed with is-a relationships information)</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP</name>
         <description>Answer Feature: 1 if the origin of this answer is a noun phrase parsed in a passage</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
@@ -72,6 +82,11 @@
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle</name>
         <description>Answer Feature: 1 if the origin of this answer is a document title</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept</name>
+        <description>Answer Feature: 1 if the origin of this answer is a document corresponding to in-question concept</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
