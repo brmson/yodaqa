@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SimpleScore;
@@ -63,7 +63,7 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 			passageLogScore = Math.log(1 + 2);
 
 		double neBonus = 0;
-		if (fv.isFeatureSet(AF_OriginNE.class))
+		if (fv.isFeatureSet(AF_OriginPsgNE.class))
 			neBonus = 1;
 
 		double score = specificity

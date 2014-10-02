@@ -60,12 +60,12 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP</name>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP</name>
         <description>Answer Feature: 1 if the origin of this answer is a noun phrase parsed in a passage</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE</name>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE</name>
         <description>Answer Feature: 1 if the origin of this answer is a named entity matched in a passage (TODO: also distinguish the type of matched named entity?)</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>

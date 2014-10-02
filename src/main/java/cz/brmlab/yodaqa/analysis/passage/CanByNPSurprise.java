@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
@@ -78,7 +78,7 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 			AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 			fv.setFeature(AF_Occurences.class, 1.0);
 			fv.setFeature(AF_PassageLogScore.class, Math.log(1 + p.getScore()));
-			fv.setFeature(AF_OriginNP.class, 1.0);
+			fv.setFeature(AF_OriginPsgNP.class, 1.0);
 			for (QuestionLATMatch qlm : JCasUtil.selectCovered(QuestionLATMatch.class, p)) {
 				double distance = 1000;
 				if (qlm.getBegin() >= np.getBegin() && qlm.getEnd() <= np.getEnd()) {

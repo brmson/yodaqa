@@ -17,8 +17,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocusProxy;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
@@ -49,7 +49,7 @@ public class AnswerFV {
 	public static ArrayList<Class<? extends AnswerFeature>> features;
 	public static String labels[] = {
 		"occurences", "resultLogScore", "passageLogScore",
-                "originNP", "originNE", "originDocTitle",
+                "originPsgNP", "originPsgNE", "originDocTitle",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
@@ -68,8 +68,8 @@ public class AnswerFV {
 			features.add(AF_Occurences.class);
 			features.add(AF_ResultLogScore.class);
 			features.add(AF_PassageLogScore.class);
-			features.add(AF_OriginNP.class);
-			features.add(AF_OriginNE.class);
+			features.add(AF_OriginPsgNP.class);
+			features.add(AF_OriginPsgNE.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_SpWordNet.class);
 			features.add(AF_LATQNoWordNet.class);
