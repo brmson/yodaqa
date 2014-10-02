@@ -19,6 +19,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -167,11 +169,14 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		return terms;
 	}
 
-	protected void generateSolrResult(JCas jcas, SolrDocument document) {
+	protected void generateSolrResult(JCas jcas, SolrDocument document) throws AnalysisEngineProcessException {
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
 		double score = ((Float) document.getFieldValue("score")).floatValue();
 		logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
+
+		AnswerFV afv = new AnswerFV();
+		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());
@@ -179,6 +184,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		ri.setSource(srcName);
 		ri.setRelevance(score);
 		ri.setOrigin(resultInfoOrigin);
+		ri.setAnsfeatures(afv.toFSArray(jcas));
 		ri.addToIndexes();
 	}
 }

@@ -15,7 +15,6 @@ import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp;
@@ -54,6 +53,9 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
+
+		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
+
 		for (NP np : JCasUtil.select(passagesView, NP.class)) {
 			String text = np.getCoveredText();
 
@@ -73,10 +75,9 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 			logger.info("caNP {}", np.getCoveredText());
 
 			Passage p = JCasUtil.selectCovering(Passage.class, np).get(0);
-			AnswerFV fv = new AnswerFV();
+			AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 			fv.setFeature(AF_Occurences.class, 1.0);
 			fv.setFeature(AF_PassageLogScore.class, Math.log(1 + p.getScore()));
-			fv.setFeature(AF_ResultLogScore.class, Math.log(1 + JCasUtil.selectSingle(resultView, ResultInfo.class).getRelevance()));
 			fv.setFeature(AF_OriginNP.class, 1.0);
 			for (QuestionLATMatch qlm : JCasUtil.selectCovered(QuestionLATMatch.class, p)) {
 				double distance = 1000;

@@ -40,6 +40,12 @@
             <description>Originating annotator name</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>ansfeatures</name>
+            <description>A set of answer features that should be inherited by all answers generated from this result.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
+          </featureDescription>
         </features>
       </typeDescription>
 
