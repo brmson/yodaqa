@@ -147,13 +147,13 @@ def measure(scorer, answersets, could_picked):
 
 
 # AnswerScoreSimple-alike scoring for performance comparison
-def simple_score(fvset):
-    specificity = fvset[:, 6 * 2]
+def simple_score(labels, fvset):
+    specificity = fvset[:, labels.index('@spWordNet')]
     specificity[specificity == 0.0] = math.exp(-4)
-    passage_score = fvset[:, 2 * 2]
-    passage_score[fvset[:, 5 * 2] > 0.0] = 2
-    ne_bonus = np.exp(fvset[:, 4 * 2])
-    score = specificity * ne_bonus * fvset[:, 0 * 2] * fvset[:, 1 * 2] * passage_score
+    passage_score = fvset[:, labels.index('@passageLogScore')]
+    passage_score[fvset[:, labels.index('@originDocTitle')] > 0.0] = 2
+    ne_bonus = np.exp(fvset[:, labels.index('@originNE')])
+    score = specificity * ne_bonus * fvset[:, labels.index('@occurences')] * fvset[:, labels.index('@resultLogScore')] * passage_score
     return score
 
 
@@ -220,7 +220,13 @@ if __name__ == "__main__":
         (cfier_any_picked, cfier_all_picked) = measure(CfierScorer(cfier), test_answersets, could_picked)
 
         # AnswerScoreSimple-alike scoring for performance comparison
-        (simple_any_picked, simple_all_picked) = measure(simple_score, test_answersets, could_picked)
+        class SimpleScorer:
+            def __init__(self, labels):
+                self.labels = labels
+            def __call__(self, fvset):
+                score = simple_score(labels, fvset)
+                return score
+        (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
 
         print("(testset) perans acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl = [%.3f]/%.3f, perq avail %.3f, any good picked = %.3f, simple %.3f" %
               (accuracy, prec, recall, f2, prec70, recall70, avail_to_pick, cfier_any_picked, simple_any_picked))
