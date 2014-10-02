@@ -1,9 +1,12 @@
 package cz.brmlab.yodaqa.analysis.tycor;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.IndexWordSet;
@@ -34,7 +37,34 @@ import cz.brmlab.yodaqa.provider.JWordnet;
 public class LATByWordnet extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByWordnet.class);
 
+	/* We don't generalize further over the noun.Tops words that
+	 * represent the most abstract hierarchy and generally words
+	 * that have nothing in common anymore.
+	 *
+	 * sed -ne 's/^{ //p' data/wordnet/dict/dbfiles//noun.Tops | sed -re 's/[.:^_a-zA-Z0-9]+,[^ ]+ //g; s/ \(.*$//; s/\[ | \]|,//g; s/ .*$//'
+	 *
+	 * XXX: It would be better to have these as synset IDs, but that
+	 * would be more complicated to obtain.
+	 */
+	protected static String tops_list[] = {
+		"entity", "physical_entity", "abstraction", "thing", "object",
+		"whole", "congener", "living_thing", "organism", "benthos",
+		"dwarf", "heterotroph", "parent", "life", "biont", "cell",
+		"causal_agent", "person", "animal", "plant", "native",
+		"natural_object", "substance", "substance1", "matter", "food",
+		"nutrient1", "artifact", "article", "psychological_feature",
+		"cognition", "motivation", "attribute", "state", "feeling",
+		"location", "shape", "time", "space", "absolute_space",
+		"phase_space", "event", "process", "act", "group", "relation",
+		"possession", "social_relation", "communication", "measure",
+		"phenomenon",
+	};
+	protected Set<String> tops;
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+		if (tops == null)
+			tops = new HashSet<String>(Arrays.asList(tops_list));
+
 		super.initialize(aContext);
 	}
 
@@ -116,6 +146,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 				}
 				continue;
 			}
+			String lemma = synset2.getWord(0).getLemma();
 
 			/* New LAT. */
 			l2 = new WordnetLAT(lat.getCAS().getJCas());
@@ -123,13 +154,15 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			l2.setEnd(lat.getEnd());
 			l2.setBase(lat.getBase());
 			l2.setBaseLAT(lat);
-			l2.setText(synset2.getWord(0).getLemma());
+			l2.setText(lemma);
 			l2.setSpecificity(spec);
 			l2.setIsHierarchical(true);
 			latmap.put(synset2, l2);
 
-			/* ...and recurse. */
-			genDerivedSynsets(latmap, l2, synset2);
+			/* ...and recurse, unless we got into the noun.Tops
+			 * realm already. */
+			if (!tops.contains(lemma))
+				genDerivedSynsets(latmap, l2, synset2);
 		}
 	}
 }
