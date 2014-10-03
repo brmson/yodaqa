@@ -152,7 +152,7 @@ def simple_score(labels, fvset):
     specificity[specificity == 0.0] = math.exp(-4)
     passage_score = fvset[:, labels.index('@passageLogScore')]
     passage_score[fvset[:, labels.index('@originDocTitle')] > 0.0] = 2
-    ne_bonus = np.exp(fvset[:, labels.index('@originNE')])
+    ne_bonus = np.exp(fvset[:, labels.index('@originPsgNE')])
     score = specificity * ne_bonus * fvset[:, labels.index('@occurences')] * fvset[:, labels.index('@resultLogScore')] * passage_score
     return score
 
