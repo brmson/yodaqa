@@ -7,3 +7,13 @@ res-*.zip
 
 # vim files
 .*.sw?
+
+# gradle
+.gradle
+build
+.idea
+*.iml
+*.ipr
+
+# tests
+/*.tsv
