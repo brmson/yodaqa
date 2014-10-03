@@ -53,7 +53,9 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* POS, constituents, dependencies: */
 		// fast, reliable
-		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class,
+					StanfordParser.PARAM_WRITE_POS, true/*,
+					StanfordParser.PARAM_SHARED_MODEL, true*/));
 
 		// slow startup, no dependencies, superseded
 		//builder.add(AnalysisEngineFactory.createEngineDescription(BerkeleyParser.class));

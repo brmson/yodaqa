@@ -40,7 +40,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* POS, constituents, dependencies: */
 		builder.add(createPrimitiveDescription(
 				StanfordParser.class,
-				StanfordParser.PARAM_MAX_TOKENS, 50), // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+				StanfordParser.PARAM_WRITE_POS, true),
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		/* Lemma features: */
