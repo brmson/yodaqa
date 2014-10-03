@@ -154,11 +154,6 @@ as such:
     and analytical tools that aren't standalone UIMA annotators (e.g.
     Wordnet); mainly to avoid reinitialization and keep them as singletons
 
-We also carry some sources in the de.tudarmstadt.ukp.dkpro namespace
-and types in the desc namespace; these are just tweaked copies of some
-DKPro upstream classes that contain bugfixes we require - we expect to
-get rid of them with the next upstream releases.
-
 ### Machine Learning
 
 Some stages of the QA pipeline use machine learning for scoring snippets
