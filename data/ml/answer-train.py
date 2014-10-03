@@ -8,7 +8,7 @@
 # The final line of output contains the weight vector and intercept
 # term.
 #
-# Training is performed by 20-round 3:1 train:test random splits
+# Training is performed by 20-round 1:1 train:test random splits
 # (with question granularity), picking the model with best rate of
 # including the correct answer in top 5 answers on the test set.
 #
@@ -28,7 +28,7 @@ import numpy.random as random
 
 
 num_rounds = 20
-test_portion = 1.0/4
+test_portion = 1.0/2
 num_picked = 5  # Our aim is to get our to the top N here
 
 
