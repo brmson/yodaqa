@@ -195,10 +195,13 @@ if __name__ == "__main__":
 
         classpred70_test = (proba[:,1] >= 0.7).astype('float')
         tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
+        tn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
         fp70_count = float(np.sum(np.logical_and(class_test < 0.5, classpred70_test > 0.5)))
         fn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
+        accuracy70 = (tp70_count + tn70_count) / (tp70_count + tn70_count + fp70_count + fn70_count)
         prec70 = tp70_count / (tp70_count + fp70_count)
         recall70 = tp70_count / (tp70_count + fn70_count)
+        f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
 
         # Test the model on whole questions
         test_answersets = [answersets[i] for i in testidx]
@@ -228,8 +231,8 @@ if __name__ == "__main__":
                 return score
         (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
 
-        print("(testset) perans acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl = [%.3f]/%.3f, perq avail %.3f, any good picked = %.3f, simple %.3f" %
-              (accuracy, prec, recall, f2, prec70, recall70, avail_to_pick, cfier_any_picked, simple_any_picked))
+        print("(testset) PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl = [%.3f]/%.3f/%.3f, PERQ avail %.3f, any good = %.3f, simple %.3f" %
+              (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked))
 
         # Our decisive factor is proportion of answers that are correctly
         # estimated as good on the 70% confidence level.
