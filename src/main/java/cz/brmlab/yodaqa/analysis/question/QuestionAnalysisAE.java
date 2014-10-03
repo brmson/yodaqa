@@ -16,6 +16,7 @@ import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordNamedEntityRecognizer;
 //import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
+
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -54,8 +55,8 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* POS, constituents, dependencies: */
 		// fast, reliable
 		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class,
-					StanfordParser.PARAM_WRITE_POS, true/*,
-					StanfordParser.PARAM_SHARED_MODEL, true*/));
+					StanfordParser.PARAM_WRITE_POS, true,
+					StanfordParser.PARAM_SHARED_MODEL, true));
 
 		// slow startup, no dependencies, superseded
 		//builder.add(AnalysisEngineFactory.createEngineDescription(BerkeleyParser.class));
@@ -107,7 +108,6 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		// too sparse to be useful
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpSemanticRoleLabeler.class));
 		*/
-
 
 		/* Okay! Now, we can proceed with our key tasks. */
 
