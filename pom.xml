@@ -224,8 +224,7 @@
 						<goals><goal>generate</goal></goals>
 						<configuration>
 							<typeSystemIncludes>
-								<typeSystemInclude>src/main/resources/cz/brmlab/yodaqa/model/*Types.xml</typeSystemInclude>
-								<typeSystemInclude>src/main/resources/desc/type/*.xml</typeSystemInclude>
+								<typeSystemInclude>src/main/typesystem/*.xml</typeSystemInclude>
 							</typeSystemIncludes>
 							<outputDirectory>src/main/java</outputDirectory>
 						</configuration>
