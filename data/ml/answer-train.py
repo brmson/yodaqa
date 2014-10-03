@@ -46,7 +46,9 @@ class AnswerSet:
         # according to score yielded by the @scorer callable.
         # Actually, it's more complicated. There may be many ties for the
         # third place and random selection may generate a lot of evaluation
-        # noise. Therefore, we actually consider all the tied candidates.
+        # noise. Therefore, we actually consider all the tied candidates,
+        # but each not as a single correct answer, but only 1/n correct
+        # answers (where n is number of tied answers).
 
         (any_picked, all_picked) = (0, 0)
 
@@ -58,15 +60,29 @@ class AnswerSet:
             score_thres = scores[-1]
 
         true_picked = 0
+        true_tiedlast = 0
+        all_tiedlast = 0
         for j in range(np.size(self.class_set)):
             # print(scorer, self.fv_set[j], 'SCORE', score_set[j], score_set[j] > score_thres - 0.001)
-            if score_set[j] <= score_thres - 0.001:
+            if score_set[j] <= score_thres - 0.0001:
                 continue
+
+            if score_set[j] <= score_thres + 0.0001:
+                is_tiedlast = True
+                all_tiedlast += 1
+            else:
+                is_tiedlast = False
+
             if self.class_set[j] > 0:
-                true_picked += 1
+                if not is_tiedlast:
+                    true_picked += 1
+                else:
+                    true_tiedlast += 1
 
         if true_picked > 0:
             any_picked += 1
+        if true_picked == 0 and true_tiedlast > 0:
+            any_picked += float(true_tiedlast) / float(all_tiedlast)
         if true_picked == 3:
             all_picked += 1
 
@@ -195,10 +211,13 @@ if __name__ == "__main__":
 
         classpred70_test = (proba[:,1] >= 0.7).astype('float')
         tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
+        tn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
         fp70_count = float(np.sum(np.logical_and(class_test < 0.5, classpred70_test > 0.5)))
         fn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
+        accuracy70 = (tp70_count + tn70_count) / (tp70_count + tn70_count + fp70_count + fn70_count)
         prec70 = tp70_count / (tp70_count + fp70_count)
         recall70 = tp70_count / (tp70_count + fn70_count)
+        f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
 
         # Test the model on whole questions
         test_answersets = [answersets[i] for i in testidx]
@@ -228,12 +247,12 @@ if __name__ == "__main__":
                 return score
         (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
 
-        print("(testset) perans acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl = [%.3f]/%.3f, perq avail %.3f, any good picked = %.3f, simple %.3f" %
-              (accuracy, prec, recall, f2, prec70, recall70, avail_to_pick, cfier_any_picked, simple_any_picked))
+        print("(testset) PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F2 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" %
+              (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked))
 
         # Our decisive factor is proportion of answers that are correctly
         # estimated as good on the 70% confidence level.
-        score = prec70
+        score = cfier_any_picked
         if score > best[1]:
             best = (cfier, score, fv_test, class_test)
 
