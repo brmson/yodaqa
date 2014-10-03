@@ -31,6 +31,10 @@
 			<id>ukp-oss-model-releases</id>
 			<url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-model-releases-local</url>
 		</repository>
+		<repository>
+			<id>ukp-public-snapshots</id>
+			<url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-snapshots</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
