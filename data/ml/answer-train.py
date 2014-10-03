@@ -46,7 +46,9 @@ class AnswerSet:
         # according to score yielded by the @scorer callable.
         # Actually, it's more complicated. There may be many ties for the
         # third place and random selection may generate a lot of evaluation
-        # noise. Therefore, we actually consider all the tied candidates.
+        # noise. Therefore, we actually consider all the tied candidates,
+        # but each not as a single correct answer, but only 1/n correct
+        # answers (where n is number of tied answers).
 
         (any_picked, all_picked) = (0, 0)
 
@@ -58,15 +60,29 @@ class AnswerSet:
             score_thres = scores[-1]
 
         true_picked = 0
+        true_tiedlast = 0
+        all_tiedlast = 0
         for j in range(np.size(self.class_set)):
             # print(scorer, self.fv_set[j], 'SCORE', score_set[j], score_set[j] > score_thres - 0.001)
-            if score_set[j] <= score_thres - 0.001:
+            if score_set[j] <= score_thres - 0.0001:
                 continue
+
+            if score_set[j] <= score_thres + 0.0001:
+                is_tiedlast = True
+                all_tiedlast += 1
+            else:
+                is_tiedlast = False
+
             if self.class_set[j] > 0:
-                true_picked += 1
+                if not is_tiedlast:
+                    true_picked += 1
+                else:
+                    true_tiedlast += 1
 
         if true_picked > 0:
             any_picked += 1
+        if true_picked == 0 and true_tiedlast > 0:
+            any_picked += float(true_tiedlast) / float(all_tiedlast)
         if true_picked == 3:
             all_picked += 1
 
