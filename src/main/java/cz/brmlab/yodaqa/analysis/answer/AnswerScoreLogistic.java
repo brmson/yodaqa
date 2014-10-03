@@ -36,6 +36,8 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 	 *           0.02972627,  0.        ,  0.59033077, -0.50002396,  0.63492322,
 	 *          -0.5446164 , -0.06628046, -1.56662507,  0.81008808, -0.71978126,
 	 *           0.63167214, -0.54136532, -0.97976597,  1.07007279]]), array([ 0.09030682]))
+	 *
+	 * (testset) perans acc/prec/rcl/F2 = 0.719/0.065/0.624/0.230, @70 prec/rcl = [0.164]/0.373, perq avail 0.704, any good picked = 0.684, simple 0.605
 	 */
 	public static double weights[] = {
 		 0.17904531,  0.        ,  0.56477368,  0.        ,  0.017477  ,
