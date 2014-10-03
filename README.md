@@ -19,22 +19,25 @@ for us.  We also draw some inspiration from the OpenQA project and the Taming
 Text book.
 
 The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarassingly often wrong; on our training
-corpus, while 67% of questions have the correct answer *suggested* in the
-process, it can currently choose the correct answer for about 14.5% of
-questions (but 27.5% of questions have the correct answer in top three and
-34.5% in top five).
+some questions, even though it's embarassingly often wrong; on the testing
+corpus, while about 70% of questions have the correct answer *suggested* in
+the process, it can currently choose the correct answer for about 18% of
+questions (but 33% of questions have the correct answer in top three and
+40% in top five candidates).
 
 ## Installation Instructions
 
 Quick instructions for setting up, building and running (focused on Debian Wheezy):
+
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install default-jdk maven uima-utils``
   * Install the Wordnet ontological database:
 	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
   * ``mvn verify``
   * ``mvn -q exec:java -Pinteractive``
-By default, YodaQA will try to connect to a remote Solr core serving Wikipedia; see the section on Data Sources if connection fails.
+
+By default, YodaQA will try to connect to a remote Solr core serving Wikipedia;
+see the section on Data Sources if connection fails.
 
 ## Usage
 
