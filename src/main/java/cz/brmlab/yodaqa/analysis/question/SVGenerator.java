@@ -60,8 +60,8 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 			return;
 		}
 
-		Token v;
-		if (focus.getTypeIndexID() == NSUBJ.type) {
+		Token v = null;
+		if (v == null && focus.getTypeIndexID() == NSUBJ.type) {
 			/* Make the subject's controlling verb an SV. */
 			v = ((NSUBJ) focus).getGovernor();
 
@@ -69,28 +69,24 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 			 * the governor.  That won't do. */
 			if (!v.getPos().getPosValue().matches("^V.*")) {
 				logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
-				return;
+				v = null;
 			}
-
-		} else if (focus.getTypeIndexID() == Token.type) {
-			if (((Token) focus).getPos().getPosValue().matches("^V.*")) {
-				/* The focus is a verb itself! Make it an SV too. */
-				v = (Token) focus;
-			} else {
-				/* Take the first non-blacklisted verb. */
-				v = getFirstVerb(sentence);
-				if (v == null)
-					return;
-			}
-
-		} else {
-			return; // huh?
 		}
 
-		/* What was the name... -> "was" is useless as clue.
-		 * Ignore over-generic verbs. */
-		if (isAux(v)) {
-			logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
+		if (v == null && focus.getTypeIndexID() == Token.type
+		    && ((Token) focus).getPos().getPosValue().matches("^V.*")
+		    && !isAux((Token) focus)) {
+			/* The focus is a verb itself! Make it an SV too. */
+			v = (Token) focus;
+		}
+
+		if (v == null) {
+			/* Take the first non-blacklisted verb. */
+			v = getFirstVerb(sentence);
+		}
+
+		if (v == null) {
+			logger.debug("No suitable SV proposed");
 			return;
 		}
 
