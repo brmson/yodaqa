@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
@@ -51,40 +53,56 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 	protected void addFocusLAT(JCas jcas, Focus focus) {
 		String text = focus.getToken().getLemma().getValue().toLowerCase();
 		double spec = 0.0;
+		POS pos = focus.getToken().getPos();
 
 		/* If focus is the question word, convert to an appropriate
 		 * concept word or give up. */
 		if (text.equals("who") || text.equals("whom")) {
 			text = "person";
+			pos = null;
 		} else if (text.equals("when")) {
 			text = "time";
+			pos = null;
 		} else if (text.equals("where")) {
 			text = "location";
+			pos = null;
 		} else if (text.equals("many")) {
 			text = "quantity";
+			pos = null;
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
 			return;
 		}
 
-		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, spec);
+		if (pos == null) {
+			/* We have a synthetic focus noun, synthetize
+			 * a POS tag for it. */
+			pos = new NN(jcas);
+			pos.setBegin(focus.getBegin());
+			pos.setEnd(focus.getEnd());
+			pos.setPosValue("NNS");
+			pos.addToIndexes();
+		}
+
+		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, pos, spec);
 	}
 
 	protected boolean addNELAT(JCas jcas, Focus focus) {
 		boolean ne_found = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
-			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), -2.0);
+			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), -2.0);
 		}
 		return ne_found;
 	}
 
-	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, double spec) {
+	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, POS pos, double spec) {
 		LAT lat = new LAT(jcas);
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
+		lat.setPos(pos);
 		lat.setText(text);
 		lat.setSpecificity(spec);
 		lat.addToIndexes();

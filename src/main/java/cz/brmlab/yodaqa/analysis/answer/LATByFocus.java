@@ -19,6 +19,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
@@ -48,16 +50,28 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		Token ftok = focus.getToken();
 		String text = ftok.getLemma().getValue().toLowerCase();
 		double spec = 0.0;
+		POS pos = ftok.getPos();
 
 		/* Focus may be a number... */
 		if (ftok.getPos().getPosValue().matches("^CD")) {
 			text = "quantity";
+			pos = null;
 			addLATFeature(jcas, AF_LATFocusProxy.class, 1.0);
 		} else {
 			addLATFeature(jcas, AF_LATFocus.class, 1.0);
 		}
 
-		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, spec);
+		if (pos == null) {
+			/* We have a synthetic focus noun, synthetize
+			 * a POS tag for it. */
+			pos = new NN(jcas);
+			pos.setBegin(focus.getBegin());
+			pos.setEnd(focus.getEnd());
+			pos.setPosValue("NNS");
+			pos.addToIndexes();
+		}
+
+		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, pos, spec);
 		logger.debug(".. LAT {} by Focus {}", text, focus.getCoveredText());
 	}
 
@@ -65,18 +79,19 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		boolean ne_found = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
-			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), 0.0);
+			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), 0.0);
 			logger.debug(".. LAT {} by NE {}", ne.getValue(), ne.getCoveredText());
 			addLATFeature(jcas, AF_LATNE.class, 1.0);
 		}
 		return ne_found;
 	}
 
-	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, double spec) {
+	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, POS pos, double spec) {
 		LAT lat = new LAT(jcas);
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
+		lat.setPos(pos);
 		lat.setText(text);
 		lat.setSpecificity(spec);
 		lat.addToIndexes();

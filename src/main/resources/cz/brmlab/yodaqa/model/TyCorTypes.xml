@@ -21,6 +21,11 @@
             <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>pos</name>
+            <description>The part-of-speech POS tag of this LAT.</description>
+            <rangeTypeName>de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>text</name>
             <description>The LAT string; this may not be the same as covered text, e.g. an LAT generated from "who" is a "person".</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>
