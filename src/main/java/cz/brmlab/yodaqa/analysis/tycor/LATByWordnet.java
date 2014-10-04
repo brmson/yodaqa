@@ -96,32 +96,43 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		 * a fallback path that derives the noun.
 		 * (Typically: How hot is the sun? -> hotness) */
 
-		IndexWordSet ws = JWordnet.getDictionary().lookupAllIndexWords(lat.getText());
-		if (ws == null || ws.size() == 0) {
-			logger.info("?! word " + lat.getText() + " not in Wordnet");
+		POS wnpos;
+		if (lat.getPos().getPosValue().matches("^NN.*")) {
+			wnpos = POS.NOUN;
+		} else if (lat.getPos().getPosValue().matches("^JJ.*")) {
+			wnpos = POS.ADJECTIVE;
+		} else if (lat.getPos().getPosValue().matches("^RB.*")) {
+			wnpos = POS.ADVERB;
+		} else {
+			logger.info("?! cannot expand LAT of POS " + lat.getPos().getPosValue());
 			return;
 		}
 
-		IndexWord wnoun = ws.getIndexWord(POS.NOUN);
-		if (wnoun != null) {
+		IndexWord w = JWordnet.getDictionary().lookupIndexWord(wnpos, lat.getText());
+		if (w == null) {
+			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " not in Wordnet");
+			return;
+		}
+
+		if (wnpos == POS.NOUN) {
 			/* Got a noun right away. */
-			genDerivedSynsets(latmap, lat, wnoun);
+			genDerivedSynsets(latmap, lat, w);
 			return;
 		}
 
+		/* Try to derive a noun. */
 		boolean foundNoun = false;
-		for (IndexWord w : ws.getIndexWordArray()) {
-			/* Try to derive a noun. */
-			for (Synset synset : w.getSenses()) {
-				for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
-					Word noun = (Word) t;
-					foundNoun = true;
-					genDerivedSynsets(latmap, lat, noun.getSynset());
-				}
+		for (Synset synset : w.getSenses()) {
+			for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
+				Word noun = (Word) t;
+				foundNoun = true;
+				logger.debug(".. adding LAT noun " + noun.getLemma());
+				genDerivedSynsets(latmap, lat, noun.getSynset());
 			}
 		}
+
 		if (!foundNoun)
-			logger.info("?! word " + lat.getText() + " in Wordnet as non-noun but derived from no noun");
+			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " in Wordnet as non-noun but derived from no noun");
 	}
 
 	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, IndexWord wnoun) throws Exception {
