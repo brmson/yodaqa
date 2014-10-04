@@ -123,11 +123,11 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		/* Try to derive a noun. */
 		boolean foundNoun = false;
 		for (Synset synset : w.getSenses()) {
-			for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
-				Word noun = (Word) t;
+			for (PointerTarget t : synset.getTargets(PointerType.ATTRIBUTE)) {
+				Synset noun = (Synset) t;
 				foundNoun = true;
-				logger.debug(".. adding LAT noun " + noun.getLemma());
-				genDerivedSynsets(latmap, lat, noun.getSynset());
+				logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
+				genDerivedSynsets(latmap, lat, noun);
 			}
 		}
 
