@@ -60,6 +60,8 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			text = "time";
 		} else if (text.equals("where")) {
 			text = "location";
+		} else if (text.equals("many")) {
+			text = "quantity";
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
