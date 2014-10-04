@@ -120,12 +120,18 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				bestMatch = match;
 		}
 
-		if (bestMatch != null)
+		if (bestMatch != null) {
+			LAT baselat1 = bestMatch.getLat1().getBaseLAT();
+			if (baselat1 == null) baselat1 = bestMatch.getLat1();
+			LAT baselat2 = bestMatch.getLat2().getBaseLAT();
+			if (baselat2 == null) baselat2 = bestMatch.getLat1();
 			logger.debug(".. TyCor "
-					+ bestMatch.getLat1().getBase().getCoveredText()
-					+ "-" + bestMatch.getLat2().getBase().getCoveredText()
-					+ " LAT " + bestMatch.getLat1().getText()
+					+ bestMatch.getLat1().getText()
+					+ "|" + baselat1.getText()
+					+ " - " + bestMatch.getLat2().getText()
+					+ "|" + baselat2.getText()
 					+ " sp. " + bestMatch.getSpecificity());
+		}
 		return bestMatch;
 	}
 }
