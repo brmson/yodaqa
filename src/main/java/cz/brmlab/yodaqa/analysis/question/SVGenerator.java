@@ -65,6 +65,13 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 			/* Make the subject's controlling verb an SV. */
 			v = ((NSUBJ) focus).getGovernor();
 
+			/* In "What is the X that Y?", "What" can be
+			 * the governor.  That won't do. */
+			if (!v.getPos().getPosValue().matches("^V.*")) {
+				logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
+				return;
+			}
+
 		} else if (focus.getTypeIndexID() == Token.type) {
 			if (((Token) focus).getPos().getPosValue().matches("^V.*")) {
 				/* The focus is a verb itself! Make it an SV too. */
