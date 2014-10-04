@@ -21,7 +21,10 @@ public class TreeUtil {
 				continue;
 			if (d.getDependencyType().equals("prep") // dkpro < 1.7.0 "- of -"
 			    || d.getDependencyType().equals("prep_of")) { // - of -
-				list.addAll(getAllGoverned(jcas, sentence, d.getDependent(), typeMatch));
+				if (d.getDependent().getLemma().getValue().toLowerCase().equals("of"))
+					list.addAll(getAllGoverned(jcas, sentence, d.getDependent(), typeMatch));
+				else
+					list.add(d.getDependent());
 			} else if (d.getDependencyType().matches(typeMatch)) {
 				list.add(d.getDependent());
 			} // else det: "the" name, amod: "last" name, ...
