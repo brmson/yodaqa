@@ -126,43 +126,45 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, IndexWord wnoun) throws Exception {
 		for (Synset synset : wnoun.getSenses()) {
-			genDerivedSynsets(latmap, lat, synset);
+			for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
+				genDerivedSynsets(latmap, lat, (Synset) t);
+			}
 		}
 	}
 
-	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, Synset synset) throws Exception {
-		for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
-			Synset synset2 = (Synset) t;
-			double spec = lat.getSpecificity() - 1;
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, Synset synset2) throws Exception {
+		double spec = lat.getSpecificity() - 1;
 
-			WordnetLAT l2 = latmap.get(synset2);
-			if (l2 != null) {
-				/* Ok, already exists. Try to raise
-				 * specificity if possible. */
-				if (l2.getSpecificity() < spec) {
-					l2.setSpecificity(spec);
-					l2.setBase(lat.getBase());
-					l2.setBaseLAT(lat);
-				}
-				continue;
+		WordnetLAT l2 = latmap.get(synset2);
+		if (l2 != null) {
+			/* Ok, already exists. Try to raise
+			 * specificity if possible. */
+			if (l2.getSpecificity() < spec) {
+				l2.setSpecificity(spec);
+				l2.setBase(lat.getBase());
+				l2.setBaseLAT(lat);
 			}
-			String lemma = synset2.getWord(0).getLemma();
+			return;
+		}
+		String lemma = synset2.getWord(0).getLemma();
 
-			/* New LAT. */
-			l2 = new WordnetLAT(lat.getCAS().getJCas());
-			l2.setBegin(lat.getBegin());
-			l2.setEnd(lat.getEnd());
-			l2.setBase(lat.getBase());
-			l2.setBaseLAT(lat);
-			l2.setText(lemma);
-			l2.setSpecificity(spec);
-			l2.setIsHierarchical(true);
-			latmap.put(synset2, l2);
+		/* New LAT. */
+		l2 = new WordnetLAT(lat.getCAS().getJCas());
+		l2.setBegin(lat.getBegin());
+		l2.setEnd(lat.getEnd());
+		l2.setBase(lat.getBase());
+		l2.setBaseLAT(lat);
+		l2.setText(lemma);
+		l2.setSpecificity(spec);
+		l2.setIsHierarchical(true);
+		latmap.put(synset2, l2);
 
-			/* ...and recurse, unless we got into the noun.Tops
-			 * realm already. */
-			if (!tops.contains(lemma))
-				genDerivedSynsets(latmap, l2, synset2);
+		/* ...and recurse, unless we got into the noun.Tops
+		 * realm already. */
+		if (!tops.contains(lemma)) {
+			for (PointerTarget t : synset2.getTargets(PointerType.HYPERNYM)) {
+				genDerivedSynsets(latmap, l2, (Synset) t);
+			}
 		}
 	}
 }
