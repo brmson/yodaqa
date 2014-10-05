@@ -6,6 +6,9 @@ Tred="$(tput setaf 1)"
 Tgreen="$(tput setaf 2)"
 Tdefault="$(setterm -default)"
 
+# Score change tolerance: do not show answers whose score changes by this or less
+stol=0.05
+
 fgained="$(mktemp)"
 fbetter="$(mktemp)"
 fworse="$(mktemp)"
@@ -14,6 +17,10 @@ flost="$(mktemp)"
 showline() {
 	id=$1; q0=$2; g0=$3; s0=$4; s1=$5
 	line=$(echo -e "$id\t$q0\t$g0\t$s0\t$s1")
+	if [ "$(echo "define abs(i) { if (i < 0) return (-i); return (i) }; $s1 == 1 || $s0 == 1 || abs($s1 - $s0) > $stol" | bc)" != 1 ]; then
+		# Ignore this answer
+		return
+	fi
 	if [ "$(echo "$s1 > $s0" | bc)" = 1 ]; then
 		if [ "$(echo "$s1 == 1" | bc)" = 1 ]; then
 			line="$Tgreen$line$Tdefault"
