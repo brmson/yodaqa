@@ -60,6 +60,12 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 		if (stok.getPos().getPosValue().matches("^W.*"))
 			return;
 
+		/* Prefer a covering Named Entity: */
+		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, stok)) {
+			addClue(new ClueSubject(jcas), ne.getBegin(), ne.getEnd(), ne, 2.5);
+			return;
+		}
+		/* But when there's none, just add the word. */
 		addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 2.5);
 	}
 
