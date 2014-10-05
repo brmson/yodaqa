@@ -81,7 +81,7 @@
 10064	factoid	how much is 1+1?	\b2\b|two
 10015	factoid	What is capital city of Russia?	Moscow
 1471	factoid	How fast can a cheetah run? 	120\s*km/?h|75\s*mph
-2335	factoid	How did Harry Chapin die? 	...|traffic
+2335	factoid	How did Harry Chapin die? 	car accident|car crash|traffic
 2302	factoid	How much did the first Barbie cost? 	\b3\b|three
 2076	factoid	What company owns the soft drink brand "Gatorade"? 	Quaker Oats|PepsiCo
 1424	factoid	Who won the Oscar for best actor in 1970? 	George C. Scott
@@ -718,7 +718,7 @@
 2027	factoid	When was OJ Simpson arrested for murder? 	1994
 1999	factoid	What is the state with the smallest population? 	Wyoming|Pitcairn|Vatican
 1573	factoid	Who was the first head of the FBI? 	Hoover
-2299	factoid	How many mph do you have to go to break the sound barrier? 	...|761
+2299	factoid	How many mph do you have to go to break the sound barrier? 	763.035|about 750|761
 1880	factoid	When was King Louis XIV born? 	1638
 1970	factoid	What is the national airline of Spain? 	Iberia
 2310	factoid	How many American deaths were there in the Korean war? 	\b3[0-9],?[0-9]{3}\b

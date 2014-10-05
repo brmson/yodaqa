@@ -81,7 +81,7 @@
 10064	factoid	how much is 1+1?	\b2\b|two
 10015	factoid	What is capital city of Russia?	Moscow
 1471	factoid	How fast can a cheetah run? 	120\s*km/?h|75\s*mph
-2335	factoid	How did Harry Chapin die? 	...|traffic
+2335	factoid	How did Harry Chapin die? 	car accident|car crash|traffic
 2302	factoid	How much did the first Barbie cost? 	\b3\b|three
 2076	factoid	What company owns the soft drink brand "Gatorade"? 	Quaker Oats|PepsiCo
 1424	factoid	Who won the Oscar for best actor in 1970? 	George C. Scott
