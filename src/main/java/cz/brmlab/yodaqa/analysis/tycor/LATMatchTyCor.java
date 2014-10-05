@@ -126,10 +126,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			LAT baselat2 = bestMatch.getLat2().getBaseLAT();
 			if (baselat2 == null) baselat2 = bestMatch.getLat1();
 			logger.debug(".. TyCor "
-					+ bestMatch.getLat1().getText()
-					+ "|" + baselat1.getText()
-					+ " - " + bestMatch.getLat2().getText()
-					+ "|" + baselat2.getText()
+					+ baselat1.getText() + "-" + baselat2.getText()
+					+ " match " + bestMatch.getLat1().getText() /* == LAT2 text */
 					+ " sp. " + bestMatch.getSpecificity());
 		}
 		return bestMatch;
