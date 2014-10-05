@@ -70,6 +70,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		 * correspond to enwiki articles? */
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
 			String clueLabel = clue.getLabel();
+			double weight = clue.getWeight();
 
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			/* Leading "The" may be optional, e.g. "6-day war".
@@ -93,6 +94,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			cluesByLen.remove(clue);
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
 				logger.debug("Concept {} subduing {} {}", a.getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
+				if (clueSub.getWeight() > weight)
+					weight = clueSub.getWeight();
 				clueSub.removeFromIndexes();
 				cluesByLen.remove(clueSub);
 			}
@@ -114,7 +117,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			/* Make a fresh concept clue. */
 			addClue(resultView, clue.getBegin(), clue.getEnd(),
-				clue.getBase(), clue.getWeight(),
+				clue.getBase(), weight,
 				a.getPageID(), a.getLabel(), !reworded);
 
 			/* Make also an NE clue with always the original text
@@ -126,7 +129,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * a CluePhrase that gets ignored during search. */
 			if (reworded)
 				addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue, clue.getWeight());
+					clue, weight);
 		}
 	}
 
