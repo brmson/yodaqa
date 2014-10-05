@@ -17,10 +17,13 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueSubject;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectAux;
 
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJPASS;
 
 /**
  * Generate Clue annotations in a QuestionCAS. These represent key information
@@ -44,15 +47,20 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 	}
 
 	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
-		for (NSUBJ subj : JCasUtil.selectCovered(NSUBJ.class, sentence)) {
-			Token stok = subj.getDependent();
+		for (NSUBJ subj : JCasUtil.selectCovered(NSUBJ.class, sentence))
+			processSubj(jcas, subj);
+		for (NSUBJPASS subj : JCasUtil.selectCovered(NSUBJPASS.class, sentence))
+			processSubj(jcas, subj);
+	}
 
-			/* Skip question word focuses (e.g. "Who"). */
-			if (stok.getPos().getPosValue().matches("^W.*"))
-				continue;
+	public void processSubj(JCas jcas, Dependency subj) throws AnalysisEngineProcessException {
+		Token stok = subj.getDependent();
 
-			addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 2.5);
-		}
+		/* Skip question word focuses (e.g. "Who"). */
+		if (stok.getPos().getPosValue().matches("^W.*"))
+			return;
+
+		addClue(new ClueSubject(jcas), subj.getBegin(), subj.getEnd(), subj, 2.5);
 	}
 
 	protected void addClue(Clue clue, int begin, int end, Annotation base, double weight) {
