@@ -81,7 +81,7 @@ public class DBpediaTitles extends CachedJenaLookup {
 			 * and the original title wasn't capitalized either.
 			 * Otherwise, all our terms will end up all-caps,
 			 * a silly thing. */
-			if (!wasCapitalized && (Character.toUpperCase(label.charAt(1)) != label.charAt(1)))
+			if (!wasCapitalized && (label.length() > 1 && Character.toUpperCase(label.charAt(1)) != label.charAt(1)))
 				label = Character.toLowerCase(label.charAt(0)) + label.substring(1);
 			logger.debug("DBpedia {}: [[{}]]", title, label);
 			results.add(new Article(rawResult[0].getInt(), label));

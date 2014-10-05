@@ -21,6 +21,10 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
@@ -138,6 +142,15 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 				logger.debug("hitlist merge " + mainAns.getText() + "|" + answer.getText());
 				mainFV.merge(af.getFV());
 			}
+
+			/* At this point we can generate some features
+			 * to be aggregated over all individual answer
+			 * instances. */
+			if (mainFV.getFeatureValue(AF_OriginPsgNP.class)
+			    + mainFV.getFeatureValue(AF_OriginPsgNE.class)
+			    + mainFV.getFeatureValue(AF_OriginDocTitle.class) > 1.0)
+				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
+
 			mainAns.setFeatures(mainFV.toFSArray(finalCas));
 			mainAns.addToIndexes();
 		}
