@@ -71,6 +71,8 @@ on these files, run
 or, to show all recorded evaluations chronologically, simply
 
 	data/eval/tsvout-stats.sh
+	data/eval/tsvout-stats.sh train
+	data/eval/tsvout-stats.sh test
 
 To compare two performance measurements question-by-question,
 try running something like (in either style):
