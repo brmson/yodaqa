@@ -15,6 +15,11 @@ import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
+import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
+import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
+
 /**
  * The main YodaQA pipeline.
  *
@@ -43,6 +48,13 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			System.err.println("*** Exception caught during SolrNamedSource initialization. ***");
 			System.err.println("You will get a fatal NullPointerException later, but the issue is above.");
 		}
+
+		/* Enable sharing of models for various NLP components. */
+		System.setProperty("dkpro.core.resourceprovider.sharable." + LanguageToolSegmenter.class.getName(), "true");
+		System.setProperty("dkpro.core.resourceprovider.sharable." + LanguageToolLemmatizer.class.getName(), "true");
+		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordParser.class.getName(), "true");
+		System.err.println("dkpro.core.resourceprovider.sharable." + StanfordParser.class.getName());
+		System.setProperty("dkpro.core.resourceprovider.sharable." + OpenNlpNameFinder.class.getName(), "true");
 	}
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
