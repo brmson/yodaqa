@@ -53,8 +53,7 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 				StanfordParser.class,
 				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
 				StanfordParser.PARAM_ANNOTATIONTYPE_TO_PARSE, "cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing",
-				StanfordParser.PARAM_WRITE_POS, true,
-				StanfordParser.PARAM_SHARED_MODEL, true),
+				StanfordParser.PARAM_WRITE_POS, true),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Determine the focus and LAT of each answer. */
