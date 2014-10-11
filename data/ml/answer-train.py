@@ -266,13 +266,11 @@ def dump_answers(cfier, fv_test, class_test):
         # print(list(cfier.predict_proba(fv_test)))
 
 
-if __name__ == "__main__":
-    (answersets, labels) = load_answers(sys.stdin)
-    print('%d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
-
-    # Cross-validation phase
-    print('+ Cross-validation:')
-
+def cross_validate(answersets, num_rounds):
+    """
+    Perform num_rounds-fold cross-validation of the model, returning
+    the list of scores in each fold.
+    """
     scores = []
     for i in range(num_rounds):
         # Generate a random train/test set split
@@ -284,7 +282,17 @@ if __name__ == "__main__":
         (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx])
         print('(testset) ' + msg)
         scores.append(score)
-    scores = np.array(scores)
+
+    return np.array(scores)
+
+
+if __name__ == "__main__":
+    (answersets, labels) = load_answers(sys.stdin)
+    print('%d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
+
+    # Cross-validation phase
+    print('+ Cross-validation:')
+    scores = cross_validate(answersets, num_rounds)
     print('Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
 
     # Train on the complete model now
@@ -295,9 +303,13 @@ if __name__ == "__main__":
         fv_full += list(aset.fv_set)
         class_full += list(aset.class_set)
     cfier = train_model(np.array(fv_full), np.array(class_full))
-    (score, msg) = test_model(cfier, fv_full, class_full, answersets)
 
+    # Report the test results - the individual accuracy metrics are obviously
+    # not very meaningful as we test on the training data, but it can still
+    # be informative wrt. the answerset metrics, esp. 'any good'.
+    (score, msg) = test_model(cfier, fv_full, class_full, answersets)
     print("(fullset) " + msg)
+
     print("Full model is " + str(cfier))
     print(cfier.coef_, cfier.intercept_)
 
