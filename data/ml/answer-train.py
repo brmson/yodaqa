@@ -27,9 +27,11 @@ import numpy as np
 import numpy.random as random
 
 
-num_rounds = 20
-test_portion = 1.0/2
 num_picked = 5  # Our aim is to get our to the top N here
+
+# Cross-validation settings
+num_rounds = 10
+test_portion = 1.0/2
 
 
 class AnswerSet:
@@ -254,24 +256,24 @@ def test_model(cfier, fv_test, class_test, test_answersets):
     return (cfier_any_picked, msg)
 
 
-def dump_answers(best):
+def dump_answers(cfier, fv_test, class_test):
     """
     Dump detailed decisions on the testing set on stdout.
     """
-    (cfier, _, fv_test, class_test) = best
     proba = cfier.predict_proba(fv_test)
     for i in range(len(fv_test)):
         print('[%05d] %.3f %.3f %d (%d) %s' % (i, proba[i][0], proba[i][1], int(proba[i][1] > proba[i][0]), class_test[i], fv_test[i]))
         # print(list(cfier.predict_proba(fv_test)))
-    print(best[0].coef_, best[0].intercept_)
 
 
 if __name__ == "__main__":
     (answersets, labels) = load_answers(sys.stdin)
     print('%d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
 
-    best = (None, -1)
+    # Cross-validation phase
+    print('+ Cross-validation:')
 
+    scores = []
     for i in range(num_rounds):
         # Generate a random train/test set split
         (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
@@ -281,14 +283,26 @@ if __name__ == "__main__":
 
         (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx])
         print('(testset) ' + msg)
+        scores.append(score)
+    scores = np.array(scores)
+    print('Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
 
-        if score > best[1]:
-            best = (cfier, score, fv_test, class_test)
+    # Train on the complete model now
+    print('+ Full training set:')
+    fv_full = []
+    class_full = []
+    for aset in answersets:
+        fv_full += list(aset.fv_set)
+        class_full += list(aset.class_set)
+    cfier = train_model(np.array(fv_full), np.array(class_full))
+    (score, msg) = test_model(cfier, fv_full, class_full, answersets)
 
-    print("Best is " + str(best))
-    print(best[0].coef_, best[0].intercept_)
+    print("(fullset) " + msg)
+    print("Full model is " + str(cfier))
+    print(cfier.coef_, cfier.intercept_)
 
-    dump_weights(best[0].coef_, labels)
+    dump_weights(cfier.coef_, labels)
 
     if False:
-        dump_answers(best)
+        dump_answers(cfier, fv_full, class_full)
+        dump_weights(cfier.coef_, labels)
