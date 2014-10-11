@@ -178,6 +178,94 @@ def dump_weights(weights, labels):
         print('%20s % 2.4f  %20s % 2.4f' % (labels[i*2], weights[0][i*2], labels[i*2 + 1], weights[0][i*2 + 1]))
 
 
+def train_model(fv_train, class_train):
+    """
+    Train a classifier on the given (fv_train, class_train) training data.
+    Returns the classifier.
+    """
+    cfier = linear_model.LogisticRegression(class_weight='auto', dual=False, fit_intercept=True)
+    cfier.fit(fv_train, class_train)
+    return cfier
+
+
+def test_model(cfier, fv_test, class_test, test_answersets):
+    """
+    Test a given classifier on the given (fv_test, class_test) training
+    data (where the set of all answers for test questions is in
+    test_answerset).  Reports the test results on stdout.  Returns a tuple
+    of the "test score" (which is implementation defined below) and
+    a message describing the performance in more detail.
+    """
+    size = np.size(class_test)
+    proba = cfier.predict_proba(fv_test)
+    classpred_test = (proba[:,0] < proba[:,1]).astype('float')
+
+    # ...generating per-answer stats that aren't actually that important.
+    accuracy = cfier.score(fv_test, class_test)
+    tp_count = float(np.sum(np.logical_and(class_test > 0.5, classpred_test > 0.5)))
+    fp_count = float(np.sum(np.logical_and(class_test < 0.5, classpred_test > 0.5)))
+    fn_count = float(np.sum(np.logical_and(class_test > 0.5, classpred_test < 0.5)))
+    prec = tp_count / (tp_count + fp_count)
+    recall = tp_count / (tp_count + fn_count)
+    f2 = 5 * (prec * recall) / (4 * prec + recall)
+
+    classpred70_test = (proba[:,1] >= 0.7).astype('float')
+    tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
+    tn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
+    fp70_count = float(np.sum(np.logical_and(class_test < 0.5, classpred70_test > 0.5)))
+    fn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
+    accuracy70 = (tp70_count + tn70_count) / (tp70_count + tn70_count + fp70_count + fn70_count)
+    prec70 = tp70_count / (tp70_count + fp70_count)
+    recall70 = tp70_count / (tp70_count + fn70_count)
+    f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
+
+    # Test the model on whole questions
+
+    could_picked = 0
+    for pset in test_answersets:
+        # Could we actually pick any valid answer from this set?
+        if np.sum(pset.class_set) > 0:
+            could_picked += 1
+    avail_to_pick = float(could_picked) / len(test_answersets)
+
+    # Classifier score is probability of class 1
+    class CfierScorer:
+        def __init__(self, cfier):
+            self.cfier = cfier
+        def __call__(self, fvset):
+            score = self.cfier.predict_proba(fvset)[:, 1]
+            return score
+    (cfier_any_picked, cfier_all_picked) = measure(CfierScorer(cfier), test_answersets, could_picked)
+
+    # AnswerScoreSimple-alike scoring for performance comparison
+    class SimpleScorer:
+        def __init__(self, labels):
+            self.labels = labels
+        def __call__(self, fvset):
+            score = simple_score(labels, fvset)
+            return score
+    (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
+
+    msg = "PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F2 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" % \
+          (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked)
+
+    # Our decisive factor is proportion of answers that are correctly
+    # estimated as good on the 70% confidence level.
+    return (cfier_any_picked, msg)
+
+
+def dump_answers(best):
+    """
+    Dump detailed decisions on the testing set on stdout.
+    """
+    (cfier, _, fv_test, class_test) = best
+    proba = cfier.predict_proba(fv_test)
+    for i in range(len(fv_test)):
+        print('[%05d] %.3f %.3f %d (%d) %s' % (i, proba[i][0], proba[i][1], int(proba[i][1] > proba[i][0]), class_test[i], fv_test[i]))
+        # print(list(cfier.predict_proba(fv_test)))
+    print(best[0].coef_, best[0].intercept_)
+
+
 if __name__ == "__main__":
     (answersets, labels) = load_answers(sys.stdin)
     print('%d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
@@ -189,70 +277,11 @@ if __name__ == "__main__":
         (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
         # print np.size(fv_train, axis=0), np.size(class_train), np.size(fv_test, axis=0), np.size(class_test)
 
-        # Train the model
+        cfier = train_model(fv_train, class_train)
 
-        cfier = linear_model.LogisticRegression(class_weight='auto', dual=False, fit_intercept=True)
-        cfier.fit(fv_train, class_train)
+        (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx])
+        print('(testset) ' + msg)
 
-        # Test the model
-
-        size = np.size(class_test)
-        proba = cfier.predict_proba(fv_test)
-        classpred_test = (proba[:,0] < proba[:,1]).astype('float')
-
-        # ...generating per-answer stats that aren't actually that important.
-        accuracy = cfier.score(fv_test, class_test)
-        tp_count = float(np.sum(np.logical_and(class_test > 0.5, classpred_test > 0.5)))
-        fp_count = float(np.sum(np.logical_and(class_test < 0.5, classpred_test > 0.5)))
-        fn_count = float(np.sum(np.logical_and(class_test > 0.5, classpred_test < 0.5)))
-        prec = tp_count / (tp_count + fp_count)
-        recall = tp_count / (tp_count + fn_count)
-        f2 = 5 * (prec * recall) / (4 * prec + recall)
-
-        classpred70_test = (proba[:,1] >= 0.7).astype('float')
-        tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
-        tn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
-        fp70_count = float(np.sum(np.logical_and(class_test < 0.5, classpred70_test > 0.5)))
-        fn70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test < 0.5)))
-        accuracy70 = (tp70_count + tn70_count) / (tp70_count + tn70_count + fp70_count + fn70_count)
-        prec70 = tp70_count / (tp70_count + fp70_count)
-        recall70 = tp70_count / (tp70_count + fn70_count)
-        f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
-
-        # Test the model on whole questions
-        test_answersets = [answersets[i] for i in testidx]
-
-        could_picked = 0
-        for pset in test_answersets:
-            # Could we actually pick any valid answer from this set?
-            if np.sum(pset.class_set) > 0:
-                could_picked += 1
-        avail_to_pick = float(could_picked) / len(testidx)
-
-        # Classifier score is probability of class 1
-        class CfierScorer:
-            def __init__(self, cfier):
-                self.cfier = cfier
-            def __call__(self, fvset):
-                score = self.cfier.predict_proba(fvset)[:, 1]
-                return score
-        (cfier_any_picked, cfier_all_picked) = measure(CfierScorer(cfier), test_answersets, could_picked)
-
-        # AnswerScoreSimple-alike scoring for performance comparison
-        class SimpleScorer:
-            def __init__(self, labels):
-                self.labels = labels
-            def __call__(self, fvset):
-                score = simple_score(labels, fvset)
-                return score
-        (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
-
-        print("(testset) PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F2 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" %
-              (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked))
-
-        # Our decisive factor is proportion of answers that are correctly
-        # estimated as good on the 70% confidence level.
-        score = cfier_any_picked
         if score > best[1]:
             best = (cfier, score, fv_test, class_test)
 
@@ -262,9 +291,4 @@ if __name__ == "__main__":
     dump_weights(best[0].coef_, labels)
 
     if False:
-        (cfier, _, fv_test, class_test) = best
-        proba = cfier.predict_proba(fv_test)
-        for i in range(len(fv_test)):
-            print('[%05d] %.3f %.3f %d (%d) %s' % (i, proba[i][0], proba[i][1], int(proba[i][1] > proba[i][0]), class_test[i], fv_test[i]))
-            # print(list(cfier.predict_proba(fv_test)))
-        print(best[0].coef_, best[0].intercept_)
+        dump_answers(best)
