@@ -118,9 +118,14 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			return;
 		}
 
+		/* For a debug message, concatenate all generated wordnet LATs
+		 * in this string. */
+		StringBuilder wnlist = new StringBuilder();
+
 		if (wnpos == POS.NOUN) {
 			/* Got a noun right away. */
-			genDerivedSynsets(latmap, lat, w);
+			genDerivedSynsets(latmap, lat, w, wnlist);
+			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
 			return;
 		}
 
@@ -131,7 +136,8 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 				Synset noun = (Synset) t;
 				foundNoun = true;
 				logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
-				genDerivedSynsets(latmap, lat, noun);
+				genDerivedSynsets(latmap, lat, noun, wnlist);
+				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
 			}
 		}
 
@@ -139,15 +145,15 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " in Wordnet as non-noun but derived from no noun");
 	}
 
-	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, IndexWord wnoun) throws Exception {
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, IndexWord wnoun, StringBuilder wnlist) throws Exception {
 		for (Synset synset : wnoun.getSenses()) {
 			for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
-				genDerivedSynsets(latmap, lat, (Synset) t);
+				genDerivedSynsets(latmap, lat, (Synset) t, wnlist);
 			}
 		}
 	}
 
-	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, Synset synset2) throws Exception {
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, Synset synset2, StringBuilder wnlist) throws Exception {
 		double spec = lat.getSpecificity() - 1;
 
 		WordnetLAT l2 = latmap.get(synset2);
@@ -174,11 +180,13 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		l2.setIsHierarchical(true);
 		latmap.put(synset2, l2);
 
+		wnlist.append(" | " + lemma);
+
 		/* ...and recurse, unless we got into the noun.Tops
 		 * realm already. */
 		if (!tops.contains(lemma)) {
 			for (PointerTarget t : synset2.getTargets(PointerType.HYPERNYM)) {
-				genDerivedSynsets(latmap, l2, (Synset) t);
+				genDerivedSynsets(latmap, l2, (Synset) t, wnlist);
 			}
 		}
 	}
