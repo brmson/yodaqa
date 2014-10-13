@@ -58,7 +58,12 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			pos = null;
 			addLATFeature(jcas, AF_LATFocusProxy.class, 1.0);
 		} else {
-			addLATFeature(jcas, AF_LATFocus.class, 1.0);
+			/* Do not create an LAT for this focus at all;
+			 * typically, assigning an LAT for a generic
+			 * NP is essentially useless. */
+			/* XXX: Rewrite the code to be more obvious
+			 * about this. */
+			return;
 		}
 
 		if (pos == null) {
