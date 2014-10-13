@@ -29,6 +29,8 @@ import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 import cz.brmlab.yodaqa.provider.JWordnet;
 
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
+
 /**
  * Generate less specific LAT annotations from existing LAT annotations
  * based on Wordnet relationships.  At this point, we generate LATs
@@ -97,7 +99,9 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		 * (Typically: How hot is the sun? -> hotness) */
 
 		POS wnpos;
-		if (lat.getPos().getPosValue().matches("^NN.*")) {
+		if (lat.getBase() instanceof NamedEntity) {
+			wnpos = POS.NOUN;
+		} else if (lat.getPos().getPosValue().matches("^NN.*")) {
 			wnpos = POS.NOUN;
 		} else if (lat.getPos().getPosValue().matches("^JJ.*")) {
 			wnpos = POS.ADJECTIVE;
