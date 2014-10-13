@@ -77,6 +77,11 @@ on it. Notable types of final featuresets produced by the annotators:
     LAT is a specific entity (in question, the-; in answer, a named entity)
     or generic role (in question, a-; in answer, a wordnet synset word).
 
+  * **Subject.** This is the main "topic" of the answer and helps to indicate
+    the primary sources.  In "The actor starring in Moon?", "Moon" is the
+    subject.  In "Who invented the transistor?", "transistor" will be the
+    subject.
+
 As is the case in the rest of the flow, multiple annotators may
 concurrently produce the same featuresets.  At the same time, not all
 featuresets may be produced, especially in the beginning.

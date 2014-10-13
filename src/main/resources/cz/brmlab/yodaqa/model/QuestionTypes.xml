@@ -79,12 +79,29 @@
       </typeDescription>
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.Focus</name>
-        <description>Question Focus</description>
+        <description>Question Focus; e.g. in "What site did Lindbergh begin his flight from?", "site" is the focus.</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
         <features>
           <featureDescription>
             <name>base</name>
-            <description>The corresponding token/constituent/dependency/...</description>
+            <description>The corresponding token/constituent/dependency/NamedEntity/...</description>
+            <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>token</name>
+            <description>The corresponding token.</description>
+            <rangeTypeName>de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.Subject</name>
+        <description>Question Subject; e.g. in "What site did Lindbergh begin his flight from?", "Lindbergh" is the subject.  It might be the sentence NSUBJ, but also e.g. the object as in "Who painted 'Sunflowers'?" - 'Sunflowers'.  Note that this is typically *not* a single token but a constituent, e.g. for "When is Fashion week in NYC?" it is "Fashion week", not "week".</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>base</name>
+	    <description>The corresponding token/constituent/dependency/NamedEntity/...</description>
             <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
           </featureDescription>
           <featureDescription>
