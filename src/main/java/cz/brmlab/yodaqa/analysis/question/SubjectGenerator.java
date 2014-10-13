@@ -63,8 +63,18 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 			addSubject(jcas, ne);
 			return;
 		}
-		/* But when there's none, just add the subject token. */
+		/* But when there's none, just add the token. */
 		addSubject(jcas, stok);
+		/* The covering base noun phrase often doesn't work so well:
+		 *
+		 * What is the state song of Kansas? -> "the state song" (too short)
+		 * What year was the first Macy's Thanksgiving Day Parade held? -> "the first Macy's Thanksgiving Day Parade" (too long)
+		 *
+		 * but when NamedEntity detection fails (e.g. "How high is
+		 * Pikes peak?"), it's indispensible.  Let's create a Subject
+		 * annotation for that too, and let ClueBySubject sort it
+		 * out based on whether it has a token or constituent. */
+		addSubject(jcas, stok.getParent());
 	}
 
 	protected void addSubject(JCas jcas, Annotation subj) throws AnalysisEngineProcessException {
