@@ -32,8 +32,10 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		AnswerStats astats = new AnswerStats(jcas);
+
 		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
-			logger.debug(a.getText() + ":" + a.getConfidence() + " -- " + Arrays.toString((new AnswerFV(a)).getValues()));
+			logger.debug(a.getText() + ":" + a.getConfidence() + " -- " + Arrays.toString((new AnswerFV(a, astats)).getValues()));
 		}
 
 		QuestionInfo qi = JCasUtil.selectSingle(jcas, QuestionInfo.class);
@@ -45,12 +47,12 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer");
 		if (trainFileName != null && !trainFileName.isEmpty()) {
 			for (Answer a : JCasUtil.select(jcas, Answer.class)) {
-				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, ap.matcher(a.getText()).find());
+				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, ap.matcher(a.getText()).find(), astats);
 			}
 		}
 	}
 
-	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch) {
+	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch, AnswerStats astats) {
 		/* First, open the output file. */
 		if (trainFile == null) {
 			try {
@@ -71,7 +73,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			trainFile.flush();
 		}
 
-		AnswerFV fv = new AnswerFV(a);
+		AnswerFV fv = new AnswerFV(a, astats);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(qid);
