@@ -52,29 +52,31 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 
 	protected void addFocusLAT(JCas jcas, Focus focus) {
 		String text = focus.getToken().getLemma().getValue().toLowerCase();
-		double spec = 0.0;
 		POS pos = focus.getToken().getPos();
 
 		/* If focus is the question word, convert to an appropriate
 		 * concept word or give up. */
 		if (text.equals("who") || text.equals("whom")) {
-			text = "person";
-			pos = null;
+			addFocusLAT(jcas, focus, "person", null, 0.0);
+
 		} else if (text.equals("when")) {
-			text = "time";
-			pos = null;
+			addFocusLAT(jcas, focus, "time", null, 0.0);
+
 		} else if (text.equals("where")) {
-			text = "location";
-			pos = null;
+			addFocusLAT(jcas, focus, "location", null, 0.0);
+
 		} else if (text.equals("many")) {
-			text = "quantity";
-			pos = null;
+			addFocusLAT(jcas, focus, "quantity", null, 0.0);
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
-			return;
-		}
 
+		} else {
+			addFocusLAT(jcas, focus, text, pos, 0.0);
+		}
+	}
+
+	protected void addFocusLAT(JCas jcas, Focus focus, String text, POS pos, double spec) {
 		if (pos == null) {
 			/* We have a synthetic focus noun, synthetize
 			 * a POS tag for it. */
