@@ -61,11 +61,12 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 
 		} else if (text.equals("when")) {
 			addFocusLAT(jcas, focus, "time", null, 0.0);
+			addFocusLAT(jcas, focus, "date", null, 0.0);
 
 		} else if (text.equals("where")) {
 			addFocusLAT(jcas, focus, "location", null, 0.0);
 
-		} else if (text.equals("many")) {
+		} else if (text.equals("many") || text.equals("much")) {
 			addFocusLAT(jcas, focus, "quantity", null, 0.0);
 
 		} else if (text.matches("^what|why|how|which|name$")) {
