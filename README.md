@@ -73,26 +73,6 @@ internally or externally.  By default, it will try to connect to the
 author's computer, but the Solr Wikipedia instance there may not be
 always running.
 
-### Local Corpus
-
-You may want to instead run YodaQA on a local corpus, either your custom
-data or e.g. Project Gutenberg fulltext index.
-
-The performance on the (default) Project Gutenberg corpus is actually not
-that good.  But try asking e.g. about "Who was the sixteenth President
-of the United States?"
-
-To set it up, first download the index:
-
-	wget https://github.com/downloads/oaqa/helloqa/guten.tar.gz; tar -C data -xf guten.tar.gz
-
-Then, you will need to modify the SolrNamedSource portion of file
-
-	src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java
-
-(follow the instructions in comments - it just involves commenting
-out a piece of code and uncommenting another). Rerun ``mvn verify``.
-
 ### Wikipedia Data Source
 
 The remote instance configured by default provides English Wikipedia as a data
