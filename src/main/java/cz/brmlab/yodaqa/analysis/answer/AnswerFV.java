@@ -18,6 +18,9 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByFocus;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
@@ -55,7 +58,7 @@ public class AnswerFV {
 		"occurences", "resultLogScore", "passageLogScore",
 		"originPsg", "originPsgFirst", "originPsgNP", "originPsgNE",
 		"originDocTitle",
-		"originConcept",
+		"originConcept", "originConceptBySubject", "originConceptByFocus", "originConceptByNE",
 		"originMultiple",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
@@ -82,6 +85,9 @@ public class AnswerFV {
 			features.add(AF_OriginPsgNE.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginConcept.class);
+			features.add(AF_OriginConceptBySubject.class);
+			features.add(AF_OriginConceptByFocus.class);
+			features.add(AF_OriginConceptByNE.class);
 			features.add(AF_OriginMultiple.class);
 			features.add(AF_SpWordNet.class);
 			features.add(AF_LATQNoWordNet.class);
