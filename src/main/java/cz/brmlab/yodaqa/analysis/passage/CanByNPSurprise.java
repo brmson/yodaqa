@@ -76,6 +76,7 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 
 			Passage p = JCasUtil.selectCovering(Passage.class, np).get(0);
 			AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
+			fv.merge(new AnswerFV(p.getAnsfeatures()));
 			fv.setFeature(AF_Occurences.class, 1.0);
 			fv.setFeature(AF_PassageLogScore.class, Math.log(1 + p.getScore()));
 			fv.setFeature(AF_OriginPsgNP.class, 1.0);

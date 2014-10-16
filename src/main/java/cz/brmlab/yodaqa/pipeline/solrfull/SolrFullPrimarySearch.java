@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
@@ -87,9 +85,6 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	protected String srcName;
 	protected Solr solr;
 
-	/* This is just information for generating AnswerFeatures. */
-	protected boolean onlyFirstPassage;
-
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -99,14 +94,6 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		 * whatever its name (allows easy enwiki/guten switching). */
 		this.srcName = (String) SolrNamedSource.nameSet().toArray()[0];
 		this.solr = SolrNamedSource.get(srcName);
-
-		/* XXX: When generating features, we assume that
-		 * PARAM_SEARCH_FULL_TEXT always corresponds to
-		 * passage PARAM_PASS_SEL_FIRST and title-in-clue
-		 * search.  The proper solution if this ever ceases
-		 * to be true will be to introduce Passage ansfeatures
-		 * and determine AF_OriginFirstPsg in passextract. */
-		onlyFirstPassage = ! searchFullText;
 
 		if (searchFullText) {
 			this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
@@ -192,11 +179,8 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 
 		AnswerFV afv = new AnswerFV();
 		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
-		afv.setFeature(AF_OriginPsg.class, 1.0);
 		if (isConcept)
 			afv.setFeature(AF_OriginConcept.class, 1.0);
-		if (onlyFirstPassage)
-			afv.setFeature(AF_OriginPsgFirst.class, 1.0);
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());
