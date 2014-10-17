@@ -182,7 +182,16 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		else if (clue instanceof ClueNE        ) afv.setFeature(AF_OriginPsgByClueNE.class, 1.0);
 		else if (clue instanceof ClueFocus     ) afv.setFeature(AF_OriginPsgByClueFocus.class, 1.0);
 		else if (clue instanceof ClueSubject   ) afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
-		else if (clue instanceof ClueConcept   ) afv.setFeature(AF_OriginPsgByClueConcept.class, 1.0);
+		else if (clue instanceof ClueConcept   ) {
+			afv.setFeature(AF_OriginPsgByClueConcept.class, 1.0);
+			ClueConcept concept = (ClueConcept) clue;
+			if (concept.getBySubject())
+				afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
+			if (concept.getByFocus())
+				afv.setFeature(AF_OriginPsgByClueFocus.class, 1.0);
+			if (concept.getByNE())
+				afv.setFeature(AF_OriginPsgByClueNE.class, 1.0);
+		}
 		else assert(false);
 	}
 }
