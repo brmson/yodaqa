@@ -52,6 +52,11 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*             passageLogScore @,%,! */ -0.227195,  0.573743, -0.142387, /*             passageLogScore d01:  0.488936 */
 		/*                   originPsg @,%,! */  0.004744, -0.354732, -0.142387, /*                   originPsg d01: -0.207601 */
 		/*              originPsgFirst @,%,! */ -0.190162, -0.022486,  0.052519, /*              originPsgFirst d01: -0.265166 */
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
 		/*                 originPsgNP @,%,! */  0.353059, -0.157826, -0.490702, /*                 originPsgNP d01:  0.685935 */
 		/*                 originPsgNE @,%,! */ -0.408738, -0.114308,  0.271095, /*                 originPsgNE d01: -0.794140 */
 		/*              originDocTitle @,%,! */  0.445767,  0.102090, -0.583410, /*              originDocTitle d01:  1.131267 */
