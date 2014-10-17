@@ -177,7 +177,7 @@ def simple_score(labels, fvset):
 
 def dump_weights(weights, labels):
     for i in range(len(weights[0]) / 3):
-        print('%20s % 2.4f  %20s % 2.4f  %20s % 2.4f' %
+        print('%28s % 2.4f  %28s % 2.4f  %28s % 2.4f' %
               (labels[i*3], weights[0][i*3],
                labels[i*3 + 1], weights[0][i*3 + 1],
                labels[i*3 + 2], weights[0][i*3 + 2]))
