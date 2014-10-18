@@ -45,7 +45,7 @@ public class DBpediaTitles extends CachedJenaLookup {
 		boolean wasCapitalized = Character.toUpperCase(title.charAt(0)) == title.charAt(0);
 		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
 
-		title = title.replaceAll("\"", "");
+		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label

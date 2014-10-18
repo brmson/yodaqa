@@ -11,6 +11,8 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 /** This is an abstract base class for accessing various RDF resources,
@@ -83,8 +85,14 @@ public abstract class CachedJenaLookup {
 		while (rs.hasNext()) {
 			QuerySolution s = rs.nextSolution();
 			Literal[] result = new Literal[resources.length];
-			for (int i = 0; i < resources.length; i++)
-				result[i] = s.getLiteral("?" + resources[i]);
+			for (int i = 0; i < resources.length; i++) {
+				RDFNode node = s.get("?" + resources[i]);
+				if (node.isLiteral())
+					result[i] = node.asLiteral();
+				else if (node.isResource())
+					result[i] = ResourceFactory.createPlainLiteral(node.asResource().getLocalName());
+				else assert(false);
+			}
 			results.add(result);
 		}
 
