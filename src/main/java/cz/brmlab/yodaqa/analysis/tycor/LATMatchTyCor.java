@@ -18,12 +18,18 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBp;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAFocus;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorXHitAFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
+import cz.brmlab.yodaqa.model.TyCor.FocusLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.NELAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /**
@@ -47,6 +53,17 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		public LAT getLat1() { return lat1; }
 		public LAT getLat2() { return lat2; }
 		public double getSpecificity() { return specificity; }
+
+		public LAT getBaseLat1() {
+			LAT baselat = lat1.getBaseLAT();
+			if (baselat == null) baselat = lat1;
+			return baselat;
+		}
+		public LAT getBaseLat2() {
+			LAT baselat = lat2.getBaseLAT();
+			if (baselat == null) baselat = lat2;
+			return baselat;
+		}
 	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -77,6 +94,15 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
 			if (match.getSpecificity() == 0 && fv.isFeatureSet(AF_LATFocus.class))
 				fv.setFeature(AF_TyCorXHitAFocus.class, 1.0);
+
+			LAT baselat2 = match.getBaseLat2();
+			if (baselat2 instanceof FocusLAT)
+				fv.setFeature(AF_TyCorAFocus.class, 1.0);
+			else if (baselat2 instanceof NELAT)
+				fv.setFeature(AF_TyCorANE.class, 1.0);
+			else if (baselat2 instanceof DBpLAT)
+				fv.setFeature(AF_TyCorADBp.class, 1.0);
+			else assert(false);
 		}
 
 		if (qNoWordnetLAT)
@@ -121,12 +147,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		}
 
 		if (bestMatch != null) {
-			LAT baselat1 = bestMatch.getLat1().getBaseLAT();
-			if (baselat1 == null) baselat1 = bestMatch.getLat1();
-			LAT baselat2 = bestMatch.getLat2().getBaseLAT();
-			if (baselat2 == null) baselat2 = bestMatch.getLat2();
 			logger.debug(".. TyCor "
-					+ baselat1.getText() + "-" + baselat2.getText()
+					+ bestMatch.getBaseLat1().getText() + "-" + bestMatch.getBaseLat2().getText()
 					+ " match " + bestMatch.getLat1().getText() /* == LAT2 text */
 					+ " sp. " + bestMatch.getSpecificity());
 		}

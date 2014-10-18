@@ -18,6 +18,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
@@ -81,12 +82,11 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, ntype, pos, 0.0);
+		addLAT(new DBpLAT(jcas), focus.getBegin(), focus.getEnd(), focus, ntype, pos, 0.0);
 		logger.debug(".. LAT {} by Focus {}", ntype, focus.getCoveredText());
 	}
 
-	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, POS pos, double spec) {
-		LAT lat = new LAT(jcas);
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, double spec) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);

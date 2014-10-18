@@ -49,8 +49,24 @@
       </typeDescription>
 
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.FocusLAT</name>
+        <description>LAT generated from a focus word.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.NELAT</name>
+        <description>LAT generated from named entity type (as provided by the named entity recognizer).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.DBpLAT</name>
+        <description>LAT generated from DBpedia ontology.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.WordnetLAT</name>
-        <description>LAT generated from relationships in the Wordnet ontology.</description>
+        <description>LAT generated from other LATs by relationships in the Wordnet ontology.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
     </types>
