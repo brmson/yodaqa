@@ -64,6 +64,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* CandidateAnswer from each named entity that does not match
 		 * any of the clues. */
 		builder.add(createPrimitiveDescription(CanByNESurprise.class));
+		/* Passages like: The <question focus> is <CandidateAnswer>. */
+		builder.add(createPrimitiveDescription(CanByFocusSubject.class));
 
 
 		/* Finishing touches: */
