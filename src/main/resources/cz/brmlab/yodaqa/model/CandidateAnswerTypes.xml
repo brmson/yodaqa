@@ -159,6 +159,16 @@
         <description>Answer Feature: Boolean value whether the LAT is the kind of named entity recognized.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQuantity</name>
+        <description>Answer Feature: Boolean value whether we generated a LAT based on seeing a quantity statement.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQuantityCD</name>
+        <description>Answer Feature: Boolean value whether we generated a LAT based on seeing a concrete numeric quantity.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
 
     </types>
   </typeSystemDescription>

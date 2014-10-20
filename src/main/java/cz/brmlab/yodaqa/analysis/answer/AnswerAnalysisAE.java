@@ -64,6 +64,9 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Multiplicate LATs */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Generate LATs based on quantity statements. */
+		builder.add(createPrimitiveDescription(LATByQuantity.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));
