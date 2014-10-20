@@ -65,7 +65,7 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * any of the clues. */
 		builder.add(createPrimitiveDescription(CanByNESurprise.class));
 		/* Passages like: The <question focus> is <CandidateAnswer>. */
-		builder.add(createPrimitiveDescription(CanByFocusSubject.class));
+		builder.add(createPrimitiveDescription(CanByLATSubject.class));
 
 
 		/* Finishing touches: */

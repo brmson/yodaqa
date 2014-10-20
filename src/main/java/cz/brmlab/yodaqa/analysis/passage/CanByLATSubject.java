@@ -14,16 +14,16 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByFocusSubj;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp;
-import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.QuestionLATMatch;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
@@ -33,13 +33,17 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJPASS;
 
 /**
  * Create CandidateAnswer for the largest NP covering governor of
- * NSUBJ where the dependent is the answer focus.
+ * NSUBJ where the dependent is the question LAT.
  *
  * In human language, the focus of question "What is the critical mass
  * of plutonium?" is "mass"; in passage "A bare critical mass of plutonium
  * at normal density is roughly 10 kilograms.", we find out that NSUBJ
  * dependent is "mass", so we look at the governor ("kilograms") and take
  * the largest covering NP ("roughly 10 kilograms").
+ *
+ * Originally, we thought of this as focus matching, but (sp=0) LAT
+ * is better as we do desirable transformations like who->person or
+ * hot->temperature when generating these, and they *are* focus based.
  *
  * Of course this is a special case of CanByNPSurprise but we should be
  * subduing those. */
@@ -49,8 +53,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJPASS;
 	outputSofas = { "PickedPassages" }
 )
 
-public class CanByFocusSubject extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(CanByFocusSubject.class);
+public class CanByLATSubject extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(CanByLATSubject.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -67,7 +71,6 @@ public class CanByFocusSubject extends JCasAnnotator_ImplBase {
 		}
 
 		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
-		logger.debug("in");
 
 		for (NSUBJ nsubj : JCasUtil.select(passagesView, NSUBJ.class))
 			processSubject(questionView, passagesView, ri, nsubj);
@@ -79,13 +82,17 @@ public class CanByFocusSubject extends JCasAnnotator_ImplBase {
 			throws AnalysisEngineProcessException {
 		Passage p = JCasUtil.selectCovering(Passage.class, nsubj).get(0);
 		String subjlemma = nsubj.getDependent().getLemma().getValue().toLowerCase();
-		logger.debug("subjlemma {}", subjlemma);
 
-		for (Focus f : JCasUtil.select(questionView, Focus.class)) {
-			String focuslemma = f.getToken().getLemma().getValue().toLowerCase();
-			logger.debug("focus >{}< subj >{}<", focuslemma, subjlemma);
-			if (subjlemma.equals(focuslemma)) {
-				logger.debug("Passage subject matches question focus {}", focuslemma);
+		for (LAT l : JCasUtil.select(questionView, LAT.class)) {
+			/* We consider only the primary LATs, and -1 sp LATs
+			 * as those are the possible noun forms. TODO: tune */
+			if (l.getSpecificity() < -1.0)
+				continue;
+
+			String latlemma = l.getText();
+			// logger.debug("lat >{}< subj >{}<", latlemma, subjlemma);
+			if (subjlemma.equals(latlemma)) {
+				logger.debug("Passage subject {} matches question lat {}", subjlemma, latlemma);
 
 				Annotation np = widestCoveringNP(passagesView, nsubj.getGovernor());
 				if (np == null)
@@ -107,13 +114,16 @@ public class CanByFocusSubject extends JCasAnnotator_ImplBase {
 
 	protected void addCandidateAnswer(JCas passagesView, Annotation np, ResultInfo ri, Passage p)
 			throws AnalysisEngineProcessException {
-		logger.info("caNPByFocusSubj {}", np.getCoveredText());
+		logger.info("caNPByLATSubj {}", np.getCoveredText());
 
 		AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 		fv.merge(new AnswerFV(p.getAnsfeatures()));
 		fv.setFeature(AF_Occurences.class, 1.0);
 		fv.setFeature(AF_PassageLogScore.class, Math.log(1 + p.getScore()));
-		fv.setFeature(AF_OriginPsgNPByFocusSubj.class, 1.0);
+
+		/* This is both origin and tycor feature, essentially. */
+		fv.setFeature(AF_OriginPsgNPByLATSubj.class, 1.0);
+
 		for (QuestionLATMatch qlm : JCasUtil.selectCovered(QuestionLATMatch.class, p)) {
 			double distance = 1000;
 			if (qlm.getBegin() >= np.getBegin() && qlm.getEnd() <= np.getEnd()) {
