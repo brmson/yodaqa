@@ -33,6 +33,10 @@ fairly volatile):
   * Try recursion in LATMatchTyCor.getBaseLat(); baseLat points
     only to immediate LAT parents
   * Disable resultLogScore feature for concept-based results
+  * LAT: Try "one-sided Wordnet specificity" - allow hypernymes for
+    question or answer LAT when matching, but not for both
+  * LAT: Try -sqrt(-x) instead of exp(x) as specificity transformation
+  * LAT: Transform ClueFocus to ClueLAT, generate for all sp=0 LATs
 
 v1.0 Roadmap
 ------------
