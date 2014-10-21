@@ -27,8 +27,6 @@ fairly volatile):
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
 
-  * For CD FocusProxy, change LAT from quantity to measure
-    (better Wordnet alignment)
   * Generate noun derivation Wordnet LATs with specificity 0
   * Try recursion in LATMatchTyCor.getBaseLat(); baseLat points
     only to immediate LAT parents
