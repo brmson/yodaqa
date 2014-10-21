@@ -16,7 +16,16 @@ Apologies if this list is not kept 100% up-to-date all the time.
 Immediate TODO Items
 --------------------
 
-These are ideas for simple things to try quickly:
+These are ideas for simple things to try quickly (this list is
+fairly volatile):
+
+  * Try training a multi-layer perceptron instead of logistic
+    classifier
+  * Revamp LAT features; completely disable LATFocus*, inst. of
+    binary use the value of Wordnet specificity as value
+  * Quantity LATs for NUM dependencies (WIP; so far overfits)
+  * Features for clues that triggered the answer generating
+    passage (WIP; so far overfits)
 
   * For CD FocusProxy, change LAT from quantity to measure
     (better Wordnet alignment)
