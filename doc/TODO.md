@@ -27,8 +27,6 @@ fairly volatile):
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
 
-  * Try recursion in LATMatchTyCor.getBaseLat(); baseLat points
-    only to immediate LAT parents
   * Disable resultLogScore feature for concept-based results
 
 v1.0 Roadmap
