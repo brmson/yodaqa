@@ -79,6 +79,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*                 tyCorSpAHit @,%,! */  1.160369, -0.481209, -1.124546, /*                 tyCorSpAHit d01:  1.803706 */
 		/*             tyCorXHitAFocus @,%,! */  0.000000,  0.000000,  0.035823, /*             tyCorXHitAFocus d01: -0.035823 */
 	};
+	public static double intercept = 0.035823;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
