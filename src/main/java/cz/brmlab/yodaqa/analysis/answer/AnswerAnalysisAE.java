@@ -64,6 +64,10 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Multiplicate LATs */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Generate DBpedia LATs after Wordnet multiplication - they
+		 * already contain abstraction hierarchy. */
+		builder.add(createPrimitiveDescription(LATByDBpedia.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));

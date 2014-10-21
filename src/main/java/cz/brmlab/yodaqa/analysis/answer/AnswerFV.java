@@ -37,8 +37,9 @@ public class AnswerFV {
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
-		"LATFocus", "LATFocusProxy", "LATNE",
+		"LATFocus", "LATFocusProxy", "LATNE", "LATDBpType",
 		"tyCorSpQHit", "tyCorSpAHit", "tyCorXHitAFocus",
+		"tyCorAFocus", "tyCorANE", "tyCorADBp",
 	};
 
 	protected double values[]; // the feature value
@@ -74,9 +75,13 @@ public class AnswerFV {
 			features.add(AF_LATFocus.class);
 			features.add(AF_LATFocusProxy.class);
 			features.add(AF_LATNE.class);
+			features.add(AF_LATDBpType.class);
 			features.add(AF_TyCorSpQHit.class);
 			features.add(AF_TyCorSpAHit.class);
 			features.add(AF_TyCorXHitAFocus.class);
+			features.add(AF_TyCorAFocus.class);
+			features.add(AF_TyCorANE.class);
+			features.add(AF_TyCorADBp.class);
 		}
 
 		values = new double[labels.length];

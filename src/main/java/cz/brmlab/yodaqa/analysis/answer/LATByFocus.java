@@ -18,6 +18,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.FocusLAT;
+import cz.brmlab.yodaqa.model.TyCor.NELAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -76,7 +78,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			pos.addToIndexes();
 		}
 
-		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, pos, spec);
+		addLAT(new FocusLAT(jcas), focus.getBegin(), focus.getEnd(), focus, text, pos, spec);
 		logger.debug(".. LAT {} by Focus {}", text, focus.getCoveredText());
 	}
 
@@ -84,15 +86,14 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		boolean ne_found = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
-			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), 0.0);
+			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), 0.0);
 			logger.debug(".. LAT {} by NE {}", ne.getValue(), ne.getCoveredText());
 			addLATFeature(jcas, AF_LATNE.class, 1.0);
 		}
 		return ne_found;
 	}
 
-	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, POS pos, double spec) {
-		LAT lat = new LAT(jcas);
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, double spec) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);

@@ -58,9 +58,13 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*                    LATFocus @,%,! */  0.000000,  0.000000, -0.044586, /*                    LATFocus d01:  0.044586 */
 		/*               LATFocusProxy @,%,! */ -1.030728,  0.153526,  0.986142, /*               LATFocusProxy d01: -1.863343 */
 		/*                       LATNE @,%,! */ -0.284744, -0.142261, -0.699669, /*                       LATNE d01:  0.272665 */
+		/*                  LATDBpType @,%,! */  0.124479, -0.432472, -0.357009, /*                  LATDBpType d01:  0.049017 */
 		/*                 tyCorSpQHit @,%,! */ -0.167126,  0.385969,  0.122540, /*                 tyCorSpQHit d01:  0.096303 */
 		/*                 tyCorSpAHit @,%,! */  1.224037, -0.546455, -1.268623, /*                 tyCorSpAHit d01:  1.946205 */
 		/*             tyCorXHitAFocus @,%,! */  0.000000,  0.000000, -0.044586, /*             tyCorXHitAFocus d01:  0.044586 */
+		/*                 tyCorAFocus @,%,! */  0.353771,  0.065256, -0.330014, /*                 tyCorAFocus d01:  0.749040 */
+		/*                    tyCorANE @,%,! */  1.101375, -0.279005, -1.077618, /*                    tyCorANE d01:  1.899987 */
+		/*                   tyCorADBp @,%,! */  1.063003, -0.159892, -1.039246, /*                   tyCorADBp d01:  1.942358 */
 	};
 	public static double intercept = -0.044586;
 
