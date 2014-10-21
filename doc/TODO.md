@@ -27,7 +27,6 @@ fairly volatile):
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
 
-  * Generate noun derivation Wordnet LATs with specificity 0
   * Try recursion in LATMatchTyCor.getBaseLat(); baseLat points
     only to immediate LAT parents
   * Disable resultLogScore feature for concept-based results
