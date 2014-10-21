@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByFocus;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
@@ -128,9 +131,10 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		/* Run a search for concept clues (pageID)
 		 * if they weren't included above. */
 
+		Collection<ClueConcept> concepts;
 		SolrDocumentList documents;
 		try {
-			Collection<ClueConcept> concepts = JCasUtil.select(questionView, ClueConcept.class);
+			concepts = JCasUtil.select(questionView, ClueConcept.class);
 			Collection<Integer> IDs = conceptsToIDs(concepts);
 			documents = solr.runIDQuery(IDs, hitListSize /* XXX: should we even limit this? */, logger);
 		} catch (Exception e) {
@@ -138,8 +142,19 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		}
 
 		for (SolrDocument doc : documents) {
-			visitedIDs.add((Integer) doc.getFieldValue("id"));
-			generateSolrResult(searchView, doc, true);
+			Integer id = (Integer) doc.getFieldValue("id");
+			visitedIDs.add(id);
+			/* Find the original concept again; XXX ugly */
+			ClueConcept concept = null;
+			for (ClueConcept c : concepts) {
+				if (c.getPageID() == id.intValue()) {
+					concept = c;
+					break;
+				}
+			}
+			assert(concept != null);
+			/* Generate the result. */
+			generateSolrResult(searchView, doc, concept);
 		}
 
 		/* Run a search for text clues. */
@@ -159,7 +174,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 				continue;
 			}
 			visitedIDs.add(docID);
-			generateSolrResult(searchView, doc, false);
+			generateSolrResult(searchView, doc, null);
 		}
 	}
 
@@ -170,7 +185,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		return terms;
 	}
 
-	protected void generateSolrResult(JCas jcas, SolrDocument document, boolean isConcept)
+	protected void generateSolrResult(JCas jcas, SolrDocument document, ClueConcept concept)
 			throws AnalysisEngineProcessException {
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
@@ -179,8 +194,15 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 
 		AnswerFV afv = new AnswerFV();
 		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
-		if (isConcept)
+		if (concept != null) {
 			afv.setFeature(AF_OriginConcept.class, 1.0);
+			if (concept.getBySubject())
+				afv.setFeature(AF_OriginConceptBySubject.class, 1.0);
+			if (concept.getByFocus())
+				afv.setFeature(AF_OriginConceptByFocus.class, 1.0);
+			if (concept.getByNE())
+				afv.setFeature(AF_OriginConceptByNE.class, 1.0);
+		}
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());
