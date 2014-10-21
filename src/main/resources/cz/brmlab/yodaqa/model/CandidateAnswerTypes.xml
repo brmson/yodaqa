@@ -80,6 +80,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj</name>
+	<description>Answer Feature: 1 if the origin of this answer is a noun phrase parsed in a passage that is object of a subject that matches question LAT ("What is critical mass of X?" -> "Critical mass is ***")</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle</name>
         <description>Answer Feature: 1 if the origin of this answer is a document title</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

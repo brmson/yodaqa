@@ -28,21 +28,8 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 	/** The weights of individual elements of the FV.  These weights
 	 * are output by data/ml/answer-train.py as this:
 	 *
-	 * 430 answersets, 82153 answers
+	 * 430 answersets, 82510 answers
 	 * + Cross-validation:
-	 * (test) PERANS acc/prec/rcl/F2 = 0.754/0.048/0.525/0.175, @70 prec/rcl/F2 = 0.082/0.308/0.199, PERQ avail 0.688, any good = [0.403], simple 0.431
-	 * (test) PERANS acc/prec/rcl/F2 = 0.762/0.061/0.594/0.216, @70 prec/rcl/F2 = 0.117/0.371/0.259, PERQ avail 0.698, any good = [0.553], simple 0.454
-	 * (test) PERANS acc/prec/rcl/F2 = 0.747/0.052/0.594/0.193, @70 prec/rcl/F2 = 0.087/0.348/0.217, PERQ avail 0.684, any good = [0.504], simple 0.416
-	 * (test) PERANS acc/prec/rcl/F2 = 0.741/0.045/0.553/0.171, @70 prec/rcl/F2 = 0.078/0.317/0.196, PERQ avail 0.702, any good = [0.483], simple 0.463
-	 * (test) PERANS acc/prec/rcl/F2 = 0.747/0.055/0.617/0.203, @70 prec/rcl/F2 = 0.101/0.390/0.248, PERQ avail 0.730, any good = [0.485], simple 0.445
-	 * (test) PERANS acc/prec/rcl/F2 = 0.745/0.055/0.578/0.200, @70 prec/rcl/F2 = 0.086/0.338/0.213, PERQ avail 0.693, any good = [0.522], simple 0.471
-	 * (test) PERANS acc/prec/rcl/F2 = 0.744/0.055/0.628/0.202, @70 prec/rcl/F2 = 0.094/0.374/0.235, PERQ avail 0.688, any good = [0.525], simple 0.422
-	 * (test) PERANS acc/prec/rcl/F2 = 0.744/0.058/0.559/0.204, @70 prec/rcl/F2 = 0.103/0.344/0.234, PERQ avail 0.702, any good = [0.469], simple 0.481
-	 * (test) PERANS acc/prec/rcl/F2 = 0.746/0.054/0.577/0.197, @70 prec/rcl/F2 = 0.098/0.350/0.231, PERQ avail 0.735, any good = [0.489], simple 0.437
-	 * (test) PERANS acc/prec/rcl/F2 = 0.758/0.062/0.595/0.218, @70 prec/rcl/F2 = 0.106/0.326/0.230, PERQ avail 0.702, any good = [0.496], simple 0.434
-	 * Cross-validation score mean 49.279% S.D. 3.791%
-	 * + Full training set:
-	 * (full) PERANS acc/prec/rcl/F2 = 0.750/1.000/0.257/0.301, @70 prec/rcl/F2 = 1.000/0.084/0.103, PERQ avail 0.702, any good = [0.531], simple 0.457
 	 * Full model is LogisticRegression(C=1.0, class_weight=auto, dual=False, fit_intercept=True,
 		  intercept_scaling=1, penalty=l2, random_state=None, tol=0.0001)
 	 */
@@ -54,6 +41,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*              originPsgFirst @,%,! */ -0.156891, -0.014469,  0.112304, /*              originPsgFirst d01: -0.283663 */
 		/*                 originPsgNP @,%,! */  0.426229, -0.177009, -0.470815, /*                 originPsgNP d01:  0.720036 */
 		/*                 originPsgNE @,%,! */ -0.303383, -0.154356,  0.258796, /*                 originPsgNE d01: -0.716535 */
+		/*        originPsgNPByLATSubj @,%,! */  0.224384,  0.011943, -0.330009, /*        originPsgNPByLATSubj d01:  0.566337 */
 		/*              originDocTitle @,%,! */  0.451927,  0.113544, -0.496513, /*              originDocTitle d01:  1.061983 */
 		/*               originConcept @,%,! */ -0.028300, -0.426822, -0.016286, /*               originConcept d01: -0.438835 */
 		/*      originConceptBySubject @,%,! */ -0.042480,  0.132147, -0.002106, /*      originConceptBySubject d01:  0.091774 */

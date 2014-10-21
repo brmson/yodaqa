@@ -29,7 +29,8 @@ public class AnswerFV {
 	public static ArrayList<Class<? extends AnswerFeature>> features;
 	public static String labels[] = {
 		"occurences", "resultLogScore", "passageLogScore",
-		"originPsg", "originPsgFirst", "originPsgNP", "originPsgNE",
+		"originPsg", "originPsgFirst",
+		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 		"originDocTitle",
 		"originConcept", "originConceptBySubject", "originConceptByFocus", "originConceptByNE",
 		"originMultiple",
@@ -56,6 +57,7 @@ public class AnswerFV {
 			features.add(AF_OriginPsgFirst.class);
 			features.add(AF_OriginPsgNP.class);
 			features.add(AF_OriginPsgNE.class);
+			features.add(AF_OriginPsgNPByLATSubj.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
