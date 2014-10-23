@@ -28,7 +28,6 @@ fairly volatile):
     passage (WIP; so far overfits)
 
   * Disable resultLogScore feature for concept-based results
-  * LAT: Transform ClueFocus to ClueLAT, generate for all sp=0 LATs
 
 v1.0 Roadmap
 ------------

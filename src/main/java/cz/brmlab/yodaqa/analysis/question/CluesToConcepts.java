@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
-import cz.brmlab.yodaqa.model.Question.ClueFocus;
+import cz.brmlab.yodaqa.model.Question.ClueLAT;
 import cz.brmlab.yodaqa.model.Question.ClueNE;
 import cz.brmlab.yodaqa.model.Question.CluePhrase;
 import cz.brmlab.yodaqa.model.Question.ClueSubject;
@@ -101,8 +101,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				logger.debug("Concept {} subduing {} {}", a.getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
 				if (clueSub instanceof ClueSubject)
 					conceptClue.setBySubject(true);
-				else if (clueSub instanceof ClueFocus)
-					conceptClue.setByFocus(true);
+				else if (clueSub instanceof ClueLAT)
+					conceptClue.setByLAT(true);
 				else if (clueSub instanceof ClueNE)
 					conceptClue.setByNE(true);
 				if (clueSub.getWeight() > weight)

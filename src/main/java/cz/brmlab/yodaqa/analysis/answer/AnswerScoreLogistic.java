@@ -58,7 +58,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*              originDocTitle @,%,! */  0.647560,  0.246438, -0.673911, /*              originDocTitle d01:  1.567909 */
 		/*               originConcept @,%,! */ -0.037110, -0.392325,  0.010759, /*               originConcept d01: -0.440194 */
 		/*      originConceptBySubject @,%,! */  0.092005,  0.049552, -0.118355, /*      originConceptBySubject d01:  0.259911 */
-		/*        originConceptByFocus @,%,! */  0.704052, -0.868384, -0.730403, /*        originConceptByFocus d01:  0.566072 */
+		/*        originConceptByLAT @,%,! */  0.704052, -0.868384, -0.730403, /*        originConceptByLAT d01:  0.566072 */
 		/*           originConceptByNE @,%,! */  0.273198, -0.347387, -0.299548, /*           originConceptByNE d01:  0.225359 */
 		/*              originMultiple @,%,! */ -0.436353, -0.169141,  0.410003, /*              originMultiple d01: -1.015496 */
 		/*                   spWordNet @,%,! */ -0.242350,  0.276525,  0.617367, /*                   spWordNet d01: -0.583192 */

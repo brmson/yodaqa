@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
-import cz.brmlab.yodaqa.model.Question.ClueFocus;
-import cz.brmlab.yodaqa.model.Question.Focus;
+import cz.brmlab.yodaqa.model.Question.ClueLAT;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 /**
  * Generate Clue annotations in a QuestionCAS. These represent key information
@@ -24,30 +24,31 @@ import cz.brmlab.yodaqa.model.Question.Focus;
  * should also generate more complex clue system from the focus, e.g. "first
  * book written by Terry Pratchett". */
 
-public class ClueByFocus extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(ClueByFocus.class);
+public class ClueByLAT extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(ClueByLAT.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		for (Focus f : JCasUtil.select(jcas, Focus.class)) {
-			/* Skip question word focuses (e.g. "Where"). */
-			if (f.getToken().getPos().getPosValue().matches("^W.*"))
+		for (LAT l : JCasUtil.select(jcas, LAT.class)) {
+			/* Use only the most specific LATs (there still may be
+			 * mutliple, e.g. noun forms, etc.) */
+			if (l.getSpecificity() < 0)
 				continue;
-			addClue(jcas, f.getBegin(), f.getEnd(), f);
+			addClue(jcas, l.getBegin(), l.getEnd(), l, l.getText());
 		}
 	}
 
-	protected void addClue(JCas jcas, int begin, int end, Annotation base) {
-		Clue clue = new ClueFocus(jcas);
+	protected void addClue(JCas jcas, int begin, int end, Annotation base, String label) {
+		Clue clue = new ClueLAT(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
 		clue.setWeight(1.5);
-		clue.setLabel(clue.getCoveredText());
-		clue.setIsReliable(true);
+		clue.setLabel(label);
+		clue.setIsReliable(false);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
 	}
