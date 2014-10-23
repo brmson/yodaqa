@@ -93,7 +93,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 
 		if (match != null) {
 			double spec = Math.exp(match.getSpecificity());
-			fv.setFeature(AF_SpWordNet.class, match.getSpecificity());
+			fv.setFeature(AF_SpWordNet.class, spec);
 			if (match.lat1.getSpecificity() == 0)
 				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
 			if (match.lat2.getSpecificity() == 0)
