@@ -21,6 +21,9 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpSp;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAFocusSp;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANESp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorXHitAFocus;
@@ -89,7 +92,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		AnswerFV fv = new AnswerFV(ai);
 
 		if (match != null) {
-			fv.setFeature(AF_SpWordNet.class, Math.exp(match.getSpecificity()));
+			double spec = Math.exp(match.getSpecificity());
+			fv.setFeature(AF_SpWordNet.class, match.getSpecificity());
 			if (match.lat1.getSpecificity() == 0)
 				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
 			if (match.lat2.getSpecificity() == 0)
@@ -98,13 +102,16 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				fv.setFeature(AF_TyCorXHitAFocus.class, 1.0);
 
 			LAT baselat2 = match.getBaseLat2();
-			if (baselat2 instanceof FocusLAT)
+			if (baselat2 instanceof FocusLAT) {
 				fv.setFeature(AF_TyCorAFocus.class, 1.0);
-			else if (baselat2 instanceof NELAT)
+				fv.setFeature(AF_TyCorAFocusSp.class, spec);
+			} else if (baselat2 instanceof NELAT) {
 				fv.setFeature(AF_TyCorANE.class, 1.0);
-			else if (baselat2 instanceof DBpLAT)
+				fv.setFeature(AF_TyCorANESp.class, spec);
+			} else if (baselat2 instanceof DBpLAT) {
 				fv.setFeature(AF_TyCorADBp.class, 1.0);
-			else assert(false);
+				fv.setFeature(AF_TyCorADBpSp.class, spec);
+			} else assert(false);
 		}
 
 		if (qNoWordnetLAT)
