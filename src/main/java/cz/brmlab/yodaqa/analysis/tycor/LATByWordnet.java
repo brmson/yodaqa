@@ -124,7 +124,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 		if (wnpos == POS.NOUN) {
 			/* Got a noun right away. */
-			genDerivedSynsets(latmap, lat, w, wnlist);
+			genDerivedSynsets(latmap, lat, w, wnlist, lat.getSpecificity() - 1);
 			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
 			return;
 		}
@@ -136,7 +136,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 				Synset noun = (Synset) t;
 				foundNoun = true;
 				logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
-				genDerivedSynsets(latmap, lat, noun, wnlist);
+				genDerivedSynsets(latmap, lat, noun, wnlist, lat.getSpecificity());
 				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
 			}
 		}
@@ -145,17 +145,19 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " in Wordnet as non-noun but derived from no noun");
 	}
 
-	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, IndexWord wnoun, StringBuilder wnlist) throws Exception {
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
+			IndexWord wnoun, StringBuilder wnlist, double spec)
+			throws Exception {
 		for (Synset synset : wnoun.getSenses()) {
 			for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
-				genDerivedSynsets(latmap, lat, (Synset) t, wnlist);
+				genDerivedSynsets(latmap, lat, (Synset) t, wnlist, spec);
 			}
 		}
 	}
 
-	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, Synset synset2, StringBuilder wnlist) throws Exception {
-		double spec = lat.getSpecificity() - 1;
-
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
+			Synset synset2, StringBuilder wnlist, double spec)
+			throws Exception {
 		WordnetLAT l2 = latmap.get(synset2);
 		if (l2 != null) {
 			/* Ok, already exists. Try to raise
@@ -186,7 +188,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		 * realm already. */
 		if (!tops.contains(lemma)) {
 			for (PointerTarget t : synset2.getTargets(PointerType.HYPERNYM)) {
-				genDerivedSynsets(latmap, l2, (Synset) t, wnlist);
+				genDerivedSynsets(latmap, l2, (Synset) t, wnlist, spec - 1);
 			}
 		}
 	}

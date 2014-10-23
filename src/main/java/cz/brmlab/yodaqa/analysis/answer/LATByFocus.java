@@ -56,7 +56,8 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 
 		/* Focus may be a number... */
 		if (ftok.getPos().getPosValue().matches("^CD")) {
-			text = "quantity";
+			// XXX: "quantity" is not the primary label for this wordnet sense
+			text = "measure";
 			pos = null;
 			addLATFeature(jcas, AF_LATFocusProxy.class, 1.0);
 		} else {

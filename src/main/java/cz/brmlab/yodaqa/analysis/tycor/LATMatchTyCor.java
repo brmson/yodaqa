@@ -55,14 +55,16 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		public double getSpecificity() { return specificity; }
 
 		public LAT getBaseLat1() {
-			LAT baselat = lat1.getBaseLAT();
-			if (baselat == null) baselat = lat1;
-			return baselat;
+			return _getBaseLat(getLat1());
 		}
 		public LAT getBaseLat2() {
-			LAT baselat = lat2.getBaseLAT();
-			if (baselat == null) baselat = lat2;
-			return baselat;
+			return _getBaseLat(getLat2());
+		}
+
+		protected LAT _getBaseLat(LAT lat) {
+			while (lat.getBaseLAT() != null)
+				lat = lat.getBaseLAT();
+			return lat;
 		}
 	}
 
