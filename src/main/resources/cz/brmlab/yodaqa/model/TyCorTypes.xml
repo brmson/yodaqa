@@ -63,6 +63,11 @@
         <description>LAT generated from DBpedia ontology.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.QuantityLAT</name>
+        <description>LAT generated from NUM dependency in answer sentence.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
 
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.WordnetLAT</name>

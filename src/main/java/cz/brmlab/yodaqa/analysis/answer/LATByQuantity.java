@@ -17,7 +17,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
-import cz.brmlab.yodaqa.model.TyCor.FocusLAT;
+import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
@@ -68,7 +68,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		if (num.getDependent().getPos().getPosValue().equals("CD"))
 			addLATFeature(jcas, AF_LATQuantityCD.class, 1.0);
 
-		addLAT(new FocusLAT(jcas), num.getBegin(), num.getEnd(), num, text, pos, spec);
+		addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text, pos, spec);
 		logger.debug(".. Quantity LAT {} by NUM {}", text, num.getCoveredText());
 	}
 
