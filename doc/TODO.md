@@ -21,16 +21,13 @@ fairly volatile):
 
   * Try training a multi-layer perceptron instead of logistic
     classifier
-  * Revamp LAT features; completely disable LATFocus*, inst. of
-    binary use the value of Wordnet specificity as value
+  * Revamp LAT features; completely disable LATFocus*, prune the features
+    that are no longer ever generated
   * Quantity LATs for NUM dependencies (WIP; so far overfits)
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
 
   * Disable resultLogScore feature for concept-based results
-  * LAT: Try "one-sided Wordnet specificity" - allow hypernymes for
-    question or answer LAT when matching, but not for both
-  * LAT: Try -sqrt(-x) instead of exp(x) as specificity transformation
   * LAT: Transform ClueFocus to ClueLAT, generate for all sp=0 LATs
 
 v1.0 Roadmap
