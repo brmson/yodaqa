@@ -112,6 +112,8 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			return;
 		}
 
+		/* FIXME: If the LAT has synset set already, go from that. */
+
 		IndexWord w = JWordnet.getDictionary().lookupIndexWord(wnpos, lat.getText());
 		if (w == null) {
 			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " not in Wordnet");
@@ -180,9 +182,10 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		l2.setText(lemma);
 		l2.setSpecificity(spec);
 		l2.setIsHierarchical(true);
+		l2.setSynset(synset2.getOffset());
 		latmap.put(synset2, l2);
 
-		wnlist.append(" | " + lemma);
+		wnlist.append(" | " + lemma + "/" + synset2.getOffset());
 
 		/* ...and recurse, unless we got into the noun.Tops
 		 * realm already. */

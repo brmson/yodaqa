@@ -125,6 +125,9 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		Map<String, LAT> answerLats = new HashMap<String, LAT>();
 		LATMatch bestMatch = null;
 
+		/* FIXME: Allow matching LATs that have same text but
+		 * different senses. */
+
 		/* Load LATs from answerView. */
 		for (LAT la : JCasUtil.select(answerView, LAT.class)) {
 			if (la.getIsHierarchical() && !(la instanceof WordnetLAT))
@@ -143,6 +146,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			LAT la = answerLats.get(lq.getText());
 			if (la == null)
 				continue;
+			if (lq.getSynset() != 0 && la.getSynset() != 0 && lq.getSynset() != la.getSynset())
+				continue;
 			LATMatch match = new LATMatch(lq, la);
 			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity())
 				bestMatch = match;
@@ -152,6 +157,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			logger.debug(".. TyCor "
 					+ bestMatch.getBaseLat1().getText() + "-" + bestMatch.getBaseLat2().getText()
 					+ " match " + bestMatch.getLat1().getText() /* == LAT2 text */
+					+ "/" + bestMatch.getLat1().getSynset()
 					+ " sp. " + bestMatch.getSpecificity());
 		}
 		return bestMatch;
