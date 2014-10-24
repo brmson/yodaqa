@@ -42,8 +42,12 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		/* A Focus is also an LAT. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
 			/* ...however, prefer an overlapping named entity. */
-			if (!addNELAT(jcas, focus))
-				addFocusLAT(jcas, focus);
+			if (!addNELAT(jcas, focus)) {
+				/* XXX: The focus itself doesn't contribute
+				 * anything anymore at this point. */
+				// addFocusLAT(jcas, focus);
+				continue;
+			}
 		}
 	}
 
