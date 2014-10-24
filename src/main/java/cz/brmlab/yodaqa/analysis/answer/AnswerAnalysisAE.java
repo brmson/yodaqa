@@ -59,6 +59,11 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Determine the focus and LAT of each answer. */
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		builder.add(createPrimitiveDescription(LATByFocus.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Multiplicate LATs */
+		builder.add(createPrimitiveDescription(LATByWordnet.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate DBpedia LATs after Wordnet multiplication - they
 		 * already contain abstraction hierarchy. */
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
