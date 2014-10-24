@@ -57,13 +57,13 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 				/* <1.0 so that we slightly prefer tokens,
 				 * usable even for fulltext search, when
 				 * merging clues. */
-				addClue(new CluePhrase(jcas), c.getBegin(), c.getEnd(), c, 0.99);
+				addClue(new CluePhrase(jcas), c.getBegin(), c.getEnd(), c, false, 0.99);
 
 			for (FeatureStructure child : c.getChildren().toArray()) {
 				if (!(child instanceof Constituent)) {
 					Token t = (Token) child;
 					if (t.getPos().getPosValue().matches(TOKENMATCH))
-						addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t, 1.0);
+						addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t, true, 1.0);
 					continue;
 				}
 				lifo.add((Constituent) child);
@@ -71,13 +71,13 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addClue(Clue clue, int begin, int end, Annotation base, double weight) {
+	protected void addClue(Clue clue, int begin, int end, Annotation base, boolean isReliable, double weight) {
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
 		clue.setWeight(weight);
 		clue.setLabel(clue.getCoveredText());
-		clue.setIsReliable(true);
+		clue.setIsReliable(isReliable);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
 	}
