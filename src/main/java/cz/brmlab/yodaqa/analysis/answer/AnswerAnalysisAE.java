@@ -56,18 +56,21 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 				StanfordParser.PARAM_WRITE_POS, true),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
-		/* Determine the focus and LAT of each answer. */
+		/* Determine the focus of each answer. */
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+
+		/* Generate focus-based LATs (mainly NamedEntity-based) */
 		builder.add(createPrimitiveDescription(LATByFocus.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		/* Multiplicate LATs */
-		builder.add(createPrimitiveDescription(LATByWordnet.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
-		/* Generate DBpedia LATs after Wordnet multiplication - they
-		 * already contain abstraction hierarchy. */
+		/* Generate DBpedia LATs */
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* We do no LAT multiplication since all of our LATs are
+		 * already "on-the-spot" and won't benefit from further
+		 * generalization - either already sufficiently generic
+		 * (NamedEntity, Quantity, ...) or with their own abstraction
+		 * hierarchy (LATByDBpedia). */
 
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));
