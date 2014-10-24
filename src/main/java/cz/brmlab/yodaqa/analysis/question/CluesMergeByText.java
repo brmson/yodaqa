@@ -77,12 +77,14 @@ public class CluesMergeByText extends JCasAnnotator_ImplBase {
 	}
 
 	protected void subdueInfo(Clue subdued, Clue subduing) {
-		logger.debug("subduing {}({}:{}) <| {}({}:{})",
+		logger.debug("subduing {}({}:{},{}) <| {}({}:{},{})",
 			subdued.getLabel(),
 			subdued.getType().getShortName(),
 			subdued.getWeight(),
+			subdued.getIsReliable(),
 			subduing.getLabel(),
 			subduing.getType().getShortName(),
-			subduing.getWeight());
+			subduing.getWeight(),
+			subduing.getIsReliable());
 	}
 }
