@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByFocus;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
@@ -198,8 +198,8 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			afv.setFeature(AF_OriginConcept.class, 1.0);
 			if (concept.getBySubject())
 				afv.setFeature(AF_OriginConceptBySubject.class, 1.0);
-			if (concept.getByFocus())
-				afv.setFeature(AF_OriginConceptByFocus.class, 1.0);
+			if (concept.getByLAT())
+				afv.setFeature(AF_OriginConceptByLAT.class, 1.0);
 			if (concept.getByNE())
 				afv.setFeature(AF_OriginConceptByNE.class, 1.0);
 		}
