@@ -160,8 +160,8 @@
         <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.Question.ClueFocus</name>
-        <description>Clue based on the focus word. Often indicates the kind of the result, but may be too generic; e.g. "book", "person", "capital", "tall", "when"...</description>
+        <name>cz.brmlab.yodaqa.model.Question.ClueLAT</name>
+        <description>Clue based on the (nongeneralized) LAT word; this corresponds to the question focus, but transformed to a noun, etc. Often indicates the kind of the result, but may be too generic; e.g. "book", "person", "capital", "height", "time"...</description>
         <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
       </typeDescription>
       <typeDescription>
@@ -190,8 +190,8 @@
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>byFocus</name>
-            <description>Whether this concept has subdued a ClueFocus.</description>
+            <name>byLAT</name>
+            <description>Whether this concept has subdued a ClueLAT.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
           <featureDescription>

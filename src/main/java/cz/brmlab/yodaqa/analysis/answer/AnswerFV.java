@@ -32,7 +32,7 @@ public class AnswerFV {
 		"originPsg", "originPsgFirst",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 		"originDocTitle",
-		"originConcept", "originConceptBySubject", "originConceptByFocus", "originConceptByNE",
+		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
@@ -62,7 +62,7 @@ public class AnswerFV {
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
-			features.add(AF_OriginConceptByFocus.class);
+			features.add(AF_OriginConceptByLAT.class);
 			features.add(AF_OriginConceptByNE.class);
 			features.add(AF_OriginMultiple.class);
 			features.add(AF_SpWordNet.class);

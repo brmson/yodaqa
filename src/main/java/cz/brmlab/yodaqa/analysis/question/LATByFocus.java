@@ -57,17 +57,18 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		/* If focus is the question word, convert to an appropriate
 		 * concept word or give up. */
 		if (text.equals("who") || text.equals("whom")) {
-			addFocusLAT(jcas, focus, "person", null, 0.0);
+			addFocusLAT(jcas, focus, "person", null, -0.5);
 
 		} else if (text.equals("when")) {
-			addFocusLAT(jcas, focus, "time", null, 0.0);
-			addFocusLAT(jcas, focus, "date", null, 0.0);
+			addFocusLAT(jcas, focus, "time", null, -0.5);
+			addFocusLAT(jcas, focus, "date", null, -0.5);
 
 		} else if (text.equals("where")) {
-			addFocusLAT(jcas, focus, "location", null, 0.0);
+			addFocusLAT(jcas, focus, "location", null, -0.5);
 
 		} else if (text.equals("many") || text.equals("much")) {
-			addFocusLAT(jcas, focus, "quantity", null, 0.0);
+			// XXX: "quantity" is not the primary label for this wordnet sense
+			addFocusLAT(jcas, focus, "measure", null, -0.5);
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
