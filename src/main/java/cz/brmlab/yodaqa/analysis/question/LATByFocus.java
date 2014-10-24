@@ -67,7 +67,8 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			addFocusLAT(jcas, focus, "location", null, -0.5);
 
 		} else if (text.equals("many") || text.equals("much")) {
-			addFocusLAT(jcas, focus, "quantity", null, -0.5);
+			// XXX: "quantity" is not the primary label for this wordnet sense
+			addFocusLAT(jcas, focus, "measure", null, -0.5);
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
