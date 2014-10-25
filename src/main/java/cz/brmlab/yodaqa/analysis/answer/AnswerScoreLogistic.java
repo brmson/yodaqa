@@ -30,19 +30,6 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 	 *
 	 * 430 answersets, 82157 answers
 	 * + Cross-validation:
-	 * (test) PERANS acc/prec/rcl/F2 = 0.793/0.064/0.570/0.221, @70 prec/rcl/F2 = 0.129/0.388/0.277, PERQ avail 0.730, any good = [0.528], simple 0.491
-	 * (test) PERANS acc/prec/rcl/F2 = 0.777/0.062/0.550/0.213, @70 prec/rcl/F2 = 0.105/0.358/0.241, PERQ avail 0.698, any good = [0.586], simple 0.508
-	 * (test) PERANS acc/prec/rcl/F2 = 0.780/0.060/0.595/0.214, @70 prec/rcl/F2 = 0.098/0.366/0.237, PERQ avail 0.688, any good = [0.505], simple 0.434
-	 * (test) PERANS acc/prec/rcl/F2 = 0.752/0.061/0.604/0.218, @70 prec/rcl/F2 = 0.096/0.416/0.250, PERQ avail 0.730, any good = [0.553], simple 0.464
-	 * (test) PERANS acc/prec/rcl/F2 = 0.765/0.061/0.643/0.220, @70 prec/rcl/F2 = 0.119/0.401/0.271, PERQ avail 0.679, any good = [0.574], simple 0.488
-	 * (test) PERANS acc/prec/rcl/F2 = 0.767/0.057/0.608/0.208, @70 prec/rcl/F2 = 0.097/0.394/0.244, PERQ avail 0.674, any good = [0.484], simple 0.463
-	 * (test) PERANS acc/prec/rcl/F2 = 0.769/0.055/0.571/0.198, @70 prec/rcl/F2 = 0.099/0.352/0.233, PERQ avail 0.716, any good = [0.540], simple 0.451
-	 * (test) PERANS acc/prec/rcl/F2 = 0.757/0.059/0.609/0.212, @70 prec/rcl/F2 = 0.097/0.367/0.236, PERQ avail 0.693, any good = [0.446], simple 0.493
-	 * (test) PERANS acc/prec/rcl/F2 = 0.770/0.063/0.618/0.223, @70 prec/rcl/F2 = 0.101/0.373/0.242, PERQ avail 0.730, any good = [0.485], simple 0.482
-	 * (test) PERANS acc/prec/rcl/F2 = 0.780/0.068/0.553/0.227, @70 prec/rcl/F2 = 0.114/0.351/0.248, PERQ avail 0.735, any good = [0.514], simple 0.469
-	 * Cross-validation score mean 52.148% S.D. 4.128%
-	 * + Full training set:
-	 * (full) PERANS acc/prec/rcl/F2 = 0.772/1.000/0.235/0.277, @70 prec/rcl/F2 = 1.000/0.084/0.102, PERQ avail 0.714, any good = [0.538], simple 0.486
 	 * Full model is LogisticRegression(C=1.0, class_weight=auto, dual=False, fit_intercept=True,
 		  intercept_scaling=1, penalty=l2, random_state=None, tol=0.0001)
 	 */
