@@ -66,6 +66,9 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Generate DBpedia LATs */
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Generate LATs based on quantity statements. */
+		builder.add(createPrimitiveDescription(LATByQuantity.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* We do no LAT multiplication since all of our LATs are
 		 * already "on-the-spot" and won't benefit from further
 		 * generalization - either already sufficiently generic
