@@ -43,8 +43,9 @@ public class OpenNlpNamedEntities {
 			/* (29){08024893} <noun.group>[14] S: (n) organization#1 (organization%1:14:00::), organisation#2 (organisation%1:14:00::) (a group of people who work together) */
 			return 8024893;
 		} else if (value.equals("percentage")) {
-			/* (26){13839738} <noun.relation>[24] S: (n) percentage#1 (percentage%1:24:00::), percent#1 (percent%1:24:00::), per centum#1 (per_centum%1:24:00::), pct#1 (pct%1:24:00::) (a proportion in relation to a whole (which is usually the amount per hundred)) */
-			return 13839738;
+			/* {13837954} <noun.relation>[24] S: (n) proportion#1 (proportion%1:24:00::) (the quotient obtained when the magnitude of a part is divided by the magnitude of the whole) */
+			/* (percentage is too specific when asking for e.g. "rate" etc.) */
+			return 13837954;
 		} else if (value.equals("person")) {
 			/* (6833){00007846} <noun.Tops>[03] S: (n) person#1 (person%1:03:00::), individual#1 (individual%1:03:00::), someone#1 (someone%1:03:00::), somebody#1 (somebody%1:03:00::), mortal#1 (mortal%1:03:00::), soul#2 (soul%1:03:00::) (a human being) "there was too much for one person to do" */
 			return 7846;
