@@ -82,17 +82,18 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(new DBpLAT(jcas), focus.getBegin(), focus.getEnd(), focus, ntype, pos, 0.0);
-		logger.debug(".. LAT {} by Focus {}", ntype, focus.getCoveredText());
+		addLAT(new DBpLAT(jcas), focus.getBegin(), focus.getEnd(), focus, ntype, pos, 0, 0.0);
+		logger.debug(".. LAT {}/0 by Focus {}", ntype, focus.getCoveredText());
 	}
 
-	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, double spec) {
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
 		lat.setPos(pos);
 		lat.setText(text);
 		lat.setSpecificity(spec);
+		lat.setSynset(synset);
 		lat.addToIndexes();
 	}
 

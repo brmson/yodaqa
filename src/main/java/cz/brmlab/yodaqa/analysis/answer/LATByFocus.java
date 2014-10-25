@@ -20,6 +20,7 @@ import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.FocusLAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
+import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -53,11 +54,13 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		String text = ftok.getLemma().getValue().toLowerCase();
 		double spec = 0.0;
 		POS pos = ftok.getPos();
+		long synset = 0;
 
 		/* Focus may be a number... */
 		if (ftok.getPos().getPosValue().matches("^CD")) {
-			// XXX: "quantity" is not the primary label for this wordnet sense
-			text = "measure";
+			/* (15){00033914} <noun.Tops>[03] S: (n) measure#2 (measure%1:03:00::), quantity#1 (quantity%1:03:00::), amount#3 (amount%1:03:00::) (how much there is or how many there are of something that you can quantify) */
+			text = "amount";
+			synset = 33914;
 			pos = null;
 			addLATFeature(jcas, AF_LATFocusProxy.class, 1.0);
 		} else {
@@ -79,28 +82,30 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			pos.addToIndexes();
 		}
 
-		addLAT(new FocusLAT(jcas), focus.getBegin(), focus.getEnd(), focus, text, pos, spec);
-		logger.debug(".. LAT {} by Focus {}", text, focus.getCoveredText());
+		addLAT(new FocusLAT(jcas), focus.getBegin(), focus.getEnd(), focus, text, pos, synset, spec);
+		logger.debug(".. LAT {}/{} by Focus {}", text, synset, focus.getCoveredText());
 	}
 
 	protected boolean addNELAT(JCas jcas, Focus focus) throws AnalysisEngineProcessException {
 		boolean ne_found = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
-			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), 0.0);
-			logger.debug(".. LAT {} by NE {}", ne.getValue(), ne.getCoveredText());
+			long synset = OpenNlpNamedEntities.neValueToSynset(ne.getValue());
+			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), synset, 0.0);
+			logger.debug(".. LAT {}/{} by NE {}", ne.getValue(), synset, ne.getCoveredText());
 			addLATFeature(jcas, AF_LATNE.class, 1.0);
 		}
 		return ne_found;
 	}
 
-	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, double spec) {
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
 		lat.setPos(pos);
 		lat.setText(text);
 		lat.setSpecificity(spec);
+		lat.setSynset(synset);
 		lat.addToIndexes();
 	}
 
