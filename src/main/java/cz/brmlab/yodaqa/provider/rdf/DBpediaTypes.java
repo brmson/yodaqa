@@ -49,6 +49,7 @@ public class DBpediaTypes extends CachedJenaLookup {
 		for (Literal[] rawResult : rawResults) {
 			String typeLabel = rawResult[0].getString().
 				replaceAll("_", " ").
+				replaceAll("[0-9]*$", "").
 				replaceAll("([a-z])([A-Z])", "$1 $2");
 			if (typeLabel.equals("Thing")) {
 				// just skip this, about everything is tagged as owl#thing
