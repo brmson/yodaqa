@@ -19,14 +19,14 @@ Immediate TODO Items
 These are ideas for simple things to try quickly (this list is
 fairly volatile):
 
-  * Try training a multi-layer perceptron instead of logistic
-    classifier
-  * Revamp LAT features; completely disable LATFocus*, prune the features
-    that are no longer ever generated
-  * Quantity LATs for NUM dependencies (WIP; so far overfits)
+  * LAT by answer focus' wordnet instanceof relation (e.g. Berlin
+    -> capital)
+  * Revamp LAT features; prune the features that are no longer
+    ever generated
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
-
+  * Try training a multi-layer perceptron instead of logistic
+    classifier
   * Disable resultLogScore feature for concept-based results
 
 v1.0 Roadmap
