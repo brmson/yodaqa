@@ -67,9 +67,6 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*              tyCorPassageSp @,%,! */  1.940806, -0.074143,  0.168221, /*              tyCorPassageSp d01:  1.698442 */
 		/*            tyCorPassageDist @,%,! */ -0.112481, -0.023171,  0.168221, /*            tyCorPassageDist d01: -0.303872 */
 		/*          tyCorPassageInside @,%,! */  0.141366,  0.046169,  0.008603, /*          tyCorPassageInside d01:  0.178932 */
-		/*                 simpleScore @,%,! */  0.012704,  0.117876,  0.000000, /*                 simpleScore d01:  0.130581 */
-		/*                    LATFocus @,%,! */  0.000000,  0.000000,  0.149969, /*                    LATFocus d01: -0.149969 */
-		/*               LATFocusProxy @,%,! */  0.000000,  0.000000,  0.149969, /*               LATFocusProxy d01: -0.149969 */
 		/*                       LATNE @,%,! */ -0.861127,  0.240673, -0.382644, /*                       LATNE d01: -0.237809 */
 		/*                  LATDBpType @,%,! */  0.022514, -0.348458, -0.032189, /*                  LATDBpType d01: -0.293755 */
 		/*                 LATQuantity @,%,! */  0.299842, -0.221148,  0.274479, /*                 LATQuantity d01: -0.195785 */
@@ -77,8 +74,6 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*               LATWnInstance @,%,! */ -0.034749, -0.025626, -0.915493, /*               LATWnInstance d01:  0.855118 */
 		/*                 tyCorSpQHit @,%,! */  0.390303, -0.080578, -0.240334, /*                 tyCorSpQHit d01:  0.550059 */
 		/*                 tyCorSpAHit @,%,! */ -0.030015, -0.482728,  0.179984, /*                 tyCorSpAHit d01: -0.692728 */
-		/*             tyCorXHitAFocus @,%,! */  0.000000,  0.000000,  0.149969, /*             tyCorXHitAFocus d01: -0.149969 */
-		/*                 tyCorAFocus @,%,! */  0.000000,  0.000000,  0.149969, /*                 tyCorAFocus d01: -0.149969 */
 		/*                    tyCorANE @,%,! */  1.061030, -0.083277, -0.911061, /*                    tyCorANE d01:  1.888814 */
 		/*                   tyCorADBp @,%,! */  0.861231, -0.197142, -0.711262, /*                   tyCorADBp d01:  1.375350 */
 		/*              tyCorAQuantity @,%,! */ -1.040891,  0.888691,  1.190860, /*              tyCorAQuantity d01: -1.343060 */

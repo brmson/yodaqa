@@ -21,8 +21,8 @@ fairly volatile):
 
   * LAT by answer focus' wordnet instanceof relation (e.g. Berlin
     -> capital)
-  * Revamp LAT features; prune the features that are no longer
-    ever generated
+  * Revamp LAT features; try carrying wordnetSp values within
+    the LAT features (WIP; so far overfitted)
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
   * Try training a multi-layer perceptron instead of logistic
