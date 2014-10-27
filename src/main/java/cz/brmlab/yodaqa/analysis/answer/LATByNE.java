@@ -11,14 +11,11 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocusProxy;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
-import cz.brmlab.yodaqa.model.TyCor.FocusLAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
@@ -28,66 +25,21 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /**
- * Generate LAT annotations in a CandidateAnswerCAS. This is based on the
- * answer focus and the result LAT texts should be compatible with Question.LAT
- * but the process of their generation might be different in details. */
+ * Generate LAT annotations in a CandidateAnswerCAS. If a NamedEntity
+ * covers the answer focus, the type of that named entity (as not just
+ * a word but a wordnet synset) is generated as the LAT. */
 
-public class LATByFocus extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(LATByFocus.class);
+public class LATByNE extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATByNE.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		/* A Focus is also an LAT. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
-			/* ...however, prefer an overlapping named entity. */
-			if (!addNELAT(jcas, focus)) {
-				/* XXX: The focus itself doesn't contribute
-				 * anything anymore at this point. */
-				// addFocusLAT(jcas, focus);
-				continue;
-			}
+			addNELAT(jcas, focus);
 		}
-	}
-
-	protected void addFocusLAT(JCas jcas, Focus focus) throws AnalysisEngineProcessException {
-		/* Convert focus to its lemma. */
-		Token ftok = focus.getToken();
-		String text = ftok.getLemma().getValue().toLowerCase();
-		double spec = 0.0;
-		POS pos = ftok.getPos();
-		long synset = 0;
-
-		/* Focus may be a number... */
-		if (ftok.getPos().getPosValue().matches("^CD")) {
-			/* (15){00033914} <noun.Tops>[03] S: (n) measure#2 (measure%1:03:00::), quantity#1 (quantity%1:03:00::), amount#3 (amount%1:03:00::) (how much there is or how many there are of something that you can quantify) */
-			text = "amount";
-			synset = 33914;
-			pos = null;
-			addLATFeature(jcas, AF_LATFocusProxy.class, 1.0);
-		} else {
-			/* Do not create an LAT for this focus at all;
-			 * typically, assigning an LAT for a generic
-			 * NP is essentially useless. */
-			/* XXX: Rewrite the code to be more obvious
-			 * about this. */
-			return;
-		}
-
-		if (pos == null) {
-			/* We have a synthetic focus noun, synthetize
-			 * a POS tag for it. */
-			pos = new NN(jcas);
-			pos.setBegin(focus.getBegin());
-			pos.setEnd(focus.getEnd());
-			pos.setPosValue("NNS");
-			pos.addToIndexes();
-		}
-
-		addLAT(new FocusLAT(jcas), focus.getBegin(), focus.getEnd(), focus, text, pos, synset, spec);
-		logger.debug(".. LAT {}/{} by Focus {}", text, synset, focus.getCoveredText());
 	}
 
 	protected boolean addNELAT(JCas jcas, Focus focus) throws AnalysisEngineProcessException {
