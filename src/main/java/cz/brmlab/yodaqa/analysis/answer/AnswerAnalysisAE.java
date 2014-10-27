@@ -60,6 +60,19 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
+		/* Generate Wordnet instance-of based LATs */
+		builder.add(createPrimitiveDescription(LATByWnInstance.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* ...and multiplicate LATs so far by wordnet hypernymy. */
+		builder.add(createPrimitiveDescription(LATByWordnet.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+
+		/* We do no LAT multiplication below here since all of our LATs
+		 * are already "on-the-spot" and won't benefit from further
+		 * generalization - either already sufficiently generic
+		 * (NamedEntity, Quantity, ...) or with their own abstraction
+		 * hierarchy (LATByDBpedia). */
+
 		/* Generate focus-based LATs (mainly NamedEntity-based) */
 		builder.add(createPrimitiveDescription(LATByFocus.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
@@ -69,11 +82,6 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Generate LATs based on quantity statements. */
 		builder.add(createPrimitiveDescription(LATByQuantity.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		/* We do no LAT multiplication since all of our LATs are
-		 * already "on-the-spot" and won't benefit from further
-		 * generalization - either already sufficiently generic
-		 * (NamedEntity, Quantity, ...) or with their own abstraction
-		 * hierarchy (LATByDBpedia). */
 
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));

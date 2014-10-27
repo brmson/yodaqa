@@ -74,6 +74,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*                  LATDBpType @,%,! */  0.024330, -0.335690, -0.084618, /*                  LATDBpType d01: -0.226743 */
 		/*                 LATQuantity @,%,! */  0.279981, -0.225196,  0.250161, /*                 LATQuantity d01: -0.195377 */
 		/*               LATQuantityCD @,%,! */  0.574132,  0.091900,  0.031720, /*               LATQuantityCD d01:  0.634312 */
+		0, 0, 0,
 		/*                 tyCorSpQHit @,%,! */  0.034145, -0.002601,  0.000642, /*                 tyCorSpQHit d01:  0.030903 */
 		/*                 tyCorSpAHit @,%,! */  0.210848, -0.535515, -0.176062, /*                 tyCorSpAHit d01: -0.148605 */
 		/*             tyCorXHitAFocus @,%,! */  0.000000,  0.000000,  0.034787, /*             tyCorXHitAFocus d01: -0.034787 */
@@ -81,6 +82,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*                    tyCorANE @,%,! */  1.027644, -0.073339, -0.992857, /*                    tyCorANE d01:  1.947162 */
 		/*                   tyCorADBp @,%,! */  0.874325, -0.199056, -0.839539, /*                   tyCorADBp d01:  1.514807 */
 		/*              tyCorAQuantity @,%,! */ -1.258555,  0.986512,  1.293341, /*              tyCorAQuantity d01: -1.565384 */
+		0, 0, 0,
 	};
 	public static double intercept = 0.034787;
 
