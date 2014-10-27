@@ -63,13 +63,17 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addLATByLabel(JCas jcas, Focus focus, String label) throws AnalysisEngineProcessException {
+		StringBuilder typelist = new StringBuilder();
+
 		List<String> types = dbt.query(label, logger);
 		for (String type : types) {
-			addTypeLAT(jcas, focus, type);
+			addTypeLAT(jcas, focus, type, typelist);
 		}
+
+		logger.debug(".. Focus {} => DBpedia LATs/0 {}", focus.getCoveredText(), typelist);
 	}
 
-	protected void addTypeLAT(JCas jcas, Focus focus, String type) throws AnalysisEngineProcessException {
+	protected void addTypeLAT(JCas jcas, Focus focus, String type, StringBuilder typelist) throws AnalysisEngineProcessException {
 		addLATFeature(jcas, AF_LATDBpType.class, 1.0);
 
 		String ntype = type.toLowerCase();
@@ -83,7 +87,8 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		pos.addToIndexes();
 
 		addLAT(new DBpLAT(jcas), focus.getBegin(), focus.getEnd(), focus, ntype, pos, 0, 0.0);
-		logger.debug(".. LAT {}/0 by Focus {}", ntype, focus.getCoveredText());
+
+		typelist.append(" | " + ntype);
 	}
 
 	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
