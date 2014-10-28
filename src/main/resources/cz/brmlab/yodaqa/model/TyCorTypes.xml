@@ -74,6 +74,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT</name>
+        <description>LAT generated from NUM dependency and CD pos in answer sentence.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT</name>
         <description>LAT generated from Wordnet instance-of relationships.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>

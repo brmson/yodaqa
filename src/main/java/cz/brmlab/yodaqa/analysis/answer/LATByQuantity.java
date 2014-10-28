@@ -18,6 +18,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
+import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
@@ -62,13 +63,16 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLATFeature(jcas, AF_LATQuantity.class, 1.0);
 		/* Also set a feature when the quantity is an actual number
 		 * (as opposed to e.g. "many"). */
-		if (num.getDependent().getPos().getPosValue().equals("CD"))
+		if (num.getDependent().getPos().getPosValue().equals("CD")) {
 			addLATFeature(jcas, AF_LATQuantityCD.class, 1.0);
+			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text, pos, spec);
+		} else {
+			addLATFeature(jcas, AF_LATQuantity.class, 1.0);
+			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text, pos, spec);
+		}
 
-		addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text, pos, spec);
 		logger.debug(".. Quantity LAT {} by NUM {}", text, num.getCoveredText());
 	}
 

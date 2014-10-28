@@ -39,7 +39,7 @@ public class AnswerFV {
 		"simpleScore",
 		"LATFocus", "LATFocusProxy", "LATNE", "LATDBpType", "LATQuantity", "LATQuantityCD", "LATWnInstance",
 		"tyCorSpQHit", "tyCorSpAHit", "tyCorXHitAFocus",
-		"tyCorAFocus", "tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAWnInstance",
+		"tyCorAFocus", "tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
 	};
 
 	protected double values[]; // the feature value
@@ -86,6 +86,7 @@ public class AnswerFV {
 			features.add(AF_TyCorANE.class);
 			features.add(AF_TyCorADBp.class);
 			features.add(AF_TyCorAQuantity.class);
+			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
 		}
 

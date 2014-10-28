@@ -82,6 +82,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*                    tyCorANE @,%,! */  1.061030, -0.083277, -0.911061, /*                    tyCorANE d01:  1.888814 */
 		/*                   tyCorADBp @,%,! */  0.861231, -0.197142, -0.711262, /*                   tyCorADBp d01:  1.375350 */
 		/*              tyCorAQuantity @,%,! */ -1.040891,  0.888691,  1.190860, /*              tyCorAQuantity d01: -1.343060 */
+		0, 0, 0,
 		/*            tyCorAWnInstance @,%,! */  0.894690, -0.297929, -0.744721, /*            tyCorAWnInstance d01:  1.341481 */
 	};
 	public static double intercept = 0.149969;

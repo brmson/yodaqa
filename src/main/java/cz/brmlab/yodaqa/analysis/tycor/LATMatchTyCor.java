@@ -22,6 +22,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantity;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantityCD;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAWnInstance;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
@@ -33,6 +34,7 @@ import cz.brmlab.yodaqa.model.TyCor.FocusLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
+import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
@@ -110,6 +112,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				fv.setFeature(AF_TyCorADBp.class, 1.0);
 			else if (baselat2 instanceof QuantityLAT)
 				fv.setFeature(AF_TyCorAQuantity.class, 1.0);
+			else if (baselat2 instanceof QuantityCDLAT)
+				fv.setFeature(AF_TyCorAQuantityCD.class, 1.0);
 			else if (baselat2 instanceof WnInstanceLAT)
 				fv.setFeature(AF_TyCorAWnInstance.class, 1.0);
 			else assert(false);
