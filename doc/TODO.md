@@ -19,12 +19,11 @@ Immediate TODO Items
 These are ideas for simple things to try quickly (this list is
 fairly volatile):
 
-  * LAT by answer focus' wordnet instanceof relation (e.g. Berlin
-    -> capital)
   * Revamp LAT features; prune the features that are no longer
     ever generated
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
+  * Try disabling the surprise element in candidate generation
   * Try training a multi-layer perceptron instead of logistic
     classifier
   * Disable resultLogScore feature for concept-based results
