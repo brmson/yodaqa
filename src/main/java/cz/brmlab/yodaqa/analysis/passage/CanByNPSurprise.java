@@ -59,19 +59,6 @@ public class CanByNPSurprise extends JCasAnnotator_ImplBase {
 		for (NP np : JCasUtil.select(passagesView, NP.class)) {
 			String text = np.getCoveredText();
 
-			/* TODO: This can be optimized a lot. */
-			boolean matches = false;
-			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (text.endsWith(clue.getLabel())) {
-					matches = true;
-					break;
-				}
-			}
-			if (matches)
-				continue;
-
-			/* Surprise! */
-
 			logger.info("caNP {}", np.getCoveredText());
 
 			Passage p = JCasUtil.selectCovering(Passage.class, np).get(0);

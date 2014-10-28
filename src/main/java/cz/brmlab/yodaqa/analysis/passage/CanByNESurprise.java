@@ -60,19 +60,6 @@ public class CanByNESurprise extends JCasAnnotator_ImplBase {
 			for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, p)) {
 				String text = ne.getCoveredText();
 
-				/* TODO: This can be optimized a lot. */
-				boolean matches = false;
-				for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-					if (text.endsWith(clue.getLabel())) {
-						matches = true;
-						break;
-					}
-				}
-				if (matches)
-					continue;
-
-				/* Surprise! */
-
 				logger.info("caNE {}", ne.getCoveredText());
 
 				AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
