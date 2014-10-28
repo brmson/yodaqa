@@ -23,10 +23,6 @@ fairly volatile):
     the LAT features (WIP; so far overfitted)
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
-  * Try disabling the surprise element in candidate generation
-  * Try training a multi-layer perceptron instead of logistic
-    classifier
-  * Disable resultLogScore feature for concept-based results
 
 v1.0 Roadmap
 ------------
@@ -115,9 +111,6 @@ FinalAnswer Precision Quality:
     * Prefer most specific answers: "When did the shootings at Columbine
       happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
       just merge overlaps
-  * Take Wordnet synsets into account in LATs; annotate NE-based
-    Focus LATs by synsets instead of generic words (to avoid
-    e.g. the date-companion-friend-person chain)
   * If an LAT is found in sentence governing an APPOS dependency,
     create the dependent as a candidate answer, as in "Who is the
     brother of Sherlock Holmes?" vs. "His brother, Mycroft, seven
@@ -127,6 +120,15 @@ FinalAnswer Precision Quality:
   * Extend WordNet ontology (so far used for TyCor) with more
     resources - dkpro lsr or uby
   * Label-less LATs via NE clustering
+
+FinalAnswer Prediction Machine Learning:
+  * Try training a multi-layer perceptron instead of logistic
+    classifier
+  * Disable resultLogScore feature for concept-based results
+  * The scoreSimple feature turns out to be fairly important
+    (avgscore 0.474 becomes 0.493); this indicates something
+    fishy about our current logistic regression based model,
+    we should try to find out why that feature works
 
 General Quality:
   * Evidence gathering feedback loops - initially maybe just
