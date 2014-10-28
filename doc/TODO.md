@@ -19,8 +19,8 @@ Immediate TODO Items
 These are ideas for simple things to try quickly (this list is
 fairly volatile):
 
-  * Revamp LAT features; prune the features that are no longer
-    ever generated
+  * Revamp LAT features; try carrying wordnetSp values within
+    the LAT features (WIP; so far overfitted)
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
   * Try disabling the surprise element in candidate generation

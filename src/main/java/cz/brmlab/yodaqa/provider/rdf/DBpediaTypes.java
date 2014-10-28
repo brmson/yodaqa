@@ -55,7 +55,7 @@ public class DBpediaTypes extends CachedJenaLookup {
 				// just skip this, about everything is tagged as owl#thing
 				continue;
 			}
-			logger.debug("DBpedia {} type: [[{}]]", title, typeLabel);
+			//logger.debug("DBpedia {} type: [[{}]]", title, typeLabel);
 			results.add(typeLabel);
 		}
 

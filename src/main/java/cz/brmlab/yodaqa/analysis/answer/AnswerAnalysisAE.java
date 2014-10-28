@@ -73,8 +73,8 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * (NamedEntity, Quantity, ...) or with their own abstraction
 		 * hierarchy (LATByDBpedia). */
 
-		/* Generate focus-based LATs (mainly NamedEntity-based) */
-		builder.add(createPrimitiveDescription(LATByFocus.class),
+		/* Generate NamedEntity type LATs */
+		builder.add(createPrimitiveDescription(LATByNE.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate DBpedia LATs */
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
