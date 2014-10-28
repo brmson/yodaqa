@@ -36,6 +36,7 @@ public class AnswerFV {
 		"originMultiple",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
+		"simpleScore",
 		"LATNE", "LATDBpType", "LATQuantity", "LATQuantityCD", "LATWnInstance",
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAWnInstance",
@@ -70,6 +71,7 @@ public class AnswerFV {
 			features.add(AF_TyCorPassageSp.class);
 			features.add(AF_TyCorPassageDist.class);
 			features.add(AF_TyCorPassageInside.class);
+			features.add(AF_SimpleScore.class);
 			features.add(AF_LATNE.class);
 			features.add(AF_LATDBpType.class);
 			features.add(AF_LATQuantity.class);

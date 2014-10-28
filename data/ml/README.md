@@ -86,6 +86,6 @@ and to update it based on the regression training run, edit that file
 and paste the contents of logistic.txt at the marked location near the
 top (replacing previous content).
 
-(There sued to be also a AnswerScoreSimple scorer which used just a small
-set of features and was super-simplistic; its performance is contrasted
-by the 'simple' performance rate output by answer-train.py.)
+(There is also a AnswerScoreSimple scorer which uses just a small set of
+features and is super-simplistic, what we used before; its performance is
+contrasted by the 'simple' performance rate output by answer-train.py.)

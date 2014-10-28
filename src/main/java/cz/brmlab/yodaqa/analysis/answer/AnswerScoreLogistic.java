@@ -67,6 +67,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*              tyCorPassageSp @,%,! */  1.951216, -0.075691,  0.168209, /*              tyCorPassageSp d01:  1.707317 */
 		/*            tyCorPassageDist @,%,! */ -0.127870, -0.012452,  0.168209, /*            tyCorPassageDist d01: -0.308531 */
 		/*          tyCorPassageInside @,%,! */  0.169031,  0.035795,  0.022791, /*          tyCorPassageInside d01:  0.182035 */
+		/*                 simpleScore @,%,! */  0.012704,  0.117876,  0.000000, /*                 simpleScore d01:  0.130581 */
 		/*                       LATNE @,%,! */ -0.847592,  0.221038, -0.389412, /*                       LATNE d01: -0.237143 */
 		/*                  LATDBpType @,%,! */  0.021856, -0.338505, -0.025800, /*                  LATDBpType d01: -0.290850 */
 		/*                 LATQuantity @,%,! */  0.301338, -0.223847,  0.269772, /*                 LATQuantity d01: -0.192280 */

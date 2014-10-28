@@ -22,6 +22,8 @@ public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
+		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreSimple.class));
+
 		/* Compute answer score (estimated probability of being right)
 		 * from the various features amassed so far. */
 		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreLogistic.class));
