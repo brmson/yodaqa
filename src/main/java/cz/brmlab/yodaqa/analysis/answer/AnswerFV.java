@@ -31,6 +31,7 @@ public class AnswerFV {
 		"occurences", "resultLogScore", "passageLogScore",
 		"originPsg", "originPsgFirst",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
+			"originPsgSurprise",
 		"originDocTitle",
 		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
@@ -59,6 +60,7 @@ public class AnswerFV {
 			features.add(AF_OriginPsgNP.class);
 			features.add(AF_OriginPsgNE.class);
 			features.add(AF_OriginPsgNPByLATSubj.class);
+			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
