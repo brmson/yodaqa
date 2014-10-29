@@ -56,13 +56,31 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 				StanfordParser.PARAM_WRITE_POS, true),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
-		/* Determine the focus and LAT of each answer. */
+		/* Determine the focus of each answer. */
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		builder.add(createPrimitiveDescription(LATByFocus.class),
+
+		/* Generate Wordnet instance-of based LATs */
+		builder.add(createPrimitiveDescription(LATByWnInstance.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		/* Multiplicate LATs */
+		/* ...and multiplicate LATs so far by wordnet hypernymy. */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+
+		/* We do no LAT multiplication below here since all of our LATs
+		 * are already "on-the-spot" and won't benefit from further
+		 * generalization - either already sufficiently generic
+		 * (NamedEntity, Quantity, ...) or with their own abstraction
+		 * hierarchy (LATByDBpedia). */
+
+		/* Generate NamedEntity type LATs */
+		builder.add(createPrimitiveDescription(LATByNE.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Generate DBpedia LATs */
+		builder.add(createPrimitiveDescription(LATByDBpedia.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Generate LATs based on quantity statements. */
+		builder.add(createPrimitiveDescription(LATByQuantity.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Perform type coercion. */

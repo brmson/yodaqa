@@ -15,15 +15,23 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANoWordNet;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBp;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantity;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantityCD;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAWnInstance;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorXHitAFocus;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.NELAT;
+import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
+import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
+import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /**
@@ -47,6 +55,19 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		public LAT getLat1() { return lat1; }
 		public LAT getLat2() { return lat2; }
 		public double getSpecificity() { return specificity; }
+
+		public LAT getBaseLat1() {
+			return _getBaseLat(getLat1());
+		}
+		public LAT getBaseLat2() {
+			return _getBaseLat(getLat2());
+		}
+
+		protected LAT _getBaseLat(LAT lat) {
+			while (lat.getBaseLAT() != null)
+				lat = lat.getBaseLAT();
+			return lat;
+		}
 	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -75,8 +96,19 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
 			if (match.lat2.getSpecificity() == 0)
 				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
-			if (match.getSpecificity() == 0 && fv.isFeatureSet(AF_LATFocus.class))
-				fv.setFeature(AF_TyCorXHitAFocus.class, 1.0);
+
+			LAT baselat2 = match.getBaseLat2();
+			if (baselat2 instanceof NELAT)
+				fv.setFeature(AF_TyCorANE.class, 1.0);
+			else if (baselat2 instanceof DBpLAT)
+				fv.setFeature(AF_TyCorADBp.class, 1.0);
+			else if (baselat2 instanceof QuantityLAT)
+				fv.setFeature(AF_TyCorAQuantity.class, 1.0);
+			else if (baselat2 instanceof QuantityCDLAT)
+				fv.setFeature(AF_TyCorAQuantityCD.class, 1.0);
+			else if (baselat2 instanceof WnInstanceLAT)
+				fv.setFeature(AF_TyCorAWnInstance.class, 1.0);
+			else assert(false);
 		}
 
 		if (qNoWordnetLAT)
@@ -97,6 +129,9 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		Map<String, LAT> answerLats = new HashMap<String, LAT>();
 		LATMatch bestMatch = null;
 
+		/* FIXME: Allow matching LATs that have same text but
+		 * different senses. */
+
 		/* Load LATs from answerView. */
 		for (LAT la : JCasUtil.select(answerView, LAT.class)) {
 			if (la.getIsHierarchical() && !(la instanceof WordnetLAT))
@@ -115,19 +150,18 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			LAT la = answerLats.get(lq.getText());
 			if (la == null)
 				continue;
+			if (lq.getSynset() != 0 && la.getSynset() != 0 && lq.getSynset() != la.getSynset())
+				continue;
 			LATMatch match = new LATMatch(lq, la);
 			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity())
 				bestMatch = match;
 		}
 
 		if (bestMatch != null) {
-			LAT baselat1 = bestMatch.getLat1().getBaseLAT();
-			if (baselat1 == null) baselat1 = bestMatch.getLat1();
-			LAT baselat2 = bestMatch.getLat2().getBaseLAT();
-			if (baselat2 == null) baselat2 = bestMatch.getLat2();
 			logger.debug(".. TyCor "
-					+ baselat1.getText() + "-" + baselat2.getText()
+					+ bestMatch.getBaseLat1().getText() + "-" + bestMatch.getBaseLat2().getText()
 					+ " match " + bestMatch.getLat1().getText() /* == LAT2 text */
+					+ "/" + bestMatch.getLat1().getSynset()
 					+ " sp. " + bestMatch.getSpecificity());
 		}
 		return bestMatch;

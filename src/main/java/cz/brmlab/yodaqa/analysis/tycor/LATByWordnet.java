@@ -112,50 +112,79 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			return;
 		}
 
-		IndexWord w = JWordnet.getDictionary().lookupIndexWord(wnpos, lat.getText());
-		if (w == null) {
-			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " not in Wordnet");
-			return;
-		}
-
 		/* For a debug message, concatenate all generated wordnet LATs
 		 * in this string. */
+		boolean foundNoun = false;
 		StringBuilder wnlist = new StringBuilder();
 
-		if (wnpos == POS.NOUN) {
-			/* Got a noun right away. */
-			genDerivedSynsets(latmap, lat, w, wnlist);
-			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
-			return;
-		}
-
-		/* Try to derive a noun. */
-		boolean foundNoun = false;
-		for (Synset synset : w.getSenses()) {
-			for (PointerTarget t : synset.getTargets(PointerType.ATTRIBUTE)) {
-				Synset noun = (Synset) t;
-				foundNoun = true;
-				logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
-				genDerivedSynsets(latmap, lat, noun, wnlist);
-				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+		if (lat.getSynset() == 0) {
+			IndexWord w = JWordnet.getDictionary().lookupIndexWord(wnpos, lat.getText());
+			if (w == null) {
+				logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " not in Wordnet");
+				return;
 			}
+
+			if (wnpos == POS.NOUN) {
+				/* Got a noun right away. */
+				genDerivedSynsets(latmap, lat, w, wnlist, lat.getSpecificity() - 1);
+				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+				return;
+			}
+
+			/* Try to derive a noun. */
+			for (Synset synset : w.getSenses()) {
+				boolean fnhere = genNounSynsets(latmap, lat, synset, wnlist);
+				foundNoun = foundNoun || fnhere;
+			}
+		} else {
+			Synset s = JWordnet.getDictionary().getSynsetAt(wnpos, lat.getSynset());
+			if (s == null) {
+				logger.warn("?! word " + lat.getText() + "/" + lat.getSynset() + " of POS " + lat.getPos().getPosValue() + " not in Wordnet even though it has Wordnet sense assigned");
+				return;
+			}
+
+			if (wnpos == POS.NOUN) {
+				/* Got a noun right away. */
+				genDerivedSynsets(latmap, lat, s, wnlist, lat.getSpecificity() - 1);
+				logger.debug("expanded LAT " + lat.getText() + "/" + lat.getSynset() + " to wn LATs: " + wnlist.toString());
+				return;
+			}
+
+			/* Try to derive a noun. */
+			foundNoun = genNounSynsets(latmap, lat, s, wnlist);
 		}
 
 		if (!foundNoun)
 			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " in Wordnet as non-noun but derived from no noun");
 	}
 
-	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, IndexWord wnoun, StringBuilder wnlist) throws Exception {
+	protected boolean genNounSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
+			Synset synset, StringBuilder wnlist) throws Exception
+	{
+		boolean foundNoun = false;
+		for (PointerTarget t : synset.getTargets(PointerType.ATTRIBUTE)) {
+			Synset noun = (Synset) t;
+			foundNoun = true;
+			logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
+			genDerivedSynsets(latmap, lat, noun, wnlist, lat.getSpecificity());
+			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+		}
+		return foundNoun;
+	}
+
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
+			IndexWord wnoun, StringBuilder wnlist, double spec)
+			throws Exception {
 		for (Synset synset : wnoun.getSenses()) {
 			for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
-				genDerivedSynsets(latmap, lat, (Synset) t, wnlist);
+				genDerivedSynsets(latmap, lat, (Synset) t, wnlist, spec);
 			}
 		}
 	}
 
-	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat, Synset synset2, StringBuilder wnlist) throws Exception {
-		double spec = lat.getSpecificity() - 1;
-
+	protected void genDerivedSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
+			Synset synset2, StringBuilder wnlist, double spec)
+			throws Exception {
 		WordnetLAT l2 = latmap.get(synset2);
 		if (l2 != null) {
 			/* Ok, already exists. Try to raise
@@ -178,15 +207,16 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		l2.setText(lemma);
 		l2.setSpecificity(spec);
 		l2.setIsHierarchical(true);
+		l2.setSynset(synset2.getOffset());
 		latmap.put(synset2, l2);
 
-		wnlist.append(" | " + lemma);
+		wnlist.append(" | " + lemma + "/" + synset2.getOffset());
 
 		/* ...and recurse, unless we got into the noun.Tops
 		 * realm already. */
 		if (!tops.contains(lemma)) {
 			for (PointerTarget t : synset2.getTargets(PointerType.HYPERNYM)) {
-				genDerivedSynsets(latmap, l2, (Synset) t, wnlist);
+				genDerivedSynsets(latmap, l2, (Synset) t, wnlist, spec - 1);
 			}
 		}
 	}

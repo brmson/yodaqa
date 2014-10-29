@@ -61,16 +61,15 @@ public class CluesMergeByText extends JCasAnnotator_ImplBase {
 				clue.removeFromIndexes();
 				if (mainClue == null) {
 					mainClue = clue;
-				} else if (!mainClue.getIsReliable() && clue.getIsReliable()) {
-					subdueInfo(mainClue, clue);
-					mainClue = clue;
-				} else if (mainClue.getIsReliable() && !clue.getIsReliable()) {
-					subdueInfo(clue, mainClue);
 				} else if (mainClue.getWeight() <= clue.getWeight()) {
 					subdueInfo(mainClue, clue);
+					if (mainClue.getIsReliable() && !clue.getIsReliable())
+						clue.setIsReliable(true);
 					mainClue = clue;
 				} else {
 					subdueInfo(clue, mainClue);
+					if (!mainClue.getIsReliable() && clue.getIsReliable())
+						mainClue.setIsReliable(true);
 				}
 			}
 			mainClue.addToIndexes();
@@ -78,12 +77,14 @@ public class CluesMergeByText extends JCasAnnotator_ImplBase {
 	}
 
 	protected void subdueInfo(Clue subdued, Clue subduing) {
-		logger.debug("subduing {}({}:{}) <| {}({}:{})",
+		logger.debug("subduing {}({}:{},{}) <| {}({}:{},{})",
 			subdued.getLabel(),
 			subdued.getType().getShortName(),
 			subdued.getWeight(),
+			subdued.getIsReliable(),
 			subduing.getLabel(),
 			subduing.getType().getShortName(),
-			subduing.getWeight());
+			subduing.getWeight(),
+			subduing.getIsReliable());
 	}
 }

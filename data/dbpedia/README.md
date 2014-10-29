@@ -21,7 +21,10 @@ Download Data Files
 	wget http://downloads.dbpedia.org/3.9/en/labels_en.nt.bz2
 	wget http://downloads.dbpedia.org/3.9/en/redirects_transitive_en.nt.bz2
 	wget http://downloads.dbpedia.org/3.9/en/page_ids_en.nt.bz2
+	wget http://downloads.dbpedia.org/3.9/en/instance_types_en.nt.bz2
+	wget http://downloads.dbpedia.org/3.9/en/instance_types_heuristic_en.nt.bz2
 	wget http://downloads.dbpedia.org/3.9/links/wordnet_links.nt.bz2
+	wget http://downloads.dbpedia.org/3.9/links/yago_types.nt.bz2
 	bunzip2 *.bz2
 	gzip *
 
