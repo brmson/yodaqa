@@ -31,16 +31,17 @@ public class AnswerFV {
 		"occurences", "resultLogScore", "passageLogScore",
 		"originPsg", "originPsgFirst",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
+			"originPsgSurprise",
 		"originDocTitle",
-		"originConcept", "originConceptBySubject", "originConceptByFocus", "originConceptByNE",
+		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
-		"LATFocus", "LATFocusProxy", "LATNE", "LATDBpType",
-		"tyCorSpQHit", "tyCorSpAHit", "tyCorXHitAFocus",
-		"tyCorAFocus", "tyCorANE", "tyCorADBp",
-		"tyCorAFocusSp", "tyCorANESp", "tyCorADBpSp",
+		"LATNE", "LATDBpType", "LATQuantity", "LATQuantityCD", "LATWnInstance",
+		"tyCorSpQHit", "tyCorSpAHit",
+		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
+		"tyCorANESp", "tyCorADBpSp", "tyCorAQuantitySp", "tyCorAQuantityCDSp", "tyCorAWnInstanceSp",
 	};
 
 	protected double values[]; // the feature value
@@ -60,10 +61,11 @@ public class AnswerFV {
 			features.add(AF_OriginPsgNP.class);
 			features.add(AF_OriginPsgNE.class);
 			features.add(AF_OriginPsgNPByLATSubj.class);
+			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
-			features.add(AF_OriginConceptByFocus.class);
+			features.add(AF_OriginConceptByLAT.class);
 			features.add(AF_OriginConceptByNE.class);
 			features.add(AF_OriginMultiple.class);
 			features.add(AF_SpWordNet.class);
@@ -73,19 +75,23 @@ public class AnswerFV {
 			features.add(AF_TyCorPassageDist.class);
 			features.add(AF_TyCorPassageInside.class);
 			features.add(AF_SimpleScore.class);
-			features.add(AF_LATFocus.class);
-			features.add(AF_LATFocusProxy.class);
 			features.add(AF_LATNE.class);
 			features.add(AF_LATDBpType.class);
+			features.add(AF_LATQuantity.class);
+			features.add(AF_LATQuantityCD.class);
+			features.add(AF_LATWnInstance.class);
 			features.add(AF_TyCorSpQHit.class);
 			features.add(AF_TyCorSpAHit.class);
-			features.add(AF_TyCorXHitAFocus.class);
-			features.add(AF_TyCorAFocus.class);
 			features.add(AF_TyCorANE.class);
 			features.add(AF_TyCorADBp.class);
-			features.add(AF_TyCorAFocusSp.class);
+			features.add(AF_TyCorAQuantity.class);
+			features.add(AF_TyCorAQuantityCD.class);
+			features.add(AF_TyCorAWnInstance.class);
 			features.add(AF_TyCorANESp.class);
 			features.add(AF_TyCorADBpSp.class);
+			features.add(AF_TyCorAQuantitySp.class);
+			features.add(AF_TyCorAQuantityCDSp.class);
+			features.add(AF_TyCorAWnInstanceSp.class);
 		}
 
 		values = new double[labels.length];

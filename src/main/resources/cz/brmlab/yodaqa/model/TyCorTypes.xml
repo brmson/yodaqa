@@ -31,6 +31,11 @@
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>synset</name>
+            <description>A WordNet synset ID of the sense that corresponds to this LAT.  This can be null if the LAT is not anchored in a wordnet sense.</description>
+            <rangeTypeName>uima.cas.Long</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>specificity</name>
             <description>A value determining how specific this is; 0 is most specific and progressive negative numbers indicate reduced specificity; in some equations, this value might be an exponent for exponentially decaying specificity. The idea is that "inventor" may get 0, "creator" -1, "person" -5, "entity" -10 or something like that.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
@@ -49,11 +54,6 @@
       </typeDescription>
 
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.TyCor.FocusLAT</name>
-        <description>LAT generated from a focus word.</description>
-        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
-      </typeDescription>
-      <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.NELAT</name>
         <description>LAT generated from named entity type (as provided by the named entity recognizer).</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
@@ -63,10 +63,25 @@
         <description>LAT generated from DBpedia ontology.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.QuantityLAT</name>
+        <description>LAT generated from NUM dependency in answer sentence.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT</name>
+        <description>LAT generated from NUM dependency and CD pos in answer sentence.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT</name>
+        <description>LAT generated from Wordnet instance-of relationships.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
 
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.WordnetLAT</name>
-        <description>LAT generated from other LATs by relationships in the Wordnet ontology.</description>
+        <description>LAT generated from other LATs by Wordnet hypernymy relationships.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
     </types>

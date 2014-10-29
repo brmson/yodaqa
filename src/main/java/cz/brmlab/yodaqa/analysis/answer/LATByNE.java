@@ -11,15 +11,13 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocus;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFocusProxy;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
-import cz.brmlab.yodaqa.model.TyCor.FocusLAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
+import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -27,80 +25,43 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /**
- * Generate LAT annotations in a CandidateAnswerCAS. This is based on the
- * answer focus and the result LAT texts should be compatible with Question.LAT
- * but the process of their generation might be different in details. */
+ * Generate LAT annotations in a CandidateAnswerCAS. If a NamedEntity
+ * covers the answer focus, the type of that named entity (as not just
+ * a word but a wordnet synset) is generated as the LAT. */
 
-public class LATByFocus extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(LATByFocus.class);
+public class LATByNE extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATByNE.class);
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		/* A Focus is also an LAT. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
-			/* ...however, prefer an overlapping named entity. */
-			if (!addNELAT(jcas, focus))
-				addFocusLAT(jcas, focus);
+			addNELAT(jcas, focus);
 		}
-	}
-
-	protected void addFocusLAT(JCas jcas, Focus focus) throws AnalysisEngineProcessException {
-		/* Convert focus to its lemma. */
-		Token ftok = focus.getToken();
-		String text = ftok.getLemma().getValue().toLowerCase();
-		double spec = 0.0;
-		POS pos = ftok.getPos();
-
-		/* Focus may be a number... */
-		if (ftok.getPos().getPosValue().matches("^CD")) {
-			// XXX: "quantity" is not the primary label for this wordnet sense
-			text = "measure";
-			pos = null;
-			addLATFeature(jcas, AF_LATFocusProxy.class, 1.0);
-		} else {
-			/* Do not create an LAT for this focus at all;
-			 * typically, assigning an LAT for a generic
-			 * NP is essentially useless. */
-			/* XXX: Rewrite the code to be more obvious
-			 * about this. */
-			return;
-		}
-
-		if (pos == null) {
-			/* We have a synthetic focus noun, synthetize
-			 * a POS tag for it. */
-			pos = new NN(jcas);
-			pos.setBegin(focus.getBegin());
-			pos.setEnd(focus.getEnd());
-			pos.setPosValue("NNS");
-			pos.addToIndexes();
-		}
-
-		addLAT(new FocusLAT(jcas), focus.getBegin(), focus.getEnd(), focus, text, pos, spec);
-		logger.debug(".. LAT {} by Focus {}", text, focus.getCoveredText());
 	}
 
 	protected boolean addNELAT(JCas jcas, Focus focus) throws AnalysisEngineProcessException {
 		boolean ne_found = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
-			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), 0.0);
-			logger.debug(".. LAT {} by NE {}", ne.getValue(), ne.getCoveredText());
+			long synset = OpenNlpNamedEntities.neValueToSynset(ne.getValue());
+			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), synset, 0.0);
+			logger.debug(".. LAT {}/{} by NE {}", ne.getValue(), synset, ne.getCoveredText());
 			addLATFeature(jcas, AF_LATNE.class, 1.0);
 		}
 		return ne_found;
 	}
 
-	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, double spec) {
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
 		lat.setPos(pos);
 		lat.setText(text);
 		lat.setSpecificity(spec);
+		lat.setSynset(synset);
 		lat.addToIndexes();
 	}
 
