@@ -57,6 +57,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*        originPsgNPByLATSubj @,%,! */  0.333734, -0.001956, -0.155348, /*        originPsgNPByLATSubj d01:  0.487126 */
 		/*           originPsgSurprise @,%,! */ -0.091159,  0.123970,  0.269545, /*           originPsgSurprise d01: -0.236734 */
 		/*              originDocTitle @,%,! */  0.727194,  0.137038, -0.548808, /*              originDocTitle d01:  1.413039 */
+		0, 0, 0,
 		/*               originConcept @,%,! */  0.105103, -0.401291,  0.073282, /*               originConcept d01: -0.369470 */
 		/*      originConceptBySubject @,%,! */  0.341682, -0.034264, -0.163296, /*      originConceptBySubject d01:  0.470714 */
 		/*          originConceptByLAT @,%,! */  0.362755, -0.544052, -0.184370, /*          originConceptByLAT d01:  0.003073 */
@@ -74,6 +75,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*                 LATQuantity @,%,! */ -0.188153, -0.068995,  0.366539, /*                 LATQuantity d01: -0.623686 */
 		/*               LATQuantityCD @,%,! */  0.721788, -0.121756,  0.167045, /*               LATQuantityCD d01:  0.432987 */
 		/*               LATWnInstance @,%,! */ -0.056652, -0.005012, -0.831737, /*               LATWnInstance d01:  0.770072 */
+		0, 0, 0,
 		/*                 tyCorSpQHit @,%,! */  0.307304, -0.023877, -0.128918, /*                 tyCorSpQHit d01:  0.412344 */
 		/*                 tyCorSpAHit @,%,! */ -0.110982, -0.414044,  0.289368, /*                 tyCorSpAHit d01: -0.814395 */
 		/*                    tyCorANE @,%,! */  1.097990, -0.096336, -0.919605, /*                    tyCorANE d01:  1.921259 */
@@ -81,6 +83,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*              tyCorAQuantity @,%,! */ -0.043507,  0.051718,  0.221893, /*              tyCorAQuantity d01: -0.213682 */
 		/*            tyCorAQuantityCD @,%,! */ -0.809476,  0.815288,  0.987861, /*            tyCorAQuantityCD d01: -0.982049 */
 		/*            tyCorAWnInstance @,%,! */  0.753231, -0.248683, -0.574845, /*            tyCorAWnInstance d01:  1.079394 */
+		0, 0, 0,
 	};
 	public static double intercept = 0.178386;
 

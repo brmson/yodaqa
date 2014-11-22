@@ -78,6 +78,11 @@
         <description>LAT generated from Wordnet instance-of relationships.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT</name>
+        <description>LAT generated from DBpedia relation property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
 
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.WordnetLAT</name>
