@@ -27,15 +27,20 @@ a separate view.
 
 A summary of the pipeline flow:
   * **Question Reader** loads the question from an input source
-  * **Question Analysis** extracts NLP and QA features from the question text
-  * **Answer Production** generates answers based on the question
-    * Typically, this happens by performing a Primary Search on document
-      corpus (e.g. enwiki) based on question clues, analyzing search result
-      documents, filtering relevant passages from these and generating
-      candidate answers from these passages
-  * **Answer Analysis** scores the candidate answers based on how well they
-    fit the question
-  * **Answer Merger** consolidates the set of scored answers
+  * **Question Analysis** extracts NLP features from the question text and
+    produces QA features based on them (clues, type, etc.)
+  * **Answer Production** generates answers based on the question.
+    Typically, this happens by performing a search (“primary search”) on
+    a data source based on question clues, and either directly using search
+    results as answers or filtering relevant passages from these and generating
+    candidate answers from these passages; many answer features are already
+    generated in this phase
+  * **Answer Analysis** generates further answer features based on detailed
+    analysis (most importantly, type determination and coercion to question
+    type)
+  * **Answer Merging and Scoring** consolidates the set of answers, removing
+    duplicates and using a machine learned classifier to score answers based
+    on their features
   * **Answer Writer** sends the question to an output sink
 
 ## Question Reader
