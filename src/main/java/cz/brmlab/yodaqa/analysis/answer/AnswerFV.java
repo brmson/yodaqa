@@ -32,16 +32,19 @@ public class AnswerFV {
 		"originPsg", "originPsgFirst",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 			"originPsgSurprise",
-		"originDocTitle",
+		"originDocTitle", "originDBpRelation",
 		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
 		"LATNE", "LATDBpType", "LATQuantity", "LATQuantityCD", "LATWnInstance",
+			"LATDBpRelation",
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
+			"tyCorADBpRelation",
 		"tyCorANESp", "tyCorADBpSp", "tyCorAQuantitySp", "tyCorAQuantityCDSp", "tyCorAWnInstanceSp",
+			"tyCorADBpRelationSp",
 	};
 
 	protected double values[]; // the feature value
@@ -63,6 +66,7 @@ public class AnswerFV {
 			features.add(AF_OriginPsgNPByLATSubj.class);
 			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
+			features.add(AF_OriginDBpRelation.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
 			features.add(AF_OriginConceptByLAT.class);
@@ -80,6 +84,7 @@ public class AnswerFV {
 			features.add(AF_LATQuantity.class);
 			features.add(AF_LATQuantityCD.class);
 			features.add(AF_LATWnInstance.class);
+			features.add(AF_LATDBpRelation.class);
 			features.add(AF_TyCorSpQHit.class);
 			features.add(AF_TyCorSpAHit.class);
 			features.add(AF_TyCorANE.class);
@@ -87,11 +92,13 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantity.class);
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
+			features.add(AF_TyCorADBpRelation.class);
 			features.add(AF_TyCorANESp.class);
 			features.add(AF_TyCorADBpSp.class);
 			features.add(AF_TyCorAQuantitySp.class);
 			features.add(AF_TyCorAQuantityCDSp.class);
 			features.add(AF_TyCorAWnInstanceSp.class);
+			features.add(AF_TyCorADBpRelationSp.class);
 		}
 
 		values = new double[labels.length];

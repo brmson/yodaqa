@@ -67,9 +67,13 @@ To get there, we have to take care of at least the following:
 We plan to publish our results in a paper when 1.0 is done.  For that,
 we will want to do some comparison benchmarks:
 
+  * Update to DBpedia 2014 and a more recent enwiki snapshot
+  * Re-benchmark with other datasets:
+    * Plain TREC QA dataset and regexes (full + curated-test questions
+      only).
+    * WebQuestions Dataset (SEMPRE)
+    * CMU "Question-Answer Dataset"
   * Benchmark with some sensible "sub-baseline" pipelines.
-  * Re-benchmark with plain TREC QA dataset and regexes (full +
-    curated-test questions only).
   * Consider benchmarking with plain TREC QA dataset + the original
     data sources http://trec.nist.gov/data/qa/t9_qadata.html#t9docs
     (I feel opposed to it; this is clumsy and not open science. --pasky)
