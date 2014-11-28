@@ -8,12 +8,13 @@ type="$1"
 args=
 case $type in
 	test) ;;
-	train) args="-Dcz.brmlab.yodaqa.train_passextract=data/ml/tsv/training-passextract-${cid}.tsv -Dcz.brmlab.yodaqa.train_answer=data/ml/tsv/training-answer-${cid}.tsv";;
+	train) args="-Dcz.brmlab.yodaqa.train_passextract=data/ml/tsv/training-passextract-${cid}.tsv -Dcz.brmlab.yodaqa.train_answer=data/ml/tsv/training-answer-${cid}.tsv -Dcz.brmlab.yodaqa.csv_answer=data/eval/answer-csv/${cid}";;
 	*) echo "Usage: curated-measure.sh {test,train}" >&2; exit 1;;
 esac
 
 outfile="data/eval/tsv/curated-${type}-ovt-${cid}.tsv"
 mkdir -p data/eval/tsv
+mkdir -p data/eval/answer-csv
 
 time mvn verify exec:java -Ptsvgs \
 	-Dexec.args="data/eval/curated-${type}.tsv $outfile" \
