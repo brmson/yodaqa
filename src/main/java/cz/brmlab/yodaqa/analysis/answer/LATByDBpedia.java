@@ -70,7 +70,8 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 			addTypeLAT(jcas, focus, type, typelist);
 		}
 
-		logger.debug(".. Focus {} => DBpedia LATs/0 {}", focus.getCoveredText(), typelist);
+		if (typelist.length() > 0)
+			logger.debug(".. Focus {} => DBpedia LATs/0 {}", focus.getCoveredText(), typelist);
 	}
 
 	protected void addTypeLAT(JCas jcas, Focus focus, String type, StringBuilder typelist) throws AnalysisEngineProcessException {
