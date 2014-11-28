@@ -127,16 +127,6 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(AF_OriginDBpRelation.class, 1.0);
 
-		LAT containedLAT = titleContainsLAT(title, questionView);
-		if (containedLAT != null) {
-			/* Okay, our answer contains a LAT.
-			 * Create the appropriate "passage TyCor"
-			 * features. */
-			fv.setFeature(AF_TyCorPassageInside.class, 1.0);
-			fv.setFeature(AF_TyCorPassageDist.class, 1.0);
-			fv.setFeature(AF_TyCorPassageSp.class, Math.exp(containedLAT.getSpecificity()));
-		}
-
 		/* Generate also a LAT for the answer right away. */
 		addTypeLAT(jcas, fv, property.getProperty());
 		if (property.getProperty().contains(" ")) {
