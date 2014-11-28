@@ -75,7 +75,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addTypeLAT(JCas jcas, Focus focus, String type, StringBuilder typelist) throws AnalysisEngineProcessException {
-		addLATFeature(jcas, AF_LATDBpType.class, 1.0);
+		addLATFeature(jcas, AF_LATDBpType.class);
 
 		String ntype = type.toLowerCase();
 
@@ -103,10 +103,10 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		lat.addToIndexes();
 	}
 
-	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f, double value) throws AnalysisEngineProcessException {
+	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f) throws AnalysisEngineProcessException {
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(f, fv.getFeatureValue(f) + value);
+		fv.setFeature(f, 1.0);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();
