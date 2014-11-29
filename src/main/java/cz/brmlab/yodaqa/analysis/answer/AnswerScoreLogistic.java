@@ -29,20 +29,6 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 	 * are output by data/ml/answer-train.py as this:
 	 *
 	 * 430 answersets, 91421 answers
-	 * + Cross-validation:
-	 * (test) PERANS acc/prec/rcl/F2 = 0.760/0.057/0.607/0.208, @70 prec/rcl/F2 = 0.102/0.366/0.242, PERQ avail 0.753, any good = [0.432], simple 0.509
-	 * (test) PERANS acc/prec/rcl/F2 = 0.746/0.056/0.660/0.208, @70 prec/rcl/F2 = 0.091/0.367/0.229, PERQ avail 0.740, any good = [0.487], simple 0.495
-	 * (test) PERANS acc/prec/rcl/F2 = 0.777/0.060/0.550/0.209, @70 prec/rcl/F2 = 0.093/0.314/0.212, PERQ avail 0.730, any good = [0.504], simple 0.544
-	 * (test) PERANS acc/prec/rcl/F2 = 0.757/0.063/0.641/0.227, @70 prec/rcl/F2 = 0.115/0.384/0.261, PERQ avail 0.716, any good = [0.532], simple 0.493
-	 * (test) PERANS acc/prec/rcl/F2 = 0.777/0.062/0.597/0.218, @70 prec/rcl/F2 = 0.103/0.345/0.234, PERQ avail 0.721, any good = [0.481], simple 0.519
-	 * (test) PERANS acc/prec/rcl/F2 = 0.756/0.062/0.594/0.218, @70 prec/rcl/F2 = 0.099/0.376/0.241, PERQ avail 0.735, any good = [0.502], simple 0.501
-	 * (test) PERANS acc/prec/rcl/F2 = 0.749/0.056/0.618/0.206, @70 prec/rcl/F2 = 0.098/0.384/0.242, PERQ avail 0.684, any good = [0.498], simple 0.515
-	 * (test) PERANS acc/prec/rcl/F2 = 0.762/0.064/0.588/0.223, @70 prec/rcl/F2 = 0.111/0.391/0.260, PERQ avail 0.730, any good = [0.511], simple 0.541
-	 * (test) PERANS acc/prec/rcl/F2 = 0.803/0.056/0.539/0.198, @70 prec/rcl/F2 = 0.092/0.303/0.208, PERQ avail 0.693, any good = [0.411], simple 0.474
-	 * (test) PERANS acc/prec/rcl/F2 = 0.758/0.057/0.609/0.207, @70 prec/rcl/F2 = 0.095/0.377/0.237, PERQ avail 0.730, any good = [0.506], simple 0.513
-	 * Cross-validation score mean 48.634% S.D. 3.537%
-	 * + Full training set:
-	 * (full) PERANS acc/prec/rcl/F2 = 0.771/1.000/0.235/0.278, @70 prec/rcl/F2 = 1.000/0.085/0.104, PERQ avail 0.730, any good = [0.530], simple 0.510
 	 * Full model is LogisticRegression(C=1.0, class_weight=auto, dual=False, fit_intercept=True,
 		  intercept_scaling=1, penalty=l2, random_state=None, tol=0.0001)
 	 */
@@ -70,12 +56,12 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		/*            tyCorPassageDist @,%,! */  0.276526, -0.116755,  0.144735, /*            tyCorPassageDist d01:  0.015036 */
 		/*          tyCorPassageInside @,%,! */ -0.049752,  0.123525,  0.161539, /*          tyCorPassageInside d01: -0.087766 */
 		/*                 simpleScore @,%,! */  0.005399,  0.120694,  0.000000, /*                 simpleScore d01:  0.126092 */
-		/*                       LATNE @,%,! */ -1.023491,  0.273424, -0.490480, /*                       LATNE d01: -0.259587 */
-		/*                  LATDBpType @,%,! */  0.017846, -0.307483, -0.017687, /*                  LATDBpType d01: -0.271950 */
-		/*                 LATQuantity @,%,! */ -0.179648, -0.089754,  0.291436, /*                 LATQuantity d01: -0.560839 */
-		/*               LATQuantityCD @,%,! */  0.537140, -0.149985, -0.185711, /*               LATQuantityCD d01:  0.572866 */
-		/*               LATWnInstance @,%,! */ -0.036625, -0.037179, -0.590633, /*               LATWnInstance d01:  0.516829 */
-		/*              LATDBpRelation @,%,! */  0.047665,  0.035590,  0.064122, /*              LATDBpRelation d01:  0.019133 */
+		/*                       LATNE @,%,! */ -0.273137,  0.270370,  0.333143, /*                       LATNE d01: -0.335909 */
+		/*                  LATDBpType @,%,! */  0.755053, -0.748230, -0.695048, /*                  LATDBpType d01:  0.701871 */
+		/*                 LATQuantity @,%,! */ -0.194094, -0.080593,  0.254099, /*                 LATQuantity d01: -0.528786 */
+		/*               LATQuantityCD @,%,! */  0.666993, -0.246150, -0.606987, /*               LATQuantityCD d01:  1.027829 */
+		/*               LATWnInstance @,%,! */  0.483584, -0.184357, -0.423578, /*               LATWnInstance d01:  0.722805 */
+		/*              LATDBpRelation @,%,! */ -0.001913,  0.032164,  0.061919, /*              LATDBpRelation d01: -0.031668 */
 		/*                 tyCorSpQHit @,%,! */  0.652977, -0.029996, -0.541189, /*                 tyCorSpQHit d01:  1.164169 */
 		/*                 tyCorSpAHit @,%,! */  0.025592, -0.409377,  0.086196, /*                 tyCorSpAHit d01: -0.469980 */
 		/*                    tyCorANE @,%,! */  1.063217, -0.118016, -0.951429, /*                    tyCorANE d01:  1.896630 */
