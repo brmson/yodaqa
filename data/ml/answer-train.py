@@ -1,12 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 #
 # Train an sklearn classifier on the given answer TSV dataset.
 #
 # Usage: answer-train.py <training-answer.tsv
 #
 # Currently, this script trains a logistic regression classifier.
-# The final line of output contains the weight vector and intercept
-# term.
+# The output is a java code with the classifier configuration, to be
+# pasted into:
+# src/main/java/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic.java
 #
 # Training is performed by 20-round 1:1 train:test random splits
 # (with question granularity), picking the model with best rate of
@@ -177,10 +178,25 @@ def simple_score(labels, fvset):
 
 def dump_weights(weights, labels):
     for i in range(len(weights[0]) / 3):
-        print('%20s % 2.4f  %20s % 2.4f  %20s % 2.4f' %
+        print(' * %28s % 2.4f  %28s % 2.4f  %28s % 2.4f' %
               (labels[i*3], weights[0][i*3],
                labels[i*3 + 1], weights[0][i*3 + 1],
                labels[i*3 + 2], weights[0][i*3 + 2]))
+
+
+def dump_model(weights, labels, intercept):
+    print('public static double weights[] = {')
+    for i in range(len(weights[0]) / 3):
+        # d01 is roughly estimated delta between feature not present and
+        # feature present and set to 1 - basically, the baseline influence
+        # of the feature (it has some meaning even for non-binary features)
+        d01 = weights[0][i*3] + weights[0][i*3 + 1] - weights[0][i*3 + 2]
+        print('\t/* %27s @,%%,! */ % 2.6f, % 2.6f, % 2.6f, /* %27s d01: % 2.6f */' %
+              (labels[i*3][1:],
+               weights[0][i*3], weights[0][i*3 + 1], weights[0][i*3 + 2],
+               labels[i*3][1:], d01))
+    print('};')
+    print('public static double intercept = %f;' % intercept)
 
 
 def train_model(fv_train, class_train):
@@ -283,7 +299,7 @@ def cross_validate(answersets, num_rounds):
         cfier = train_model(fv_train, class_train)
 
         (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx])
-        print('(testset) ' + msg)
+        print(' * (test) ' + msg)
         scores.append(score)
 
     return np.array(scores)
@@ -291,15 +307,19 @@ def cross_validate(answersets, num_rounds):
 
 if __name__ == "__main__":
     (answersets, labels) = load_answers(sys.stdin)
-    print('%d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
+
+    print('/** The weights of individual elements of the FV.  These weights')
+    print(' * are output by data/ml/answer-train.py as this:')
+    print(' *')
+    print(' * %d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
 
     # Cross-validation phase
-    print('+ Cross-validation:')
+    print(' * + Cross-validation:')
     scores = cross_validate(answersets, num_rounds)
-    print('Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
+    print(' * Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
 
     # Train on the complete model now
-    print('+ Full training set:')
+    print(' * + Full training set:')
     fv_full = []
     class_full = []
     for aset in answersets:
@@ -311,12 +331,13 @@ if __name__ == "__main__":
     # not very meaningful as we test on the training data, but it can still
     # be informative wrt. the answerset metrics, esp. 'any good'.
     (score, msg) = test_model(cfier, fv_full, class_full, answersets)
-    print("(fullset) " + msg)
+    print(" * (full) " + msg)
 
-    print("Full model is " + str(cfier))
-    print(cfier.coef_, cfier.intercept_)
+    # dump_weights(cfier.coef_, labels)
 
-    dump_weights(cfier.coef_, labels)
+    print(" * Full model is " + str(cfier))
+    print(' */')
+    dump_model(cfier.coef_, labels, cfier.intercept_)
 
     if False:
         dump_answers(cfier, fv_full, class_full)

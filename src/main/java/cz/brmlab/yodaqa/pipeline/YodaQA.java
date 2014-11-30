@@ -13,6 +13,7 @@ import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
+import cz.brmlab.yodaqa.pipeline.dbpedia.DBpediaRelationAnswerProducer;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
@@ -95,6 +96,9 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		 * here, you must also bump the AnswerMerger parameter
 		 * PARAM_ISLAST_BARRIER. */
 
+		AnalysisEngineDescription dbpRel = DBpediaRelationAnswerProducer.createEngineDescription();
+		builder.add(dbpRel);
+
 		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
 		builder.add(solrFull);
 
@@ -116,7 +120,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
 				AnswerMerger.class,
-				AnswerMerger.PARAM_ISLAST_BARRIER, 3);
+				AnswerMerger.PARAM_ISLAST_BARRIER, 4);
 		builder.add(answerMerger);
 
 		AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();

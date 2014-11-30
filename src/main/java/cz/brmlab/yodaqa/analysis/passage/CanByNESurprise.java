@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgSurprise;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
@@ -68,17 +69,18 @@ public class CanByNESurprise extends JCasAnnotator_ImplBase {
 						break;
 					}
 				}
-				if (matches)
-					continue;
-
-				/* Surprise! */
 
 				logger.info("caNE {}", ne.getCoveredText());
 
 				AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
+				fv.merge(new AnswerFV(p.getAnsfeatures()));
 				fv.setFeature(AF_Occurences.class, 1.0);
 				fv.setFeature(AF_PassageLogScore.class, Math.log(1 + p.getScore()));
 				fv.setFeature(AF_OriginPsgNE.class, 1.0);
+				if (!matches) {
+					/* Surprise! */
+					fv.setFeature(AF_OriginPsgSurprise.class, 1.0);
+				}
 				for (QuestionLATMatch qlm : JCasUtil.selectCovered(QuestionLATMatch.class, p)) {
 					double distance = 1000;
 					if (qlm.getBegin() >= ne.getBegin() && qlm.getEnd() <= ne.getEnd()) {
@@ -91,6 +93,7 @@ public class CanByNESurprise extends JCasAnnotator_ImplBase {
 					}
 					fv.setFeature(AF_TyCorPassageDist.class, Math.exp(-distance));
 					fv.setFeature(AF_TyCorPassageSp.class, Math.exp(qlm.getBaseLAT().getSpecificity()) * Math.exp(-distance));
+					logger.debug("Passage TyCor (d {}, contains {})", distance, qlm.getBaseLAT().getText());
 					// this should be a singleton
 					break;
 				}

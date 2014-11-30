@@ -65,6 +65,12 @@
             <description>Score of the passage regarding relevance likelihood.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>ansfeatures</name>
+            <description>A set of answer features that should be inherited by all answers generated from this passage.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
+          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>

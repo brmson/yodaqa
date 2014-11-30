@@ -20,8 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.ClueLAT;
 import cz.brmlab.yodaqa.model.Question.ClueNE;
 import cz.brmlab.yodaqa.model.Question.CluePhrase;
+import cz.brmlab.yodaqa.model.Question.ClueSubject;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
 
 /**
@@ -87,6 +89,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			/* Yay, got one! */
 			DBpediaTitles.Article a = results.get(0);
 
+			/* Start constructing the annotation. */
+			ClueConcept conceptClue = new ClueConcept(resultView);
+
 			/* Now remove all the covered sub-clues. */
 			/* TODO: Mark the clues as alternatives so that we
 			 * don't require both during full-text search. */
@@ -94,6 +99,12 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			cluesByLen.remove(clue);
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
 				logger.debug("Concept {} subduing {} {}", a.getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
+				if (clueSub instanceof ClueSubject)
+					conceptClue.setBySubject(true);
+				else if (clueSub instanceof ClueLAT)
+					conceptClue.setByLAT(true);
+				else if (clueSub instanceof ClueNE)
+					conceptClue.setByNE(true);
 				if (clueSub.getWeight() > weight)
 					weight = clueSub.getWeight();
 				clueSub.removeFromIndexes();
@@ -116,7 +127,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			boolean reworded = ! clueLabel.toLowerCase().equals(a.getLabel().toLowerCase());
 
 			/* Make a fresh concept clue. */
-			addClue(resultView, clue.getBegin(), clue.getEnd(),
+			addClue(conceptClue, clue.getBegin(), clue.getEnd(),
 				clue.getBase(), weight,
 				a.getPageID(), a.getLabel(), !reworded);
 
@@ -133,8 +144,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addClue(JCas jcas, int begin, int end, Annotation base, double weight, int pageID, String label, boolean isReliable) {
-		ClueConcept clue = new ClueConcept(jcas);
+	protected void addClue(ClueConcept clue, int begin, int end, Annotation base,
+			double weight, int pageID, String label, boolean isReliable) {
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);

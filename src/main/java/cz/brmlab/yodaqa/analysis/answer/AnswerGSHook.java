@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -20,7 +21,11 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 /**
  * A GoldStandard hook in the process of answer extraction.  We scan all the
  * answers, match them against the answerPattern and dump model training data
- * if that is enabled on the commandline (see data/ml/README.md). */
+ * if that is enabled on the commandline (see data/ml/README.md).
+ *
+ * If cz.brmlab.yodaqa.csv_answer property is set, we also create (in given
+ * directory) one CSV file per question with a list of all answers and their
+ * features. */
 
 public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	PrintWriter trainFile;
@@ -39,13 +44,26 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		}
 
 		QuestionInfo qi = JCasUtil.selectSingle(jcas, QuestionInfo.class);
-		if (qi.getAnswerPattern() == null)
-			return; // nothing to do, no gold standard
-		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+		Pattern ap = null;
+		if (qi.getAnswerPattern() != null) {
+			ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+		}
 
-		/* Possibly dump model training data. */
+		/* Possibly dump CSV data on answers, one file per question. */
+		String csvDirName = System.getProperty("cz.brmlab.yodaqa.csv_answer");
+		if (csvDirName != null && !csvDirName.isEmpty()) {
+			(new File(csvDirName)).mkdir();
+			String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
+			PrintWriter csvFile = openAnswersCSV(csvFileName);
+			for (Answer a : JCasUtil.select(jcas, Answer.class)) {
+				dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
+			}
+		}
+
+		/* Possibly dump model training data.  We also require gold
+		 * standard for this, otherwise there is no training to do. */
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer");
-		if (trainFileName != null && !trainFileName.isEmpty()) {
+		if (ap != null && trainFileName != null && !trainFileName.isEmpty()) {
 			for (Answer a : JCasUtil.select(jcas, Answer.class)) {
 				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, ap.matcher(a.getText()).find(), astats);
 			}
@@ -86,5 +104,57 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		sb.append(isMatch ? 1 : 0);
 		trainFile.println(sb.toString());
 		trainFile.flush();
+	}
+
+	protected PrintWriter openAnswersCSV(String csvFileName)
+			throws AnalysisEngineProcessException {
+		/* First, open the output file. */
+		PrintWriter csvFile = null;
+		try {
+			csvFile = new PrintWriter(csvFileName);
+		} catch (IOException io) {
+			throw new AnalysisEngineProcessException(io);
+		}
+
+		/* Write out the header. */
+		StringBuilder sb = new StringBuilder();
+		sb.append("answer,");
+		sb.append("iM,");
+		int i = 0;
+		for (String label : AnswerFV.getFVLabels()) {
+			/* Consider only primary values in the FV. */
+			if (i % 3 == 0) {
+				sb.append(label);
+				sb.append(",");
+			}
+			i++;
+		}
+		csvFile.println(sb.toString());
+		csvFile.flush();
+
+		return csvFile;
+	}
+
+	protected void dumpAnswerCSV(PrintWriter csvFile, Answer a, boolean isMatch, AnswerStats astats) {
+		AnswerFV fv = new AnswerFV(a, astats);
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("\"");
+		sb.append(a.getText().replaceAll("\"", "\\\""));
+		sb.append("\"");
+		sb.append(",");
+		sb.append(isMatch ? "+" : "-");
+		sb.append(",");
+		int i = 0;
+		for (double value : fv.getFV()) {
+			if (i % 3 == 0) {
+				sb.append(value);
+				sb.append(",");
+			}
+			i++;
+		}
+
+		csvFile.println(sb.toString());
+		csvFile.flush();
 	}
 }

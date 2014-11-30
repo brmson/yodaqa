@@ -55,53 +55,53 @@
 		<!-- For some reason, I can't get this to work: <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 			<type>pom</type>
 		</dependency> -->
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.io-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 		<!-- unused now <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.clearnlp-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency> -->
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.languagetool-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 		<!-- unused now <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.maltparser-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency> -->
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.opennlp-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 		<!-- unused now <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.tokit-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency> -->
 		<!-- provided locally <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.berkeleyparser-gpl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency> -->
 		<!-- unused now <dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.matetools-gpl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency> -->
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 
 		<!-- Solr for searching data sources. -->
@@ -135,22 +135,22 @@
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.metadata-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.parameter-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.resources-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
 			<artifactId>de.tudarmstadt.ukp.dkpro.core.api.syntax-asl</artifactId>
-			<version>1.7.0-SNAPSHOT</version>
+			<version>1.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>

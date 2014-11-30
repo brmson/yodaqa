@@ -36,7 +36,7 @@ public class AnswerStats {
 			for (int i = 0; i < mean.length; i++)
 				mean[i] += val[i];
 		for (int i = 0; i < mean.length; i++) {
-			System.err.println("i " + i + " sum " + mean[i]);
+			// System.err.println("i " + i + " sum " + mean[i]);
 			mean[i] /= values.size();
 		}
 
@@ -46,7 +46,7 @@ public class AnswerStats {
 				sd[i] += Math.pow(val[i] - mean[i], 2);
 		for (int i = 0; i < sd.length; i++) {
 			sd[i] = Math.sqrt(sd[i] / values.size());
-			System.err.println("i " + i + " mean " + mean[i] + " sd " + sd[i]);
+			// System.err.println("i " + i + " mean " + mean[i] + " sd " + sd[i]);
 		}
 	}
 }

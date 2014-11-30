@@ -23,6 +23,8 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.PF_ClueMatch;
 import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
@@ -124,10 +126,15 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			}
 
 			if (!features.isEmpty()) {
+				/* Generate features. */
+				AnswerFV afv = new AnswerFV();
+				afv.setFeature(AF_OriginPsg.class, 1.0);
+
 				/* Annotate. */
 				Passage passage = new Passage(passagesView);
 				passage.setBegin(sentence.getBegin());
 				passage.setEnd(sentence.getEnd());
+				passage.setAnsfeatures(afv.toFSArray(passagesView));
 				passage.setFeatures(FSCollectionFactory.createFSArray(jcas, features));
 				passage.addToIndexes();
 

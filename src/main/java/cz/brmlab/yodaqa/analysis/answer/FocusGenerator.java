@@ -120,6 +120,14 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		Annotation focus = null;
 
 		for (Token t : JCasUtil.select(jcas, Token.class)) {
+			if (t.getPos() == null) {
+				/* This in theory should never happen.
+				 * However, in unsanitized DBpedia inputs,
+				 * evil characters (like |) that mess up
+				 * postagging might happen, so this dirty
+				 * hack guards against that. */
+				continue;
+			}
 			if (t.getPos().getPosValue().matches("^NN.*")) {
 				focusTok = t;
 				focus = focusTok;

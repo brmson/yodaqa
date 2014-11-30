@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.analysis.passextract;
 import java.lang.Math;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -16,6 +17,10 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
@@ -60,12 +65,18 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		int numClues = JCasUtil.select(questionView, Clue.class).size();
 		double weight = numClues; // proportional to #clues since so is PassByClue
 
+		/* Generate features. */
+		AnswerFV afv = new AnswerFV();
+		afv.setFeature(AF_OriginPsg.class, 1.0);
+		afv.setFeature(AF_OriginPsgFirst.class, 1.0);
+
 		/* Annotate */
 		Passage passage = new Passage(passagesView);
 		passage.setBegin(sentence.getBegin());
 		passage.setEnd(sentence.getEnd());
 
 		passage.setScore(Math.sqrt(weight));
+		passage.setAnsfeatures(afv.toFSArray(passagesView));
 
 		passage.addToIndexes();
 
