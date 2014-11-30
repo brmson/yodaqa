@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueLAT;
+import cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 /**
@@ -33,9 +34,10 @@ public class ClueByLAT extends JCasAnnotator_ImplBase {
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		for (LAT l : JCasUtil.select(jcas, LAT.class)) {
-			/* Use only the most specific LATs (there still may be
-			 * mutliple, e.g. noun forms, etc.) */
-			if (l.getSpecificity() < 0)
+			/* Use only the most specific LATs (there still may
+			 * be mutliple, e.g. noun forms, etc.)  Also do not
+			 * generate ClueLAT for question word LATs. */
+			if (l.getSpecificity() < 0 || l instanceof ImplicitQLAT)
 				continue;
 			addClue(jcas, l.getBegin(), l.getEnd(), l, l.getText());
 		}

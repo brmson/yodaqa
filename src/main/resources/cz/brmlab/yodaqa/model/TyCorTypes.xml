@@ -54,6 +54,12 @@
       </typeDescription>
 
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT</name>
+	<description>LAT generated from a question word (e.g. when -> LAT time).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.NELAT</name>
         <description>LAT generated from named entity type (as provided by the named entity recognizer).</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
