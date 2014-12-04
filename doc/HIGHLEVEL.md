@@ -198,9 +198,8 @@ This phase runs a variety of analytics on the **CandidateAnswerCAS**
 that extract various features, match them to the Question view,
 possibly produce and consider supporting evidence, etc.
 
-Confidence rating is issued to each answer based on features generated
-during the analysis.  The rating score is computed by a machine learned
-classifier.
+The most notable thing happenning here is type coercion, estimating how
+well the answer fits the question.
 
 ## Answer Hitlist Scoring 1
 
