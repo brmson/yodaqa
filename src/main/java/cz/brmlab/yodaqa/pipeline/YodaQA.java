@@ -70,8 +70,13 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
 		builder.add(answerAnalysis);
 
-		AnalysisEngineDescription answerMergeAndScore = createAnswerMergeAndScoreDescription();
-		builder.add(answerMergeAndScore);
+		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+				AnswerMerger.class,
+				AnswerMerger.PARAM_ISLAST_BARRIER, 4);
+		builder.add(answerMerger);
+
+		AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
+		builder.add(answerScoring);
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
@@ -109,27 +114,6 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 				FlowControllerFactory.createFlowControllerDescription(
 					FixedParallelFlowController.class,
 					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
-
-		AnalysisEngineDescription aed = builder.createAggregateDescription();
-		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
-		return aed;
-	}
-
-	public static AnalysisEngineDescription createAnswerMergeAndScoreDescription() throws ResourceInitializationException {
-		AggregateBuilder builder = new AggregateBuilder();
-
-		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-				AnswerMerger.class,
-				AnswerMerger.PARAM_ISLAST_BARRIER, 4);
-		builder.add(answerMerger);
-
-		AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
-		builder.add(answerScoring);
-
-		builder.setFlowControllerDescription(
-				FlowControllerFactory.createFlowControllerDescription(
-					FixedFlowController.class,
-					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
