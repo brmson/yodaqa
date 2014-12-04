@@ -78,7 +78,7 @@ we will want to do some comparison benchmarks:
     data sources http://trec.nist.gov/data/qa/t9_qadata.html#t9docs
     (I feel opposed to it; this is clumsy and not open science. --pasky)
   * Check the TamingText dataset
-  * Benchmark OpenEphyra and BlanQA on the same datasets.
+  * Benchmark OpenEphyra, BlanQA and Jacana on the same datasets.
 
 For the first paper or for a next stage survey-ish publication:
 
