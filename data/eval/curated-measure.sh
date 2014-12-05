@@ -1,6 +1,12 @@
 #!/bin/sh
 #
 # Usage: curated-measure.sh {test,train}
+#
+# Note that this is a legacy script that is not maintained anymore;
+# we use train-and-eval.sh for training models and benchmarking at once
+# nowadays.  This script might get broken over time, you can repair it
+# by comparing runtime options with _multistage_traineval.sh (which is
+# the backend for train-and-eval.sh).
 
 cid=$(git rev-parse --short HEAD)
 

@@ -33,12 +33,14 @@ if [ "$#" -gt 1 ]; then
 else
 	# List all commits that have recorded evaluation
 	evaldir=$(dirname "$0")/tsv
-	commits=$(echo "$evaldir"/*$1*.tsv | sed 's/[^ ]*-\([^.]*\).tsv/\1/g')
+	commits=$(echo "$evaldir"/*$1*.tsv | sed 's/[^ ]*-\([^.]*\).tsv/\1/g; s/u//g')
 	git log --no-walk --pretty='tformat:%h %ad %s' --date=short $commits |
 		while read commit date subject; do
-			for file in "$evaldir"/*$1*-"$commit".tsv; do
+			for file in "$evaldir"/*"$commit".tsv; do
+				case $file in *"$1"*) ;; *) continue;; esac
 				name="${file##*/}"; name="$(echo "$name" | cut -d- -f2)"
-				printf '% 5s %s %s %.20s... ' "${name:0:5}" "$commit" "$date" "$subject"
+				commit="${file##*/}"; commit="$(echo "$commit" | cut -d- -f4)"; commit="${commit%.*}"
+				printf '% 5s % 8s %s %.20s... ' "${name:0:5}" "$commit" "$date" "$subject"
 				showstats "$file"
 			done
 		done
