@@ -209,10 +209,16 @@ In this phase, a CAS multiplier consumes all the analyzed
 are merged or combined.
 
 The answers have their features consolidated, and some auxiliary features
-generated (e.g. hitlist-normalized versions of base features).  The answers
-are scored (by estimated probability of being correct, using a machine learned
-model based on the features) and ranked (by their score).  This is taken
-care of the **AnswerScoringAE** pipeline.
+generated (e.g. hitlist-normalized versions of base features).
+
+*At this point, the AnswerHitlistCAS may be serialized and stored
+to disk, typically for the purpose of training a classifier.  The pipeline
+is then stopped, and can be later started from this point on, restoring
+the hitlists for each question.*
+
+The answers are scored (by estimated probability of being correct, using
+a machine learned model based on the features) and ranked (by their score).
+This is taken care of the **AnswerScoringAE** pipeline.
 
 ## Answer Evidence Gathering
 

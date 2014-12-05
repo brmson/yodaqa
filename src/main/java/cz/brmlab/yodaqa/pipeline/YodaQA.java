@@ -14,6 +14,7 @@ import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.dbpedia.DBpediaRelationAnswerProducer;
+import cz.brmlab.yodaqa.pipeline.AnswerHitlistSerialize;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
@@ -59,24 +60,46 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	}
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
+		String answerSaveDir = System.getProperty("cz.brmlab.yodaqa.save_answerfvs");
+		boolean answerSaveDo = answerSaveDir != null && !answerSaveDir.isEmpty();
+		String answerLoadDir = System.getProperty("cz.brmlab.yodaqa.load_answerfvs");
+		boolean answerLoadDo = answerLoadDir != null && !answerLoadDir.isEmpty();
+
 		AggregateBuilder builder = new AggregateBuilder();
 
-		AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
-		builder.add(questionAnalysis);
+		if (!answerLoadDo) {
+			AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
+			builder.add(questionAnalysis);
 
-		AnalysisEngineDescription answerProducer = createAnswerProducerDescription();
-		builder.add(answerProducer);
+			AnalysisEngineDescription answerProducer = createAnswerProducerDescription();
+			builder.add(answerProducer);
 
-		AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
-		builder.add(answerAnalysis);
+			AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
+			builder.add(answerAnalysis);
 
-		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-				AnswerMerger.class,
-				AnswerMerger.PARAM_ISLAST_BARRIER, 4);
-		builder.add(answerMerger);
+			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerMerger.class,
+					AnswerMerger.PARAM_ISLAST_BARRIER, 4);
+			builder.add(answerMerger);
 
-		AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
-		builder.add(answerScoring);
+			if (answerSaveDo) {
+				AnalysisEngineDescription answerSerialize = AnalysisEngineFactory.createEngineDescription(
+						AnswerHitlistSerialize.class,
+						AnswerHitlistSerialize.PARAM_SAVE_DIR, answerSaveDir);
+				builder.add(answerSerialize);
+			}
+		}
+
+		if (true) { //!answerSaveDo) {
+			if (answerLoadDo) {
+				AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
+						AnswerHitlistDeserialize.class,
+						AnswerHitlistDeserialize.PARAM_LOAD_DIR, answerLoadDir);
+				builder.add(answerDeserialize);
+			}
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
+			builder.add(answerScoring);
+		}
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
@@ -84,7 +107,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
-		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		if (!answerLoadDo)
+			aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
 	}
 
