@@ -40,16 +40,19 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 		weights = new double[AnswerFV.labels.length * 3];
 
 		/* Load and parse the model. */
-		InputStream model_stream = AnswerScoreLogistic.class.getResourceAsStream(MODEL_RES);
+		try {
+			loadModel(AnswerScoreLogistic.class.getResourceAsStream(MODEL_RES));
+		} catch (Exception e) {
+			throw new ResourceInitializationException(e);
+		}
+	}
+
+	protected void loadModel(InputStream model_stream) throws Exception {
 		BufferedReader model = new BufferedReader(new InputStreamReader(model_stream));
 		String line;
 		int i = 0;
 		while (true) {
-			try {
-				line = model.readLine();
-			} catch (IOException e) {
-				throw new ResourceInitializationException(e);
-			}
+			line = model.readLine();
 			if (line == null)
 				break;
 			if (line.equals("") || line.matches("^\\s*//.*"))
