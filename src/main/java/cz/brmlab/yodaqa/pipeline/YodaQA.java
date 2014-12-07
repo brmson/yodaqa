@@ -64,10 +64,17 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		boolean answerSaveDo = answerSaveDir != null && !answerSaveDir.isEmpty();
 		String answerLoadDir = System.getProperty("cz.brmlab.yodaqa.load_answerfvs");
 		boolean answerLoadDo = answerLoadDir != null && !answerLoadDir.isEmpty();
+		String answer1SaveDir = System.getProperty("cz.brmlab.yodaqa.save_answer1fvs");
+		boolean answer1SaveDo = answer1SaveDir != null && !answer1SaveDir.isEmpty();
+		String answer1LoadDir = System.getProperty("cz.brmlab.yodaqa.load_answer1fvs");
+		boolean answer1LoadDo = answer1LoadDir != null && !answer1LoadDir.isEmpty();
+		System.err.println("a1sd" + answer1SaveDo + " " + answer1SaveDir);
 
 		AggregateBuilder builder = new AggregateBuilder();
 
-		if (!answerLoadDo) {
+		/* First stage - question analysis, generating answers,
+		 * and basic analysis. */
+		if (!answerLoadDo && !answer1LoadDo) {
 			AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
 			builder.add(questionAnalysis);
 
@@ -88,15 +95,49 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 						AnswerHitlistSerialize.PARAM_SAVE_DIR, answerSaveDir);
 				builder.add(answerSerialize);
 			}
+		} else if (!answer1LoadDo) {
+			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistDeserialize.class,
+					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answerLoadDir);
+			builder.add(answerDeserialize);
 		}
 
-		if (true) { //!answerSaveDo) {
-			if (answerLoadDo) {
-				AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
-						AnswerHitlistDeserialize.class,
-						AnswerHitlistDeserialize.PARAM_LOAD_DIR, answerLoadDir);
-				builder.add(answerDeserialize);
+		/* Next stage - initial scoring, evidence gathering */
+		if (!answer1LoadDo) {
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
+			builder.add(answerScoring);
+
+			/* Convert top N AnswerHitlist entries back to separate CASes;
+			 * the original hitlist with the rest of questions is also
+			 * still passed through.. */
+			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerSplitter.class);
+			builder.add(answerSplitter);
+
+			AnalysisEngineDescription answerEvidencer = createAnswerEvidencerDescription();
+			builder.add(answerEvidencer);
+
+			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerMerger.class,
+					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerMerger.PARAM_HITLIST_REUSE, true);
+			builder.add(answerMerger);
+
+			if (answer1SaveDo) {
+				AnalysisEngineDescription answerSerialize = AnalysisEngineFactory.createEngineDescription(
+						AnswerHitlistSerialize.class,
+						AnswerHitlistSerialize.PARAM_SAVE_DIR, answer1SaveDir);
+				builder.add(answerSerialize);
 			}
+		} else {
+			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistDeserialize.class,
+					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer1LoadDir);
+			builder.add(answerDeserialize);
+		}
+
+		/* Next stage - final scoring */
+		if (true) {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
 			builder.add(answerScoring);
 		}
@@ -141,6 +182,27 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		return aed;
+	}
+
+	public static AnalysisEngineDescription createAnswerEvidencerDescription() throws ResourceInitializationException {
+		AggregateBuilder builder = new AggregateBuilder();
+
+		/* The AEs below are all run "in parallel" - not necessarily
+		 * runtime wise. */
+
+		/* N.B. We want to ignore the AnswerHitlistCAS in these
+		 * annotators. */
+
+		/* TODO */
+
+		builder.setFlowControllerDescription(
+				FlowControllerFactory.createFlowControllerDescription(
+					FixedParallelFlowController.class,
+					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
+
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		//aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
 	}
 }
