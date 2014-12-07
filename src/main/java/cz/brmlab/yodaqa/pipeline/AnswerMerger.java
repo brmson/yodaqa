@@ -61,7 +61,7 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 	}
 
 	Map<String, List<AnswerFeatures>> answersByText;
-	JCas finalCas;
+	JCas finalCas, finalQuestionView, finalAnswerHitlistView;
 	boolean isFirst;
 	int isLast;
 
@@ -86,15 +86,20 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		if (finalCas == null)
+		if (finalCas == null) {
 			finalCas = getEmptyJCas();
+			try {
+				finalQuestionView = finalCas.createView("Question");
+				finalAnswerHitlistView = finalCas.createView("AnswerHitlist");
+			} catch (Exception e) {
+				throw new AnalysisEngineProcessException(e);
+			}
+		}
 
 		if (isFirst) {
-			QuestionInfo qi = JCasUtil.selectSingle(canQuestion, QuestionInfo.class);
 			/* Copy QuestionInfo */
-			CasCopier copier = new CasCopier(canQuestion.getCas(), finalCas.getCas());
-			QuestionInfo qi2 = (QuestionInfo) copier.copyFs(qi);
-			qi2.addToIndexes();
+			CasCopier copier = new CasCopier(canQuestion.getCas(), finalQuestionView.getCas());
+			copier.copyCasView(canQuestion.getCas(), finalQuestionView.getCas(), true);
 			isFirst = false;
 		}
 
@@ -106,7 +111,7 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 			return; // we received a dummy CAS
 
 		AnswerFV fv = new AnswerFV(ai);
-		Answer answer = new Answer(finalCas);
+		Answer answer = new Answer(finalAnswerHitlistView);
 		String text = canAnswer.getDocumentText();
 		answer.setText(text);
 
@@ -151,7 +156,7 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 			    + mainFV.getFeatureValue(AF_OriginDocTitle.class) > 1.0)
 				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
 
-			mainAns.setFeatures(mainFV.toFSArray(finalCas));
+			mainAns.setFeatures(mainFV.toFSArray(finalAnswerHitlistView));
 			mainAns.addToIndexes();
 		}
 

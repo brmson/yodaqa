@@ -37,13 +37,21 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		AnswerStats astats = new AnswerStats(jcas);
+		JCas questionView, answerHitlist;
+		try {
+			questionView = jcas.getView("Question");
+			answerHitlist = jcas.getView("AnswerHitlist");
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
 
-		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
+		AnswerStats astats = new AnswerStats(answerHitlist);
+
+		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
 			logger.debug(a.getText() + ":" + a.getConfidence() + " -- " + Arrays.toString((new AnswerFV(a, astats)).getValues()));
 		}
 
-		QuestionInfo qi = JCasUtil.selectSingle(jcas, QuestionInfo.class);
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		Pattern ap = null;
 		if (qi.getAnswerPattern() != null) {
 			ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -55,7 +63,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			(new File(csvDirName)).mkdir();
 			String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
 			PrintWriter csvFile = openAnswersCSV(csvFileName);
-			for (Answer a : JCasUtil.select(jcas, Answer.class)) {
+			for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
 				dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
 			}
 		}
@@ -64,7 +72,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * standard for this, otherwise there is no training to do. */
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer");
 		if (ap != null && trainFileName != null && !trainFileName.isEmpty()) {
-			for (Answer a : JCasUtil.select(jcas, Answer.class)) {
+			for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
 				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, ap.matcher(a.getText()).find(), astats);
 			}
 		}

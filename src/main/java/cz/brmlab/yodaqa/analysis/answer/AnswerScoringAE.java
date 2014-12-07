@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -22,11 +23,13 @@ public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
-		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreSimple.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreSimple.class),
+				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		/* Compute answer score (estimated probability of being right)
 		 * from the various features amassed so far. */
-		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreLogistic.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreLogistic.class),
+				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerGSHook.class));
 

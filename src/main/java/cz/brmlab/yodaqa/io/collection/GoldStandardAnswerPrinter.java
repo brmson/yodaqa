@@ -88,11 +88,19 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		QuestionInfo qi = JCasUtil.selectSingle(jcas, QuestionInfo.class);
+		JCas questionView, answerHitlist;
+		try {
+			questionView = jcas.getView("Question");
+			answerHitlist = jcas.getView("AnswerHitlist");
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		double procTime = (System.currentTimeMillis() - qi.getProcBeginTime()) / 1000.0;
 
-		FSIndex idx = jcas.getJFSIndexRepository().getIndex("SortedAnswers");
+		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
 		if (answers.hasNext()) {
 			String[] toplist = new String[topListLen];
