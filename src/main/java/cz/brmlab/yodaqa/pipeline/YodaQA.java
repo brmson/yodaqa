@@ -99,7 +99,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 						AnswerHitlistSerialize.PARAM_SAVE_DIR, answerSaveDir);
 				builder.add(answerSerialize);
 			}
-		} else if (!answer1LoadDo) {
+		} else if (!answer1LoadDo && !answer2LoadDo) {
+			System.err.println("l0");
 			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
 					AnswerHitlistDeserialize.class,
 					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answerLoadDir);
@@ -109,7 +110,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		/* Next stage - initial scoring, and pruning all but the top N
 		 * answers; this should help us differentiate better selection
 		 * with most of the noisy low quality answers wed out. */
-		if (!answer1LoadDo) {
+		if (!answer1LoadDo && !answer2LoadDo) {
+			System.err.println("1");
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("");
 			builder.add(answerScoring);
 
@@ -134,7 +136,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 						AnswerHitlistSerialize.PARAM_SAVE_DIR, answer1SaveDir);
 				builder.add(answerSerialize);
 			}
-		} else {
+		} else if (!answer2LoadDo) {
+			System.err.println("l1");
 			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
 					AnswerHitlistDeserialize.class,
 					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer1LoadDir);
@@ -189,8 +192,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
-		if (!answerLoadDo)
+		if (!answer2LoadDo) {
+			System.err.println("onc");
 			aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		}
 		return aed;
 	}
 
