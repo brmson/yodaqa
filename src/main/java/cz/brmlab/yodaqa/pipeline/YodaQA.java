@@ -68,7 +68,6 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		boolean answer1SaveDo = answer1SaveDir != null && !answer1SaveDir.isEmpty();
 		String answer1LoadDir = System.getProperty("cz.brmlab.yodaqa.load_answer1fvs");
 		boolean answer1LoadDo = answer1LoadDir != null && !answer1LoadDir.isEmpty();
-		System.err.println("a1sd" + answer1SaveDo + " " + answer1SaveDir);
 
 		AggregateBuilder builder = new AggregateBuilder();
 
