@@ -92,21 +92,15 @@ train_and_sync() {
 ## Gather answers once, also storing the answerfvs
 echo "First run..."
 time mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-toptwo.tsv $outfile0" \
+	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile0" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 	$args0
 
 train_and_sync "" "$atrainfile0" "$modelfile0"
 
-echo time mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-toptwo.tsv $outfile1" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
-	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
-	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
-	$args1
 time mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-toptwo.tsv $outfile1" \
+	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -114,14 +108,8 @@ time mvn exec:java -Ptsvgs \
 
 train_and_sync "1" "$atrainfile1" "$modelfile1"
 
-time echo mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-toptwo.tsv $outfile2" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
-	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
-	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
-	$args2
 time mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-toptwo.tsv $outfile2" \
+	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
@@ -129,13 +117,8 @@ time mvn exec:java -Ptsvgs \
 
 train_and_sync "2" "$atrainfile2" "$modelfile2"
 
-echo time mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-toptwo.tsv $outfileF" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
-	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
-	$argsF
 time mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-toptwo.tsv $outfileF" \
+	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfileF" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
 	$argsF
