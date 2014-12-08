@@ -201,7 +201,7 @@ possibly produce and consider supporting evidence, etc.
 The most notable thing happenning here is type coercion, estimating how
 well the answer fits the question.
 
-## Answer Hitlist Scoring 1
+## Answer Hitlist Scoring 0
 
 In this phase, a CAS multiplier consumes all the analyzed
 **CandidateAnswerCAS** instances and pours everything down to a single
@@ -219,6 +219,12 @@ the hitlists for each question.*
 The answers are scored (by estimated probability of being correct, using
 a machine learned model based on the features) and ranked (by their score).
 This is taken care of the **AnswerScoringAE** pipeline.
+
+## Answer Hitlist Scoring 1
+
+The answer hitlist is pruned to top N (let's say N=100) answers and
+re-scored; the idea is that scoring (esp. normalized) may work better
+with the most noise wed out.
 
 ## Answer Evidence Gathering
 

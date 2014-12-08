@@ -37,6 +37,14 @@ public class AnswerSplitter extends JCasMultiplier_ImplBase {
 	@ConfigurationParameter(name = PARAM_TOPLISTLEN, mandatory = false, defaultValue = "5")
 	protected int topListLen;
 
+	/**
+	 * Whether to emit the original hitlist as the first output CAS
+	 * to pass it through.
+	 */
+	public static final String PARAM_HITLIST_EMIT = "HITLIST_EMIT";
+	@ConfigurationParameter(name = PARAM_HITLIST_EMIT, mandatory = false, defaultValue = "true")
+	protected boolean hitlistEmit;
+
 	JCas baseJcas;
 	QuestionInfo qi;
 
@@ -62,11 +70,11 @@ public class AnswerSplitter extends JCasMultiplier_ImplBase {
 
 		FSIndex idx = hitlistView.getJFSIndexRepository().getIndex("SortedAnswers");
 		answers = idx.iterator();
-		i = 0;
+		i = hitlistEmit ? 0 : 1;
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return (i - 1 <= topListLen && answers.hasNext()) || i <= 1;
+		return (i - 1 < topListLen + (hitlistEmit ? 1 : 0) && answers.hasNext()) || i <= 1;
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {

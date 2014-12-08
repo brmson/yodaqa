@@ -68,12 +68,16 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		boolean answer1SaveDo = answer1SaveDir != null && !answer1SaveDir.isEmpty();
 		String answer1LoadDir = System.getProperty("cz.brmlab.yodaqa.load_answer1fvs");
 		boolean answer1LoadDo = answer1LoadDir != null && !answer1LoadDir.isEmpty();
+		String answer2SaveDir = System.getProperty("cz.brmlab.yodaqa.save_answer2fvs");
+		boolean answer2SaveDo = answer2SaveDir != null && !answer2SaveDir.isEmpty();
+		String answer2LoadDir = System.getProperty("cz.brmlab.yodaqa.load_answer2fvs");
+		boolean answer2LoadDo = answer2LoadDir != null && !answer2LoadDir.isEmpty();
 
 		AggregateBuilder builder = new AggregateBuilder();
 
 		/* First stage - question analysis, generating answers,
 		 * and basic analysis. */
-		if (!answerLoadDo && !answer1LoadDo) {
+		if (!answerLoadDo && !answer1LoadDo && !answer2LoadDo) {
 			AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
 			builder.add(questionAnalysis);
 
@@ -101,9 +105,44 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			builder.add(answerDeserialize);
 		}
 
-		/* Next stage - initial scoring, evidence gathering */
+		/* Next stage - initial scoring, and pruning all but the top N
+		 * answers; this should help us differentiate better selection
+		 * with most of the noisy low quality answers wed out. */
 		if (!answer1LoadDo) {
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("");
+			builder.add(answerScoring);
+
+			/* Convert top N AnswerHitlist entries back to separate CASes,
+			 * then back to a hitlist, to get rid of them.  This is a bit
+			 * convoluted, but simple. */
+			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerSplitter.class,
+					AnswerSplitter.PARAM_TOPLISTLEN, 100,
+					AnswerSplitter.PARAM_HITLIST_EMIT, false);
+			builder.add(answerSplitter);
+
+			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerMerger.class,
+					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerMerger.PARAM_HITLIST_REUSE, false);
+			builder.add(answerMerger);
+
+			if (answer1SaveDo) {
+				AnalysisEngineDescription answerSerialize = AnalysisEngineFactory.createEngineDescription(
+						AnswerHitlistSerialize.class,
+						AnswerHitlistSerialize.PARAM_SAVE_DIR, answer1SaveDir);
+				builder.add(answerSerialize);
+			}
+		} else {
+			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistDeserialize.class,
+					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer1LoadDir);
+			builder.add(answerDeserialize);
+		}
+
+		/* Next stage - initial scoring, evidence gathering */
+		if (!answer2LoadDo) {
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("1");
 			builder.add(answerScoring);
 
 			/* Convert top N AnswerHitlist entries back to separate CASes;
@@ -122,22 +161,22 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerMerger.PARAM_HITLIST_REUSE, true);
 			builder.add(answerMerger);
 
-			if (answer1SaveDo) {
+			if (answer2SaveDo) {
 				AnalysisEngineDescription answerSerialize = AnalysisEngineFactory.createEngineDescription(
 						AnswerHitlistSerialize.class,
-						AnswerHitlistSerialize.PARAM_SAVE_DIR, answer1SaveDir);
+						AnswerHitlistSerialize.PARAM_SAVE_DIR, answer2SaveDir);
 				builder.add(answerSerialize);
 			}
 		} else {
 			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
 					AnswerHitlistDeserialize.class,
-					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer1LoadDir);
+					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer2LoadDir);
 			builder.add(answerDeserialize);
 		}
 
 		/* Next stage - final scoring */
 		if (true) {
-			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("1");
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("2");
 			builder.add(answerScoring);
 		}
 
