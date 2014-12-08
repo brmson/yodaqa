@@ -101,8 +101,9 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		AnswerStats astats = new AnswerStats(jcas);
+		logger.debug("scoring with model {}", modelName);
 
+		AnswerStats astats = new AnswerStats(jcas);
 		List<AnswerScore> answers = new LinkedList<AnswerScore>();
 
 		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
