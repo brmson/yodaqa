@@ -226,7 +226,10 @@ def test_model(cfier, fv_test, class_test, test_answersets):
     fn_count = float(np.sum(np.logical_and(class_test > 0.5, classpred_test < 0.5)))
     prec = tp_count / (tp_count + fp_count)
     recall = tp_count / (tp_count + fn_count)
-    f2 = 5 * (prec * recall) / (4 * prec + recall)
+    try:
+        f2 = 5 * (prec * recall) / (4 * prec + recall)
+    except ZeroDivisionError:
+        f2 = 0
 
     classpred70_test = (proba[:,1] >= 0.7).astype('float')
     tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
@@ -236,7 +239,10 @@ def test_model(cfier, fv_test, class_test, test_answersets):
     accuracy70 = (tp70_count + tn70_count) / (tp70_count + tn70_count + fp70_count + fn70_count)
     prec70 = tp70_count / (tp70_count + fp70_count)
     recall70 = tp70_count / (tp70_count + fn70_count)
-    f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
+    try:
+        f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
+    except ZeroDivisionError:
+        f2_70 = 0
 
     # Test the model on whole questions
 
