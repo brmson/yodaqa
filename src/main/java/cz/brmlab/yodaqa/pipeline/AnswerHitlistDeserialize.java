@@ -32,12 +32,7 @@ public class AnswerHitlistDeserialize extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		QuestionInfo qi;
-		try {
-			qi = JCasUtil.selectSingle(jcas.getView("Question"), QuestionInfo.class);
-		} catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
-		}
+		QuestionInfo qi = JCasUtil.selectSingle(jcas, QuestionInfo.class);
 
 		FileInputStream in = null;
 
