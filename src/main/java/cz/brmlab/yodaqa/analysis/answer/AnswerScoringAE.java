@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 	final static Logger logger = LoggerFactory.getLogger(AnswerScoringAE.class);
 
-	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
+	public static AnalysisEngineDescription createEngineDescription(String scoringPhase) throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreSimple.class),
@@ -28,10 +28,12 @@ public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Compute answer score (estimated probability of being right)
 		 * from the various features amassed so far. */
-		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreLogistic.class),
+		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreLogistic.class,
+					AnswerScoreLogistic.PARAM_SCORING_PHASE, scoringPhase),
 				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
-		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerGSHook.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerGSHook.class,
+					AnswerGSHook.PARAM_SCORING_PHASE, scoringPhase));
 
 		return builder.createAggregateDescription();
 	}

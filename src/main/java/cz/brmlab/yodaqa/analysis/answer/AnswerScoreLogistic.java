@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -29,7 +30,15 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(AnswerScoreLogistic.class);
 
-	private static final String MODEL_RES = "AnswerScoreLogistic.model";
+	/**
+	 * Pipeline phase in which we are scoring.  We may be scoring
+	 * multiple times and will use different models.
+	 */
+	public static final String PARAM_SCORING_PHASE = "SCORING_PHASE";
+	@ConfigurationParameter(name = PARAM_SCORING_PHASE, mandatory = true)
+	protected String scoringPhase;
+
+	protected String modelName;
 
 	public double weights[];
 	public double intercept;
@@ -39,12 +48,15 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 
 		weights = new double[AnswerFV.labels.length * 3];
 
+		modelName = "AnswerScoreLogistic" + scoringPhase + ".model";
+
 		/* Load and parse the model. */
 		try {
-			loadModel(AnswerScoreLogistic.class.getResourceAsStream(MODEL_RES));
+			loadModel(AnswerScoreLogistic.class.getResourceAsStream(modelName));
 		} catch (Exception e) {
 			throw new ResourceInitializationException(e);
 		}
+		logger.debug("model " + modelName + " i " + intercept);
 	}
 
 	protected void loadModel(InputStream model_stream) throws Exception {
@@ -71,11 +83,11 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 				// logger.debug("i {}", intercept);
 				i++;
 			} else {
-				throw new ResourceInitializationException(); // "Too many data in the model " + MODEL_RES
+				throw new ResourceInitializationException(); // "Too many data in the model " + modelName
 			}
 		}
 		if (i <= weights.length)
-			throw new ResourceInitializationException(); // "Too little data in the model " + MODEL_RES
+			throw new ResourceInitializationException(); // "Too little data in the model " + modelName
 	}
 
 	protected class AnswerScore {

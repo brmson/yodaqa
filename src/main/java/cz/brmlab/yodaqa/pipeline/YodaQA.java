@@ -103,7 +103,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		/* Next stage - initial scoring, evidence gathering */
 		if (!answer1LoadDo) {
-			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("");
 			builder.add(answerScoring);
 
 			/* Convert top N AnswerHitlist entries back to separate CASes;
@@ -137,7 +137,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		/* Next stage - final scoring */
 		if (true) {
-			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("1");
 			builder.add(answerScoring);
 		}
 
