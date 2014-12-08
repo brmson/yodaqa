@@ -57,11 +57,12 @@ screen -m sh -c '
 popd
 
 data/eval/tsvout-stats.sh "$cid"
-modelfile="data/ml/models/logistic-${cid}.model"
 echo
 echo "Now, you may want to do and commit:"
-echo "cp $modelfile src/main/resources/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic.model"
+for i in "" 1 2; do
+	echo "cp data/ml/models/logistic${i}-${cid}.model src/main/resources/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic${i}.model"
+done
 echo
 echo "Run finished. Press Enter to rm -rf \"$clonedir\"; Ctrl-C to preserve it for whatever reason (data and logs are not kept there)."
-read
+read x
 rm -rf "$clonedir"
