@@ -46,7 +46,9 @@ public class AnswerHitlistSerialize extends JCasAnnotator_ImplBase {
 		try {
 			(new File(saveDir)).mkdir();
 			// write XMI
-			out = new FileOutputStream(saveDir + "/" + qi.getQuestionId() + ".xmi");
+			String fileName = saveDir + "/" + qi.getQuestionId() + ".xmi";
+			out = new FileOutputStream(fileName);
+			logger.debug("serializing to {}", fileName);
 			XmiCasSerializer ser = new XmiCasSerializer(jcas.getTypeSystem());
 			XMLSerializer xmlSer = new XMLSerializer(out, false);
 			ser.serialize(jcas.getCas(), xmlSer.getContentHandler());

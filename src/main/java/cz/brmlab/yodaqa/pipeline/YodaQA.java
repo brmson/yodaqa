@@ -78,6 +78,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		/* First stage - question analysis, generating answers,
 		 * and basic analysis. */
 		if (!answerLoadDo && !answer1LoadDo && !answer2LoadDo) {
+			System.err.println("0");
 			AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
 			builder.add(questionAnalysis);
 
@@ -142,6 +143,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		/* Next stage - initial scoring, evidence gathering */
 		if (!answer2LoadDo) {
+			System.err.println("2");
 			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("1");
 			builder.add(answerScoring);
 
@@ -168,6 +170,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 				builder.add(answerSerialize);
 			}
 		} else {
+			System.err.println("l2");
 			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
 					AnswerHitlistDeserialize.class,
 					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer2LoadDir);

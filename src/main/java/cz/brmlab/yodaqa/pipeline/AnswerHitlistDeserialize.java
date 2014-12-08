@@ -43,7 +43,9 @@ public class AnswerHitlistDeserialize extends JCasAnnotator_ImplBase {
 
 		try {
 			// load XMI
-			in = new FileInputStream(loadDir + "/" + qi.getQuestionId() + ".xmi");
+			String fileName = loadDir + "/" + qi.getQuestionId() + ".xmi";
+			in = new FileInputStream(fileName);
+			logger.debug("deserializing from {}", fileName);
 			XmiCasDeserializer.deserialize(in, jcas.getCas());
 			in.close();
 		} catch (Exception e) {
