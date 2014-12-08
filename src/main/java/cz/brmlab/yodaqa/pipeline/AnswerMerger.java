@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
@@ -25,6 +26,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
@@ -109,8 +111,12 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 			}
 
 			for (Entry<String, List<AnswerFeatures>> entry : answersByText.entrySet()) {
-				for (AnswerFeatures af : entry.getValue()) {
-					af.getAnswer().removeFromIndexes();
+				for (AnswerFeatures afs : entry.getValue()) {
+					for (FeatureStructure fs : afs.getAnswer().getFeatures().toArray()) {
+						AnswerFeature af = (AnswerFeature) fs;
+						af.removeFromIndexes();
+					}
+					afs.getAnswer().removeFromIndexes();
 				}
 			}
 			return;
