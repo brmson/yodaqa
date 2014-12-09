@@ -18,6 +18,7 @@ ext.dkproVersion	= '1.7.0'
 
 run {
   standardInput = System.in
+  systemProperties = System.getProperties()
 }
 
 sourceSets {
@@ -35,6 +36,7 @@ task(tsvgs, dependsOn: 'classes', type: JavaExec) {
   minHeapSize = "2048m"
   maxHeapSize = "4500m"
   classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
 }
 
 repositories {
