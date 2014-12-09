@@ -31,6 +31,7 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
 
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install default-jdk maven uima-utils``
+  * You need to install gradle-2.1 or newer: http://www.gradle.org/installation
   * Install the Wordnet ontological database:
 	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
   * ``gradle check``
@@ -41,7 +42,7 @@ see the section on Data Sources if connection fails.
 
 ## Usage
 
-The ``gradle run`` starts YodaQA with the "interactive"
+The ``gradle run -q`` starts YodaQA with the "interactive"
 frontend which offers a prompt and answers questions interactively;
 answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
