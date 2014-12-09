@@ -48,7 +48,9 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 	protected int isLastBarrier;
 
 	/** Reuse the first CAS received as the AnswerHitlistCAS instead
-	 * of building one from scratch. */
+	 * of building one from scratch. This parameter is also overloaded
+	 * to mean that CandidateAnswerCAS will override same-text answers
+	 * in the hitlist, instead of merging with them. */
 	public static final String PARAM_HITLIST_REUSE = "hitlist-reuse";
 	@ConfigurationParameter(name = PARAM_HITLIST_REUSE, mandatory = false, defaultValue = "false")
 	protected boolean doReuseHitlist;
@@ -189,7 +191,9 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 			AnswerFV mainFV = null;
 			for (AnswerFeatures af : entry.getValue()) {
 				Answer answer = af.getAnswer();
-				if (mainAns == null) {
+				/* In case of hitlist-reuse, keep overriding
+				 * early Answer records instead of merging. */
+				if (mainAns == null || doReuseHitlist) {
 					mainAns = answer;
 					mainFV = af.getFV();
 					continue;
