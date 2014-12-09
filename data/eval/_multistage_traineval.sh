@@ -14,7 +14,7 @@
 # but instead data files are symlinked from BASECOMMIT evals.
 #
 # All data and logs are stored relative to BASEDIR.  The project
-# is assumed to be built already (using `mvn verify`).  This is
+# is assumed to be built already (using `gradle check`).  This is
 # meant to be used via the data/eval/train-and-eval.sh script.
 
 ## Setup and initialize
@@ -74,7 +74,7 @@ train_and_sync() {
 		data/ml/answer-train.py <"$atrainfile" | tee "$modelfile"
 		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic${i}.model
 		echo "Rebuilding with new model..."
-		mvn verify
+		gradle check
 		touch "$barrierfile" # testing is go, too!
 
 	else  # test
@@ -89,14 +89,14 @@ train_and_sync() {
 	fi
 }
 
-## Run the pipelien
+## Run the pipeline
 
 {
 
 if [ -z "$basecommit" ]; then
 	## Gather answers once, also storing the answerfvs
 	echo "First run..."
-	time mvn exec:java -Ptsvgs \
+	time gradle tsvgs \
 		-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile0" \
 		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
@@ -120,7 +120,7 @@ fi
 
 train_and_sync "" "$atrainfile0" "$modelfile0"
 
-time mvn exec:java -Ptsvgs \
+time gradle tsvgs \
 	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
@@ -129,7 +129,7 @@ time mvn exec:java -Ptsvgs \
 
 train_and_sync "1" "$atrainfile1" "$modelfile1"
 
-time mvn exec:java -Ptsvgs \
+time gradle tsvgs \
 	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
@@ -138,7 +138,7 @@ time mvn exec:java -Ptsvgs \
 
 train_and_sync "2" "$atrainfile2" "$modelfile2"
 
-time mvn exec:java -Ptsvgs \
+time gradle tsvgs \
 	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfileF" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \

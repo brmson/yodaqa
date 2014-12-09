@@ -51,7 +51,7 @@ echo "Checked out in $clonedir"
 sleep 2
 
 # Pre-build so we don't do that twice
-time mvn verify
+time gradle verify
 
 echo "Starting evaluation in $clonedir"
 sleep 2

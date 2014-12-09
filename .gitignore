@@ -14,3 +14,13 @@ workbench.xmi
 training-passextract.tsv
 training-answer.tsv
 logistic.txt
+
+# gradle
+.gradle
+build
+.idea
+*.iml
+*.ipr
+
+# tests
+/*.tsv
