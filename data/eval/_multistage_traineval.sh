@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: _multistage-traineval.sh BASEDIR {train,test}
+# Usage: _multistage-traineval.sh BASEDIR {train,test} [BASECOMMIT]
 #
 # In training mode, run the pipeline for all questions up to the
 # answer scoring, stop there, perform training, update the model
@@ -9,6 +9,9 @@
 # Testing mode (evaluation on test set) is designed to run in
 # parallel with the training mode and works in lock-step, stopping
 # before scoring to wait and use the new model.
+#
+# If BASECOMMIT is specified, the pipeline phase 0 is not run
+# but instead data files are symlinked from BASECOMMIT evals.
 #
 # All data and logs are stored relative to BASEDIR.  The project
 # is assumed to be built already (using `mvn verify`).  This is
@@ -20,6 +23,7 @@ cid=$(git rev-parse --short HEAD)
 
 basedir="$1"
 type="$2"
+basecommit="$3"
 args0=
 argsF=
 
@@ -89,13 +93,28 @@ train_and_sync() {
 
 {
 
-## Gather answers once, also storing the answerfvs
-echo "First run..."
-time mvn exec:java -Ptsvgs \
-	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile0" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
-	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
-	$args0
+if [ -z "$basecommit" ]; then
+	## Gather answers once, also storing the answerfvs
+	echo "First run..."
+	time mvn exec:java -Ptsvgs \
+		-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile0" \
+		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
+		$args0
+
+else
+	## Reuse data files from $basecommit
+	base_outfile0="$basedir/data/eval/tsv/curated-${type}-ovt-u${basecommit}.tsv"
+	base_xmidir="$basedir/data/eval/answer-xmi/${basecommit}-$type"
+	ln -s "$base_outfile0" "$outfile0"
+	ln -s "$base_xmidir" "$xmidir"
+	if [ "$type" = "train" ]; then
+		base_atrainfile0="$basedir/data/ml/tsv/training-answer-${basecommit}.tsv"
+		ln -s "$base_atrainfile0" "$atrainfile0"
+		ln -s "$basedir/data/ml/tsv/training-passextract-${basecommit}.tsv" "$basedir/data/ml/tsv/training-passextract-${cid}.tsv"
+		ln -s "$basedir/data/eval/answer-csv/${basecommit}" "$basedir/data/eval/answer-csv/${cid}"
+	fi
+fi
 
 train_and_sync "" "$atrainfile0" "$modelfile0"
 
