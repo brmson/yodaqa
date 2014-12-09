@@ -97,7 +97,7 @@ if [ -z "$basecommit" ]; then
 	## Gather answers once, also storing the answerfvs
 	echo "First run..."
 	time ./gradlew tsvgs \
-		-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile0" \
+		-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
 		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 		$args0
@@ -121,7 +121,7 @@ fi
 train_and_sync "" "$atrainfile0" "$modelfile0"
 
 time ./gradlew tsvgs \
-	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile1" \
+	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -130,7 +130,7 @@ time ./gradlew tsvgs \
 train_and_sync "1" "$atrainfile1" "$modelfile1"
 
 time ./gradlew tsvgs \
-	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfile2" \
+	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
@@ -139,7 +139,7 @@ time ./gradlew tsvgs \
 train_and_sync "2" "$atrainfile2" "$modelfile2"
 
 time ./gradlew tsvgs \
-	-Dexec.args="$basedir/data/eval/curated-${type}.tsv $outfileF" \
+	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfileF" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
 	$argsF
