@@ -74,7 +74,7 @@ public class AnswerSplitter extends JCasMultiplier_ImplBase {
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return (i - 1 < topListLen + (hitlistEmit ? 1 : 0) && answers.hasNext()) || i <= 1;
+		return (i - 1 < topListLen && answers.hasNext()) || i <= 1;
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
