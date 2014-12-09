@@ -7,6 +7,7 @@ import org.apache.uima.fit.factory.FlowControllerFactory;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.analysis.ansevid.AnswerEvidencingAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
@@ -207,8 +208,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerSplitter.class);
 			builder.add(answerSplitter);
 
-			AnalysisEngineDescription answerEvidencer = createAnswerEvidencerDescription();
-			builder.add(answerEvidencer);
+			AnalysisEngineDescription answerEvidencing = AnswerEvidencingAE.createEngineDescription();
+			builder.add(answerEvidencing);
 
 			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerMerger.class,
@@ -267,27 +268,6 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
-		return aed;
-	}
-
-	public static AnalysisEngineDescription createAnswerEvidencerDescription() throws ResourceInitializationException {
-		AggregateBuilder builder = new AggregateBuilder();
-
-		/* The AEs below are all run "in parallel" - not necessarily
-		 * runtime wise. */
-
-		/* N.B. We want to ignore the AnswerHitlistCAS in these
-		 * annotators. */
-
-		/* TODO */
-
-		builder.setFlowControllerDescription(
-				FlowControllerFactory.createFlowControllerDescription(
-					FixedParallelFlowController.class,
-					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
-
-		AnalysisEngineDescription aed = builder.createAggregateDescription();
-		//aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
 	}
 }
