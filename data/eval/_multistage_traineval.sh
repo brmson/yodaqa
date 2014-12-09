@@ -107,7 +107,9 @@ else
 	base_outfile0="$basedir/data/eval/tsv/curated-${type}-ovt-u${basecommit}.tsv"
 	base_xmidir="$basedir/data/eval/answer-xmi/${basecommit}-$type"
 	ln -s "$base_outfile0" "$outfile0"
+	rmdir "$xmidir"
 	ln -s "$base_xmidir" "$xmidir"
+
 	if [ "$type" = "train" ]; then
 		base_atrainfile0="$basedir/data/ml/tsv/training-answer-${basecommit}.tsv"
 		ln -s "$base_atrainfile0" "$atrainfile0"
