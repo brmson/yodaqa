@@ -1,1 +1,1 @@
-classpath*:cz/brmlab/yodaqa/model/*Types.xml
+classpath*:*_TS.xml
