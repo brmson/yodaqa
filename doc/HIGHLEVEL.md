@@ -198,20 +198,50 @@ This phase runs a variety of analytics on the **CandidateAnswerCAS**
 that extract various features, match them to the Question view,
 possibly produce and consider supporting evidence, etc.
 
-Confidence rating is issued to each answer based on features generated
-during the analysis.  The rating score is computed by a machine learned
-classifier.
+The most notable thing happenning here is type coercion, estimating how
+well the answer fits the question.
 
-## Answer Merge-and-Score
+## Answer Hitlist Scoring 0
 
-This phase begins with a CAS multiplier that consumes all the analyzed
+In this phase, a CAS multiplier consumes all the analyzed
 **CandidateAnswerCAS** instances and pours everything down to a single
 **AnswerHitlistCAS** CAS.  Within this CAS, identical or similar answers
-are merged or combined and then the answers are scored (by estimated
-probability of being correct) and ranked (by their score).
+are merged or combined.
 
-In the future, the above might be iterated and possibly the iterations
-interleaved with extra steps like evidence gathering.
+The answers have their features consolidated, and some auxiliary features
+generated (e.g. hitlist-normalized versions of base features).
+
+*At this point, the AnswerHitlistCAS may be serialized and stored
+to disk, typically for the purpose of training a classifier.  The pipeline
+is then stopped, and can be later started from this point on, restoring
+the hitlists for each question.*
+
+The answers are scored (by estimated probability of being correct, using
+a machine learned model based on the features) and ranked (by their score).
+This is taken care of the **AnswerScoringAE** pipeline.
+
+## Answer Hitlist Scoring 1
+
+The answer hitlist is pruned to top N (let's say N=100) answers and
+re-scored; the idea is that scoring (esp. normalized) may work better
+with the most noise wed out.
+
+## Answer Evidence Gathering
+
+New **CandidateAnswerCAS** instances are re-spawned for an "elite" portion
+of top N answers scored previously, and extra, possibly more expensive,
+analysis is run on them and evidence gathered.  Typically, this may involve
+something like an extra set of searches for clues + answer and counting the
+hits, or even something more expensive.  New features are generated based
+on that.
+
+## Answer Hitlist Scoring 2
+
+Eventually, these CASes are merged back to the **AnswerHitlistCAS**,
+updating the answer features, possibly some more merging occurs.
+
+The top N answers are then re-scored (based on all the features, but a model
+separate from scoring 1) and re-ranked.
 
 ## Answer Writer
 

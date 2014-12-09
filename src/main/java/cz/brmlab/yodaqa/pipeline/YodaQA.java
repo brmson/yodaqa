@@ -7,6 +7,7 @@ import org.apache.uima.fit.factory.FlowControllerFactory;
 import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.analysis.ansevid.AnswerEvidencingAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
@@ -14,6 +15,7 @@ import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.dbpedia.DBpediaRelationAnswerProducer;
+import cz.brmlab.yodaqa.pipeline.AnswerHitlistSerialize;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
@@ -59,19 +61,19 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	}
 
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
+		/* Our multi-phase logic is that
+		 *
+		 * (i) If a load_answer*fvs property is set, we skip all
+		 *     the previous phases
+		 * (ii) If a save_answer*fvs property is set, we wrap up
+		 *      that phase with a scoring step and stop early
+		 *
+		 * Specifying multiple load or multiple save properties
+		 * triggers undefined behavior. */
+
 		AggregateBuilder builder = new AggregateBuilder();
 
-		AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
-		builder.add(questionAnalysis);
-
-		AnalysisEngineDescription answerProducer = createAnswerProducerDescription();
-		builder.add(answerProducer);
-
-		AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
-		builder.add(answerAnalysis);
-
-		AnalysisEngineDescription answerMergeAndScore = createAnswerMergeAndScoreDescription();
-		builder.add(answerMergeAndScore);
+		boolean outputsNewCASes = buildPipeline(builder);
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
@@ -79,9 +81,163 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
-		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		if (outputsNewCASes)
+			aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
 	}
+
+	/** Build a multi-phase pipeline, possibly skipping some phases
+	 * based on property setting. Returns whether the pipeline outputs
+	 * new CASes. */
+	protected static boolean buildPipeline(AggregateBuilder builder) throws ResourceInitializationException {
+		boolean outputsNewCASes = false;
+
+		String answerSaveDir = System.getProperty("cz.brmlab.yodaqa.save_answerfvs");
+		boolean answerSaveDo = answerSaveDir != null && !answerSaveDir.isEmpty();
+		String answerLoadDir = System.getProperty("cz.brmlab.yodaqa.load_answerfvs");
+		boolean answerLoadDo = answerLoadDir != null && !answerLoadDir.isEmpty();
+		String answer1SaveDir = System.getProperty("cz.brmlab.yodaqa.save_answer1fvs");
+		boolean answer1SaveDo = answer1SaveDir != null && !answer1SaveDir.isEmpty();
+		String answer1LoadDir = System.getProperty("cz.brmlab.yodaqa.load_answer1fvs");
+		boolean answer1LoadDo = answer1LoadDir != null && !answer1LoadDir.isEmpty();
+		String answer2SaveDir = System.getProperty("cz.brmlab.yodaqa.save_answer2fvs");
+		boolean answer2SaveDo = answer2SaveDir != null && !answer2SaveDir.isEmpty();
+		String answer2LoadDir = System.getProperty("cz.brmlab.yodaqa.load_answer2fvs");
+		boolean answer2LoadDo = answer2LoadDir != null && !answer2LoadDir.isEmpty();
+
+		int loadPhase = -1;
+		if (answerLoadDo) loadPhase = 0;
+		else if (answer1LoadDo) loadPhase = 1;
+		else if (answer2LoadDo) loadPhase = 2;
+
+		/* First stage - question analysis, generating answers,
+		 * and basic analysis. */
+		if (loadPhase < 0) {
+			System.err.println("0");
+			outputsNewCASes = true;
+
+			AnalysisEngineDescription questionAnalysis = QuestionAnalysisAE.createEngineDescription();
+			builder.add(questionAnalysis);
+
+			AnalysisEngineDescription answerProducer = createAnswerProducerDescription();
+			builder.add(answerProducer);
+
+			AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
+			builder.add(answerAnalysis);
+
+			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerMerger.class,
+					AnswerMerger.PARAM_ISLAST_BARRIER, 4);
+			builder.add(answerMerger);
+
+		/* (Serialization / scoring point #0.) */
+		} else if (loadPhase == 0) {
+			System.err.println("l0");
+			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistDeserialize.class,
+					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answerLoadDir);
+			builder.add(answerDeserialize);
+		}
+		if (answerSaveDo) {
+			AnalysisEngineDescription answerSerialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistSerialize.class,
+					AnswerHitlistSerialize.PARAM_SAVE_DIR, answerSaveDir);
+			builder.add(answerSerialize);
+		}
+		if (loadPhase <= 0) {
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("");
+			builder.add(answerScoring);
+		}
+		if (answerSaveDo)
+			return outputsNewCASes;
+
+
+		/* Next stage - initial scoring, and pruning all but the top N
+		 * answers; this should help us differentiate better selection
+		 * with most of the noisy low quality answers wed out. */
+		if (loadPhase < 1) {
+			System.err.println("1");
+			outputsNewCASes = true;
+
+			/* Convert top N AnswerHitlist entries back to separate CASes,
+			 * then back to a hitlist, to get rid of them.  This is a bit
+			 * convoluted, but simple. */
+			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerSplitter.class,
+					AnswerSplitter.PARAM_TOPLISTLEN, 100,
+					AnswerSplitter.PARAM_HITLIST_EMIT, false);
+			builder.add(answerSplitter);
+
+			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerMerger.class,
+					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerMerger.PARAM_HITLIST_REUSE, false);
+			builder.add(answerMerger);
+
+		/* (Serialization / scoring point #1.) */
+		} else if (loadPhase == 1) {
+			System.err.println("l1");
+			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistDeserialize.class,
+					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer1LoadDir);
+			builder.add(answerDeserialize);
+		}
+		if (answer1SaveDo) {
+			AnalysisEngineDescription answerSerialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistSerialize.class,
+					AnswerHitlistSerialize.PARAM_SAVE_DIR, answer1SaveDir);
+			builder.add(answerSerialize);
+		}
+		if (loadPhase <= 1) {
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("1");
+			builder.add(answerScoring);
+		}
+		if (answer1SaveDo)
+			return outputsNewCASes;
+
+
+		/* Next stage - initial scoring, evidence gathering */
+		if (loadPhase < 2) {
+			System.err.println("2");
+			outputsNewCASes = true;
+
+			/* Convert top N AnswerHitlist entries back to separate CASes;
+			 * the original hitlist with the rest of questions is also
+			 * still passed through.. */
+			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerSplitter.class);
+			builder.add(answerSplitter);
+
+			AnalysisEngineDescription answerEvidencing = AnswerEvidencingAE.createEngineDescription();
+			builder.add(answerEvidencing);
+
+			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerMerger.class,
+					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerMerger.PARAM_HITLIST_REUSE, true);
+			builder.add(answerMerger);
+
+		/* (Serialization / scoring point #2.) */
+		} else if (loadPhase == 2) {
+			System.err.println("l2");
+			AnalysisEngineDescription answerDeserialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistDeserialize.class,
+					AnswerHitlistDeserialize.PARAM_LOAD_DIR, answer2LoadDir);
+			builder.add(answerDeserialize);
+		}
+		if (answer2SaveDo) {
+			AnalysisEngineDescription answerSerialize = AnalysisEngineFactory.createEngineDescription(
+					AnswerHitlistSerialize.class,
+					AnswerHitlistSerialize.PARAM_SAVE_DIR, answer2SaveDir);
+			builder.add(answerSerialize);
+		}
+		if (loadPhase <= 2) {
+			AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription("2");
+			builder.add(answerScoring);
+		}
+		return outputsNewCASes;
+	}
+
 
 	public static AnalysisEngineDescription createAnswerProducerDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
@@ -109,27 +265,6 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 				FlowControllerFactory.createFlowControllerDescription(
 					FixedParallelFlowController.class,
 					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
-
-		AnalysisEngineDescription aed = builder.createAggregateDescription();
-		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
-		return aed;
-	}
-
-	public static AnalysisEngineDescription createAnswerMergeAndScoreDescription() throws ResourceInitializationException {
-		AggregateBuilder builder = new AggregateBuilder();
-
-		AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-				AnswerMerger.class,
-				AnswerMerger.PARAM_ISLAST_BARRIER, 4);
-		builder.add(answerMerger);
-
-		AnalysisEngineDescription answerScoring = AnswerScoringAE.createEngineDescription();
-		builder.add(answerScoring);
-
-		builder.setFlowControllerDescription(
-				FlowControllerFactory.createFlowControllerDescription(
-					FixedFlowController.class,
-					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);

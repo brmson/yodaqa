@@ -185,7 +185,6 @@ def dump_weights(weights, labels):
 
 
 def dump_model(weights, labels, intercept):
-    print('public static double weights[] = {')
     for i in range(len(weights[0]) / 3):
         # d01 is roughly estimated delta between feature not present and
         # feature present and set to 1 - basically, the baseline influence
@@ -195,8 +194,7 @@ def dump_model(weights, labels, intercept):
               (labels[i*3][1:],
                weights[0][i*3], weights[0][i*3 + 1], weights[0][i*3 + 2],
                labels[i*3][1:], d01))
-    print('};')
-    print('public static double intercept = %f;' % intercept)
+    print('/* intercept */ %f' % intercept)
 
 
 def train_model(fv_train, class_train):
@@ -228,7 +226,10 @@ def test_model(cfier, fv_test, class_test, test_answersets):
     fn_count = float(np.sum(np.logical_and(class_test > 0.5, classpred_test < 0.5)))
     prec = tp_count / (tp_count + fp_count)
     recall = tp_count / (tp_count + fn_count)
-    f2 = 5 * (prec * recall) / (4 * prec + recall)
+    try:
+        f2 = 5 * (prec * recall) / (4 * prec + recall)
+    except ZeroDivisionError:
+        f2 = 0
 
     classpred70_test = (proba[:,1] >= 0.7).astype('float')
     tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
@@ -238,7 +239,10 @@ def test_model(cfier, fv_test, class_test, test_answersets):
     accuracy70 = (tp70_count + tn70_count) / (tp70_count + tn70_count + fp70_count + fn70_count)
     prec70 = tp70_count / (tp70_count + fp70_count)
     recall70 = tp70_count / (tp70_count + fn70_count)
-    f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
+    try:
+        f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
+    except ZeroDivisionError:
+        f2_70 = 0
 
     # Test the model on whole questions
 
@@ -299,7 +303,7 @@ def cross_validate(answersets, num_rounds):
         cfier = train_model(fv_train, class_train)
 
         (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx])
-        print(' * (test) ' + msg)
+        print('// (test) ' + msg)
         scores.append(score)
 
     return np.array(scores)
@@ -308,18 +312,18 @@ def cross_validate(answersets, num_rounds):
 if __name__ == "__main__":
     (answersets, labels) = load_answers(sys.stdin)
 
-    print('/** The weights of individual elements of the FV.  These weights')
-    print(' * are output by data/ml/answer-train.py as this:')
-    print(' *')
-    print(' * %d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
+    print('/// The weights of individual elements of the FV.  These weights')
+    print('// are output by data/ml/answer-train.py as this:')
+    print('//')
+    print('// %d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
 
     # Cross-validation phase
-    print(' * + Cross-validation:')
+    print('// + Cross-validation:')
     scores = cross_validate(answersets, num_rounds)
-    print(' * Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
+    print('// Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
 
     # Train on the complete model now
-    print(' * + Full training set:')
+    print('// + Full training set:')
     fv_full = []
     class_full = []
     for aset in answersets:
@@ -331,12 +335,12 @@ if __name__ == "__main__":
     # not very meaningful as we test on the training data, but it can still
     # be informative wrt. the answerset metrics, esp. 'any good'.
     (score, msg) = test_model(cfier, fv_full, class_full, answersets)
-    print(" * (full) " + msg)
+    print("// (full) " + msg)
 
     # dump_weights(cfier.coef_, labels)
 
-    print(" * Full model is " + str(cfier))
-    print(' */')
+    print("// Full model is " + str(cfier).replace("\n", " "))
+    print('//')
     dump_model(cfier.coef_, labels, cfier.intercept_)
 
     if False:
