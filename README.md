@@ -31,25 +31,24 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
 
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install default-jdk maven uima-utils``
-  * You need to install gradle-2.1 or newer: http://www.gradle.org/installation
   * Install the Wordnet ontological database:
 	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
-  * ``gradle check``
-  * ``gradle run -q``
+  * ``./gradlew check``
+  * ``./gradlew run -q``
 
 By default, YodaQA will try to connect to a remote Solr core serving Wikipedia;
 see the section on Data Sources if connection fails.
 
 ## Usage
 
-The ``gradle run -q`` starts YodaQA with the "interactive"
+The ``./gradlew run -q`` starts YodaQA with the "interactive"
 frontend which offers a prompt and answers questions interactively;
 answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
 
 It is also possible to let YodaQA answer many questions at once, e.g. to
-measure the performance; use ``gradle tsvgs`` to feed YodaQA
+measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
 the curated testing dataset from data/eval/.  (See also data/eval/README.md
 for more details, and a convenient wrapper script ``train-and-eval.sh``.)
 
@@ -61,7 +60,7 @@ or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
 on systems with less than 8GB RAM.  Anyhow, you may need to invoke it as
-``JAVA_OPTS="-Xms2048m -Xmx4500m" gradle ...``.  Another issue
+``JAVA_OPTS="-Xms2048m -Xmx4500m" ./gradlew ...``.  Another issue
 that can arise is that if you are running measurements in parallel, one
 of the java processes decides to spawn bazillion threads to perform
 garbage collection; to prevent that, include ``-XX:-UseParallelGC
