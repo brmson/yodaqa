@@ -43,6 +43,7 @@ public class AnswerFV {
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
 			"tyCorADBpRelation",
+		"topAnswer",
 	};
 
 	protected double values[]; // the feature value
@@ -91,6 +92,7 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
 			features.add(AF_TyCorADBpRelation.class);
+			features.add(AF_TopAnswer.class);
 		}
 
 		values = new double[labels.length];

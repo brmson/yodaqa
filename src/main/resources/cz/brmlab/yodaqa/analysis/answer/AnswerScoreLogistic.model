@@ -56,4 +56,5 @@
 	/*            tyCorAQuantityCD @,%,! */ -0.885588,  0.856233,  0.961568, /*            tyCorAQuantityCD d01: -0.990923 */
 	/*            tyCorAWnInstance @,%,! */ -0.508068,  0.234336,  0.584047, /*            tyCorAWnInstance d01: -0.857778 */
 	/*           tyCorADBpRelation @,%,! */ -0.251507,  0.187912,  0.327486, /*           tyCorADBpRelation d01: -0.391080 */
+	0, 0, 0,
 /* intercept */ 0.075979
