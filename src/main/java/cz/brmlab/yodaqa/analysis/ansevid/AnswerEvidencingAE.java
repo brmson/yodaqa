@@ -31,7 +31,7 @@ public class AnswerEvidencingAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Mark all answers that even *enter* this AE with
 		 * a special feature. */
-		builder.add(createPrimitiveDescription(AnswerTopMarker.class));
+		//builder.add(createPrimitiveDescription(AnswerTopMarker.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
