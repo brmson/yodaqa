@@ -29,8 +29,7 @@ argsF=
 
 outfile0="$basedir/data/eval/tsv/curated-${type}-ovt-u${cid}.tsv"
 outfile1="$basedir/data/eval/tsv/curated-${type}-ovt-v${cid}.tsv"
-outfile2="$basedir/data/eval/tsv/curated-${type}-ovt-w${cid}.tsv"
-outfileF="$basedir/data/eval/tsv/curated-${type}-ovt-${cid}.tsv"
+outfile2="$basedir/data/eval/tsv/curated-${type}-ovt-${cid}.tsv"
 atrainfile0="$basedir/data/ml/tsv/training-answer-${cid}.tsv"
 atrainfile1="$basedir/data/ml/tsv/training-answer1-${cid}.tsv"
 atrainfile2="$basedir/data/ml/tsv/training-answer2-${cid}.tsv"
@@ -120,6 +119,15 @@ fi
 
 train_and_sync "" "$atrainfile0" "$modelfile0"
 
+# Re-score with new model
+time ./gradlew tsvgs \
+	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
+	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
+	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
+	$args0
+
+
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
@@ -128,6 +136,15 @@ time ./gradlew tsvgs \
 	$args1
 
 train_and_sync "1" "$atrainfile1" "$modelfile1"
+
+# Re-score with new model
+time ./gradlew tsvgs \
+	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
+	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
+	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
+	$args1
+
 
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
@@ -138,12 +155,15 @@ time ./gradlew tsvgs \
 
 train_and_sync "2" "$atrainfile2" "$modelfile2"
 
+# Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfileF" \
+	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
-	$argsF
+	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
+	$args2
 
-echo "$outfileF"
+
+echo "$outfile2"
 
 } 2>&1 | tee "$basedir/logs/curated-${type}-${cid}.log"
