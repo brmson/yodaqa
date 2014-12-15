@@ -10,6 +10,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'eclipse'
 apply plugin: 'com.dictanova.jcasgen'
 
 mainClassName 		= 'cz.brmlab.yodaqa.YodaQA_Interactive'
