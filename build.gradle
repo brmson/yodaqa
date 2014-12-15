@@ -21,6 +21,8 @@ run {
   standardInput = System.in
   if (project.hasProperty('execArgs'))
     args(execArgs.split(' '))
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
   systemProperties = System.getProperties()
 }
 
