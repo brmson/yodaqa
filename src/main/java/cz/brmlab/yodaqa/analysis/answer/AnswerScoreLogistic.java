@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -62,32 +64,35 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 	protected void loadModel(InputStream model_stream) throws Exception {
 		BufferedReader model = new BufferedReader(new InputStreamReader(model_stream));
 		String line;
-		int i = 0;
 		while (true) {
 			line = model.readLine();
 			if (line == null)
 				break;
 			if (line.equals("") || line.matches("^\\s*//.*"))
 				continue;
+
+			// Load feature name from the line: ^\t/*      originConceptBySubject @,%,! */
+			Matcher m = Pattern.compile("^\t/\\* *([^ ]*) ").matcher(line);
 			line = line.replaceAll("\\s*/\\*.*?\\*/\\s*", "");
-			if (i < weights.length) {
-				while (!line.equals("")) {
-					String line1 = line.replaceAll(",.*$", "");
-					weights[i] = Double.parseDouble(line1);
-					// logger.debug("{} {}, line {}", i, weights[i], line);
-					line = line.replaceAll("^.*?,\\s*", "");
-					i++;
-				}
-			} else if (i == weights.length) {
+
+			if (!m.find()) {
+				// The intercept!
 				intercept = Double.parseDouble(line);
 				// logger.debug("i {}", intercept);
+				continue;
+			}
+
+			String label = m.group(1);
+			int i = AnswerFV.featureIndex(label) * 3;
+
+			while (!line.equals("")) {
+				String line1 = line.replaceAll(",.*$", "");
+				weights[i] = Double.parseDouble(line1);
+				// logger.debug("{} {}, line {}", i, weights[i], line);
+				line = line.replaceAll("^.*?,\\s*", "");
 				i++;
-			} else {
-				throw new ResourceInitializationException(); // "Too many data in the model " + modelName
 			}
 		}
-		if (i <= weights.length)
-			throw new ResourceInitializationException(); // "Too little data in the model " + modelName
 	}
 
 	protected class AnswerScore {

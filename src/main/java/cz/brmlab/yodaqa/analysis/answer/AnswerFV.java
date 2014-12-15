@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.util.FSCollectionFactory;
@@ -150,6 +151,10 @@ public class AnswerFV {
 
 	public static int featureIndex(Class<? extends AnswerFeature> f) {
 		return features.indexOf(f);
+	}
+
+	public static int featureIndex(String label) {
+		return ArrayUtils.indexOf(labels, label);
 	}
 
 
