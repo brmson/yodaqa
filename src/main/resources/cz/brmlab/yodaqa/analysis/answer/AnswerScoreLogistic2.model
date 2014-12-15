@@ -56,4 +56,7 @@
 	/*            tyCorAWnInstance @,%,! */ -0.777919,  0.359221,  0.768678, /*            tyCorAWnInstance d01: -1.187376 */
 	/*           tyCorADBpRelation @,%,! */ -0.369564,  0.484715,  0.360322, /*           tyCorADBpRelation d01: -0.245171 */
 	/*                   topAnswer @,%,! */  0.000000,  0.000000, -0.009241, /*                   topAnswer d01:  0.009241 */
+	0, 0, 0,
+	0, 0, 0,
+	0, 0, 0,
 /* intercept */ -0.009241

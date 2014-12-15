@@ -234,6 +234,20 @@
         <description>Answer Feature: Boolean value whether we are one of the top answers selected by earlier scoring.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
-
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsEv</name>
+        <description>Answer Feature: Unbounded integer representing the number of search hits for question + answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrMaxScoreEv</name>
+        <description>Answer Feature: Unbounded float representing the maximum score among search hits for question + answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsMaxScoreEv</name>
+        <description>Answer Feature: Unbounded float representing SolrHitsEv * SolrMaxScoreEv.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
     </types>
   </typeSystemDescription>
