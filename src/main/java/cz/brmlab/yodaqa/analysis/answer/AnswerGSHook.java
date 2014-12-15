@@ -60,6 +60,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 
 		AnswerStats astats = new AnswerStats(answerHitlist);
 
+		logger.debug("------------------------------------------------");
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
 			logger.debug(a.getText() + ":" + a.getConfidence() + " -- " + Arrays.toString((new AnswerFV(a, astats)).getValues()));
 		}
