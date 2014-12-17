@@ -144,6 +144,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		StringBuilder sb = new StringBuilder();
 		sb.append("answer,");
 		sb.append("iM,");
+		sb.append("confidence,");
 		int i = 0;
 		for (String label : AnswerFV.getFVLabels()) {
 			/* Consider only primary values in the FV. */
@@ -168,6 +169,8 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		sb.append("\"");
 		sb.append(",");
 		sb.append(isMatch ? "+" : "-");
+		sb.append(",");
+		sb.append(a.getConfidence());
 		sb.append(",");
 		int i = 0;
 		for (double value : fv.getFV()) {
