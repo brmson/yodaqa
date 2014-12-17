@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
@@ -88,8 +90,12 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * standard for this, otherwise there is no training to do. */
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer" + scoringPhase);
 		if (ap != null && trainFileName != null && !trainFileName.isEmpty()) {
-			for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, ap.matcher(a.getText()).find(), astats);
+			FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
+			FSIterator answers = idx.iterator();
+			while (answers.hasNext()) {
+				Answer a = (Answer) answers.next();
+				boolean isMatch = ap.matcher(a.getText()).find();
+				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, isMatch, astats);
 			}
 		}
 	}
