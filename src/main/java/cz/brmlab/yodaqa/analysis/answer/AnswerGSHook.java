@@ -90,11 +90,18 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * standard for this, otherwise there is no training to do. */
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer" + scoringPhase);
 		if (ap != null && trainFileName != null && !trainFileName.isEmpty()) {
+			boolean alreadyMatched = false;
+
 			FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 			FSIterator answers = idx.iterator();
 			while (answers.hasNext()) {
 				Answer a = (Answer) answers.next();
 				boolean isMatch = ap.matcher(a.getText()).find();
+				if (isMatch) {
+					if (alreadyMatched)
+						continue; // output only the top positive match
+					alreadyMatched = true;
+				}
 				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, isMatch, astats);
 			}
 		}
