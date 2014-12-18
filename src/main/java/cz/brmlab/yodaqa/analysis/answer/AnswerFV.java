@@ -45,6 +45,7 @@ public class AnswerFV {
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
 			"tyCorADBpRelation",
 		"topAnswer", "solrHitsEv", "solrMaxScoreEv", "solrHitsMaxScoreEv",
+		"phase0Score", "phase1Score",
 	};
 
 	protected double values[]; // the feature value
@@ -97,6 +98,8 @@ public class AnswerFV {
 			features.add(AF_SolrHitsEv.class);
 			features.add(AF_SolrMaxScoreEv.class);
 			features.add(AF_SolrHitsMaxScoreEv.class);
+			features.add(AF_Phase0Score.class);
+			features.add(AF_Phase1Score.class);
 		}
 
 		values = new double[labels.length];

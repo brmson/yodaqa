@@ -249,5 +249,15 @@
         <description>Answer Feature: Unbounded float representing SolrHitsEv * SolrMaxScoreEv.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score</name>
+        <description>Answer Feature: Confidence computed in phase 0 (for use by next phases).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score</name>
+        <description>Answer Feature: Confidence computed in phase 1 (for use by next phases).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
     </types>
   </typeSystemDescription>

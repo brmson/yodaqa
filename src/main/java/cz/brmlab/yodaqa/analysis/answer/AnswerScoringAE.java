@@ -35,6 +35,10 @@ public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerGSHook.class,
 					AnswerGSHook.PARAM_SCORING_PHASE, scoringPhase));
 
+		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreToFV.class,
+					AnswerScoreToFV.PARAM_SCORING_PHASE, scoringPhase),
+				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
+
 		return builder.createAggregateDescription();
 	}
 }
