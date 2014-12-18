@@ -34,6 +34,9 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * Install the Wordnet ontological database:
 	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
   * ``./gradlew check``
+  * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
+    of all sorts of NLP resources and models.  This will amount to several
+    hundreds of megabytes of download!
   * ``./gradlew run -q``
 
 By default, YodaQA will try to connect to a remote Solr core serving Wikipedia;
