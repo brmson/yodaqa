@@ -62,12 +62,9 @@ Alternatively, if things don't go well, try passing an extra parameter
 or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
-on systems with less than 8GB RAM.  Anyhow, you may need to invoke it as
-``JAVA_OPTS="-Xms2048m -Xmx4500m" ./gradlew ...``.  Another issue
-that can arise is that if you are running measurements in parallel, one
-of the java processes decides to spawn bazillion threads to perform
-garbage collection; to prevent that, include ``-XX:-UseParallelGC
--XX:-UseConcMarkSweepGC`` in ``MAVEN_OPTS``.
+on systems with less than 8GB RAM.  You may also need to tweak the
+minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
+on a 32-bit system.
 
 ## Data Sources
 
