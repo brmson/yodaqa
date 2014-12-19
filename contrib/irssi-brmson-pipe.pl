@@ -4,7 +4,7 @@
 #   mkfifo /tmp/brmson.ask; mkfifo /tmp/brmson.ans
 #
 # Run brmson as:
-#   ./gradlew machine </tmp/brmson.ask >/tmp/brmson.ans
+#   ./gradlew -q machine </tmp/brmson.ask >/tmp/brmson.ans
 #
 # Start irssi and load this script.  Anything said to this user
 # will be interpreted as a question.
