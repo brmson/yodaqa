@@ -107,6 +107,8 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			wnpos = POS.ADJECTIVE;
 		} else if (lat.getPos().getPosValue().matches("^RB.*")) {
 			wnpos = POS.ADVERB;
+		} else if (lat.getPos().getPosValue().matches("^VB.*")) {
+			wnpos = POS.VERB;
 		} else {
 			logger.info("?! cannot expand LAT of POS " + lat.getPos().getPosValue());
 			return;
@@ -162,11 +164,21 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			Synset synset, StringBuilder wnlist) throws Exception
 	{
 		boolean foundNoun = false;
+		logger.debug("checking noun synsets of " + synset.getWord(0).getLemma() + "/" + synset.getOffset());
 		for (PointerTarget t : synset.getTargets(PointerType.ATTRIBUTE)) {
 			Synset noun = (Synset) t;
 			foundNoun = true;
 			logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
 			genDerivedSynsets(latmap, lat, noun, wnlist, lat.getSpecificity());
+			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+		}
+		for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
+			Word nounw = (Word) t;
+			foundNoun = true;
+			if (nounw.getPOS() != POS.NOUN)
+				continue;
+			logger.debug(".. adding LAT noun " + nounw.getLemma());
+			genDerivedSynsets(latmap, lat, nounw.getSynset(), wnlist, lat.getSpecificity());
 			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
 		}
 		return foundNoun;
