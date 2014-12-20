@@ -56,7 +56,7 @@ case $type in
 	*) echo "Usage: $0 BASEDIR {test,train}; but use the train-and-eval wrapper." >&2; exit 1;;
 esac
 
-if [ -e $barrierfile ]; then
+if [ -e $barrierfile -o -e ${barrierfile}1 -o -e ${barrierfile}2 ]; then
 	echo "$barrierfile: Already exists" >&2
 	read x
 	exit 1
@@ -74,17 +74,17 @@ train_and_sync() {
 		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic${i}.model
 		echo "Rebuilding with new model..."
 		./gradlew check
-		touch "$barrierfile" # testing is go, too!
+		touch "$barrierfile$i" # testing is go, too!
 
 	else  # test
 		# Just wait for the training to finish; XXX ugly this way
-		echo "Waiting for $barrierfile, #${i}"
-		while [ ! -e "$barrierfile" ]; do
+		echo "Waiting for $barrierfile$i, #${i}"
+		while [ ! -e "$barrierfile$i" ]; do
 			echo -n .
 			sleep 2
 		done
 		echo " :)"
-		rm "$barrierfile"
+		rm "$barrierfile$i"
 	fi
 }
 
