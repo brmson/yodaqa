@@ -1,62 +1,64 @@
 /// The weights of individual elements of the FV.  These weights
 // are output by data/ml/answer-train.py as this:
 //
-// 430 answersets, 89524 answers
+// 430 answersets, 89552 answers
 // + Cross-validation:
-// (test) PERANS acc/prec/rcl/F2 = 0.879/0.023/0.812/0.102, @70 prec/rcl/F2 = 0.041/0.721/0.166, PERQ avail 0.716, any good = [0.594], simple 0.462
-// (test) PERANS acc/prec/rcl/F2 = 0.901/0.025/0.758/0.112, @70 prec/rcl/F2 = 0.041/0.614/0.162, PERQ avail 0.712, any good = [0.503], simple 0.400
-// (test) PERANS acc/prec/rcl/F2 = 0.898/0.026/0.726/0.112, @70 prec/rcl/F2 = 0.042/0.616/0.165, PERQ avail 0.763, any good = [0.494], simple 0.352
-// (test) PERANS acc/prec/rcl/F2 = 0.890/0.023/0.763/0.102, @70 prec/rcl/F2 = 0.038/0.612/0.152, PERQ avail 0.707, any good = [0.485], simple 0.371
-// (test) PERANS acc/prec/rcl/F2 = 0.895/0.023/0.711/0.103, @70 prec/rcl/F2 = 0.041/0.616/0.163, PERQ avail 0.740, any good = [0.462], simple 0.418
-// (test) PERANS acc/prec/rcl/F2 = 0.887/0.024/0.747/0.106, @70 prec/rcl/F2 = 0.040/0.623/0.160, PERQ avail 0.753, any good = [0.451], simple 0.411
-// (test) PERANS acc/prec/rcl/F2 = 0.893/0.024/0.745/0.106, @70 prec/rcl/F2 = 0.039/0.637/0.157, PERQ avail 0.730, any good = [0.485], simple 0.392
-// (test) PERANS acc/prec/rcl/F2 = 0.900/0.025/0.724/0.111, @70 prec/rcl/F2 = 0.041/0.609/0.162, PERQ avail 0.726, any good = [0.500], simple 0.362
-// (test) PERANS acc/prec/rcl/F2 = 0.884/0.025/0.784/0.109, @70 prec/rcl/F2 = 0.041/0.623/0.162, PERQ avail 0.777, any good = [0.527], simple 0.401
-// (test) PERANS acc/prec/rcl/F2 = 0.890/0.024/0.756/0.108, @70 prec/rcl/F2 = 0.040/0.625/0.161, PERQ avail 0.744, any good = [0.453], simple 0.399
-// Cross-validation score mean 49.541% S.D. 3.993%
+// (test) PERANS acc/prec/rcl/F2 = 0.897/0.025/0.744/0.109, @70 prec/rcl/F2 = 0.045/0.644/0.176, PERQ avail 0.744, any good = [0.519], simple 0.391
+// (test) PERANS acc/prec/rcl/F2 = 0.876/0.021/0.755/0.096, @70 prec/rcl/F2 = 0.037/0.667/0.151, PERQ avail 0.740, any good = [0.557], simple 0.416
+// (test) PERANS acc/prec/rcl/F2 = 0.882/0.024/0.799/0.106, @70 prec/rcl/F2 = 0.041/0.692/0.167, PERQ avail 0.740, any good = [0.545], simple 0.454
+// (test) PERANS acc/prec/rcl/F2 = 0.892/0.023/0.709/0.101, @70 prec/rcl/F2 = 0.039/0.608/0.155, PERQ avail 0.735, any good = [0.468], simple 0.402
+// (test) PERANS acc/prec/rcl/F2 = 0.866/0.023/0.848/0.104, @70 prec/rcl/F2 = 0.042/0.733/0.170, PERQ avail 0.767, any good = [0.567], simple 0.475
+// (test) PERANS acc/prec/rcl/F2 = 0.892/0.025/0.773/0.112, @70 prec/rcl/F2 = 0.041/0.626/0.161, PERQ avail 0.758, any good = [0.494], simple 0.343
+// (test) PERANS acc/prec/rcl/F2 = 0.890/0.024/0.781/0.108, @70 prec/rcl/F2 = 0.041/0.665/0.165, PERQ avail 0.721, any good = [0.501], simple 0.417
+// (test) PERANS acc/prec/rcl/F2 = 0.886/0.025/0.811/0.112, @70 prec/rcl/F2 = 0.043/0.648/0.169, PERQ avail 0.740, any good = [0.515], simple 0.420
+// (test) PERANS acc/prec/rcl/F2 = 0.898/0.026/0.748/0.115, @70 prec/rcl/F2 = 0.043/0.642/0.171, PERQ avail 0.740, any good = [0.506], simple 0.419
+// (test) PERANS acc/prec/rcl/F2 = 0.896/0.024/0.739/0.108, @70 prec/rcl/F2 = 0.039/0.675/0.159, PERQ avail 0.730, any good = [0.487], simple 0.407
+// Cross-validation score mean 51.589% S.D. 3.002%
 // + Full training set:
-// (full) PERANS acc/prec/rcl/F2 = 0.885/1.000/0.117/0.142, @70 prec/rcl/F2 = 1.000/0.059/0.073, PERQ avail 0.730, any good = [0.540], simple 0.417
+// (full) PERANS acc/prec/rcl/F2 = 0.885/1.000/0.117/0.142, @70 prec/rcl/F2 = 1.000/0.059/0.073, PERQ avail 0.730, any good = [0.541], simple 0.424
 // Full model is LogisticRegression(C=1.0, class_weight='auto', dual=False, fit_intercept=True,           intercept_scaling=1, penalty='l2', random_state=None, tol=0.0001)
 //
-	/*                  occurences @,%,! */ -0.046866, -0.070345,  0.000000, /*                  occurences d01: -0.117210 */
-	/*              resultLogScore @,%,! */  0.369377, -0.173293,  0.000000, /*              resultLogScore d01:  0.196084 */
-	/*             passageLogScore @,%,! */  0.233327,  1.039535, -0.264599, /*             passageLogScore d01:  1.537461 */
-	/*                   originPsg @,%,! */  0.143008, -1.055582, -0.264599, /*                   originPsg d01: -0.647975 */
-	/*              originPsgFirst @,%,! */ -0.267768, -0.284148,  0.146177, /*              originPsgFirst d01: -0.698093 */
-	/*                 originPsgNP @,%,! */  0.421001,  0.149999, -0.542591, /*                 originPsgNP d01:  1.113590 */
-	/*                 originPsgNE @,%,! */ -0.125914, -0.068768,  0.004324, /*                 originPsgNE d01: -0.199007 */
-	/*        originPsgNPByLATSubj @,%,! */  0.384362,  0.278116, -0.505953, /*        originPsgNPByLATSubj d01:  1.168431 */
-	/*           originPsgSurprise @,%,! */  0.543813, -0.237739, -0.665404, /*           originPsgSurprise d01:  0.971478 */
-	/*              originDocTitle @,%,! */ -0.045506,  0.646796, -0.076084, /*              originDocTitle d01:  0.677375 */
-	/*           originDBpRelation @,%,! */  0.001713,  0.321019, -0.123303, /*           originDBpRelation d01:  0.446035 */
-	/*               originConcept @,%,! */ -0.439150,  0.634735,  0.317559, /*               originConcept d01: -0.121974 */
-	/*      originConceptBySubject @,%,! */ -0.171312,  0.363056,  0.049722, /*      originConceptBySubject d01:  0.142022 */
-	/*          originConceptByLAT @,%,! */  0.363972, -0.273553, -0.485563, /*          originConceptByLAT d01:  0.575982 */
-	/*           originConceptByNE @,%,! */ -0.085962,  0.054644, -0.035628, /*           originConceptByNE d01:  0.004310 */
-	/*              originMultiple @,%,! */ -0.047397, -0.284185, -0.074194, /*              originMultiple d01: -0.257388 */
-	/*                   spWordNet @,%,! */ -0.556704,  0.296681, -0.545290, /*                   spWordNet d01:  0.285267 */
-	/*               LATQNoWordNet @,%,! */  0.037053,  0.000000, -0.158644, /*               LATQNoWordNet d01:  0.195697 */
-	/*               LATANoWordNet @,%,! */  0.241530, -0.442896, -0.363121, /*               LATANoWordNet d01:  0.161755 */
-	/*              tyCorPassageSp @,%,! */  1.178135,  0.326868,  0.489877, /*              tyCorPassageSp d01:  1.015125 */
-	/*            tyCorPassageDist @,%,! */  0.172579, -0.727391,  0.489877, /*            tyCorPassageDist d01: -1.044690 */
-	/*          tyCorPassageInside @,%,! */  0.449150,  0.577853, -0.570740, /*          tyCorPassageInside d01:  1.597743 */
-	/*                 simpleScore @,%,! */  0.001647,  0.305873,  0.000000, /*                 simpleScore d01:  0.307520 */
-	/*                       LATNE @,%,! */ -0.354036,  0.571300,  0.232445, /*                       LATNE d01: -0.015181 */
-	/*                  LATDBpType @,%,! */  0.127153, -0.264158, -0.248744, /*                  LATDBpType d01:  0.111739 */
-	/*                 LATQuantity @,%,! */ -0.018485, -0.119300, -0.103105, /*                 LATQuantity d01: -0.034680 */
-	/*               LATQuantityCD @,%,! */ -0.095004,  0.183086, -0.026587, /*               LATQuantityCD d01:  0.114669 */
-	/*               LATWnInstance @,%,! */ -0.229545,  0.118052,  0.107955, /*               LATWnInstance d01: -0.219447 */
-	/*              LATDBpRelation @,%,! */  0.001713,  0.321019, -0.123303, /*              LATDBpRelation d01:  0.446035 */
-	/*                 tyCorSpQHit @,%,! */  0.126249,  0.476319, -0.247839, /*                 tyCorSpQHit d01:  0.850407 */
-	/*                 tyCorSpAHit @,%,! */ -0.335629, -0.197269,  0.214038, /*                 tyCorSpAHit d01: -0.746936 */
-	/*                    tyCorANE @,%,! */  0.130991,  0.186500, -0.252581, /*                    tyCorANE d01:  0.570072 */
-	/*                   tyCorADBp @,%,! */  0.257751, -0.007066, -0.379342, /*                   tyCorADBp d01:  0.630026 */
-	/*              tyCorAQuantity @,%,! */ -0.005753, -0.011272, -0.115838, /*              tyCorAQuantity d01:  0.098813 */
-	/*            tyCorAQuantityCD @,%,! */  0.080934,  0.350063, -0.202525, /*            tyCorAQuantityCD d01:  0.633522 */
-	/*            tyCorAWnInstance @,%,! */ -0.536289,  0.173197,  0.414699, /*            tyCorAWnInstance d01: -0.777791 */
-	/*           tyCorADBpRelation @,%,! */ -0.033679,  0.064222, -0.087912, /*           tyCorADBpRelation d01:  0.118454 */
-	/*                   topAnswer @,%,! */  0.000000,  0.000000, -0.121590, /*                   topAnswer d01:  0.121590 */
-	/*                  solrHitsEv @,%,! */  0.000000,  0.000000, -0.121590, /*                  solrHitsEv d01:  0.121590 */
-	/*              solrMaxScoreEv @,%,! */  0.000000,  0.000000, -0.121590, /*              solrMaxScoreEv d01:  0.121590 */
-	/*          solrHitsMaxScoreEv @,%,! */  0.000000,  0.000000, -0.121590, /*          solrHitsMaxScoreEv d01:  0.121590 */
-/* intercept */ -0.121590
+	/*                  occurences @,%,! */ -0.070701, -0.033054,  0.000000, /*                  occurences d01: -0.103755 */
+	/*              resultLogScore @,%,! */  0.355859, -0.175481,  0.000000, /*              resultLogScore d01:  0.180378 */
+	/*             passageLogScore @,%,! */  0.334736,  1.031477, -0.289472, /*             passageLogScore d01:  1.655684 */
+	/*                   originPsg @,%,! */  0.177722, -1.080112, -0.289472, /*                   originPsg d01: -0.612918 */
+	/*              originPsgFirst @,%,! */ -0.243197, -0.330361,  0.131447, /*              originPsgFirst d01: -0.705005 */
+	/*                 originPsgNP @,%,! */  0.417326,  0.114837, -0.529077, /*                 originPsgNP d01:  1.061240 */
+	/*                 originPsgNE @,%,! */ -0.110023, -0.086771, -0.001727, /*                 originPsgNE d01: -0.195066 */
+	/*        originPsgNPByLATSubj @,%,! */  0.386733,  0.282130, -0.498483, /*        originPsgNPByLATSubj d01:  1.167345 */
+	/*           originPsgSurprise @,%,! */  0.571971, -0.223275, -0.683721, /*           originPsgSurprise d01:  1.032417 */
+	/*              originDocTitle @,%,! */ -0.055407,  0.620083, -0.056343, /*              originDocTitle d01:  0.621020 */
+	/*           originDBpRelation @,%,! */  0.060785,  0.312451, -0.172535, /*           originDBpRelation d01:  0.545771 */
+	/*               originConcept @,%,! */ -0.448318,  0.621932,  0.336568, /*               originConcept d01: -0.162954 */
+	/*      originConceptBySubject @,%,! */ -0.154310,  0.394473,  0.042560, /*      originConceptBySubject d01:  0.197603 */
+	/*          originConceptByLAT @,%,! */  0.388130, -0.280512, -0.499880, /*          originConceptByLAT d01:  0.607497 */
+	/*           originConceptByNE @,%,! */ -0.073891,  0.057987, -0.037859, /*           originConceptByNE d01:  0.021955 */
+	/*              originMultiple @,%,! */  0.064626, -0.312418, -0.176376, /*              originMultiple d01: -0.071416 */
+	/*                   spWordNet @,%,! */ -0.507589,  0.224951, -0.453462, /*                   spWordNet d01:  0.170824 */
+	/*               LATQNoWordNet @,%,! */  0.037655,  0.000000, -0.149406, /*               LATQNoWordNet d01:  0.187061 */
+	/*               LATANoWordNet @,%,! */  0.260774, -0.456206, -0.372524, /*               LATANoWordNet d01:  0.177091 */
+	/*              tyCorPassageSp @,%,! */  1.127384,  0.344381,  0.508370, /*              tyCorPassageSp d01:  0.963395 */
+	/*            tyCorPassageDist @,%,! */  0.168727, -0.814419,  0.508370, /*            tyCorPassageDist d01: -1.154062 */
+	/*          tyCorPassageInside @,%,! */  0.500418,  0.638203, -0.612168, /*          tyCorPassageInside d01:  1.750788 */
+	/*                 simpleScore @,%,! */  0.004146,  0.319599,  0.000000, /*                 simpleScore d01:  0.323745 */
+	/*                       LATNE @,%,! */ -0.333152,  0.556083,  0.221402, /*                       LATNE d01:  0.001529 */
+	/*                  LATDBpType @,%,! */  0.133131, -0.273193, -0.244881, /*                  LATDBpType d01:  0.104820 */
+	/*                 LATQuantity @,%,! */ -0.017585, -0.122969, -0.094166, /*                 LATQuantity d01: -0.046388 */
+	/*               LATQuantityCD @,%,! */ -0.088080,  0.184854, -0.023670, /*               LATQuantityCD d01:  0.120445 */
+	/*               LATWnInstance @,%,! */ -0.268689,  0.156886,  0.156939, /*               LATWnInstance d01: -0.268742 */
+	/*              LATDBpRelation @,%,! */  0.060785,  0.312451, -0.172535, /*              LATDBpRelation d01:  0.545771 */
+	/*                 tyCorSpQHit @,%,! */  0.101935,  0.528267, -0.213685, /*                 tyCorSpQHit d01:  0.843887 */
+	/*                 tyCorSpAHit @,%,! */ -0.331422, -0.127373,  0.219672, /*                 tyCorSpAHit d01: -0.678466 */
+	/*                    tyCorANE @,%,! */  0.051091,  0.172203, -0.162841, /*                    tyCorANE d01:  0.386135 */
+	/*                   tyCorADBp @,%,! */  0.328568, -0.059347, -0.440318, /*                   tyCorADBp d01:  0.709540 */
+	/*              tyCorAQuantity @,%,! */ -0.005501, -0.008286, -0.106249, /*              tyCorAQuantity d01:  0.092461 */
+	/*            tyCorAQuantityCD @,%,! */  0.104695,  0.329928, -0.216445, /*            tyCorAQuantityCD d01:  0.651068 */
+	/*            tyCorAWnInstance @,%,! */ -0.510676,  0.186659,  0.398926, /*            tyCorAWnInstance d01: -0.722942 */
+	/*           tyCorADBpRelation @,%,! */ -0.035309,  0.043136, -0.076441, /*           tyCorADBpRelation d01:  0.084267 */
+	/*                   topAnswer @,%,! */  0.000000,  0.000000, -0.111750, /*                   topAnswer d01:  0.111750 */
+	/*                  solrHitsEv @,%,! */  0.000000,  0.000000, -0.111750, /*                  solrHitsEv d01:  0.111750 */
+	/*              solrMaxScoreEv @,%,! */  0.000000,  0.000000, -0.111750, /*              solrMaxScoreEv d01:  0.111750 */
+	/*          solrHitsMaxScoreEv @,%,! */  0.000000,  0.000000, -0.111750, /*          solrHitsMaxScoreEv d01:  0.111750 */
+	/*                 phase0Score @,%,! */  0.000000,  0.000000, -0.111750, /*                 phase0Score d01:  0.111750 */
+	/*                 phase1Score @,%,! */  0.000000,  0.000000, -0.111750, /*                 phase1Score d01:  0.111750 */
+/* intercept */ -0.111750
