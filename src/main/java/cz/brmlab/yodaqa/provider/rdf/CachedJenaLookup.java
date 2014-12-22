@@ -29,7 +29,7 @@ public abstract class CachedJenaLookup {
 	 * with these DBpedia specific defaults */
 	/* Replace this value with http://dbpedia.org/sparql to use the
 	 * public DBpedia SPARQL endpoint. */
-	protected String service = "http://pasky.or.cz:8890/sparql";
+	protected String service = "http://pasky.or.cz:3030/dbpedia/query";
 	protected String prefixes =
 		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
 		"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" +
