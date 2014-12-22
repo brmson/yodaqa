@@ -98,6 +98,20 @@ and to benchmark performance on test set, run
 
 and then investigate the results as above.)
 
+When debugging the AnswerGSHook mechanisms etc., it may be also useful
+to do a custom mini tsvgs run, like:
+
+	./gradlew tsvgs -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
+		-PexecArgs="data/eval/curated-toptwo.tsv toptwo.tsv" \
+		-Dcz.brmlab.yodaqa.train_answer=training-answer.tsv \
+		-Dcz.brmlab.yodaqa.train_answer1=training-answer1.tsv \
+		-Dcz.brmlab.yodaqa.train_answer2=training-answer2.tsv \
+		-Dcz.brmlab.yodaqa.save_answer2fvs=answers2  2>&1 | \
+		tee /tmp/yodaqa.log
+
+(make `data/eval/curated-toptwo.tsv` from some other gold standard
+TSV file).
+
 Analysis
 --------
 
