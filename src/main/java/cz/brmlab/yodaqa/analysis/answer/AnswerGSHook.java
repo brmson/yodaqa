@@ -3,7 +3,6 @@ package cz.brmlab.yodaqa.analysis.answer;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
@@ -20,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
 
 /**
  * A GoldStandard hook in the process of answer extraction.  We scan all the
@@ -90,21 +91,62 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * standard for this, otherwise there is no training to do. */
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer" + scoringPhase);
 		if (ap != null && trainFileName != null && !trainFileName.isEmpty()) {
-			boolean alreadyMatched = false;
+			/* It turns out to make sense to include only a single
+			 * best correct answer in the training set.  We find
+			 * and store this in refAnswer and skip all correct
+			 * (matching) answers that are not refAnswer.
+			 *
+			 * To decide between multiple possible answers, we use
+			 * the one with the highest score from the previous
+			 * phase; use all correct answers in the initial phase.
+			 * If we used the current model, it would not be stable
+			 * across re-trainings on identical program version as
+			 * the selected correct answers would keep changing;
+			 * it turns out this introduces a significant
+			 * instability and (i) the performance degrades
+			 * (ii) it is very tricky to measure improvements. */
+			String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
 
 			FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 			FSIterator answers = idx.iterator();
 			while (answers.hasNext()) {
 				Answer a = (Answer) answers.next();
 				boolean isMatch = ap.matcher(a.getText()).find();
-				if (isMatch) {
-					if (alreadyMatched)
-						continue; // output only the top positive match
-					alreadyMatched = true;
+				if (isMatch && refAnswer != null && !refAnswer.equals(a.getText())) {
+					logger.debug("not including correct answer: {} < {}", a.getText(), refAnswer);
+					continue; // output only the top positive match
 				}
 				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, isMatch, astats);
 			}
 		}
+	}
+
+	protected String getReferenceAnswer(JCas answerHitlist, Pattern ap, AnswerStats astats) {
+		/* Pass all correct answers in the initial scoring phase. */
+		if (scoringPhase.equals(""))
+			return null;
+
+		Answer bestA = null;
+		double bestAScore = 0;
+		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
+			if (!ap.matcher(a.getText()).find())
+				continue;
+
+			AnswerFV fv = new AnswerFV(a, astats);
+			double score = 0;
+			if (scoringPhase.equals("1"))
+				score = fv.getFeatureValue(AF_Phase0Score.class);
+			else if (scoringPhase.equals("2"))
+				score = fv.getFeatureValue(AF_Phase1Score.class);
+			else assert(false);
+
+			if (score > bestAScore) {
+				bestA = a;
+				bestAScore = score;
+			}
+		}
+
+		return bestA != null ? bestA.getText() : null;
 	}
 
 	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch, AnswerStats astats) {
