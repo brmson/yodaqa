@@ -68,6 +68,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				if (det.getDependent().getPos().getPosValue().matches("^W.*")) {
 					focusTok = det.getGovernor();
 					focus = focusTok;
+					logger.debug("DET+W {}", focus.getCoveredText());
 					break;
 				}
 			}
@@ -82,10 +83,12 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				    && advmod.getGovernor().getPos().getPosValue().matches("^J.*|R.*")) {
 					focusTok = advmod.getGovernor();
 					focus = focusTok;
+					logger.debug("ADVMOD+how {}", focus.getCoveredText());
 					break;
 				} else if (advmod.getDependent().getPos().getPosValue().matches("^W.*")) {
 					focusTok = advmod.getDependent();
 					focus = focusTok;
+					logger.debug("ADVMOD+W {}", focus.getCoveredText());
 					break;
 				}
 			}
@@ -98,6 +101,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				if (dep.getDependent().getPos().getPosValue().matches("^W.*")) {
 					focusTok = dep.getGovernor();
 					focus = focusTok;
+					logger.debug("DEP+W {}", focus.getCoveredText());
 					break;
 				}
 			}
@@ -111,6 +115,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			for (NSUBJ nsubj : JCasUtil.selectCovered(NSUBJ.class, sentence)) {
 				focusTok = nsubj.getDependent();
 				focus = nsubj;
+				logger.debug("NSUBJ {}", focus.getCoveredText());
 				break;
 			}
 		}
@@ -124,6 +129,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				if (t.getPos().getPosValue().matches("^NN.*")) {
 					focusTok = t;
 					focus = focusTok;
+					logger.debug("NN {}", focus.getCoveredText());
 					break;
 				}
 			}
