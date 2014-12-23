@@ -93,6 +93,7 @@ public class CanByNESurprise extends JCasAnnotator_ImplBase {
 					}
 					fv.setFeature(AF_TyCorPassageDist.class, Math.exp(-distance));
 					fv.setFeature(AF_TyCorPassageSp.class, Math.exp(qlm.getBaseLAT().getSpecificity()) * Math.exp(-distance));
+					logger.debug("Passage TyCor (d {}, contains {})", distance, qlm.getBaseLAT().getText());
 					// this should be a singleton
 					break;
 				}

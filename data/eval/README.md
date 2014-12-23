@@ -54,13 +54,10 @@ and suspect questions.
 Tools
 -----
 
-To measure training set performance at a given commit, run
+To re-train models and benchmark training + testing set performances
+at a given commit (uncommitted changes are ignored!), run
 
-	data/eval/curated-measure.sh train
-
-and to benchmark performance on test set, run
-
-	data/eval/curated-measure.sh test
+	data/eval/train-and-eval.sh
 
 from the project root.  It will create a file in data/eval/ with
 the answers to the training set questions.  To display simple stats
@@ -85,6 +82,35 @@ correct answer at a given rank, run:
 
 	data/eval/tsvout-ranks.sh data/eval/tsv/curated-train-ovt-3b46430.tsv
 	data/eval/tsvout-rankgraph.sh data/eval/tsv/curated-train-ovt-3b46430.tsv
+
+Legacy Benchmarking
+-------------------
+
+(If you want to avoid re-training models and want to have more control
+over the process, there is a more fine-grained approach available.
+To measure training set performance at a given commit, run
+
+	data/eval/curated-measure.sh train
+
+and to benchmark performance on test set, run
+
+	data/eval/curated-measure.sh test
+
+and then investigate the results as above.)
+
+When debugging the AnswerGSHook mechanisms etc., it may be also useful
+to do a custom mini tsvgs run, like:
+
+	./gradlew tsvgs -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
+		-PexecArgs="data/eval/curated-toptwo.tsv toptwo.tsv" \
+		-Dcz.brmlab.yodaqa.train_answer=training-answer.tsv \
+		-Dcz.brmlab.yodaqa.train_answer1=training-answer1.tsv \
+		-Dcz.brmlab.yodaqa.train_answer2=training-answer2.tsv \
+		-Dcz.brmlab.yodaqa.save_answer2fvs=answers2  2>&1 | \
+		tee /tmp/yodaqa.log
+
+(make `data/eval/curated-toptwo.tsv` from some other gold standard
+TSV file).
 
 Analysis
 --------

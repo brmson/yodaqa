@@ -76,7 +76,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addWordnetLAT(JCas jcas, Annotation base, Synset synset) throws Exception {
-		addLATFeature(jcas, AF_LATWnInstance.class, 1.0);
+		addLATFeature(jcas, AF_LATWnInstance.class);
 
 		String lemma = synset.getWord(0).getLemma();
 
@@ -104,10 +104,10 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 		lat.addToIndexes();
 	}
 
-	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f, double value) throws AnalysisEngineProcessException {
+	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f) throws AnalysisEngineProcessException {
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(f, fv.getFeatureValue(f) + value);
+		fv.setFeature(f, 1.0);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();

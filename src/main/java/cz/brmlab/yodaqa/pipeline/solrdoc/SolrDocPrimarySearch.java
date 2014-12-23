@@ -172,6 +172,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 			fv.setFeature(AF_TyCorPassageInside.class, 1.0);
 			fv.setFeature(AF_TyCorPassageDist.class, 1.0);
 			fv.setFeature(AF_TyCorPassageSp.class, Math.exp(containedLAT.getSpecificity()));
+			logger.debug("Passage TyCor ('{}' contains '{}')", title, containedLAT.getText());
 		}
 
 		AnswerInfo ai = new AnswerInfo(jcas);

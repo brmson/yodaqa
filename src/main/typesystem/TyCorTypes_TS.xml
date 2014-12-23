@@ -4,6 +4,9 @@
     <description>Type Coercion type system - assign "lexical types" to expected question answers and candidate answers and allow matching them</description>
     <vendor>yodaqa</vendor>
     <version>1.0</version>
+    <imports>
+      <import name="QuestionTypes_TS"/>
+    </imports>
     <types>
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.LAT</name>
@@ -51,6 +54,12 @@
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
         </features>
+      </typeDescription>
+
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT</name>
+	<description>LAT generated from a question word (e.g. when -> LAT time).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
 
       <typeDescription>

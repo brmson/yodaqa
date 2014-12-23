@@ -49,7 +49,7 @@ public class LATByNE extends JCasAnnotator_ImplBase {
 			long synset = OpenNlpNamedEntities.neValueToSynset(ne.getValue());
 			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), synset, 0.0);
 			logger.debug(".. LAT {}/{} by NE {}", ne.getValue(), synset, ne.getCoveredText());
-			addLATFeature(jcas, AF_LATNE.class, 1.0);
+			addLATFeature(jcas, AF_LATNE.class);
 		}
 		return ne_found;
 	}
@@ -65,10 +65,10 @@ public class LATByNE extends JCasAnnotator_ImplBase {
 		lat.addToIndexes();
 	}
 
-	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f, double value) throws AnalysisEngineProcessException {
+	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f) throws AnalysisEngineProcessException {
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(f, fv.getFeatureValue(f) + value);
+		fv.setFeature(f, 1.0);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();

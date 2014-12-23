@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.util.FSCollectionFactory;
@@ -45,6 +46,8 @@ public class AnswerFV {
 			"tyCorADBpRelation",
 		"tyCorANESp", "tyCorADBpSp", "tyCorAQuantitySp", "tyCorAQuantityCDSp", "tyCorAWnInstanceSp",
 			"tyCorADBpRelationSp",
+		"topAnswer", "solrHitsEv", "solrMaxScoreEv", "solrHitsMaxScoreEv",
+		"phase0Score", "phase1Score",
 	};
 
 	protected double values[]; // the feature value
@@ -99,6 +102,12 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantityCDSp.class);
 			features.add(AF_TyCorAWnInstanceSp.class);
 			features.add(AF_TyCorADBpRelationSp.class);
+			features.add(AF_TopAnswer.class);
+			features.add(AF_SolrHitsEv.class);
+			features.add(AF_SolrMaxScoreEv.class);
+			features.add(AF_SolrHitsMaxScoreEv.class);
+			features.add(AF_Phase0Score.class);
+			features.add(AF_Phase1Score.class);
 		}
 
 		values = new double[labels.length];
@@ -153,6 +162,10 @@ public class AnswerFV {
 
 	public static int featureIndex(Class<? extends AnswerFeature> f) {
 		return features.indexOf(f);
+	}
+
+	public static int featureIndex(String label) {
+		return ArrayUtils.indexOf(labels, label);
 	}
 
 

@@ -1,0 +1,89 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
+    classpath 'com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:+'
+  }
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'com.dictanova.jcasgen'
+
+mainClassName 		= 'cz.brmlab.yodaqa.YodaQA_Interactive'
+
+ext.dkproVersion	= '1.7.0'
+
+run {
+  standardInput = System.in
+  if (project.hasProperty('execArgs'))
+    args(execArgs.split(' '))
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  systemProperties = System.getProperties()
+}
+
+sourceSets {
+  main {
+    jcasgen {
+      srcDir 'src/main/resources/cz/brmlab/yodaqa/model/'
+    }
+  }
+}
+
+task(tsvgs, dependsOn: 'classes', type: JavaExec) {
+  main = 'cz.brmlab.yodaqa.YodaQA_GS'
+  if (project.hasProperty('execArgs'))
+    args(execArgs.split(' '))
+  else
+    args = ['data/eval/curated-test.tsv', 'curated-test.tsv']
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
+}
+
+task(machine, dependsOn: 'classes', type: JavaExec) {
+  standardInput = System.in
+  main = 'cz.brmlab.yodaqa.YodaQA_Machine'
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
+}
+
+repositories {
+  mavenCentral()
+  maven {
+    url 'http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/repo/'
+  }
+}
+
+dependencies {
+  compile 'org.apache.uima:uimaj-core:2.5.0'
+  compile 'org.apache.uima:uimafit-core:2.0.0'
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core-asl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.io-asl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.clearnlp-asl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.languagetool-asl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.maltparser-asl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.opennlp-asl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.tokit-asl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.berkeleyparser-gpl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.matetools-gpl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:$dkproVersion"
+  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.parameter-asl:$dkproVersion"
+  compile 'org.apache.solr:solr-solrj:3.6.0'
+  compile 'org.apache.solr:solr-core:3.6.0'
+  compile 'org.apache.httpcomponents:httpmime:4.2.1'
+  compile 'org.apache.httpcomponents:httpclient:4.2.1'
+  compile 'net.sf.jwordnet:jwnl:1.4_rc3'
+  compile 'org.slf4j:slf4j-api:1.7.7'
+  compile 'org.slf4j:slf4j-simple:1.7.7'
+  compile 'org.apache.jena:apache-jena-libs:2.11.2'
+  compile 'xom:xom:+'
+  compile 'xalan:xalan:+'
+}

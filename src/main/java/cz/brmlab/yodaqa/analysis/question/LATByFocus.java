@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Focus;
+import cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
@@ -59,31 +60,39 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		 * concept word or give up. */
 		if (text.equals("who") || text.equals("whom")) {
 			/* (6833){00007846} <noun.Tops>[03] S: (n) person#1 (person%1:03:00::), individual#1 (individual%1:03:00::), someone#1 (someone%1:03:00::), somebody#1 (somebody%1:03:00::), mortal#1 (mortal%1:03:00::), soul#2 (soul%1:03:00::) (a human being) "there was too much for oneperson to do" */
-			addFocusLAT(jcas, focus, "person", null, 7846, -0.5);
+			addFocusLAT(jcas, focus, "person", null, 7846, 0.0, new ImplicitQLAT(jcas));
 
 		} else if (text.equals("when")) {
 			/* (114){15147173} <noun.time>[28] S: (n) time#3 (time%1:28:00::) (an indefinite period (usually marked by specific attributes or activities)) "the time of year for planting"; "he was a great actor in his time" */
-			addFocusLAT(jcas, focus, "time", null, 15147173, -0.5);
+			addFocusLAT(jcas, focus, "time", null, 15147173, 0.0, new ImplicitQLAT(jcas));
 			/* (23){15184543} <noun.time>[28] S: (n) date#1 (date%1:28:00::), day of the month#1 (day_of_the_month%1:28:00::) (the specified day of the month) "what is the date today?" */
-			addFocusLAT(jcas, focus, "date", null, 15184543, -0.5);
+			addFocusLAT(jcas, focus, "date", null, 15184543, 0.0, new ImplicitQLAT(jcas));
 
 		} else if (text.equals("where")) {
 			/* (992){00027365} <noun.Tops>[03] S: (n) location#1 (location%1:03:00::) (a point or extent in space) */
-			addFocusLAT(jcas, focus, "location", null, 27365, -0.5);
+			addFocusLAT(jcas, focus, "location", null, 27365, 0.0, new ImplicitQLAT(jcas));
 
 		} else if (text.equals("many") || text.equals("much")) {
 			/* (15){00033914} <noun.Tops>[03] S: (n) measure#2 (measure%1:03:00::), quantity#1 (quantity%1:03:00::), amount#3 (amount%1:03:00::) (how much there is or how many there are of something that you can quantify) */
-			addFocusLAT(jcas, focus, "amount", null, 33914, -0.5);
+			addFocusLAT(jcas, focus, "amount", null, 33914, 0.0, new ImplicitQLAT(jcas));
 
 		} else if (text.matches("^what|why|how|which|name$")) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
 
 		} else {
-			addFocusLAT(jcas, focus, text, pos, 0, 0.0);
+			/* Primarily generate the non-lemmatized LAT.  For
+			 * example for "species", we also generate the original
+			 * form in addition to the (wrongly) lemmatized
+			 * "specie". */
+			String realText = focus.getCoveredText().toLowerCase();
+			addFocusLAT(jcas, focus, realText, pos, 0, 0.0, new LAT(jcas));
+
+			if (!text.equals(realText))
+				addFocusLAT(jcas, focus, text, pos, 0, 0.0, new ImplicitQLAT(jcas));
 		}
 	}
 
-	protected void addFocusLAT(JCas jcas, Focus focus, String text, POS pos, long synset, double spec) {
+	protected void addFocusLAT(JCas jcas, Focus focus, String text, POS pos, long synset, double spec, LAT lat) {
 		if (pos == null) {
 			/* We have a synthetic focus noun, synthetize
 			 * a POS tag for it. */
@@ -94,7 +103,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			pos.addToIndexes();
 		}
 
-		addLAT(jcas, focus.getBegin(), focus.getEnd(), focus, text, pos, synset, spec);
+		addLAT(lat, focus.getBegin(), focus.getEnd(), focus, text, pos, synset, spec);
 	}
 
 	protected boolean addNELAT(JCas jcas, Focus focus) {
@@ -102,13 +111,12 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
 			long synset = OpenNlpNamedEntities.neValueToSynset(ne.getValue());
-			addLAT(jcas, ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), synset, -2.0);
+			addLAT(new LAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), synset, -2.0);
 		}
 		return ne_found;
 	}
 
-	protected void addLAT(JCas jcas, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
-		LAT lat = new LAT(jcas);
+	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
 		lat.setBegin(begin);
 		lat.setEnd(end);
 		lat.setBase(base);
