@@ -137,6 +137,12 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			for (Synset synset : w.getSenses()) {
 				boolean fnhere = genNounSynsets(latmap, lat, synset, wnpos, wnlist);
 				foundNoun = foundNoun || fnhere;
+				if (wnpos == POS.VERB) {
+					// ignore other senses since
+					// nominalization is highly noisy;
+					// see getNounSynsets() for details
+					break;
+				}
 			}
 		} else {
 			Synset s = JWordnet.getDictionary().getSynsetAt(wnpos, lat.getSynset());
