@@ -107,6 +107,8 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			wnpos = POS.ADJECTIVE;
 		} else if (lat.getPos().getPosValue().matches("^RB.*")) {
 			wnpos = POS.ADVERB;
+		} else if (lat.getPos().getPosValue().matches("^VB.*")) {
+			wnpos = POS.VERB;
 		} else {
 			logger.info("?! cannot expand LAT of POS " + lat.getPos().getPosValue());
 			return;
@@ -133,8 +135,14 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 			/* Try to derive a noun. */
 			for (Synset synset : w.getSenses()) {
-				boolean fnhere = genNounSynsets(latmap, lat, synset, wnlist);
+				boolean fnhere = genNounSynsets(latmap, lat, synset, wnpos, wnlist);
 				foundNoun = foundNoun || fnhere;
+				if (wnpos == POS.VERB) {
+					// ignore other senses since
+					// nominalization is highly noisy;
+					// see getNounSynsets() for details
+					break;
+				}
 			}
 		} else {
 			Synset s = JWordnet.getDictionary().getSynsetAt(wnpos, lat.getSynset());
@@ -151,7 +159,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			}
 
 			/* Try to derive a noun. */
-			foundNoun = genNounSynsets(latmap, lat, s, wnlist);
+			foundNoun = genNounSynsets(latmap, lat, s, wnpos, wnlist);
 		}
 
 		if (!foundNoun)
@@ -159,15 +167,36 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	}
 
 	protected boolean genNounSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
-			Synset synset, StringBuilder wnlist) throws Exception
+			Synset synset, POS wnpos, StringBuilder wnlist) throws Exception
 	{
 		boolean foundNoun = false;
+		logger.debug("checking noun synsets of " + synset.getWord(0).getLemma() + "/" + synset.getOffset());
 		for (PointerTarget t : synset.getTargets(PointerType.ATTRIBUTE)) {
 			Synset noun = (Synset) t;
 			foundNoun = true;
 			logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
 			genDerivedSynsets(latmap, lat, noun, wnlist, lat.getSpecificity());
 			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+		}
+		if (wnpos == POS.VERB) {
+			/* For other non-nouns, this is too wide.  E.g. for
+			 * "how deep", we want "depth" but not "mystery",
+			 * "richness", "deepness", "obscureness", ... */
+			for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
+				Word nounw = (Word) t;
+				foundNoun = true;
+				if (nounw.getPOS() != POS.NOUN)
+					continue;
+				logger.debug(".. adding LAT noun " + nounw.getLemma());
+				genDerivedSynsets(latmap, lat, nounw.getSynset(), wnlist, lat.getSpecificity());
+				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+				/* Take only the first word, to avoid pulling
+				 * in anything obscure - and there is a lot
+				 * of obscure stuff.  E.g. for die:
+				 * death Death die breakdown dead_person end
+				 * passing failure */
+				break;
+			}
 		}
 		return foundNoun;
 	}
