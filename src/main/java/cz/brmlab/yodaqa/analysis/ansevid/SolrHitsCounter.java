@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.ansevid;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -31,7 +32,8 @@ import cz.brmlab.yodaqa.provider.solr.SolrTerm;
 /**
  * For a given candidate answer, measure the number of results for
  * a search for question clues plus the answer.  We use the same
- * settings as for the baseline fulltext search. */
+ * settings as for the baseline fulltext search.  The values are
+ * normalized by number of hits for answer alone. */
 
 public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(SolrHitsCounter.class);
@@ -86,20 +88,37 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 			return; // AnswerHitlistCAS
 		}
 
+		Collection<SolrTerm> terms;
 		SolrTerm answerTerm = new SolrTerm(answerView.getDocumentText(), 10 /* XXX */, true);
 
-		Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
-		Collection<SolrTerm> terms = SolrTerm.cluesToTerms(clues);
+		/* Count hits of answer alone... */
+		terms = new ArrayList<SolrTerm>();
 		terms.add(answerTerm);
-		SolrHitsCount shc = countTermsHits(terms);
+		SolrDocumentList dAnswer = countTermsHits(terms);
+
+		/* ...and combined question + answer. */
+		Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
+		terms = SolrTerm.cluesToTerms(clues);
+		terms.add(answerTerm);
+		SolrDocumentList dCombined = countTermsHits(terms);
+
+		/* Compute the stats. */
+
+		float n = (float) dCombined.getNumFound() / dAnswer.getNumFound();
+		float s = dCombined.getMaxScore();
+		/* N.B. normalization by something like dQuestion is not needed
+		 * thanks to the generic all-answer feature normalization we
+		 * do. */
 
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(AF_SolrHitsEv.class, shc.n);
-		fv.setFeature(AF_SolrMaxScoreEv.class, shc.s);
-		fv.setFeature(AF_SolrHitsMaxScoreEv.class, shc.n * shc.s);
+		fv.setFeature(AF_SolrHitsEv.class, n);
+		fv.setFeature(AF_SolrMaxScoreEv.class, s);
+		fv.setFeature(AF_SolrHitsMaxScoreEv.class, n * s);
 
-		logger.debug("{} => {}, {} => {}", answerView.getDocumentText(),
-				shc.n, shc.s, shc.n * shc.s);
+		logger.debug("{} => (a {}; c {}, {}) n {}, {} => {}", answerView.getDocumentText(),
+				dAnswer.getNumFound(),
+				dCombined.getNumFound(), dCombined.getMaxScore(),
+				n, s, n * s);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();
@@ -109,23 +128,13 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 		ai.addToIndexes();
 	}
 
-	protected SolrHitsCount countTermsHits(Collection<SolrTerm> terms) throws AnalysisEngineProcessException {
+	protected SolrDocumentList countTermsHits(Collection<SolrTerm> terms) throws AnalysisEngineProcessException {
 		SolrDocumentList documents;
 		try {
 			documents = solr.runQuery(terms, 10000 /* XXX */, settings, logger);
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
-		return new SolrHitsCount(documents.getNumFound(), documents.getMaxScore());
-	}
-
-	protected class SolrHitsCount {
-		long n; // number of hits
-		float s; // maximum hit score
-
-		public SolrHitsCount(long n_, float s_) {
-			n = n_;
-			s = s_;
-		}
+		return documents;
 	}
 }
