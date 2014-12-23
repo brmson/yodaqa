@@ -86,27 +86,20 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 			return; // AnswerHitlistCAS
 		}
 
-		SolrDocumentList documents;
-		try {
-			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
-			Collection<SolrTerm> terms = SolrTerm.cluesToTerms(clues);
+		SolrTerm answerTerm = new SolrTerm(answerView.getDocumentText(), 10 /* XXX */, true);
 
-			SolrTerm answerTerm = new SolrTerm(answerView.getDocumentText(), 10 /* XXX */, true);
-			terms.add(answerTerm);
-
-			documents = solr.runQuery(terms, 10000 /* XXX */, settings, logger);
-		} catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
-		}
-
-		long n = documents.getNumFound();
-		float s = documents.getMaxScore();
-		logger.debug("{} => {}, {} => {}", answerView.getDocumentText(), n, s, n * s);
+		Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
+		Collection<SolrTerm> terms = SolrTerm.cluesToTerms(clues);
+		terms.add(answerTerm);
+		SolrHitsCount shc = countTermsHits(terms);
 
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(AF_SolrHitsEv.class, n);
-		fv.setFeature(AF_SolrMaxScoreEv.class, s);
-		fv.setFeature(AF_SolrHitsMaxScoreEv.class, n * s);
+		fv.setFeature(AF_SolrHitsEv.class, shc.n);
+		fv.setFeature(AF_SolrMaxScoreEv.class, shc.s);
+		fv.setFeature(AF_SolrHitsMaxScoreEv.class, shc.n * shc.s);
+
+		logger.debug("{} => {}, {} => {}", answerView.getDocumentText(),
+				shc.n, shc.s, shc.n * shc.s);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();
@@ -114,5 +107,25 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 
 		ai.setFeatures(fv.toFSArray(answerView));
 		ai.addToIndexes();
+	}
+
+	protected SolrHitsCount countTermsHits(Collection<SolrTerm> terms) throws AnalysisEngineProcessException {
+		SolrDocumentList documents;
+		try {
+			documents = solr.runQuery(terms, 10000 /* XXX */, settings, logger);
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+		return new SolrHitsCount(documents.getNumFound(), documents.getMaxScore());
+	}
+
+	protected class SolrHitsCount {
+		long n; // number of hits
+		float s; // maximum hit score
+
+		public SolrHitsCount(long n_, float s_) {
+			n = n_;
+			s = s_;
+		}
 	}
 }
