@@ -184,6 +184,12 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 				logger.debug(".. adding LAT noun " + nounw.getLemma());
 				genDerivedSynsets(latmap, lat, nounw.getSynset(), wnlist, lat.getSpecificity());
 				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+				/* Take only the first word, to avoid pulling
+				 * in anything obscure - and there is a lot
+				 * of obscure stuff.  E.g. for die:
+				 * death Death die breakdown dead_person end
+				 * passing failure */
+				break;
 			}
 		}
 		return foundNoun;
