@@ -135,7 +135,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 			/* Try to derive a noun. */
 			for (Synset synset : w.getSenses()) {
-				boolean fnhere = genNounSynsets(latmap, lat, synset, wnlist);
+				boolean fnhere = genNounSynsets(latmap, lat, synset, wnpos, wnlist);
 				foundNoun = foundNoun || fnhere;
 			}
 		} else {
@@ -153,7 +153,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			}
 
 			/* Try to derive a noun. */
-			foundNoun = genNounSynsets(latmap, lat, s, wnlist);
+			foundNoun = genNounSynsets(latmap, lat, s, wnpos, wnlist);
 		}
 
 		if (!foundNoun)
@@ -161,7 +161,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	}
 
 	protected boolean genNounSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
-			Synset synset, StringBuilder wnlist) throws Exception
+			Synset synset, POS wnpos, StringBuilder wnlist) throws Exception
 	{
 		boolean foundNoun = false;
 		logger.debug("checking noun synsets of " + synset.getWord(0).getLemma() + "/" + synset.getOffset());
@@ -172,14 +172,25 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			genDerivedSynsets(latmap, lat, noun, wnlist, lat.getSpecificity());
 			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
 		}
-		for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
-			Word nounw = (Word) t;
-			foundNoun = true;
-			if (nounw.getPOS() != POS.NOUN)
-				continue;
-			logger.debug(".. adding LAT noun " + nounw.getLemma());
-			genDerivedSynsets(latmap, lat, nounw.getSynset(), wnlist, lat.getSpecificity());
-			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+		if (wnpos == POS.VERB) {
+			/* For other non-nouns, this is too wide.  E.g. for
+			 * "how deep", we want "depth" but not "mystery",
+			 * "richness", "deepness", "obscureness", ... */
+			for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
+				Word nounw = (Word) t;
+				foundNoun = true;
+				if (nounw.getPOS() != POS.NOUN)
+					continue;
+				logger.debug(".. adding LAT noun " + nounw.getLemma());
+				genDerivedSynsets(latmap, lat, nounw.getSynset(), wnlist, lat.getSpecificity());
+				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
+				/* Take only the first word, to avoid pulling
+				 * in anything obscure - and there is a lot
+				 * of obscure stuff.  E.g. for die:
+				 * death Death die breakdown dead_person end
+				 * passing failure */
+				break;
+			}
 		}
 		return foundNoun;
 	}
