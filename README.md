@@ -20,10 +20,10 @@ Text book.
 
 The current version is a work-in-progress snapshot that already can answer
 some questions, even though it's embarassingly often wrong; on the testing
-corpus, while about 70% of questions have the correct answer *suggested* in
-the process, it can currently choose the correct answer for about 22.5% of
-questions (but 35% of questions have the correct answer in top three and
-41.5% in top five candidates).
+corpus, while about 73% of questions have the correct answer *suggested* in
+the process, it can currently choose the correct answer for about 25% of
+questions (but 38% of questions have the correct answer in top three and
+44% in top five candidates).
 
 ## Installation Instructions
 
@@ -33,38 +33,40 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * ``sudo apt-get install default-jdk maven uima-utils``
   * Install the Wordnet ontological database:
 	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
-  * ``mvn verify``
-  * ``mvn -q exec:java -Pinteractive``
+  * ``./gradlew check``
+  * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
+    of all sorts of NLP resources and models.  This will amount to several
+    hundreds of megabytes of download!
+  * ``./gradlew run -q``
 
 By default, YodaQA will try to connect to a remote Solr core serving Wikipedia;
 see the section on Data Sources if connection fails.
 
 ## Usage
 
-The ``mvn -q exec:java -Pinteractive`` starts YodaQA with the "interactive"
+The ``./gradlew run -q`` starts YodaQA with the "interactive"
 frontend which offers a prompt and answers questions interactively;
 answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
 
 It is also possible to let YodaQA answer many questions at once, e.g. to
-measure the performance; use ``mvn -q exec:java -Ptsvgs`` to feed YodaQA
+measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
 the curated testing dataset from data/eval/.  (See also data/eval/README.md
-for more details, and a convenient wrapper script ``curated-measure.sh``.)
+for more details, and a convenient wrapper script ``train-and-eval.sh``.)
+Support for connecting YodaQA to other programs (e.g. to IRC) is a work
+in progress, see ``contrib/irssi-brmson-pipe.pl`` for an example.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
 Alternatively, if things don't go well, try passing an extra parameter
-``-Dorg.slf4j.simpleLogger.defaultLogLevel=debug`` on the mvn commandline,
+``-Dorg.slf4j.simpleLogger.defaultLogLevel=debug`` on the commandline,
 or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
-on systems with less than 8GB RAM.  Anyhow, you may need to invoke it as
-``MAVEN_OPTS="-Xms2048m -Xmx4500m" mvn -q exec:java ...``.  Another issue
-that can arise is that if you are running measurements in parallel, one
-of the java processes decides to spawn bazillion threads to perform
-garbage collection; to prevent that, include ``-XX:-UseParallelGC
--XX:-UseConcMarkSweepGC`` in ``MAVEN_OPTS``.
+on systems with less than 8GB RAM.  You may also need to tweak the
+minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
+on a 32-bit system.
 
 ## Data Sources
 
@@ -112,7 +114,11 @@ in ``data/dbpedia/README.md``.
 ## Development Notes
 
 See the [High Level Design Notes](doc/HIGHLEVEL.md) document for
-a brief description of YodaQA's design approach.
+a brief description of YodaQA's design approach.  When hacking brmson
+QA logic, you should understand basics of the UIMA framework we use,
+see the [UIMA Intro](doc/UIMA-INTRO.md).  You will probably want to
+switch back and forth between these two documents when learning about
+brmson first.
 
 ### Package Organization
 

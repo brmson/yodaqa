@@ -66,10 +66,10 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		/* Also set a feature when the quantity is an actual number
 		 * (as opposed to e.g. "many"). */
 		if (num.getDependent().getPos().getPosValue().equals("CD")) {
-			addLATFeature(jcas, AF_LATQuantityCD.class, 1.0);
+			addLATFeature(jcas, AF_LATQuantityCD.class);
 			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text, pos, spec);
 		} else {
-			addLATFeature(jcas, AF_LATQuantity.class, 1.0);
+			addLATFeature(jcas, AF_LATQuantity.class);
 			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text, pos, spec);
 		}
 
@@ -86,10 +86,10 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		lat.addToIndexes();
 	}
 
-	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f, double value) throws AnalysisEngineProcessException {
+	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f) throws AnalysisEngineProcessException {
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(f, fv.getFeatureValue(f) + value);
+		fv.setFeature(f, 1.0);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();

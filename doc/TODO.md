@@ -24,6 +24,18 @@ fairly volatile):
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
 
+  * SolrHitsCounter: Also count hits of answer alone and normalize
+    question + answer hits by it
+  * Revise the LAT generation quality on training set, produce
+    a breakdown and annotate it
+  * Generate a special "boring" feature for answers that contain
+    no interesting information
+  * Special handling of "name" queries (simple focus proxy is
+    not enough, maybe we want a special feature and even a special
+    answer generator?)
+  * Try a small decision forest instead of logistic regression
+    to capture some simple feature dependencies
+
 v1.0 Roadmap
 ------------
 
@@ -52,8 +64,6 @@ pipeline stages implemented.  More concretely:
 To get there, we have to take care of at least the following:
 
   * Evidence Gathering stage
-    * Support for training two hitlists; embedded training of
-      macihne learning models in the pipeline
     * Extra Fulltext Search: An answer feature for normalized
       number of fulltext search hits for clues + candidate answer
     * Extra LAT Extraction: An answer feature for extracting LATs
@@ -61,20 +71,25 @@ To get there, we have to take care of at least the following:
     * Extra Type Coercion: An answer feature for normalized number
       of fulltext search hits for question LAT + candidate answer
   * Structured Primary Search
-    * Try to extract focus-based relations from subject-based
-      DBpedia concepts
+    * Try using Freebase in addition to DBpedia or create a custom
+      raw infobox/table dataset from the enwiki data; it turns out
+      that DBpedia is in fact really narrow :(
 
 We plan to publish our results in a paper when 1.0 is done.  For that,
 we will want to do some comparison benchmarks:
 
+  * Update to DBpedia 2014 and a more recent enwiki snapshot
+  * Re-benchmark with other datasets:
+    * Plain TREC QA dataset and regexes (full + curated-test questions
+      only).
+    * WebQuestions Dataset (SEMPRE)
+    * CMU "Question-Answer Dataset"
   * Benchmark with some sensible "sub-baseline" pipelines.
-  * Re-benchmark with plain TREC QA dataset and regexes (full +
-    curated-test questions only).
   * Consider benchmarking with plain TREC QA dataset + the original
     data sources http://trec.nist.gov/data/qa/t9_qadata.html#t9docs
     (I feel opposed to it; this is clumsy and not open science. --pasky)
   * Check the TamingText dataset
-  * Benchmark OpenEphyra and BlanQA on the same datasets.
+  * Benchmark OpenEphyra, BlanQA and Jacana on the same datasets.
 
 For the first paper or for a next stage survey-ish publication:
 
@@ -144,7 +159,6 @@ Speed:
 
 Interface:
   * Readline interface for the interactive IO?
-  * IRC/pipeline interface (from BlanQA).
   * Web interface.
   * Give context to answers, allow for clarifications and iterative
     conversation; add a lot of hooks but I think this is pretty key
@@ -152,7 +166,7 @@ Interface:
     valuable for actual usage.
 
 Janitorial:
-  * Switch to gradle, SolrJ, extWordNet
+  * Switch to SolrJ, extWordNet
   * Add an origin record to each annotation - which annotator
     produced it? Will be useful when we have multiple possible
     annotation paths.

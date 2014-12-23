@@ -4,6 +4,9 @@
     <description>Type Coercion type system - assign "lexical types" to expected question answers and candidate answers and allow matching them</description>
     <vendor>yodaqa</vendor>
     <version>1.0</version>
+    <imports>
+      <import name="QuestionTypes_TS"/>
+    </imports>
     <types>
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.LAT</name>
@@ -54,6 +57,12 @@
       </typeDescription>
 
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT</name>
+	<description>LAT generated from a question word (e.g. when -> LAT time).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.NELAT</name>
         <description>LAT generated from named entity type (as provided by the named entity recognizer).</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
@@ -76,6 +85,11 @@
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT</name>
         <description>LAT generated from Wordnet instance-of relationships.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT</name>
+        <description>LAT generated from DBpedia relation property name.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
 

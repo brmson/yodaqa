@@ -1,0 +1,95 @@
+package cz.brmlab.yodaqa.io.machine;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
+import org.apache.uima.UimaContext;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.collection.CollectionException;
+import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.Progress;
+import org.apache.uima.util.ProgressImpl;
+
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+
+
+/**
+ * A collection that reads the raw question from stdin. */
+
+public class MachineQuestionReader extends CasCollectionReader_ImplBase {
+	/**
+	 * Name of optional configuration parameter that contains the language
+	 * of questions. This is mandatory as x-unspecified will break e.g. OpenNLP.
+	 */
+	public static final String PARAM_LANGUAGE = ComponentParameters.PARAM_LANGUAGE;
+	@ConfigurationParameter(name = PARAM_LANGUAGE, mandatory = true)
+	private String language;
+
+	BufferedReader br;
+
+	private int index;
+	private String input;
+
+	@Override
+	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+		super.initialize(aContext);
+
+		index = -1;
+		br = new BufferedReader(new InputStreamReader(System.in));;
+	}
+
+	protected void acquireInput() {
+		index++;
+		try {
+			input = br.readLine();
+		} catch (IOException io) {
+			io.printStackTrace();
+			input = null;
+		}
+	}
+
+	@Override
+	public boolean hasNext() throws CollectionException {
+		if (input == null)
+			acquireInput();
+		return input != null;
+	}
+
+	protected void initCas(JCas jcas) {
+		jcas.setDocumentLanguage(language);
+
+		QuestionInfo qInfo = new QuestionInfo(jcas);
+		qInfo.setSource("machine");
+		qInfo.setQuestionId(Integer.toString(index));
+		qInfo.addToIndexes(jcas);
+	}
+
+	@Override
+	public void getNext(CAS aCAS) throws CollectionException {
+		if (input == null)
+			acquireInput();
+		try {
+			JCas jcas = aCAS.getJCas();
+			initCas(jcas);
+			jcas.setDocumentText(input);
+		} catch (CASException e) {
+			throw new CollectionException(e);
+		}
+		input = null;
+	}
+
+	@Override
+	public Progress[] getProgress() {
+		return new Progress[]{new ProgressImpl(index, -1, Progress.ENTITIES)};
+	}
+
+	@Override
+	public void close() {
+	}
+}

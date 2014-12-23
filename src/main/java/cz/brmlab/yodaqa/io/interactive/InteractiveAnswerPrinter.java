@@ -25,7 +25,13 @@ public class InteractiveAnswerPrinter extends JCasConsumer_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		FSIndex idx = jcas.getJFSIndexRepository().getIndex("SortedAnswers");
+		JCas answerHitlist;
+		try {
+			answerHitlist = jcas.getView("AnswerHitlist");
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
 		if (answers.hasNext()) {
 			int i = 1;

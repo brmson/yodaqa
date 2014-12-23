@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.util.FSCollectionFactory;
@@ -33,15 +34,19 @@ public class AnswerFV {
 		"originPsgByClueSV", "originPsgByClueNE", "originPsgByClueLAT", "originPsgByClueSubject", "originPsgByClueConcept",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 			"originPsgSurprise",
-		"originDocTitle",
+		"originDocTitle", "originDBpRelation",
 		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
 		"LATNE", "LATDBpType", "LATQuantity", "LATQuantityCD", "LATWnInstance",
+			"LATDBpRelation",
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
+			"tyCorADBpRelation",
+		"topAnswer", "solrHitsEv", "solrMaxScoreEv", "solrHitsMaxScoreEv",
+		"phase0Score", "phase1Score",
 	};
 
 	protected double values[]; // the feature value
@@ -68,6 +73,7 @@ public class AnswerFV {
 			features.add(AF_OriginPsgNPByLATSubj.class);
 			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
+			features.add(AF_OriginDBpRelation.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
 			features.add(AF_OriginConceptByLAT.class);
@@ -85,6 +91,7 @@ public class AnswerFV {
 			features.add(AF_LATQuantity.class);
 			features.add(AF_LATQuantityCD.class);
 			features.add(AF_LATWnInstance.class);
+			features.add(AF_LATDBpRelation.class);
 			features.add(AF_TyCorSpQHit.class);
 			features.add(AF_TyCorSpAHit.class);
 			features.add(AF_TyCorANE.class);
@@ -92,6 +99,13 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantity.class);
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
+			features.add(AF_TyCorADBpRelation.class);
+			features.add(AF_TopAnswer.class);
+			features.add(AF_SolrHitsEv.class);
+			features.add(AF_SolrMaxScoreEv.class);
+			features.add(AF_SolrHitsMaxScoreEv.class);
+			features.add(AF_Phase0Score.class);
+			features.add(AF_Phase1Score.class);
 		}
 
 		values = new double[labels.length];
@@ -146,6 +160,10 @@ public class AnswerFV {
 
 	public static int featureIndex(Class<? extends AnswerFeature> f) {
 		return features.indexOf(f);
+	}
+
+	public static int featureIndex(String label) {
+		return ArrayUtils.indexOf(labels, label);
 	}
 
 

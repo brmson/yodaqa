@@ -1,5 +1,7 @@
 tsv
 tsv-local
+answer*-csv
+answer-xmi
 
 .gle
 ranks.dat

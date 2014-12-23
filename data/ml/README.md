@@ -11,7 +11,7 @@ Right now, we consider machine learned models in two cases:
 
 In general, to train models, we first need to gather training data.
 We run YodaQA with the tsvgs frontend like during gold standard measurements,
-but passing extra mvn commandline options
+but passing extra java commandline options
 
 	-Dcz.brmlab.yodaqa.train_passextract=training-passextract.tsv -Dcz.brmlab.yodaqa.train_answer=training-answer.tsv
 
@@ -27,6 +27,11 @@ commits is available at
 
 After this data is accumulated, the training procedure is specific
 for each model.
+
+In practice, to train + evaluate performance at once, you should simply
+call the ``data/eval/train-and-eval.sh`` script, which will take care
+of everything.  It will also suggest a cp command to use to update the
+model with the re-trained version - commit afterwards.
 
 Passage Extraction
 ------------------
