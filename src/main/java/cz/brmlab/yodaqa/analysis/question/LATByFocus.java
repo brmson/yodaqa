@@ -80,7 +80,15 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
 
 		} else {
-			addFocusLAT(jcas, focus, text, pos, 0, 0.0, new LAT(jcas));
+			/* Primarily generate the non-lemmatized LAT.  For
+			 * example for "species", we also generate the original
+			 * form in addition to the (wrongly) lemmatized
+			 * "specie". */
+			String realText = focus.getCoveredText().toLowerCase();
+			addFocusLAT(jcas, focus, realText, pos, 0, 0.0, new LAT(jcas));
+
+			if (!text.equals(realText))
+				addFocusLAT(jcas, focus, text, pos, 0, 0.0, new ImplicitQLAT(jcas));
 		}
 	}
 
