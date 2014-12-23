@@ -114,7 +114,11 @@ in ``data/dbpedia/README.md``.
 ## Development Notes
 
 See the [High Level Design Notes](doc/HIGHLEVEL.md) document for
-a brief description of YodaQA's design approach.
+a brief description of YodaQA's design approach.  When hacking brmson
+QA logic, you should understand basics of the UIMA framework we use,
+see the [UIMA Intro](doc/UIMA-INTRO.md).  You will probably want to
+switch back and forth between these two documents when learning about
+brmson first.
 
 ### Package Organization
 
