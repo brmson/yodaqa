@@ -73,6 +73,9 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 
 		this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
 				new String[]{"", "titleText"}, true /* XXX? */);
+		/* Include only the answer and proximity terms in
+		 * the solr search query. */
+		this.settings.setProximityOnly(true);
 	}
 
 
