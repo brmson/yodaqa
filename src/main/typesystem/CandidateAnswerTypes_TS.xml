@@ -240,6 +240,16 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrAHitsEv</name>
+        <description>Answer Feature: Unbounded integer representing the number of search hits for answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsANormEv</name>
+        <description>Answer Feature: Unbounded integer representing the number of search hits for question + answer, normalized by number of search hits for just the answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrMaxScoreEv</name>
         <description>Answer Feature: Unbounded float representing the maximum score among search hits for question + answer.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

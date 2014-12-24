@@ -44,7 +44,8 @@ public class AnswerFV {
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
 			"tyCorADBpRelation",
-		"topAnswer", "solrHitsEv", "solrMaxScoreEv", "solrHitsMaxScoreEv",
+		"topAnswer", "solrHitsEv", "solrAHitsEv", "solrHitsANormEv", "solrMaxScoreEv",
+			"solrHitsMaxScoreEv",
 		"phase0Score", "phase1Score",
 	};
 
@@ -96,6 +97,8 @@ public class AnswerFV {
 			features.add(AF_TyCorADBpRelation.class);
 			features.add(AF_TopAnswer.class);
 			features.add(AF_SolrHitsEv.class);
+			features.add(AF_SolrAHitsEv.class);
+			features.add(AF_SolrHitsANormEv.class);
 			features.add(AF_SolrMaxScoreEv.class);
 			features.add(AF_SolrHitsMaxScoreEv.class);
 			features.add(AF_Phase0Score.class);

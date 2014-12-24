@@ -18,7 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrAHitsEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsEv;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsANormEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrMaxScoreEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsMaxScoreEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
@@ -107,7 +109,7 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 
 		/* Compute the stats. */
 
-		float n = (float) dCombined.getNumFound() / dAnswer.getNumFound();
+		long n = dCombined.getNumFound();
 		float s = dCombined.getMaxScore();
 		/* N.B. normalization by something like dQuestion is not needed
 		 * thanks to the generic all-answer feature normalization we
@@ -115,6 +117,8 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 
 		AnswerFV fv = new AnswerFV(ai);
 		fv.setFeature(AF_SolrHitsEv.class, n);
+		fv.setFeature(AF_SolrAHitsEv.class, dAnswer.getNumFound());
+		fv.setFeature(AF_SolrHitsANormEv.class, (float) n / dAnswer.getNumFound());
 		fv.setFeature(AF_SolrMaxScoreEv.class, s);
 		fv.setFeature(AF_SolrHitsMaxScoreEv.class, n * s);
 
