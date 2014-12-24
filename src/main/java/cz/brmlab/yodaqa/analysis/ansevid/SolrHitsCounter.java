@@ -118,7 +118,8 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 		AnswerFV fv = new AnswerFV(ai);
 		fv.setFeature(AF_SolrHitsEv.class, n);
 		fv.setFeature(AF_SolrAHitsEv.class, dAnswer.getNumFound());
-		fv.setFeature(AF_SolrHitsANormEv.class, (float) n / dAnswer.getNumFound());
+		if (dAnswer.getNumFound() > 0)
+			fv.setFeature(AF_SolrHitsANormEv.class, (float) n / dAnswer.getNumFound());
 		fv.setFeature(AF_SolrMaxScoreEv.class, s);
 		fv.setFeature(AF_SolrHitsMaxScoreEv.class, n * s);
 
