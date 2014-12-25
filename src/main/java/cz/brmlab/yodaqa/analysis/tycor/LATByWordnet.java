@@ -182,20 +182,23 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			/* For other non-nouns, this is too wide.  E.g. for
 			 * "how deep", we want "depth" but not "mystery",
 			 * "richness", "deepness", "obscureness", ... */
+			Word nominalw = null;
 			for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
 				Word nounw = (Word) t;
 				foundNoun = true;
 				if (nounw.getPOS() != POS.NOUN)
 					continue;
-				logger.debug(".. adding LAT noun " + nounw.getLemma());
-				genDerivedSynsets(latmap, lat, nounw.getSynset(), wnlist, lat.getSpecificity());
+				nominalw = nounw;
+			}
+			/* Take only the last word (which is the most common
+			 * one), to avoid pulling in anything obscure - and
+			 * there is a lot of obscure stuff.  E.g. for die:
+			 * death Death die breakdown dead_person end passing
+			 * failure */
+			if (nominalw != null) {
+				logger.debug(".. adding LAT noun " + nominalw.getLemma());
+				genDerivedSynsets(latmap, lat, nominalw.getSynset(), wnlist, lat.getSpecificity());
 				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
-				/* Take only the first word, to avoid pulling
-				 * in anything obscure - and there is a lot
-				 * of obscure stuff.  E.g. for die:
-				 * death Death die breakdown dead_person end
-				 * passing failure */
-				break;
 			}
 		}
 		return foundNoun;
