@@ -97,8 +97,9 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			 * (matching) answers that are not refAnswer.
 			 *
 			 * To decide between multiple possible answers, we use
-			 * the one with the highest score from the previous
-			 * phase; use all correct answers in the initial phase.
+			 * the shortest one, in case of a tie, use the one
+			 * with the highest score from the previous phase;
+			 * use all correct answers in the initial phase.
 			 * If we used the current model, it would not be stable
 			 * across re-trainings on identical program version as
 			 * the selected correct answers would keep changing;
@@ -140,7 +141,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 				score = fv.getFeatureValue(AF_Phase1Score.class);
 			else assert(false);
 
-			if (score > bestAScore) {
+			if (a.getText().length() < bestA.getText().length() || score > bestAScore) {
 				bestA = a;
 				bestAScore = score;
 			}
