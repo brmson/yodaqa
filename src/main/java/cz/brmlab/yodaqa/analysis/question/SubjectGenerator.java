@@ -4,6 +4,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.WHNP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.ADVMOD;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DEP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DET;
@@ -53,9 +54,18 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 
 	protected void processSubj(JCas jcas, Dependency subj) throws AnalysisEngineProcessException {
 		Token stok = subj.getDependent();
+		Annotation parent = stok.getParent();
+		Constituent cparent = null;
+		if (parent != null && parent instanceof Constituent)
+			cparent = (Constituent) parent;
 
 		/* Skip question word focuses (e.g. "Who"). */
 		if (stok.getPos().getPosValue().matches("^W.*"))
+			return;
+		/* In "What country is Berlin in?", "country" (with
+		 * parent "What country" WHNP) is *also* a NSUBJ
+		 * - skip that one. */
+		if (cparent instanceof WHNP)
 			return;
 
 		/* Prefer a covering Named Entity: */
@@ -74,7 +84,7 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 		 * Pikes peak?"), it's indispensible.  Let's create a Subject
 		 * annotation for that too, and let ClueBySubject sort it
 		 * out based on whether it has a token or constituent. */
-		addSubject(jcas, stok.getParent());
+		addSubject(jcas, parent);
 	}
 
 	protected void addSubject(JCas jcas, Annotation subj) throws AnalysisEngineProcessException {
