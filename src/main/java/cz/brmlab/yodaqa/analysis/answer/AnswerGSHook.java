@@ -83,7 +83,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
 			PrintWriter csvFile = openAnswersCSV(csvFileName);
 			for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-				dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
+				dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).matches() : false, astats);
 			}
 		}
 
@@ -111,7 +111,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			FSIterator answers = idx.iterator();
 			while (answers.hasNext()) {
 				Answer a = (Answer) answers.next();
-				boolean isMatch = ap.matcher(a.getText()).find();
+				boolean isMatch = ap.matcher(a.getText()).matches();
 				if (isMatch && refAnswer != null && !refAnswer.equals(a.getText())) {
 					logger.debug("not including correct answer: {} < {}", a.getText(), refAnswer);
 					continue; // output only the top positive match
@@ -129,7 +129,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		Answer bestA = null;
 		double bestAScore = 0;
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-			if (!ap.matcher(a.getText()).find())
+			if (!ap.matcher(a.getText()).matches())
 				continue;
 
 			AnswerFV fv = new AnswerFV(a, astats);
