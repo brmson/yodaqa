@@ -141,7 +141,9 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 				score = fv.getFeatureValue(AF_Phase1Score.class);
 			else assert(false);
 
-			if (a.getText().length() < bestA.getText().length() || score > bestAScore) {
+			if (bestA == null
+			    || (a.getText().length() < bestA.getText().length())
+			    || (a.getText().length() == bestA.getText().length() && score > bestAScore)) {
 				bestA = a;
 				bestAScore = score;
 			}
