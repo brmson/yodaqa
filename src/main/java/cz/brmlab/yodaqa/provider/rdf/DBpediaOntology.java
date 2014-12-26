@@ -86,7 +86,9 @@ public class DBpediaOntology extends CachedJenaLookup {
 				replaceAll(".*/", "").
 				replaceAll("_", " ").
 				replaceAll("([a-z])([A-Z])", "$1 $2");
-			String value = rawResult[1].getString();
+			/* Remove trailing (...) (e.g. (disambiguation) in
+			 * links). */
+			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			logger.debug("DBpedia {} property: {} -> {}", title, propLabel, value);
 			results.add(new PropertyValue(title, propLabel, value));
 		}

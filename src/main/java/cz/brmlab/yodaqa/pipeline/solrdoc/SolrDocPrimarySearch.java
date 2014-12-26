@@ -145,7 +145,12 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		String title = (String) doc.getFieldValue("titleText");
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
 
-		jcas.setDocumentText(title);
+		/* Chop any trailing (...) substring (e.g. Foo (disambiguation)
+		 * to just Foo).  N.B. it might be tempting to use this as
+		 * a LAT, but it might not be a type; e.g.
+		 * Socialist Party(France), ...  so at most this should be
+		 * a weak LAT signal. */
+		jcas.setDocumentText(title.replaceAll("\\s+\\([^)]*\\)\\s*$", ""));
 		jcas.setDocumentLanguage("en"); // XXX
 
 		ResultInfo ri = new ResultInfo(jcas);
