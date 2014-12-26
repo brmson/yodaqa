@@ -97,15 +97,17 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			 * (matching) answers that are not refAnswer.
 			 *
 			 * To decide between multiple possible answers, we use
-			 * the shortest one, in case of a tie, use the one
-			 * with the highest score from the previous phase;
-			 * use all correct answers in the initial phase.
+			 * the one with the highest score from the previous
+			 * phase; use all correct answers in the initial phase.
 			 * If we used the current model, it would not be stable
 			 * across re-trainings on identical program version as
 			 * the selected correct answers would keep changing;
 			 * it turns out this introduces a significant
 			 * instability and (i) the performance degrades
-			 * (ii) it is very tricky to measure improvements. */
+			 * (ii) it is very tricky to measure improvements.
+			 *
+			 * We also prefer correct answers which have lower
+			 * score but are contained in other correct answers. */
 			String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
 
 			FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
@@ -142,8 +144,8 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			else assert(false);
 
 			if (bestA == null
-			    || (a.getText().length() < bestA.getText().length())
-			    || (a.getText().length() == bestA.getText().length() && score > bestAScore)) {
+			    || bestA.getText().contains(a.getText())
+			    || score > bestAScore) {
 				bestA = a;
 				bestAScore = score;
 			}
