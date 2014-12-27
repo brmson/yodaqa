@@ -1,0 +1,18 @@
+LAT bugs in about first 1/3 of curated-train set (about 10% failure rate):
+
+ * For whom was the state of Pennsylvania named? (state)
+ * What is written on the U.S. tomb of the unknown soldier? (U.S.)
+ * What body of water does the Colorado River empty into? (body) ++
+ * when was Voyager 1 launched? (launch)
+ * How often does the men's soccer World Cup take place? (often)
+ * What was Aaron Copland's most famous piece of music? (piece)
+ * What are pennies made of? (pennies)
+ * How long is the Great Barrier Reef? (long)
+ * how long does light travel from sun to earth? (long)
+ * What is an Indian flute made of? (flute)
+ * What did Osama bin Laden's father do for a living? (do)
+ * What is the play "West Side Story" based on? (play)
+ * What did Caesar say before he died? (Caesar)
+ * How far is the distance for a free throw? (far)
+ * What did Charles Babbage invent?
+ * Whose business slogan is "Quality is job 1"? (quality)
