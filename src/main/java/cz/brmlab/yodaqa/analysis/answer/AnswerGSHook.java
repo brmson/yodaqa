@@ -107,7 +107,13 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			 * (ii) it is very tricky to measure improvements.
 			 *
 			 * We also prefer correct answers which have lower
-			 * score but are contained in other correct answers. */
+			 * score but are contained in other correct answers.
+			 * Basically, we first pick the answer with the highest
+			 * score, then try to reduce this answer (by substring
+			 * relations) even at the cost of lowering the score
+			 * too.  The motivation is that shorter answers are
+			 * more precise and will therefore have a more
+			 * determining set of features to take for training. */
 			String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
 
 			FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
@@ -129,6 +135,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		if (scoringPhase.equals(""))
 			return null;
 
+		/* First, pick the best scored answer. */
 		Answer bestA = null;
 		double bestAScore = 0;
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
@@ -136,16 +143,32 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 				continue;
 
 			double score = getAnswerScore(a, astats);
-
-			if (bestA == null
-			    || bestA.getText().contains(a.getText())
-			    || score > bestAScore) {
+			if (score > bestAScore) {
 				bestA = a;
 				bestAScore = score;
 			}
 		}
+		if (bestA == null)
+			return null;  // no luck
 
-		return bestA != null ? bestA.getText() : null;
+		/* Now, check again if we can find a shorter but still
+		 * correct version of the best answer.  If so, take
+		 * the shortest one. */
+		Answer bestShorterA = bestA;
+		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
+			if (!ap.matcher(a.getText()).find())
+				continue;
+			if (!bestA.getText().contains(a.getText()))
+				continue;
+			if (bestShorterA.getText().length() < a.getText().length())
+				continue;
+			if (bestShorterA.getText().length() == a.getText().length()
+			    && getAnswerScore(bestShorterA, astats) > getAnswerScore(a, astats))
+				continue;  // tie-breaker is score
+			bestShorterA = a;
+		}
+
+		return bestShorterA.getText();
 	}
 
 	protected double getAnswerScore(Answer a, AnswerStats astats) {
