@@ -88,6 +88,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			/* Yay, got one! */
 			DBpediaTitles.Article a = results.get(0);
+			/* Remove trailing (...) (e.g. (disambiguation)). */
+			String cookedLabel = a.getLabel().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
 			/* Start constructing the annotation. */
 			ClueConcept conceptClue = new ClueConcept(resultView);
@@ -98,7 +100,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			clue.removeFromIndexes();
 			cluesByLen.remove(clue);
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-				logger.debug("Concept {} subduing {} {}", a.getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
+				logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
 				if (clueSub instanceof ClueSubject)
 					conceptClue.setBySubject(true);
 				else if (clueSub instanceof ClueLAT)
@@ -124,12 +126,12 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * text *optional* during full-text search and keep
 			 * the original text (required during search) within
 			 * a new ClueNE annotation. */
-			boolean reworded = ! clueLabel.toLowerCase().equals(a.getLabel().toLowerCase());
+			boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
 
 			/* Make a fresh concept clue. */
 			addClue(conceptClue, clue.getBegin(), clue.getEnd(),
 				clue.getBase(), weight,
-				a.getPageID(), a.getLabel(), !reworded);
+				a.getPageID(), cookedLabel, !reworded);
 
 			/* Make also an NE clue with always the original text
 			 * as label. */

@@ -24,12 +24,11 @@ fairly volatile):
   * Features for clues that triggered the answer generating
     passage (WIP; so far overfits)
 
-  * SolrHitsCounter: Also count hits of answer alone and normalize
-    question + answer hits by it
-  * Revise the LAT generation quality on training set, produce
-    a breakdown and annotate it
+  * Problem with quantities like "What's the speed of light?"
+  * Improve qLAT generation re `data/eval/analysis/LAT-6bccbab.txt`
+  * Review Subject generation, aLAT generation
   * Generate a special "boring" feature for answers that contain
-    no interesting information
+    no interesting information; this is important for SolrHitsCount
   * Special handling of "name" queries (simple focus proxy is
     not enough, maybe we want a special feature and even a special
     answer generator?)
