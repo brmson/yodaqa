@@ -165,6 +165,7 @@ Interface:
     valuable for actual usage.
 
 Janitorial:
+  * Log answer processing during batch evaluations to separate files
   * Switch to SolrJ, extWordNet
   * Add an origin record to each annotation - which annotator
     produced it? Will be useful when we have multiple possible
