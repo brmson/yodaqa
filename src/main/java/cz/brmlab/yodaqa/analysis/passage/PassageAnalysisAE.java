@@ -78,6 +78,10 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Passages like: The <question focus> is <CandidateAnswer>. */
 		builder.add(createPrimitiveDescription(CanByLATSubject.class));
 
+		/* Blacklist some answers that are just linguistic artifacts */
+		builder.add(createPrimitiveDescription(CanBlacklist.class),
+			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+
 
 		/* Finishing touches: */
 
