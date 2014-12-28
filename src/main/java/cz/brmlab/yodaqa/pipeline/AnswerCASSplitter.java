@@ -27,8 +27,8 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * each to-be-reanalyzed candidate answer.  However, first we return
  * AnswerHitlistCAS again to keep it flowing. */
 
-public class AnswerSplitter extends JCasMultiplier_ImplBase {
-	final static Logger logger = LoggerFactory.getLogger(AnswerSplitter.class);
+public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
+	final static Logger logger = LoggerFactory.getLogger(AnswerCASSplitter.class);
 
 	/**
 	 * Number of top answers to extract.

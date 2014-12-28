@@ -36,8 +36,8 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
  *
  * We also deduplicate answers with identical text. */
 
-public class AnswerMerger extends JCasMultiplier_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(AnswerMerger.class);
+public class AnswerCASMerger extends JCasMultiplier_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(AnswerCASMerger.class);
 
 	/** Number of CASes marked as isLast required to encounter before
 	 * the final merging is performed.  When multiple independent CAS

@@ -125,10 +125,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
 			builder.add(answerAnalysis);
 
-			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-					AnswerMerger.class,
-					AnswerMerger.PARAM_ISLAST_BARRIER, 4);
-			builder.add(answerMerger);
+			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASMerger.class,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 4);
+			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #0.) */
 		} else if (loadPhase == 0) {
@@ -162,17 +162,17 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			/* Convert top N AnswerHitlist entries back to separate CASes,
 			 * then back to a hitlist, to get rid of them.  This is a bit
 			 * convoluted, but simple. */
-			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
-					AnswerSplitter.class,
-					AnswerSplitter.PARAM_TOPLISTLEN, 100,
-					AnswerSplitter.PARAM_HITLIST_EMIT, false);
-			builder.add(answerSplitter);
+			AnalysisEngineDescription answerCASSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASSplitter.class,
+					AnswerCASSplitter.PARAM_TOPLISTLEN, 100,
+					AnswerCASSplitter.PARAM_HITLIST_EMIT, false);
+			builder.add(answerCASSplitter);
 
-			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-					AnswerMerger.class,
-					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
-					AnswerMerger.PARAM_HITLIST_REUSE, false);
-			builder.add(answerMerger);
+			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASMerger.class,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerCASMerger.PARAM_HITLIST_REUSE, false);
+			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #1.) */
 		} else if (loadPhase == 1) {
@@ -204,18 +204,18 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			/* Convert top N AnswerHitlist entries back to separate CASes;
 			 * the original hitlist with the rest of questions is also
 			 * still passed through.. */
-			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
-					AnswerSplitter.class);
-			builder.add(answerSplitter);
+			AnalysisEngineDescription answerCASSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASSplitter.class);
+			builder.add(answerCASSplitter);
 
 			AnalysisEngineDescription answerEvidencing = AnswerEvidencingAE.createEngineDescription();
 			builder.add(answerEvidencing);
 
-			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-					AnswerMerger.class,
-					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
-					AnswerMerger.PARAM_HITLIST_REUSE, true);
-			builder.add(answerMerger);
+			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASMerger.class,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerCASMerger.PARAM_HITLIST_REUSE, true);
+			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #2.) */
 		} else if (loadPhase == 2) {
@@ -249,7 +249,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		/* Since each of these CAS multipliers will eventually produce
 		 * a single CAS marked as "isLast", if you add another one
-		 * here, you must also bump the AnswerMerger parameter
+		 * here, you must also bump the AnswerCASMerger parameter
 		 * PARAM_ISLAST_BARRIER. */
 
 		AnalysisEngineDescription dbpRel = DBpediaRelationAnswerProducer.createEngineDescription();
