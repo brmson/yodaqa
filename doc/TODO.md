@@ -125,6 +125,12 @@ FinalAnswer Precision Quality:
     * Prefer most specific answers: "When did the shootings at Columbine
       happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
       just merge overlaps
+  * A framework for evidence diffusion:
+    * If a capital has a lot of evidence and the question is for a country,
+      diffuse the evidence to the country too
+  * A type coercion classifier that outputs a generic coercion score
+    (or pair of scores like match + specificity) - we need a LAT training
+    set for that
   * If an LAT is found in sentence governing an APPOS dependency,
     create the dependent as a candidate answer, as in "Who is the
     brother of Sherlock Holmes?" vs. "His brother, Mycroft, seven
