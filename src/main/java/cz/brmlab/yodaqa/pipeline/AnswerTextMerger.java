@@ -19,10 +19,13 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRelation;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 
 /**
@@ -87,9 +90,12 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 			/* At this point we can generate some features
 			 * to be aggregated over all individual answer
 			 * instances. */
-			if (fv.getFeatureValue(AF_OriginPsgNP.class)
+			if (fv.getFeatureValue(AF_OriginPsgFirst.class)
+			    + fv.getFeatureValue(AF_OriginPsgNP.class)
 			    + fv.getFeatureValue(AF_OriginPsgNE.class)
-			    + fv.getFeatureValue(AF_OriginDocTitle.class) > 1.0)
+			    + fv.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
+			    + fv.getFeatureValue(AF_OriginDocTitle.class)
+			    + fv.getFeatureValue(AF_OriginDBpRelation.class) > 1.0)
 				fv.setFeature(AF_OriginMultiple.class, 1.0);
 
 			bestAnswer.setFeatures(fv.toFSArray(jcas));

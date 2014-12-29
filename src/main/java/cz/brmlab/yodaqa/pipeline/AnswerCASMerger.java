@@ -21,10 +21,13 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRelation;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
@@ -218,9 +221,12 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			/* At this point we can generate some features
 			 * to be aggregated over all individual answer
 			 * instances. */
-			if (mainFV.getFeatureValue(AF_OriginPsgNP.class)
+			if (mainFV.getFeatureValue(AF_OriginPsgFirst.class)
+			    + mainFV.getFeatureValue(AF_OriginPsgNP.class)
 			    + mainFV.getFeatureValue(AF_OriginPsgNE.class)
-			    + mainFV.getFeatureValue(AF_OriginDocTitle.class) > 1.0)
+			    + mainFV.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
+			    + mainFV.getFeatureValue(AF_OriginDocTitle.class)
+			    + mainFV.getFeatureValue(AF_OriginDBpRelation.class) > 1.0)
 				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
 			/* Also restore confidence value if we already
 			 * determined it before. */
