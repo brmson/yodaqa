@@ -85,6 +85,11 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 			String label = m.group(1);
 			int i = AnswerFV.featureIndex(label) * 3;
 
+			if (i < 0) {
+				logger.debug("WARNING: Ignoring unknown feature {}", label);
+				continue;
+			}
+
 			while (!line.equals("")) {
 				String line1 = line.replaceAll(",.*$", "");
 				weights[i] = Double.parseDouble(line1);

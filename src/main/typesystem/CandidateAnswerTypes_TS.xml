@@ -235,11 +235,6 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_MergedSyntaxScore</name>
-        <description>Answer Feature: Sum of scores of all answers that were merged into this one because they were syntactically equivalent.</description>
-        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
-      </typeDescription>
-      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDPrefixedScore</name>
         <description>Answer Feature (Evidence Diffusion): Sum of scores of all answers that are syntactic prefixes of this answer.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

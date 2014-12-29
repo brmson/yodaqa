@@ -236,6 +236,10 @@ to the top-scored one.  If the answers are only partially equivalent
 (e.g. country vs. its capital), the score is transferred but no removal
 is done and we call this **evidence diffusion**.
 
+(For merging, we might actually just merge the feature vectors themselves
+rather than transfer the score to a separate feature; the evidence is
+always diffused through features.)
+
 ## Answer Hitlist Scoring 1
 
 Answers are re-scored and re-ranked.

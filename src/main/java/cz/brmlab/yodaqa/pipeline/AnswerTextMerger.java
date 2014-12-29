@@ -19,7 +19,10 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_MergedSyntaxScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 
 /**
@@ -61,45 +64,37 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 			answers.add(a);
 		}
 
-		/* Now, we keep the top scored answer and sum up the rest in
-		 * a specific AF. */
+		/* Now, we keep the top scored answer and merge in the FVs
+		 * of the other variants. */
 		for (Entry<String, List<Answer>> entry : answersByCoreText.entrySet()) {
 			List<Answer> answers = entry.getValue();
 			if (answers.size() == 1)
 				continue;
+
 			Answer bestAnswer = answers.remove(0);
+			AnswerFV fv = new AnswerFV(bestAnswer);
+			removeAnswer(bestAnswer);
 
-			/* Generate an AF of the other answers */
-			double sumScore = sumAnswerScore(answers);
-			logger.debug("merged answer <<{}>> (sumScore {})", bestAnswer.getText(), sumScore);
-			setMergedScore(jcas, bestAnswer, sumScore);
-
-			/* Remove the other answers */
 			for (Answer oa : answers) {
-				logger.debug("...subsumed <<{}>>:{} < <<{}>>", oa.getText(), oa.getConfidence(), bestAnswer.getText());
+				logger.debug("subsumed <<{}>>:{} < <<{}>>", oa.getText(), oa.getConfidence(), bestAnswer.getText());
+				fv.merge(new AnswerFV(oa));
 				removeAnswer(oa);
 			}
+
+			/* XXX: Code duplication with AnswerCASMerger;
+			 * TODO: Move to a specialized annotator within
+			 * AnswerScoringAE */
+			/* At this point we can generate some features
+			 * to be aggregated over all individual answer
+			 * instances. */
+			if (fv.getFeatureValue(AF_OriginPsgNP.class)
+			    + fv.getFeatureValue(AF_OriginPsgNE.class)
+			    + fv.getFeatureValue(AF_OriginDocTitle.class) > 1.0)
+				fv.setFeature(AF_OriginMultiple.class, 1.0);
+
+			bestAnswer.setFeatures(fv.toFSArray(jcas));
+			bestAnswer.addToIndexes();
 		}
-	}
-
-	protected double sumAnswerScore(List<Answer> answers) {
-		double score = 0;
-		for (Answer a : answers) {
-			score += a.getConfidence();
-		}
-		return score;
-	}
-
-	protected void setMergedScore(JCas jcas, Answer a, double sumScore) throws AnalysisEngineProcessException {
-		AnswerFV fv = new AnswerFV(a);
-		fv.setFeature(AF_MergedSyntaxScore.class, sumScore);
-
-		for (FeatureStructure af : a.getFeatures().toArray())
-			((AnswerFeature) af).removeFromIndexes();
-		a.removeFromIndexes();
-
-		a.setFeatures(fv.toFSArray(jcas));
-		a.addToIndexes();
 	}
 
 	protected void removeAnswer(Answer a) {
