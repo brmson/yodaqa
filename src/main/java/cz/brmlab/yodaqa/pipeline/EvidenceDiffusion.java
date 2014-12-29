@@ -50,7 +50,7 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 	public static final String SMP_SUM = "sum";
 	public static final String SMP_DECAY_SUM = "decay-sum";
 	public static final String SMP_MAXIMUM = "maximum";
-	@ConfigurationParameter(name = PARAM_SCORE_MERGE_POLICY, mandatory = false, defaultValue = SMP_SUM)
+	@ConfigurationParameter(name = PARAM_SCORE_MERGE_POLICY, mandatory = false, defaultValue = SMP_DECAY_SUM)
 	protected String scoreMergePolicy;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
