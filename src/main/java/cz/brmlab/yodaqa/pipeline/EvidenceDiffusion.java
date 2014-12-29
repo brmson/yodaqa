@@ -12,6 +12,7 @@ import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -41,6 +42,16 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 
 public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(EvidenceDiffusion.class);
+
+	/** Score merging policy in case score is diffused from multiple
+	 * answers. We can just sum the score, produce a decayed sum or
+	 * take a maximum. */
+	public static final String PARAM_SCORE_MERGE_POLICY = "score-merge-policy";
+	public static final String SMP_SUM = "sum";
+	public static final String SMP_DECAY_SUM = "decay-sum";
+	public static final String SMP_MAXIMUM = "maximum";
+	@ConfigurationParameter(name = PARAM_SCORE_MERGE_POLICY, mandatory = false, defaultValue = SMP_SUM)
+	protected String scoreMergePolicy;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -82,12 +93,14 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 			String text = a.getCanonText();
 			Patterns ps = patterns.get(a);
 
-			double prefixedScore = 0;
-			double prefixingScore = 0;
-			double suffixedScore = 0;
-			double suffixingScore = 0;
-			double substredScore = 0;
-			double substringScore = 0;
+			/* XXX: This needs to be somehow cleaned up. */
+
+			List<Double> prefixedScores = new ArrayList<Double>();
+			List<Double> prefixingScores = new ArrayList<Double>();
+			List<Double> suffixedScores = new ArrayList<Double>();
+			List<Double> suffixingScores = new ArrayList<Double>();
+			List<Double> substredScores = new ArrayList<Double>();
+			List<Double> substringScores = new ArrayList<Double>();
 
 			for (Answer a2 : answers) {
 				if (a == a2)
@@ -96,42 +109,74 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 				Patterns ps2 = patterns.get(a2);
 				if (ps2.prefix.matcher(text).matches()) {
 					logger.debug("prefixed(<<{}>>) += <<{}>>:{}", a.getText(), a2.getText(), a2.getConfidence());
-					prefixedScore += a2.getConfidence();
+					prefixedScores.add(a2.getConfidence());
 				} else if (ps.prefix.matcher(text2).matches()) {
 					logger.debug("prefixing(<<{}>>) += <<{}>>:{}", a.getText(), a2.getText(), a2.getConfidence());
-					prefixingScore += a2.getConfidence();
+					prefixingScores.add(a2.getConfidence());
 				} else if (ps2.suffix.matcher(text).matches()) {
 					logger.debug("suffixed(<<{}>>) += <<{}>>:{}", a.getText(), a2.getText(), a2.getConfidence());
-					suffixedScore += a2.getConfidence();
+					suffixedScores.add(a2.getConfidence());
 				} else if (ps.suffix.matcher(text2).matches()) {
 					logger.debug("suffixing(<<{}>>) += <<{}>>:{}", a.getText(), a2.getText(), a2.getConfidence());
-					suffixingScore += a2.getConfidence();
+					suffixingScores.add(a2.getConfidence());
 				} else if (ps2.substr.matcher(text).matches()) {
 					logger.debug("substred(<<{}>>) += <<{}>>:{}", a.getText(), a2.getText(), a2.getConfidence());
-					substredScore += a2.getConfidence();
+					substredScores.add(a2.getConfidence());
 				} else if (ps.substr.matcher(text2).matches()) {
 					logger.debug("substring(<<{}>>) += <<{}>>:{}", a.getText(), a2.getText(), a2.getConfidence());
-					substringScore += a2.getConfidence();
+					substringScores.add(a2.getConfidence());
 				} else {
 					continue;
 				}
 			}
 
-			if (prefixedScore + prefixingScore + suffixedScore + suffixingScore + substredScore + substringScore == 0)
+			if (!(prefixedScores.size() > 0
+				|| prefixingScores.size() > 0
+				|| suffixedScores.size() > 0
+				|| suffixingScores.size() > 0
+				|| substredScores.size() > 0
+				|| substringScores.size() > 0))
 				continue;
 
 			AnswerFV fv = new AnswerFV(a);
-			if (prefixedScore > 0) fv.setFeature(AF_EvDPrefixedScore.class, prefixedScore);
-			if (prefixingScore > 0) fv.setFeature(AF_EvDPrefixingScore.class, prefixingScore);
-			if (suffixedScore > 0) fv.setFeature(AF_EvDSuffixedScore.class, suffixedScore);
-			if (suffixingScore > 0) fv.setFeature(AF_EvDSuffixingScore.class, suffixingScore);
-			if (substredScore > 0) fv.setFeature(AF_EvDSubstredScore.class, substredScore);
-			if (substringScore > 0) fv.setFeature(AF_EvDSubstringScore.class, substringScore);
+			if (prefixedScores.size() > 0) fv.setFeature(AF_EvDPrefixedScore.class, mergeScores(prefixedScores));
+			if (prefixingScores.size() > 0) fv.setFeature(AF_EvDPrefixingScore.class, mergeScores(prefixingScores));
+			if (suffixedScores.size() > 0) fv.setFeature(AF_EvDSuffixedScore.class, mergeScores(suffixedScores));
+			if (suffixingScores.size() > 0) fv.setFeature(AF_EvDSuffixingScore.class, mergeScores(suffixingScores));
+			if (substredScores.size() > 0) fv.setFeature(AF_EvDSubstredScore.class, mergeScores(substredScores));
+			if (substringScores.size() > 0) fv.setFeature(AF_EvDSubstringScore.class, mergeScores(substringScores));
 			for (FeatureStructure af : a.getFeatures().toArray())
 				((AnswerFeature) af).removeFromIndexes();
 			a.removeFromIndexes();
 			a.setFeatures(fv.toFSArray(jcas));
 			a.addToIndexes();
 		}
+	}
+
+	/** Merge multiple diffused scores to a single value.  This is done
+	 * according to the PARAM_SCORE_MERGE_POLICY. */
+	protected double mergeScores(List<Double> scores) {
+		double mScore = 0;
+
+		if (scoreMergePolicy.equals(SMP_SUM)) {
+			for (double score : scores)
+				mScore += score;
+
+		} else if (scoreMergePolicy.equals(SMP_DECAY_SUM)) {
+			double i = 1;
+			for (double score : scores) {
+				mScore += score / i;
+				i *= 2;
+			}
+
+		} else if (scoreMergePolicy.equals(SMP_MAXIMUM)) {
+			for (double score : scores) {
+				if (score > mScore)
+					mScore = score;
+			}
+
+		} else assert(false);
+
+		return mScore;
 	}
 }
