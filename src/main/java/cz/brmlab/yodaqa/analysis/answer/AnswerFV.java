@@ -45,6 +45,8 @@ public class AnswerFV {
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
 			"tyCorADBpRelation",
 		"mergedSyntaxScore",
+		"evdPrefixedScore", "evdPrefixingScore", "evdSuffixedScore", "evdSuffixingScore",
+			"evdSubstredScore", "evdSubstringScore",
 		"topAnswer", "solrHitsEv", "solrAHitsEv", "solrHitsANormEv", "solrMaxScoreEv",
 			"solrHitsMaxScoreEv",
 		"phase0Score", "phase1Score",
@@ -97,6 +99,12 @@ public class AnswerFV {
 			features.add(AF_TyCorAWnInstance.class);
 			features.add(AF_TyCorADBpRelation.class);
 			features.add(AF_MergedSyntaxScore.class);
+			features.add(AF_EvDPrefixedScore.class);
+			features.add(AF_EvDPrefixingScore.class);
+			features.add(AF_EvDSuffixedScore.class);
+			features.add(AF_EvDSuffixingScore.class);
+			features.add(AF_EvDSubstredScore.class);
+			features.add(AF_EvDSubstringScore.class);
 			features.add(AF_TopAnswer.class);
 			features.add(AF_SolrHitsEv.class);
 			features.add(AF_SolrAHitsEv.class);

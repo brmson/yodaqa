@@ -178,13 +178,20 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerCASMerger.PARAM_PHASE, 1);
 			builder.add(answerCASMerger);
 
+			/* XXX: Move the following to a separate scoring phase
+			 * so that we already capture the single correct answer
+			 * scoring preference. */
+
 			/* Merge textually equivalent answers. */
-			/* XXX: Move this to a separate scoring phase so that
-			 * we already capture the single correct answer scoring
-			 * preference. */
 			AnalysisEngineDescription answerTextMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerTextMerger.class);
 			builder.add(answerTextMerger,
+				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
+
+			/* Diffuse scores between textually similar answers. */
+			AnalysisEngineDescription evidenceDiffusion = AnalysisEngineFactory.createEngineDescription(
+					EvidenceDiffusion.class);
+			builder.add(evidenceDiffusion,
 				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		/* (Serialization / scoring point #1.) */
