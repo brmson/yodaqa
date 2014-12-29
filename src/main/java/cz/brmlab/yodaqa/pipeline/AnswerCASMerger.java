@@ -36,7 +36,11 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
  * Take a set of per-answer CandidateAnswerCAS and merge them to
  * an AnswerHitlistCAS.
  *
- * We also deduplicate answers with identical text. */
+ * We also deduplicate answers with identical text.
+ *
+ * Otherwise, do not confuse with AnswerTextMerger, which merges answers
+ * in the AnswerHitlist that are textually different but heuristically
+ * equivalent. */
 
 public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(AnswerCASMerger.class);

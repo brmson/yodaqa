@@ -156,7 +156,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		/* Next stage - initial scoring, and pruning all but the top N
 		 * answers; this should help us differentiate better selection
-		 * with most of the noisy low quality answers wed out. */
+		 * with most of the noisy low quality answers wed out. Also
+		 * merge textually equivalent answers. */
 		if (loadPhase < 1) {
 			System.err.println("1");
 			outputsNewCASes = true;
@@ -176,6 +177,15 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerCASMerger.PARAM_HITLIST_REUSE, false,
 					AnswerCASMerger.PARAM_PHASE, 1);
 			builder.add(answerCASMerger);
+
+			/* Merge textually equivalent answers. */
+			/* XXX: Move this to a separate scoring phase so that
+			 * we already capture the single correct answer scoring
+			 * preference. */
+			AnalysisEngineDescription answerTextMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerTextMerger.class);
+			builder.add(answerTextMerger,
+				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		/* (Serialization / scoring point #1.) */
 		} else if (loadPhase == 1) {
