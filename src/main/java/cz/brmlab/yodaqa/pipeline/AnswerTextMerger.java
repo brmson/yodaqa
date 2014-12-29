@@ -67,14 +67,14 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 
 			/* Generate an AF of the other answers */
 			double sumScore = sumAnswerScore(answers, bestAnswer);
-			logger.debug("merged answer {} (sumScore {})", bestAnswer.getText(), sumScore);
+			logger.debug("merged answer <<{}>> (sumScore {})", bestAnswer.getText(), sumScore);
 			setMergedScore(jcas, bestAnswer, sumScore);
 
 			/* Remove the other answers */
 			for (Answer oa : answers) {
 				if (oa == bestAnswer)
 					continue;
-				logger.debug("...subsumed {}:{} < {}", oa.getText(), oa.getConfidence(), bestAnswer.getText());
+				logger.debug("...subsumed <<{}>>:{} < <<{}>>", oa.getText(), oa.getConfidence(), bestAnswer.getText());
 				removeAnswer(oa);
 			}
 		}
