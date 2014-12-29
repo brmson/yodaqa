@@ -48,7 +48,6 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 
 	protected class Patterns {
 		/* The required bounary. */
-		/* TODO: Try to relax boundary to just \\W */
 		static final String boundary = "\\s*[.,:;()–-]\\s*";
 
 		Pattern prefix, suffix, substr;

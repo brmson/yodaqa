@@ -123,11 +123,11 @@ CandidateAnswer Recall Quality:
 FinalAnswer Precision Quality:
   * A framework for merging related answers:
     * Bare-bone done, but needs work - esp. have a separate rescoring
-    * Prefer most specific answers: "When did the shootings at Columbine
-      happen?" (April 20, 1999) the morning, 1999, April 20, ... at first,
-      just merge overlaps
+    * Some LAT-specific equivalence classes, e.g. for persons (surnames)
+      or dates (YYYY-MM-DD vs. Month D, YYYY, etc.)
   * A framework for evidence diffusion:
-    * Syntactic diffusion - "full prefix" and "full suffix"
+    * Bare-bone work done (syntactic diffusion)
+    * Syntactic diffusion through stripping of numeric suffixes
     * If a capital has a lot of evidence and the question is for a country,
       diffuse the evidence to the country too
   * A type coercion classifier that outputs a generic coercion score
@@ -173,8 +173,17 @@ Interface:
     valuable for actual usage.
 
 Janitorial:
+  * There are many common chunks of code (e.g. wrt feature addition
+    to answer featuresets) that should be factored out to utility
+    classes and some common abstract base classes
+  * Do some pipeline stage class renaming - instead of *Generator,
+    use *Splitter terminology, e.g. AnswerGenerator to
+    AnswerResultSplitter, AnswerCASSplitter to AnswerHitlistSplitter...
   * Log answer processing during batch evaluations to separate files
   * Switch to SolrJ, extWordNet
+    * extWordNet would have a big tangible benefit as we'd gain access
+      e.g. to useCount of WordNet synsets, but it seems to mess with
+      our logging subsystem
   * Add an origin record to each annotation - which annotator
     produced it? Will be useful when we have multiple possible
     annotation paths.
