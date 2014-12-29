@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
-import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
@@ -178,6 +177,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		Answer answer = new Answer(finalAnswerHitlistView);
 		String text = canAnswer.getDocumentText();
 		answer.setText(text);
+		answer.setCanonText(ai.getCanonText());
 
 		// System.err.println("AR process: " + answer.getText());
 

@@ -56,6 +56,11 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 				StanfordParser.PARAM_WRITE_POS, true),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
+		/* Generate and store on the side a "syntactically canonical
+		 * form" of the answer text. */
+		builder.add(createPrimitiveDescription(SyntaxCanonization.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+
 		/* Determine the focus of each answer. */
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");

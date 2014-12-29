@@ -23,8 +23,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 
 /**
  * Merge textually similar answers in AnswerHitlistCAS.  Right now,
- * we just determine syntactic equivalence, dropping "the"-ish stuff,
- * whitespaces and interpunction.
+ * we just determine syntactic equivalence based on canonText
+ * (dropping "the"-ish stuff, whitespaces and interpunction).
  *
  * (Do not confuse with AnswerCASMerger which just puts all CASes
  * of candidate answers together in a single CAS - the hitlist.)
@@ -47,7 +47,7 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 
 		Map<String, List<Answer>> answersByCoreText = new HashMap<String, List<Answer>>();
 		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
-			String coreText = getAnswerCoreText(a);
+			String coreText = a.getCanonText();
 			// logger.debug("answer {} coreText {}", a.getText(), coreText);
 			List<Answer> answers = answersByCoreText.get(coreText);
 			if (answers == null) {
@@ -78,17 +78,6 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 				removeAnswer(oa);
 			}
 		}
-	}
-
-	protected String getAnswerCoreText(Answer a) {
-		/* Basically, throw away any DET and decorations at the
-		 * beginning and end (like quotes, commas or apostrophes). */
-		String text = a.getText().toLowerCase();
-		text = text.replaceAll("\\W*$", "");
-		text = text.replaceAll("^\\W*", "");
-		text = text.replaceAll("^(the|a|an|one)\\s+", "");
-		text = text.replaceAll("^\\W*", "");
-		return text;
 	}
 
 	protected Answer getBestAnswer(List<Answer> answers) {

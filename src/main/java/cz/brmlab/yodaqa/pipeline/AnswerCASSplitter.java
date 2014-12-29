@@ -136,6 +136,7 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 
 		/* Generate the AnswerInfo singleton */
 		AnswerInfo ai = new AnswerInfo(jcas);
+		ai.setCanonText(answer.getCanonText());
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.addToIndexes();
