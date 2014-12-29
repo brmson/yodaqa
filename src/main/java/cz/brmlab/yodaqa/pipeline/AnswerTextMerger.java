@@ -48,7 +48,7 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 		Map<String, List<Answer>> answersByCoreText = new HashMap<String, List<Answer>>();
 		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
 			String coreText = getAnswerCoreText(a);
-			logger.debug("answer {} coreText {}", a.getText(), coreText);
+			// logger.debug("answer {} coreText {}", a.getText(), coreText);
 			List<Answer> answers = answersByCoreText.get(coreText);
 			if (answers == null) {
 				answers = new LinkedList<Answer>();
