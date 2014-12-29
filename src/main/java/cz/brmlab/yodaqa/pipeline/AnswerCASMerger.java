@@ -26,6 +26,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -54,6 +56,12 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	public static final String PARAM_HITLIST_REUSE = "hitlist-reuse";
 	@ConfigurationParameter(name = PARAM_HITLIST_REUSE, mandatory = false, defaultValue = "false")
 	protected boolean doReuseHitlist;
+
+	/** The phase number. If non-zero, confidence of the answer is
+	 * pre-set to AF_Phase(n-1)Score. */
+	public static final String PARAM_PHASE = "phase";
+	@ConfigurationParameter(name = PARAM_PHASE, mandatory = false, defaultValue = "0")
+	protected int phaseNum;
 
 	protected class AnswerFeatures {
 		Answer answer;
@@ -209,6 +217,12 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			    + mainFV.getFeatureValue(AF_OriginPsgNE.class)
 			    + mainFV.getFeatureValue(AF_OriginDocTitle.class) > 1.0)
 				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
+			/* Also restore confidence value if we already
+			 * determined it before. */
+			if (phaseNum == 1)
+				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase0Score.class));
+			else if (phaseNum == 2)
+				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase1Score.class));
 
 			mainAns.setFeatures(mainFV.toFSArray(finalAnswerHitlistView));
 			mainAns.addToIndexes();

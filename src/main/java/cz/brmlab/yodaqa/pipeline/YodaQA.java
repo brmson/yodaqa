@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.pipeline;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.FlowControllerFactory;
@@ -127,7 +128,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 4);
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 4,
+					AnswerCASMerger.PARAM_PHASE, 0);
 			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #0.) */
@@ -171,7 +173,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
-					AnswerCASMerger.PARAM_HITLIST_REUSE, false);
+					AnswerCASMerger.PARAM_HITLIST_REUSE, false,
+					AnswerCASMerger.PARAM_PHASE, 1);
 			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #1.) */
@@ -214,7 +217,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
-					AnswerCASMerger.PARAM_HITLIST_REUSE, true);
+					AnswerCASMerger.PARAM_HITLIST_REUSE, true,
+					AnswerCASMerger.PARAM_PHASE, 2);
 			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #2.) */

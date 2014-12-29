@@ -142,7 +142,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			if (!ap.matcher(a.getText()).find())
 				continue;
 
-			double score = getAnswerScore(a, astats);
+			double score = a.getConfidence();
 			if (score > bestAScore) {
 				bestA = a;
 				bestAScore = score;
@@ -163,23 +163,12 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			if (bestShorterA.getText().length() < a.getText().length())
 				continue;
 			if (bestShorterA.getText().length() == a.getText().length()
-			    && getAnswerScore(bestShorterA, astats) > getAnswerScore(a, astats))
+			    && bestShorterA.getConfidence() > a.getConfidence())
 				continue;  // tie-breaker is score
 			bestShorterA = a;
 		}
 
 		return bestShorterA.getText();
-	}
-
-	protected double getAnswerScore(Answer a, AnswerStats astats) {
-		AnswerFV fv = new AnswerFV(a, astats);
-		double score = 0;
-		if (scoringPhase.equals("1"))
-			score = fv.getFeatureValue(AF_Phase0Score.class);
-		else if (scoringPhase.equals("2"))
-			score = fv.getFeatureValue(AF_Phase1Score.class);
-		else assert(false);
-		return score;
 	}
 
 	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch, AnswerStats astats) {
