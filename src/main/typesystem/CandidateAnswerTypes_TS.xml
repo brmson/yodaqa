@@ -235,11 +235,6 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_MergedSyntaxScore</name>
-        <description>Answer Feature: Sum of scores of all answers that were merged into this one because they were syntactically equivalent.</description>
-        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
-      </typeDescription>
-      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TopAnswer</name>
         <description>Answer Feature: Boolean value whether we are one of the top answers selected by earlier scoring.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

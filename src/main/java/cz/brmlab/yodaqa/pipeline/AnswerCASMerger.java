@@ -214,6 +214,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				mainFV.merge(af.getFV());
 			}
 
+			/* XXX: Code duplication with AnswerTextMerger */
 			/* At this point we can generate some features
 			 * to be aggregated over all individual answer
 			 * instances. */
