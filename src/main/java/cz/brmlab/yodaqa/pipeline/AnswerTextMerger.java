@@ -8,9 +8,10 @@ import java.util.Map.Entry;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
-import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -44,9 +45,12 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		/* We determine a "core text" for each answer and merge
 		 * answers wit the same core text. */
-
 		Map<String, List<Answer>> answersByCoreText = new HashMap<String, List<Answer>>();
-		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
+
+		FSIndex idx = jcas.getJFSIndexRepository().getIndex("SortedAnswers");
+		FSIterator sortedAnswers = idx.iterator();
+		while (sortedAnswers.hasNext()) {
+			Answer a = (Answer) sortedAnswers.next();
 			String coreText = a.getCanonText();
 			// logger.debug("answer {} coreText {}", a.getText(), coreText);
 			List<Answer> answers = answersByCoreText.get(coreText);
@@ -63,37 +67,24 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 			List<Answer> answers = entry.getValue();
 			if (answers.size() == 1)
 				continue;
-			Answer bestAnswer = getBestAnswer(answers);
+			Answer bestAnswer = answers.remove(0);
 
 			/* Generate an AF of the other answers */
-			double sumScore = sumAnswerScore(answers, bestAnswer);
+			double sumScore = sumAnswerScore(answers);
 			logger.debug("merged answer <<{}>> (sumScore {})", bestAnswer.getText(), sumScore);
 			setMergedScore(jcas, bestAnswer, sumScore);
 
 			/* Remove the other answers */
 			for (Answer oa : answers) {
-				if (oa == bestAnswer)
-					continue;
 				logger.debug("...subsumed <<{}>>:{} < <<{}>>", oa.getText(), oa.getConfidence(), bestAnswer.getText());
 				removeAnswer(oa);
 			}
 		}
 	}
 
-	protected Answer getBestAnswer(List<Answer> answers) {
-		Answer bestAnswer = null;
-		for (Answer a : answers) {
-			if (bestAnswer == null || a.getConfidence() > bestAnswer.getConfidence())
-				bestAnswer = a;
-		}
-		return bestAnswer;
-	}
-
-	protected double sumAnswerScore(List<Answer> answers, Answer except) {
+	protected double sumAnswerScore(List<Answer> answers) {
 		double score = 0;
 		for (Answer a : answers) {
-			if (a == except)
-				continue;
 			score += a.getConfidence();
 		}
 		return score;
