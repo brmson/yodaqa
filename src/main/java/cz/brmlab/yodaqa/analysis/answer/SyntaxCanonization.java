@@ -28,7 +28,7 @@ public class SyntaxCanonization extends JCasAnnotator_ImplBase {
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		String text = jcas.getDocumentText();
-		String canonText = getCanonText(text);
+		String canonText = getCanonText(text.toLowerCase());
 
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		ai.removeFromIndexes();
@@ -38,11 +38,12 @@ public class SyntaxCanonization extends JCasAnnotator_ImplBase {
 
 	/* Basically, throw away any DET and decorations at the
 	 * beginning and end (like quotes, commas or apostrophes). */
-	protected String getCanonText(String text) {
-		text = text.toLowerCase();
+	/* XXX: This method is also called from entirely different
+	 * analysis classes. */
+	public static String getCanonText(String text) {
 		text = text.replaceAll("\\W*$", "");
 		text = text.replaceAll("^\\W*", "");
-		text = text.replaceAll("^(the|a|an|one)\\s+", "");
+		text = text.replaceAll("^(?i)(the|a|an|one)\\s+", "");
 		text = text.replaceAll("^\\W*", "");
 		return text;
 	}

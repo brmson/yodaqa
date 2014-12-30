@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
@@ -16,6 +17,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.CluePhrase;
 import cz.brmlab.yodaqa.model.Question.ClueToken;
@@ -76,7 +78,7 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		clue.setEnd(end);
 		clue.setBase(base);
 		clue.setWeight(weight);
-		clue.setLabel(clue.getCoveredText());
+		clue.setLabel(SyntaxCanonization.getCanonText(clue.getCoveredText()));
 		clue.setIsReliable(isReliable);
 		clue.addToIndexes();
 		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
