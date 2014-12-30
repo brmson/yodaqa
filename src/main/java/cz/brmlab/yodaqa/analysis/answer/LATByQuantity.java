@@ -56,6 +56,8 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		String text0 = "measure"; long synset0 = 33914;
 		// quantitative relation, e.g. speed:
 		String text1 = "magnitude_relation"; long synset1 = 13837364;
+		// positions and distances, e.g. altitude:
+		String text2 = "magnitude"; long synset2 = 5097645;
 		double spec = 0.0;
 
 		/* We have a synthetic LAT, synthetize a POS tag for it. */
@@ -71,13 +73,15 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 			addLATFeature(jcas, AF_LATQuantityCD.class);
 			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text0, synset0, pos, spec);
 			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text1, synset1, pos, spec);
+			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text2, synset2, pos, spec);
 		} else {
 			addLATFeature(jcas, AF_LATQuantity.class);
 			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text0, synset0, pos, spec);
 			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text1, synset1, pos, spec);
+			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text2, synset2, pos, spec);
 		}
 
-		logger.debug(".. Quantity LAT {}/{}, {}/{} by NUM {}", text0, synset0, text1, synset1, num.getCoveredText());
+		logger.debug(".. Quantity LAT {}/{}, {}/{}, {}/{} by NUM {}", text0, synset0, text1, synset1, text2, synset2, num.getCoveredText());
 	}
 
 	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, long synset, POS pos, double spec) {
