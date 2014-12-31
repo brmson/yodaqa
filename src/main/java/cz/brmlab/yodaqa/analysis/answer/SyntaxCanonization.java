@@ -41,10 +41,15 @@ public class SyntaxCanonization extends JCasAnnotator_ImplBase {
 	/* XXX: This method is also called from entirely different
 	 * analysis classes. */
 	public static String getCanonText(String text) {
-		text = text.replaceAll("\\W*$", "");
-		text = text.replaceAll("^\\W*", "");
+		/* If the text is completely \W, keep it that way;
+		 * e.g. <<which number corresponds to * in ASCII?>>. */
+		if (!text.matches("^\\W*$")) {
+			text = text.replaceAll("\\W*$", "");
+			text = text.replaceAll("^\\W*", "");
+		}
 		text = text.replaceAll("^(?i)(the|a|an|one)\\s+", "");
-		text = text.replaceAll("^\\W*", "");
+		if (!text.matches("^\\W*$"))
+			text = text.replaceAll("^\\W*", "");
 		return text;
 	}
 }
