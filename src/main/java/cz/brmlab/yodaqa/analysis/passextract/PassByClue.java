@@ -77,7 +77,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		Map<Clue, Boolean> clueIsAbout = new HashMap<Clue, Boolean>();
 		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
 		for (Clue clue : JCasUtil.select(questionView, Clue.class))
-			if (ri.getDocumentTitle().matches("(?i).*\\b\\Q" + clue.getLabel() + "\\E(.|ed|ing)?\\b.*"))
+			if (ri.getDocumentTitle().matches(getClueRegex(clue)))
 				clueIsAbout.put(clue, true);
 
 		/* Pre-index covering info. */
@@ -96,7 +96,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			 * try to match word clues of phrase clues we already
 			 * matched. */
 			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-				if (!sentence.getCoveredText().matches("(?i).*\\b\\Q" + clue.getLabel() + "\\E(.|ed|ing)?\\b.*"))
+				if (!sentence.getCoveredText().matches(getClueRegex(clue)))
 					continue;
 				/* Match! */
 
@@ -154,6 +154,19 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				}
 			}
 		}
+	}
+
+	protected String getClueRegex(Clue clue) {
+		/* XXX: Maybe we should just tokenize and lemmatize
+		 * the passage instead? */
+		String label = clue.getLabel();
+		if (label.endsWith("y") && label.length() > 1) {
+			/* empty -> empties too */
+			label = label.substring(0, label.length() - 1) + "\\E[yi]\\Q";
+		}
+		String regex = "(?i).*\\b\\Q" + label + "\\E(.|e?d|e?s|ing)?\\b.*";
+		// logger.debug("regex {}", regex);
+		return regex;
 	}
 
 	protected void clueFeatures(JCas jcas, List<PassageFeature> features,
