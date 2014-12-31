@@ -48,6 +48,16 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		/* First, try to look up the whole answer - that's ideal,
+		 * after all! */
+		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
+			// XXX: With no focus, we could have still done
+			// the lookup...
+			if (addLATByLabel(jcas, focus, jcas.getDocumentText()))
+				return;
+			break;
+		}
+
 		/* A Focus is a good LAT query source. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
 			/* ...however, prefer an overlapping named entity. */
@@ -56,13 +66,14 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 				addLATByLabel(jcas, focus, ne.getCoveredText());
 				ne_found = true;
 			}
+
 			if (!ne_found) {
 				addLATByLabel(jcas, focus, focus.getToken().getLemma().getValue());
 			}
 		}
 	}
 
-	protected void addLATByLabel(JCas jcas, Focus focus, String label) throws AnalysisEngineProcessException {
+	protected boolean addLATByLabel(JCas jcas, Focus focus, String label) throws AnalysisEngineProcessException {
 		StringBuilder typelist = new StringBuilder();
 
 		List<String> types = dbt.query(label, logger);
@@ -70,8 +81,12 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 			addTypeLAT(jcas, focus, type, typelist);
 		}
 
-		if (typelist.length() > 0)
+		if (typelist.length() > 0) {
 			logger.debug(".. Focus {} => DBpedia LATs/0 {}", focus.getCoveredText(), typelist);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	protected void addTypeLAT(JCas jcas, Focus focus, String type, StringBuilder typelist) throws AnalysisEngineProcessException {
