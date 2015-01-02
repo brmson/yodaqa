@@ -22,6 +22,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSubstredScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSubstringScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSuffixedScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSuffixingScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCMetaMatchScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOMatchScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOPrefixedScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOPrefixingScore;
@@ -29,6 +30,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSubstredScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSubstringScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSuffixedScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSuffixingScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOMetaMatchScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -89,7 +91,8 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 				AF_ClOMatchScore.class,
 				AF_ClOPrefixedScore.class, AF_ClOPrefixingScore.class,
 				AF_ClOSuffixedScore.class, AF_ClOSuffixingScore.class,
-				AF_ClOSubstredScore.class, AF_ClOSubstringScore.class);
+				AF_ClOSubstredScore.class, AF_ClOSubstringScore.class,
+				AF_ClOMetaMatchScore.class);
 
 		matchClues(ai, questionView, answerView,
 				new ClueFilter() {
@@ -100,7 +103,8 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 				AF_ClOCMatchScore.class,
 				AF_ClOCPrefixedScore.class, AF_ClOCPrefixingScore.class,
 				AF_ClOCSuffixedScore.class, AF_ClOCSuffixingScore.class,
-				AF_ClOCSubstredScore.class, AF_ClOCSubstringScore.class);
+				AF_ClOCSubstredScore.class, AF_ClOCSubstringScore.class,
+				AF_ClOCMetaMatchScore.class);
 	}
 
 	/* XXX: This is so ugly calling convention... */
@@ -110,7 +114,8 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 			Class<? extends AnswerFeature> matchAF,
 			Class<? extends AnswerFeature> prefixedAF, Class<? extends AnswerFeature> prefixingAF,
 			Class<? extends AnswerFeature> suffixedAF, Class<? extends AnswerFeature> suffixingAF,
-			Class<? extends AnswerFeature> substredAF, Class<? extends AnswerFeature> substringAF)
+			Class<? extends AnswerFeature> substredAF, Class<? extends AnswerFeature> substringAF,
+			Class<? extends AnswerFeature> metaMatchAF)
 				throws AnalysisEngineProcessException {
 
 		String text = ai.getCanonText();
@@ -181,6 +186,18 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 		if (suffixingScores.size() > 0) fv.setFeature(suffixingAF, mergeScores(suffixingScores));
 		if (substredScores.size() > 0) fv.setFeature(substredAF, mergeScores(substredScores));
 		if (substringScores.size() > 0) fv.setFeature(substringAF, mergeScores(substringScores));
+		/* If we are both prefixed and suffixed by a clue,
+		 * we have a "meta-match", which can be quite nice
+		 * answer, actually.  E.g.
+		 *   <<what's OCD?>>
+		 * has an answer
+		 *   <<Obsessive–compulsive disorder (OCD)>>
+		 * which is suffixed by OCD and prefixed by concept
+		 * clue Obsessive–compulsive disorder.  And it's the
+		 * correct answer. */
+		if (prefixedScores.size() > 0 && suffixedScores.size() > 0)
+			fv.setFeature(metaMatchAF, (mergeScores(prefixedScores) + mergeScores(suffixedScores)) / 2.0);
+
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();
 		ai.removeFromIndexes();

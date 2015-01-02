@@ -270,6 +270,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOMetaMatchScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that either prefix or suffix this answer if both happens.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCMatchScore</name>
         <description>Answer Feature (Clue Overlap): #of conceptual clues that are syntactically equivalent to this answer.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
@@ -301,7 +306,12 @@
       </typeDescription>
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSubstringScore</name>
-        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that this answer is a syntactic substring of.</description>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that this answer is a syntactic substring of.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCMetaMatchScore</name>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that either prefix or suffix this answer if both happens.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
