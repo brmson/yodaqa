@@ -38,7 +38,10 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
  *
  * TODO: Produce more diffusion engines, especially based on semantic
  * relations (like capital vs. country).  Then, we would rename this to
- * EvidenceSyntacticDiffusion and make EvidenceDiffusion an aggregate AE. */
+ * EvidenceSyntacticDiffusion and make EvidenceDiffusion an aggregate AE.
+ *
+ * FIXME: The syntactic diffusion code is largely duplicated in the
+ * AnswerClueOverlap code! */
 
 public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(EvidenceDiffusion.class);

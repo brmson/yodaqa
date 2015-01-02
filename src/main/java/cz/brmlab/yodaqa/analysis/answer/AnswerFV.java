@@ -44,6 +44,10 @@ public class AnswerFV {
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
 			"tyCorADBpRelation",
+		"clOCMatchScore", "clOCPrefixedScore", "clOCPrefixingScore", "clOCSuffixedScore",
+			"clOCSuffixingScore", "clOCSubstredScore", "clOCSubstringScore",
+		"clOMatchScore", "clOPrefixedScore", "clOPrefixingScore", "clOSuffixedScore",
+			"clOSuffixingScore", "clOSubstredScore", "clOSubstringScore",
 		"evdPrefixedScore", "evdPrefixingScore", "evdSuffixedScore", "evdSuffixingScore",
 			"evdSubstredScore", "evdSubstringScore",
 		"topAnswer", "solrHitsEv", "solrAHitsEv", "solrHitsANormEv", "solrMaxScoreEv",
@@ -97,6 +101,20 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
 			features.add(AF_TyCorADBpRelation.class);
+			features.add(AF_ClOCMatchScore.class);
+			features.add(AF_ClOCPrefixedScore.class);
+			features.add(AF_ClOCPrefixingScore.class);
+			features.add(AF_ClOCSuffixedScore.class);
+			features.add(AF_ClOCSuffixingScore.class);
+			features.add(AF_ClOCSubstredScore.class);
+			features.add(AF_ClOCSubstringScore.class);
+			features.add(AF_ClOMatchScore.class);
+			features.add(AF_ClOPrefixedScore.class);
+			features.add(AF_ClOPrefixingScore.class);
+			features.add(AF_ClOSuffixedScore.class);
+			features.add(AF_ClOSuffixingScore.class);
+			features.add(AF_ClOSubstredScore.class);
+			features.add(AF_ClOSubstringScore.class);
 			features.add(AF_EvDPrefixedScore.class);
 			features.add(AF_EvDPrefixingScore.class);
 			features.add(AF_EvDSuffixedScore.class);

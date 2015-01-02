@@ -61,6 +61,9 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(SyntaxCanonization.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
+		/* Determine overlaps of the answer and question clues. */
+		builder.add(createPrimitiveDescription(AnswerClueOverlap.class));
+
 		/* Determine the focus of each answer. */
 		builder.add(createPrimitiveDescription(FocusGenerator.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");

@@ -235,6 +235,76 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOMatchScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that are syntactically equivalent to this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOPrefixedScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that are syntactic prefixes of this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOPrefixingScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that this answer is a syntactic prefix of.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSuffixedScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that are syntactic suffixes of this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSuffixingScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that this answer is a syntactic suffix of.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSubstredScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that are syntactic substrings of this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSubstringScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that this answer is a syntactic substring of.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCMatchScore</name>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that are syntactically equivalent to this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCPrefixedScore</name>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that are syntactic prefixes of this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCPrefixingScore</name>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that this answer is a syntactic prefix of.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSuffixedScore</name>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that are syntactic suffixes of this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSuffixingScore</name>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that this answer is a syntactic suffix of.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSubstredScore</name>
+        <description>Answer Feature (Clue Overlap): #of conceptual clues that are syntactic substrings of this answer.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSubstringScore</name>
+        <description>Answer Feature (Clue Overlap): #of non-conceptual clues that this answer is a syntactic substring of.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDPrefixedScore</name>
         <description>Answer Feature (Evidence Diffusion): Sum of scores of all answers that are syntactic prefixes of this answer.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
