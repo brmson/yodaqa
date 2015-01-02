@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.didion.jwnl.data.IndexWord;
-import net.didion.jwnl.data.IndexWordSet;
 import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.PointerTarget;
 import net.didion.jwnl.data.PointerType;
@@ -81,7 +80,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		/* TODO: Populate with existing LATs for deduplication. */
 		for (LAT lat : lats) {
 			try {
-				genDerivedLATs(latmap, lat);
+				genDerivedLATs(latmap, lat, lat.getPos().getPosValue());
 			} catch (Exception e) {
 				throw new AnalysisEngineProcessException(e);
 			}
@@ -92,7 +91,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			lat.addToIndexes();
 	}
 
-	protected void genDerivedLATs(Map<Synset, WordnetLAT> latmap, LAT lat) throws Exception {
+	protected void genDerivedLATs(Map<Synset, WordnetLAT> latmap, LAT lat, String latpos) throws Exception {
 		/* TODO: Use pos information from the parser?
 		 * Currently, we just assume a noun and the rest is
 		 * a fallback path that derives the noun.
@@ -101,16 +100,16 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		POS wnpos;
 		if (lat.getBase() instanceof NamedEntity) {
 			wnpos = POS.NOUN;
-		} else if (lat.getPos().getPosValue().matches("^NN.*")) {
+		} else if (latpos.matches("^NN.*")) {
 			wnpos = POS.NOUN;
-		} else if (lat.getPos().getPosValue().matches("^JJ.*")) {
+		} else if (latpos.matches("^JJ.*")) {
 			wnpos = POS.ADJECTIVE;
-		} else if (lat.getPos().getPosValue().matches("^RB.*")) {
+		} else if (latpos.matches("^RB.*")) {
 			wnpos = POS.ADVERB;
-		} else if (lat.getPos().getPosValue().matches("^VB.*")) {
+		} else if (latpos.matches("^VB.*")) {
 			wnpos = POS.VERB;
 		} else {
-			logger.info("?! cannot expand LAT of POS " + lat.getPos().getPosValue());
+			logger.info("?! cannot expand LAT of POS " + latpos);
 			return;
 		}
 
@@ -122,7 +121,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		if (lat.getSynset() == 0) {
 			IndexWord w = JWordnet.getDictionary().lookupIndexWord(wnpos, lat.getText());
 			if (w == null) {
-				logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " not in Wordnet");
+				logger.info("?! word " + lat.getText() + " of POS " + latpos + " not in Wordnet");
 				return;
 			}
 
@@ -147,7 +146,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		} else {
 			Synset s = JWordnet.getDictionary().getSynsetAt(wnpos, lat.getSynset());
 			if (s == null) {
-				logger.warn("?! word " + lat.getText() + "/" + lat.getSynset() + " of POS " + lat.getPos().getPosValue() + " not in Wordnet even though it has Wordnet sense assigned");
+				logger.warn("?! word " + lat.getText() + "/" + lat.getSynset() + " of POS " + latpos + " not in Wordnet even though it has Wordnet sense assigned");
 				return;
 			}
 
@@ -163,7 +162,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		}
 
 		if (!foundNoun)
-			logger.info("?! word " + lat.getText() + " of POS " + lat.getPos().getPosValue() + " in Wordnet as non-noun but derived from no noun");
+			logger.info("?! word " + lat.getText() + " of POS " + latpos + " in Wordnet as non-noun but derived from no noun");
 	}
 
 	protected boolean genNounSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
