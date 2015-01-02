@@ -142,7 +142,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * a CluePhrase that gets ignored during search. */
 			if (reworded)
 				addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue, weight);
+					clue, clue.getLabel(), weight);
 		}
 	}
 
@@ -159,13 +159,14 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
 
-	protected void addNEClue(JCas jcas, int begin, int end, Annotation base, double weight) {
+	protected void addNEClue(JCas jcas, int begin, int end, Annotation base,
+			String label, double weight) {
 		ClueNE clue = new ClueNE(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
 		clue.setWeight(weight + 0.1); // ensure precedence during merge
-		clue.setLabel(clue.getCoveredText());
+		clue.setLabel(label);
 		clue.setIsReliable(true);
 		clue.addToIndexes();
 		logger.debug("new(NE) by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
