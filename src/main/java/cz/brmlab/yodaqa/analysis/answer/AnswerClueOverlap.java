@@ -52,8 +52,8 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 
 	protected class Patterns {
 		/* The required bounary. */
-		// XXX: Try with just \\W
-		static final String boundary = "\\s*[.,:;()–-]\\s*";
+		// XXX: Try with static final String boundary = "\\s*[.,:;()–-]\\s*";
+		static final String boundary = "\\s*\\W\\s*";
 
 		Pattern prefix, suffix, substr;
 
