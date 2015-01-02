@@ -161,8 +161,23 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			foundNoun = genNounSynsets(latmap, lat, s, wnpos, wnlist);
 		}
 
-		if (!foundNoun)
+		if (!foundNoun && !latpos.matches(".*XSURROGATE$")) {
+			/* We didn't find a noun but it turns out that
+			 * we may need to flip adverb/adjective tag, e.g.
+			 * for "how long" we need to consider "long" as
+			 * an adjective to get to "length". */
+			if (wnpos == POS.ADVERB) {
+				genDerivedLATs(latmap, lat, "JJXSURROGATE");
+				return;
+			} else if (wnpos == POS.ADJECTIVE) {
+				genDerivedLATs(latmap, lat, "RBXSURROGATE");
+				return;
+			}
+		}
+
+		if (!foundNoun) {
 			logger.info("?! word " + lat.getText() + " of POS " + latpos + " in Wordnet as non-noun but derived from no noun");
+		}
 	}
 
 	protected boolean genNounSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
