@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.ADV;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
@@ -94,11 +95,18 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		}
 
 		/* DEP dependencies are also sometimes generated, e.g.
+		 * "When was the battle of Aigospotamoi?" (When / was)
 		 * "What lays blue eggs?" (What / lays) */
 		if (focus == null) {
 			for (DEP dep : JCasUtil.selectCovered(DEP.class, sentence)) {
 				if (dep.getDependent().getPos().getPosValue().matches("^W.*")) {
-					focusTok = dep.getGovernor();
+					if (dep.getDependent().getPos() instanceof ADV) {
+						/* Not 'what' but adverbish like 'when'. */
+						focusTok = dep.getDependent();
+					} else {
+						/* A verb like 'lays'. */
+						focusTok = dep.getGovernor();
+					}
 					focus = focusTok;
 					logger.debug("DEP+W {}", focus.getCoveredText());
 					break;
