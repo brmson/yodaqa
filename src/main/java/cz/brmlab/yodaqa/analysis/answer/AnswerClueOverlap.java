@@ -119,6 +119,8 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 				throws AnalysisEngineProcessException {
 
 		String text = ai.getCanonText();
+		if (text.length() == 0)
+			return; // Don't generate stuff for empty answers
 		Patterns ps = new Patterns(text);
 
 		/* Cross-match answer with clues */
@@ -198,8 +200,9 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 		if (prefixedScores.size() > 0 && suffixedScores.size() > 0)
 			fv.setFeature(metaMatchAF, (mergeScores(prefixedScores) + mergeScores(suffixedScores)) / 2.0);
 
-		for (FeatureStructure af : ai.getFeatures().toArray())
-			((AnswerFeature) af).removeFromIndexes();
+		if (ai.getFeatures() != null)
+			for (FeatureStructure af : ai.getFeatures().toArray())
+				((AnswerFeature) af).removeFromIndexes();
 		ai.removeFromIndexes();
 		ai.setFeatures(fv.toFSArray(answerView));
 		ai.addToIndexes();
