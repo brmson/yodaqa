@@ -26,6 +26,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsMaxScoreEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.ClueLAT;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
@@ -102,7 +104,14 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 		SolrDocumentList dAnswer = countTermsHits(terms);
 
 		/* ...and combined question + answer. */
-		Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
+		Collection<Clue> clues = new ArrayList<Clue>();
+		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
+			// do not include the LAT
+			if (clue instanceof ClueLAT
+			    || (clue instanceof ClueConcept && ((ClueConcept) clue).getByLAT()))
+				continue;
+			clues.add(clue);
+		}
 		terms = SolrTerm.cluesToTerms(clues);
 		terms.add(answerTerm);
 		SolrDocumentList dCombined = countTermsHits(terms);
