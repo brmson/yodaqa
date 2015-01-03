@@ -59,7 +59,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	 * successively multiplied by proximity-base-factor; initial weight
 	 * is sum of individual weights and is successively halved. */
 	public static final String PARAM_PROXIMITY_NUM = "proximity-num";
-	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "2")
+	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "3")
 	protected int proximityNum;
 	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "2")
