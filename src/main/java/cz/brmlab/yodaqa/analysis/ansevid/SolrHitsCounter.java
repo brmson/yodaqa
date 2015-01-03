@@ -110,6 +110,9 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 			if (clue instanceof ClueLAT
 			    || (clue instanceof ClueConcept && ((ClueConcept) clue).getByLAT()))
 				continue;
+			// do not include non-required clues
+			if (!clue.getIsReliable())
+				continue;
 			clues.add(clue);
 		}
 		terms = SolrTerm.cluesToTerms(clues);
