@@ -166,8 +166,23 @@
       </typeDescription>
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.ClueSubject</name>
-        <description>Clue based on the question subject. "When was Einstein born?" has SV "born", focus "when", but the subject is "Einstein". This is the most important clue, if it exists.</description>
+        <description>Clue based on the question subject. "When was Einstein born?" has SV "born", focus "when", but the subject is "Einstein". This is the most important clue, if it exists. When asking "What is the capital of Laos?", multiple subjects "capital", "Laos" and "capital of Laos" with different tweaks (weight, subclass) will be generated.</description>
         <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueSubjectNE</name>
+        <description>Clue based on the question subject, indicating that it is a named entity (e.g. "Laos" in "What is the capital of Laos?").</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.ClueSubject</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueSubjectToken</name>
+        <description>Clue based on the question subject, indicating that it is a single token (e.g. "capital" in "What is the capital of Laos?").</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.ClueSubject</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase</name>
+        <description>Clue based on the question subject, indicating that it is a full phrase (e.g. "capital of Laos" in "What is the capital of Laos?").</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.ClueSubject</supertypeName>
       </typeDescription>
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.ClueSubjectAux</name>
