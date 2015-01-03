@@ -77,6 +77,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			/* Leading "The" may be optional, e.g. "6-day war".
 			 * But make sure the rest is still multi-word. */
+			// XXX: Use the syntax cooker?
 			if (results.isEmpty()
 			    && clueLabel.toLowerCase().startsWith("the ")
 			    && clueLabel.substring(4).contains(" ")) {
@@ -88,8 +89,17 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			/* Yay, got one! */
 			DBpediaTitles.Article a = results.get(0);
+			String cookedLabel = a.getLabel();
+			/* But in case of "list of...", keep the original label
+			 * (but still generate a conceptclue since we have
+			 * a confirmed named entity and we want to include
+			 * the list in our document set). */
+			if (cookedLabel.toLowerCase().matches("^list of .*")) {
+				logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
+				cookedLabel = new String(clueLabel);
+			}
 			/* Remove trailing (...) (e.g. (disambiguation)). */
-			String cookedLabel = a.getLabel().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
 			/* Start constructing the annotation. */
 			ClueConcept conceptClue = new ClueConcept(resultView);
