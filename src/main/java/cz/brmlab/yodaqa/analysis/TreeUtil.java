@@ -8,6 +8,7 @@ import org.apache.uima.jcas.JCas;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 
 /** Collection of dependency tree annotation tools. For example for iterating
@@ -30,5 +31,15 @@ public class TreeUtil {
 			} // else det: "the" name, amod: "last" name, ...
 		}
 		return list;
+	}
+
+	public static NP widestCoveringNP(Token t) {
+		NP bestnp = null;
+
+		for (NP np : JCasUtil.selectCovering(NP.class, t))
+			if (bestnp == null || bestnp.getBegin() > np.getBegin() || bestnp.getEnd() < np.getEnd())
+				bestnp = np;
+
+		return bestnp;
 	}
 }
