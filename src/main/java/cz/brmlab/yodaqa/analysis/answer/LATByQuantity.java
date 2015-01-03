@@ -19,12 +19,10 @@ import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
-import cz.brmlab.yodaqa.model.TyCor.NELAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NUM;
 
 /**
@@ -45,8 +43,12 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		/* A Focus is also an LAT. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
 			for (NUM num : JCasUtil.select(jcas, NUM.class)) {
-				if (num.getGovernor().equals(focus.getToken()))
+				/* Ignore if we are part of a named entity,
+				 * that's a better determinator. */
+				if (num.getGovernor().equals(focus.getToken())
+				    && JCasUtil.selectCovering(NamedEntity.class, num).isEmpty()) {
 					addQuantityLAT(jcas, num);
+				}
 			}
 		}
 	}
