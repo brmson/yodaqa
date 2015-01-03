@@ -91,6 +91,10 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 		 * sense as it can be treated as reliable compared to the full
 		 * phrase which may not be in the text word-by-word.) */
 		NP np = TreeUtil.widestCoveringNP(stok);
+		if (np == null) {
+			// <<How long before bankruptcy is removed from a credit report?>>
+			return;
+		}
 		addSubject(jcas, np);
 
 		/* However, if there *is* a NamedEntity in the covering NP,
