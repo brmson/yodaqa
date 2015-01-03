@@ -55,29 +55,27 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 			break;
 		}
 
-		if (focus == null) {
-			/* No Focus means no SV. */
-			return;
-		}
-
 		Token v = null;
-		if (v == null && focus.getTypeIndexID() == NSUBJ.type) {
-			/* Make the subject's controlling verb an SV. */
-			v = ((NSUBJ) focus).getGovernor();
 
-			/* In "What is the X that Y?", "What" can be
-			 * the governor.  That won't do. */
-			if (!v.getPos().getPosValue().matches("^V.*")) {
-				logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
-				v = null;
+		if (focus != null) {
+			if (v == null && focus.getTypeIndexID() == NSUBJ.type) {
+				/* Make the subject's controlling verb an SV. */
+				v = ((NSUBJ) focus).getGovernor();
+
+				/* In "What is the X that Y?", "What" can be
+				 * the governor.  That won't do. */
+				if (!v.getPos().getPosValue().matches("^V.*")) {
+					logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
+					v = null;
+				}
 			}
-		}
 
-		if (v == null && focus.getTypeIndexID() == Token.type
-		    && ((Token) focus).getPos().getPosValue().matches("^V.*")
-		    && !isAux((Token) focus)) {
-			/* The focus is a verb itself! Make it an SV too. */
-			v = (Token) focus;
+			if (v == null && focus.getTypeIndexID() == Token.type
+			    && ((Token) focus).getPos().getPosValue().matches("^V.*")
+			    && !isAux((Token) focus)) {
+				/* The focus is a verb itself! Make it an SV too. */
+				v = (Token) focus;
+			}
 		}
 
 		if (v == null) {
