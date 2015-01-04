@@ -18,7 +18,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDPrefixedScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDPrefixingScore;

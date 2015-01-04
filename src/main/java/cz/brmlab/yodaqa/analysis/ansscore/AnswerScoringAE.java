@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.answer;
+package cz.brmlab.yodaqa.analysis.ansscore;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;

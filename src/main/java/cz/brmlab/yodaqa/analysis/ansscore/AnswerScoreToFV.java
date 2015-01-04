@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.answer;
+package cz.brmlab.yodaqa.analysis.ansscore;
 
 import java.io.File;
 import java.io.IOException;

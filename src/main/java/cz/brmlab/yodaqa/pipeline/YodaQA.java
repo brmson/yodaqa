@@ -9,8 +9,8 @@ import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.analysis.ansevid.AnswerEvidencingAE;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
-import cz.brmlab.yodaqa.analysis.answer.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
