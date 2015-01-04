@@ -127,21 +127,6 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			}
 		}
 
-		/* Ok, no NSUBJ. Just pick the first noun then, e.g.
-		 * "The inventor of transistor" or
-		 * "Name the inventor of transistor."
-		 */
-		if (focus == null) {
-			for (Token t : JCasUtil.selectCovered(Token.class, sentence)) {
-				if (t.getPos().getPosValue().matches("^NN.*")) {
-					focusTok = t;
-					focus = focusTok;
-					logger.debug("NN {}", focus.getCoveredText());
-					break;
-				}
-			}
-		}
-
 		if (focus == null) {
 			logger.info("?! No focus in: {}", sentence.getCoveredText());
 			return;
