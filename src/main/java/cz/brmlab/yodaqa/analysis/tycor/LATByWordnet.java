@@ -152,7 +152,9 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 			if (wnpos == POS.NOUN) {
 				/* Got a noun right away. */
-				genDerivedSynsets(latmap, lat, s, wnlist, lat.getSpecificity() - 1);
+				for (PointerTarget t : s.getTargets(PointerType.HYPERNYM)) {
+					genDerivedSynsets(latmap, lat, (Synset) t, wnlist, lat.getSpecificity() - 1);
+				}
 				logger.debug("expanded LAT " + lat.getText() + "/" + lat.getSynset() + " to wn LATs: " + wnlist.toString());
 				return;
 			}
