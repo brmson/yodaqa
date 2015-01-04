@@ -44,9 +44,9 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
 			for (NUM num : JCasUtil.select(jcas, NUM.class)) {
 				/* Ignore if we are part of a named entity,
-				 * that's a better determinator. */
+				 * that's a better LAT determinator. */
 				if (num.getGovernor().equals(focus.getToken())
-				    && JCasUtil.selectCovering(NamedEntity.class, num).isEmpty()) {
+				    && !isNERelated(jcas, num)) {
 					addQuantityLAT(jcas, num);
 				}
 			}
@@ -84,6 +84,29 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		}
 
 		logger.debug(".. Quantity LAT {}/{}, {}/{}, {}/{} by NUM {}", text0, synset0, text1, synset1, text2, synset2, num.getCoveredText());
+	}
+
+	/** Whether the annotation is covered by a named entity
+	 * or touching one at most across \\W. */
+	protected boolean isNERelated(JCas jcas, Annotation ann) {
+		for (NamedEntity ne : JCasUtil.select(jcas, NamedEntity.class)) {
+			/* If there is an overlap, return right away. */
+			if ((ne.getBegin() >= ann.getBegin() && ne.getEnd() <= ann.getEnd())
+			    || (ne.getBegin() < ann.getBegin() && ne.getEnd() >= ann.getBegin()))
+				return true;
+
+			// arbitrary fuzz factor for maximum displacement
+			int displ_limit = 6;
+			// only non-word characters between NamedEntity and ann?
+			if (ne.getEnd() < ann.getBegin() && ne.getEnd() + displ_limit >= ann.getBegin()
+			    && jcas.getDocumentText().substring(ne.getEnd(), ann.getBegin()).matches("^\\W*$"))
+				return true;
+			// only non-word characters between ann and NamedEntity?
+			if (ne.getBegin() >= ann.getEnd() && ann.getEnd() + displ_limit < ne.getBegin()
+			    && jcas.getDocumentText().substring(ann.getEnd(), ne.getBegin()).matches("^\\W*$"))
+				return true;
+		}
+		return false;
 	}
 
 	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, long synset, POS pos, double spec) {
