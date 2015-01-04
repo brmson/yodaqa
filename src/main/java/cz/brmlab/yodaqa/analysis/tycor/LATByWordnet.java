@@ -256,7 +256,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		l2.setSynset(synset2.getOffset());
 		latmap.put(synset2, l2);
 
-		wnlist.append(" | " + lemma + "/" + synset2.getOffset());
+		wnlist.append(" | " + lemma + "/" + synset2.getOffset() + ":" + Double.toString(spec));
 
 		/* ...and recurse, unless we got into the noun.Tops
 		 * realm already. */
