@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -25,6 +27,8 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
  * TODO: Actually do cache the response. :-) */
 
 public abstract class CachedJenaLookup {
+	final Logger logger = LoggerFactory.getLogger(CachedJenaLookup.class);
+
 	/* XXX: In theory, we should have an extra class in the hierachy
 	 * with these DBpedia specific defaults */
 	/* Replace this value with http://dbpedia.org/sparql to use the
@@ -64,6 +68,7 @@ public abstract class CachedJenaLookup {
 			+ StringUtils.join(resources, " ?")
 			+ " WHERE { " + selectWhere + " }";
 		QueryExecution qe = QueryExecutionFactory.sparqlService(service, queryExpr);
+		// logger.debug(queryExpr);
 
 		ResultSet rs;
 		while (true) {
