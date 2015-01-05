@@ -17,6 +17,8 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
+import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
+
 /** This is an abstract base class for accessing various RDF resources,
  * typically DBpedia.  We leverage Apache Jena for the backend, plus
  * employ a cache store of already obtained query responses, since by
@@ -103,5 +105,19 @@ public abstract class CachedJenaLookup {
 
 		qe.close();
 		return results;
+	}
+
+	/** Generate a list of various cooked forms of the title for
+	 * fallback.  Cooked means without the leading "the", etc. */
+	public static List<String> cookedTitles(String title) {
+		List<String> titles = new LinkedList<String>();
+		titles.add(title); // by default, try non-cooked
+
+		/* Syntax cooked will drop leading the-, a-, etc. */
+		String canonTitle = SyntaxCanonization.getCanonText(title);
+		if (!canonTitle.equals(title) && !canonTitle.matches("^\\s*$"))
+			titles.add(canonTitle);
+
+		return titles;
 	}
 }

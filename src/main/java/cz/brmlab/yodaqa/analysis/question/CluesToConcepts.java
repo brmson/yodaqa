@@ -75,15 +75,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			double weight = clue.getWeight();
 
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
-			/* Leading "The" may be optional, e.g. "6-day war".
-			 * But make sure the rest is still multi-word. */
-			// XXX: Use the syntax cooker?
-			if (results.isEmpty()
-			    && clueLabel.toLowerCase().startsWith("the ")
-			    && clueLabel.substring(4).contains(" ")) {
-				clueLabel = clueLabel.substring(4);
-				results = dbp.query(clueLabel, logger);
-			}
 			if (results.isEmpty())
 				continue;
 
