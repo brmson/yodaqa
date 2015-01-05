@@ -36,6 +36,7 @@ public class AnswerFV {
 		"originDocTitle", "originDBpRelation",
 		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
+		"noTyCor", "LATANone",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
@@ -82,6 +83,8 @@ public class AnswerFV {
 			features.add(AF_OriginConceptByLAT.class);
 			features.add(AF_OriginConceptByNE.class);
 			features.add(AF_OriginMultiple.class);
+			features.add(AF_NoTyCor.class);
+			features.add(AF_LATANone.class);
 			features.add(AF_SpWordNet.class);
 			features.add(AF_LATQNoWordNet.class);
 			features.add(AF_LATANoWordNet.class);

@@ -14,8 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANone;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANoWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_NoTyCor;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpRelation;
@@ -23,6 +25,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantity;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantityCD;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAWnInstance;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
@@ -95,6 +98,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 
 		boolean qNoWordnetLAT = JCasUtil.select(questionView, WordnetLAT.class).isEmpty();
 		boolean aNoWordnetLAT = JCasUtil.select(answerView, WordnetLAT.class).isEmpty();
+		boolean aNoLAT = JCasUtil.select(answerView, LAT.class).isEmpty();
 		LATMatch match = matchLATs(questionView, answerView);
 
 		AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
@@ -123,11 +127,31 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 					fv.setFeature(AF_TyCorADBpRelation.class, 1.0);
 				else assert(false);
 			}
+
+		/* We were the only ones doing type coercion here. */
+		} else if (!fv.isFeatureSet(AF_TyCorPassageDist.class)) {
+			/* XXX: Make the following a separate annotator?
+			 * When we get another type coercion stage. */
+
+			/* There is no LAT generated for this answer at all;
+			 * a pretty interesting negative feature on its own? */
+			if (aNoLAT) {
+				logger.debug("no LAT for <<{}>>", answerView.getDocumentText());
+				fv.setFeature(AF_LATANone.class, -1.0);
+
+			/* There is no type coercion match, but wordnet LATs
+			 * generated for both question and answer.  This means
+			 * we are fairly sure this answer is of a wrong type. */
+			} else if (!qNoWordnetLAT && !aNoWordnetLAT
+				   && !fv.isFeatureSet(AF_TyCorPassageDist.class)) {
+				logger.debug("failed TyCor for <<{}>>", answerView.getDocumentText());
+				fv.setFeature(AF_NoTyCor.class, -1.0);
+			}
 		}
 
 		if (qNoWordnetLAT)
 			fv.setFeature(AF_LATQNoWordNet.class, 1.0);
-		if (aNoWordnetLAT)
+		if (!aNoLAT && aNoWordnetLAT)
 			fv.setFeature(AF_LATANoWordNet.class, 1.0);
 
 		if (ai.getFeatures() != null)

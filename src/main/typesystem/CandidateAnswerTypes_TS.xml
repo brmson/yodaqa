@@ -130,6 +130,16 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_NoTyCor</name>
+        <description>Answer Feature: Negative evidence (-1.0), indicates a failed type coercion - i.e. both question and answer have some recognizable LATs but there is no match found</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANone</name>
+        <description>Answer Feature: Negative evidence (-1.0), indicates that no LAT has been generated for this answer at all</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet</name>
         <description>Answer Feature: Specificity measured as WordNet graph exp(-distance), i.e. 1 is perfect match, 1/e is very specific, ..., 1/e^4 is already very non-specific</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
@@ -141,7 +151,7 @@
       </typeDescription>
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANoWordNet</name>
-        <description>Answer Feature: Answer LAT has no derivable WordNet LATs.</description>
+        <description>Answer Feature: Answer LAT has no derivable WordNet LATs (but does have *some* LATs).</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
