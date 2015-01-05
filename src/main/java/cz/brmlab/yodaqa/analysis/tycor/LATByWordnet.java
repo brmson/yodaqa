@@ -152,7 +152,9 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 			if (wnpos == POS.NOUN) {
 				/* Got a noun right away. */
-				genDerivedSynsets(latmap, lat, s, wnlist, lat.getSpecificity() - 1);
+				for (PointerTarget t : s.getTargets(PointerType.HYPERNYM)) {
+					genDerivedSynsets(latmap, lat, (Synset) t, wnlist, lat.getSpecificity() - 1);
+				}
 				logger.debug("expanded LAT " + lat.getText() + "/" + lat.getSynset() + " to wn LATs: " + wnlist.toString());
 				return;
 			}
@@ -256,7 +258,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		l2.setSynset(synset2.getOffset());
 		latmap.put(synset2, l2);
 
-		wnlist.append(" | " + lemma + "/" + synset2.getOffset());
+		wnlist.append(" | " + lemma + "/" + synset2.getOffset() + ":" + Double.toString(spec));
 
 		/* ...and recurse, unless we got into the noun.Tops
 		 * realm already. */

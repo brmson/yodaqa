@@ -70,6 +70,14 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				lat = lat.getBaseLAT();
 			return lat;
 		}
+
+		public void logMatch(Logger logger, String prefix) {
+			logger.debug(prefix + " "
+					+ getBaseLat1().getText() + "-" + getBaseLat2().getText()
+					+ " match " + getLat1().getText() /* == LAT2 text */
+					+ "/" + getLat1().getSynset()
+					+ " sp. " + getSpecificity());
+		}
 	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -159,17 +167,13 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			if (lq.getSynset() != 0 && la.getSynset() != 0 && lq.getSynset() != la.getSynset())
 				continue;
 			LATMatch match = new LATMatch(lq, la);
+			// match.logMatch(logger, " maybe ");
 			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity())
 				bestMatch = match;
 		}
 
-		if (bestMatch != null) {
-			logger.debug(".. TyCor "
-					+ bestMatch.getBaseLat1().getText() + "-" + bestMatch.getBaseLat2().getText()
-					+ " match " + bestMatch.getLat1().getText() /* == LAT2 text */
-					+ "/" + bestMatch.getLat1().getSynset()
-					+ " sp. " + bestMatch.getSpecificity());
-		}
+		if (bestMatch != null)
+			bestMatch.logMatch(logger, ".. TyCor");
 		return bestMatch;
 	}
 }
