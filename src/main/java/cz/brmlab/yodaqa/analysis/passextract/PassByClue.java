@@ -191,11 +191,18 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 	}
 
 	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
-		     if (clue instanceof ClueSV        ) afv.setFeature(AF_OriginPsgByClueSV.class, 1.0);
+		     if (clue instanceof ClueToken     ) afv.setFeature(AF_OriginPsgByClueToken.class, 1.0);
+		else if (clue instanceof CluePhrase    ) afv.setFeature(AF_OriginPsgByCluePhrase.class, 1.0);
+		else if (clue instanceof ClueSV        ) afv.setFeature(AF_OriginPsgByClueSV.class, 1.0);
 		else if (clue instanceof ClueNE        ) afv.setFeature(AF_OriginPsgByClueNE.class, 1.0);
 		else if (clue instanceof ClueLAT       ) afv.setFeature(AF_OriginPsgByClueLAT.class, 1.0);
-		else if (clue instanceof ClueSubject   ) afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
-		else if (clue instanceof ClueConcept   ) {
+		else if (clue instanceof ClueSubject   ) {
+			afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
+			     if (clue instanceof ClueSubjectNE) afv.setFeature(AF_OriginPsgByClueSubjectNE.class, 1.0);
+			else if (clue instanceof ClueSubjectToken) afv.setFeature(AF_OriginPsgByClueSubjectToken.class, 1.0);
+			else if (clue instanceof ClueSubjectPhrase) afv.setFeature(AF_OriginPsgByClueSubjectPhrase.class, 1.0);
+			else assert(false);
+		} else if (clue instanceof ClueConcept ) {
 			afv.setFeature(AF_OriginPsgByClueConcept.class, 1.0);
 			ClueConcept concept = (ClueConcept) clue;
 			if (concept.getBySubject())
