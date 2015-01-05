@@ -65,7 +65,7 @@ To get there, we have to take care of at least the following:
     * Extra Type Coercion: An answer feature for normalized number
       of fulltext search hits for question LAT + candidate answer
   * Structured Primary Search
-    * Try using Freebase in addition to DBpedia or create a custom
+    * Try using WikiData in addition to DBpedia or create a custom
       raw infobox/table dataset from the enwiki data; it turns out
       that DBpedia is in fact really narrow :(
 
