@@ -25,7 +25,6 @@ import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /**
  * Generate LAT annotations in a CandidateAnswerCAS. This is based on the
@@ -49,15 +48,14 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		/* Skip an empty answer. */
+		if (jcas.getDocumentText().matches("^\\s*$"))
+			return;
+
 		/* First, try to look up the whole answer - that's ideal,
 		 * after all! */
-		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
-			// XXX: With no focus, we could have still done
-			// the lookup...
-			if (addLATByLabel(jcas, focus, jcas.getDocumentText()))
-				return;
-			break;
-		}
+		if (addLATByLabel(jcas, null, jcas.getDocumentText()))
+			return;
 
 		/* A Focus is a good LAT query source. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
@@ -83,7 +81,10 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		}
 
 		if (typelist.length() > 0) {
-			logger.debug(".. Focus {} => DBpedia LATs/0 {}", focus.getCoveredText(), typelist);
+			if (focus != null)
+				logger.debug(".. Focus {} => DBpedia LATs/0 {}", focus.getCoveredText(), typelist);
+			else
+				logger.debug(".. Ans {} => DBpedia LATs/0 {}", label, typelist);
 			return true;
 		} else {
 			return false;
@@ -97,13 +98,21 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 
 		/* We have a synthetic noun(-ish), synthetize
 		 * a POS tag for it. */
+		Annotation LATBase;
 		POS pos = new NN(jcas);
-		pos.setBegin(focus.getBegin());
-		pos.setEnd(focus.getEnd());
+		if (focus != null) {
+			LATBase = focus;
+			pos.setBegin(focus.getBegin());
+			pos.setEnd(focus.getEnd());
+		} else {
+			LATBase = pos;
+			pos.setBegin(0);
+			pos.setEnd(jcas.getDocumentText().length());
+		}
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(new DBpLAT(jcas), focus.getBegin(), focus.getEnd(), focus, ntype, pos, 0, 0.0);
+		addLAT(new DBpLAT(jcas), LATBase.getBegin(), LATBase.getEnd(), LATBase, ntype, pos, 0, 0.0);
 
 		typelist.append(" | " + ntype);
 	}
