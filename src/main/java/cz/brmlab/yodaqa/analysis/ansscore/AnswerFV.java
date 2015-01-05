@@ -31,6 +31,11 @@ public class AnswerFV {
 	public static String labels[] = {
 		"occurences", "resultLogScore", "passageLogScore",
 		"originPsg", "originPsgFirst",
+		"originPsgByClueToken", "originPsgByCluePhrase", "originPsgByClueSV",
+			"originPsgByClueNE", "originPsgByClueLAT",
+			"originPsgByClueSubject", "originPsgByClueSubjectNE",
+			"originPsgByClueSubjectToken", "originPsgByClueSubjectPhrase",
+			"originPsgByClueConcept",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 			"originPsgSurprise",
 		"originDocTitle", "originDBpRelation",
@@ -72,6 +77,16 @@ public class AnswerFV {
 			features.add(AF_PassageLogScore.class);
 			features.add(AF_OriginPsg.class);
 			features.add(AF_OriginPsgFirst.class);
+			features.add(AF_OriginPsgByClueToken.class);
+			features.add(AF_OriginPsgByCluePhrase.class);
+			features.add(AF_OriginPsgByClueSV.class);
+			features.add(AF_OriginPsgByClueNE.class);
+			features.add(AF_OriginPsgByClueLAT.class);
+			features.add(AF_OriginPsgByClueSubject.class);
+			features.add(AF_OriginPsgByClueSubjectNE.class);
+			features.add(AF_OriginPsgByClueSubjectToken.class);
+			features.add(AF_OriginPsgByClueSubjectPhrase.class);
+			features.add(AF_OriginPsgByClueConcept.class);
 			features.add(AF_OriginPsgNP.class);
 			features.add(AF_OriginPsgNE.class);
 			features.add(AF_OriginPsgNPByLATSubj.class);

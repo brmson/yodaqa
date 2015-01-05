@@ -74,6 +74,24 @@
         <description>Answer Feature: 1 if the origin of this answer is the first passage of document (often a blurb packed with is-a relationships information)</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+
+      <!-- XXX: This looks kind of really awful, ugh. But how to do this sensibly? -->
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</name>
+        <description>Answer Feature: 1 if the origin of this answer is a passage that was selected because it matched a clue that's given in the feature name; "AbClue" means that the "about clue" was also in the title of the document (i.e. low signal).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByCluePhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueSV</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueLAT</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueSubject</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueSubjectNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueSubjectToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueSubjectPhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgByClueConcept</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginPsgByClue</supertypeName></typeDescription>
+
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP</name>
         <description>Answer Feature: 1 if the origin of this answer is a noun phrase parsed in a passage</description>
