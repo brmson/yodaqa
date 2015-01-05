@@ -39,6 +39,13 @@ public class SolrTerm {
 		return required;
 	}
 
+	/**
+	 * @param required the required to set
+	 */
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
 	/** Convert Clue annotations to SolrTerm objects. Ignores some
 	 * clues that aren't very good as keywords. */
 	public static List<SolrTerm> cluesToTerms(Collection<Clue> clues) {

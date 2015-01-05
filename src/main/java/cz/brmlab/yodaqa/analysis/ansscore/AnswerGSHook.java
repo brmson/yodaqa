@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.answer;
+package cz.brmlab.yodaqa.analysis.ansscore;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,7 +104,16 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			 * the selected correct answers would keep changing;
 			 * it turns out this introduces a significant
 			 * instability and (i) the performance degrades
-			 * (ii) it is very tricky to measure improvements. */
+			 * (ii) it is very tricky to measure improvements.
+			 *
+			 * We also prefer correct answers which have lower
+			 * score but are contained in other correct answers.
+			 * Basically, we first pick the answer with the highest
+			 * score, then try to reduce this answer (by substring
+			 * relations) even at the cost of lowering the score
+			 * too.  The motivation is that shorter answers are
+			 * more precise and will therefore have a more
+			 * determining set of features to take for training. */
 			String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
 
 			FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
@@ -126,27 +135,40 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		if (scoringPhase.equals(""))
 			return null;
 
+		/* First, pick the best scored answer. */
 		Answer bestA = null;
 		double bestAScore = 0;
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
 			if (!ap.matcher(a.getText()).find())
 				continue;
 
-			AnswerFV fv = new AnswerFV(a, astats);
-			double score = 0;
-			if (scoringPhase.equals("1"))
-				score = fv.getFeatureValue(AF_Phase0Score.class);
-			else if (scoringPhase.equals("2"))
-				score = fv.getFeatureValue(AF_Phase1Score.class);
-			else assert(false);
-
+			double score = a.getConfidence();
 			if (score > bestAScore) {
 				bestA = a;
 				bestAScore = score;
 			}
 		}
+		if (bestA == null)
+			return null;  // no luck
 
-		return bestA != null ? bestA.getText() : null;
+		/* Now, check again if we can find a shorter but still
+		 * correct version of the best answer.  If so, take
+		 * the shortest one. */
+		Answer bestShorterA = bestA;
+		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
+			if (!ap.matcher(a.getText()).find())
+				continue;
+			if (!bestA.getText().contains(a.getText()))
+				continue;
+			if (bestShorterA.getText().length() < a.getText().length())
+				continue;
+			if (bestShorterA.getText().length() == a.getText().length()
+			    && bestShorterA.getConfidence() > a.getConfidence())
+				continue;  // tie-breaker is score
+			bestShorterA = a;
+		}
+
+		return bestShorterA.getText();
 	}
 
 	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch, AnswerStats astats) {

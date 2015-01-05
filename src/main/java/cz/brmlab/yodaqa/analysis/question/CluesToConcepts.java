@@ -77,6 +77,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			/* Leading "The" may be optional, e.g. "6-day war".
 			 * But make sure the rest is still multi-word. */
+			// XXX: Use the syntax cooker?
 			if (results.isEmpty()
 			    && clueLabel.toLowerCase().startsWith("the ")
 			    && clueLabel.substring(4).contains(" ")) {
@@ -88,6 +89,17 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			/* Yay, got one! */
 			DBpediaTitles.Article a = results.get(0);
+			String cookedLabel = a.getLabel();
+			/* But in case of "list of...", keep the original label
+			 * (but still generate a conceptclue since we have
+			 * a confirmed named entity and we want to include
+			 * the list in our document set). */
+			if (cookedLabel.toLowerCase().matches("^list of .*")) {
+				logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
+				cookedLabel = new String(clueLabel);
+			}
+			/* Remove trailing (...) (e.g. (disambiguation)). */
+			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
 			/* Start constructing the annotation. */
 			ClueConcept conceptClue = new ClueConcept(resultView);
@@ -98,7 +110,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			clue.removeFromIndexes();
 			cluesByLen.remove(clue);
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-				logger.debug("Concept {} subduing {} {}", a.getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
+				logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
 				if (clueSub instanceof ClueSubject)
 					conceptClue.setBySubject(true);
 				else if (clueSub instanceof ClueLAT)
@@ -124,12 +136,12 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * text *optional* during full-text search and keep
 			 * the original text (required during search) within
 			 * a new ClueNE annotation. */
-			boolean reworded = ! clueLabel.toLowerCase().equals(a.getLabel().toLowerCase());
+			boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
 
 			/* Make a fresh concept clue. */
 			addClue(conceptClue, clue.getBegin(), clue.getEnd(),
 				clue.getBase(), weight,
-				a.getPageID(), a.getLabel(), !reworded);
+				a.getPageID(), cookedLabel, !reworded);
 
 			/* Make also an NE clue with always the original text
 			 * as label. */
@@ -140,7 +152,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * a CluePhrase that gets ignored during search. */
 			if (reworded)
 				addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue, weight);
+					clue, clue.getLabel(), weight);
 		}
 	}
 
@@ -157,13 +169,14 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
 
-	protected void addNEClue(JCas jcas, int begin, int end, Annotation base, double weight) {
+	protected void addNEClue(JCas jcas, int begin, int end, Annotation base,
+			String label, double weight) {
 		ClueNE clue = new ClueNE(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
 		clue.setWeight(weight + 0.1); // ensure precedence during merge
-		clue.setLabel(clue.getCoveredText());
+		clue.setLabel(label);
 		clue.setIsReliable(true);
 		clue.addToIndexes();
 		logger.debug("new(NE) by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());

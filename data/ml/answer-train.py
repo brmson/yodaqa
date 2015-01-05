@@ -310,6 +310,10 @@ def cross_validate(answersets, num_rounds):
 
 
 if __name__ == "__main__":
+    # Seed always to the same number to get reproducible builds
+    # TODO: Make this configurable on the command line or in the environment
+    random.seed(17151713)
+
     (answersets, labels) = load_answers(sys.stdin)
 
     print('/// The weights of individual elements of the FV.  These weights')

@@ -1,0 +1,30 @@
+Question LAT bugs in about first 1/3 of curated-train set (about 10%
+failure rate):
+
+Adverb nominalization:
+ * How often does the men's soccer World Cup take place? (often)
+ * How long is the Great Barrier Reef? (long)
+ * how long does light travel from sun to earth? (long)
+ * How far is the distance for a free throw? (far)
+
+Missed wh- LAT:
+ * when was Voyager 1 launched? (launch)
+ * For whom was the state of Pennsylvania named? (state)
+ * Whose business slogan is "Quality is job 1"? (quality)
+
+Passive verb nominalization A:
+ * What is written on the U.S. tomb of the unknown soldier? (U.S.)
+ * What did Caesar say before he died? (Caesar)
+ * What did Charles Babbage invent?
+
+Passive verb nominalization B (more complex):
+ * What are pennies made of? (pennies)
+ * What is an Indian flute made of? (flute)
+
+Passive verb nominalization X (correct LAT rather unclear):
+ * What did Osama bin Laden's father do for a living? (do)
+ * What is the play "West Side Story" based on? (play)
+
+Too narrow LAT:
+ * What body of water does the Colorado River empty into? (body) ++
+ * What was Aaron Copland's most famous piece of music? (piece)

@@ -11,6 +11,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.PipelineLogger;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
@@ -38,6 +39,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * and tokenized. */
 
 		/* POS, constituents, dependencies: */
+		builder.add(createPrimitiveDescription(PipelineLogger.class,
+					PipelineLogger.PARAM_LOG_MESSAGE, "Parsing"));
 		builder.add(createPrimitiveDescription(
 				StanfordParser.class,
 				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
@@ -45,12 +48,20 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		/* Lemma features: */
+		builder.add(createPrimitiveDescription(PipelineLogger.class,
+					PipelineLogger.PARAM_LOG_MESSAGE, "Lemmatization"));
 		builder.add(createPrimitiveDescription(LanguageToolLemmatizer.class),
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		/* Named Entities: */
+		builder.add(createPrimitiveDescription(PipelineLogger.class,
+					PipelineLogger.PARAM_LOG_MESSAGE, "Named Entities"));
 		builder.add(OpenNlpNamedEntities.createEngineDescription(),
 			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+
+
+		builder.add(createPrimitiveDescription(PipelineLogger.class,
+					PipelineLogger.PARAM_LOG_MESSAGE, "QA analysis"));
 
 		/* Question LAT Text Matches: */
 		builder.add(createPrimitiveDescription(MatchQuestionLATs.class));
@@ -66,6 +77,10 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(CanByNESurprise.class));
 		/* Passages like: The <question focus> is <CandidateAnswer>. */
 		builder.add(createPrimitiveDescription(CanByLATSubject.class));
+
+		/* Blacklist some answers that are just linguistic artifacts */
+		builder.add(createPrimitiveDescription(CanBlacklist.class),
+			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 
 		/* Finishing touches: */

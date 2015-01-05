@@ -11,10 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.Clue;
-import cz.brmlab.yodaqa.model.Question.ClueSubject;
+import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
+import cz.brmlab.yodaqa.model.Question.ClueSubjectToken;
+import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
 import cz.brmlab.yodaqa.model.Question.Subject;
 
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 
 /**
  * Generate Clue annotations in a QuestionCAS. These represent key information
@@ -35,11 +40,16 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 		for (Subject s : JCasUtil.select(jcas, Subject.class)) {
 			/* Single-token subjects are treated as reliable
 			 * indicators.  Phrasal subjects aren't, as they
-			 * may have overly specific phrasing. */
-			boolean isReliable = true;
-			if (s.getBase() instanceof Constituent)
-				isReliable = false;
-			addClue(new ClueSubject(jcas), s.getBegin(), s.getEnd(), s, isReliable, 2.5);
+			 * may have overly specific phrasing.  NamedEntity
+			 * subjects are treated as reliable indicators but
+			 * have lower height. */
+			if (s.getBase() instanceof NamedEntity)
+				addClue(new ClueSubjectNE(jcas), s.getBegin(), s.getEnd(), s, true, 2.2);
+			else if (s.getBase() instanceof Token)
+				addClue(new ClueSubjectToken(jcas), s.getBegin(), s.getEnd(), s, true, 2.5);
+			else if (s.getBase() instanceof NP)
+				addClue(new ClueSubjectPhrase(jcas), s.getBegin(), s.getEnd(), s, false, 2.7);
+			else assert(false);
 		}
 	}
 

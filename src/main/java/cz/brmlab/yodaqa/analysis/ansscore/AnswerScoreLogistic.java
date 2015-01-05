@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.answer;
+package cz.brmlab.yodaqa.analysis.ansscore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -84,6 +84,11 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 
 			String label = m.group(1);
 			int i = AnswerFV.featureIndex(label) * 3;
+
+			if (i < 0) {
+				logger.debug("WARNING: Ignoring unknown feature {}", label);
+				continue;
+			}
 
 			while (!line.equals("")) {
 				String line1 = line.replaceAll(",.*$", "");

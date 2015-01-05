@@ -50,7 +50,7 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 
 		/* Since each of these CAS multipliers will eventually produce
 		 * a single CAS marked as "isLast", if you add another one
-		 * here, you must also bump the AnswerMerger parameter
+		 * here, you must also bump the AnswerCASMerger parameter
 		 * PARAM_ISLAST_BARRIER. */
 
 		AnalysisEngineDescription fulltext = createFulltextPassageProducerDescription();

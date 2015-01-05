@@ -3,10 +3,9 @@ package cz.brmlab.yodaqa.analysis.question;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.Constituent;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.ADVMOD;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DEP;
-import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DET;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.WHNP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJPASS;
@@ -21,6 +20,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.TreeUtil;
 import cz.brmlab.yodaqa.model.Question.Subject;
 
 /**
@@ -53,9 +53,18 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 
 	protected void processSubj(JCas jcas, Dependency subj) throws AnalysisEngineProcessException {
 		Token stok = subj.getDependent();
+		Annotation parent = stok.getParent();
+		Constituent cparent = null;
+		if (parent != null && parent instanceof Constituent)
+			cparent = (Constituent) parent;
 
 		/* Skip question word focuses (e.g. "Who"). */
 		if (stok.getPos().getPosValue().matches("^W.*"))
+			return;
+		/* In "What country is Berlin in?", "country" (with
+		 * parent "What country" WHNP) is *also* a NSUBJ
+		 * - skip that one. */
+		if (cparent instanceof WHNP)
 			return;
 
 		/* Prefer a covering Named Entity: */
@@ -63,18 +72,37 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 			addSubject(jcas, ne);
 			return;
 		}
-		/* But when there's none, just add the token. */
+
+		/* N.B. Sometimes NamedEntity detection fails (e.g. "How high
+		 * is Pikes peak?"). So when there's none, just add the token
+		 * as the subject. */
 		addSubject(jcas, stok);
-		/* The covering base noun phrase often doesn't work so well:
-		 *
-		 * What is the state song of Kansas? -> "the state song" (too short)
-		 * What year was the first Macy's Thanksgiving Day Parade held? -> "the first Macy's Thanksgiving Day Parade" (too long)
-		 *
-		 * but when NamedEntity detection fails (e.g. "How high is
-		 * Pikes peak?"), it's indispensible.  Let's create a Subject
-		 * annotation for that too, and let ClueBySubject sort it
-		 * out based on whether it has a token or constituent. */
-		addSubject(jcas, stok.getParent());
+
+		/* However, just the token is often pretty useless, yielding
+		 * e.g.
+		 * - How hot does it get in Death Valley? (it)
+		 * - What is the southwestern-most tip of England? (tip)
+		 * - What is the capital of Laos? (capital)
+		 * - What is the motto for California? (motto)
+		 * - What is the name of the second Beatles album? (name)
+		 * so we rather add the widest covering NP (e.g.
+		 * "capital of Laos"). */
+		/* (Adding just the token, e.g. "capital", above too also makes
+		 * sense as it can be treated as reliable compared to the full
+		 * phrase which may not be in the text word-by-word.) */
+		NP np = TreeUtil.widestCoveringNP(stok);
+		if (np == null) {
+			// <<How long before bankruptcy is removed from a credit report?>>
+			return;
+		}
+		addSubject(jcas, np);
+
+		/* However, if there *is* a NamedEntity in the covering NP,
+		 * add it as a subject too - NamedEntity subject clues can
+		 * be treated as reliable. */
+		for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, np)) {
+			addSubject(jcas, ne);
+		}
 	}
 
 	protected void addSubject(JCas jcas, Annotation subj) throws AnalysisEngineProcessException {

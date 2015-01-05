@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.answer;
+package cz.brmlab.yodaqa.analysis.ansscore;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -45,7 +45,16 @@ public class AnswerFV {
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
 			"tyCorADBpRelation",
-		"topAnswer", "solrHitsEv", "solrMaxScoreEv", "solrHitsMaxScoreEv",
+		"clOCMatchScore", "clOCPrefixedScore", "clOCPrefixingScore", "clOCSuffixedScore",
+			"clOCSuffixingScore", "clOCSubstredScore", "clOCSubstringScore",
+			"clOCMetaMatchScore",
+		"clOMatchScore", "clOPrefixedScore", "clOPrefixingScore", "clOSuffixedScore",
+			"clOSuffixingScore", "clOSubstredScore", "clOSubstringScore",
+			"clOMetaMatchScore",
+		"evdPrefixedScore", "evdPrefixingScore", "evdSuffixedScore", "evdSuffixingScore",
+			"evdSubstredScore", "evdSubstringScore",
+		"topAnswer", "solrHitsEv", "solrAHitsEv", "solrHitsANormEv", "solrMaxScoreEv",
+			"solrHitsMaxScoreEv",
 		"phase0Score", "phase1Score",
 	};
 
@@ -100,8 +109,32 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
 			features.add(AF_TyCorADBpRelation.class);
+			features.add(AF_ClOCMatchScore.class);
+			features.add(AF_ClOCPrefixedScore.class);
+			features.add(AF_ClOCPrefixingScore.class);
+			features.add(AF_ClOCSuffixedScore.class);
+			features.add(AF_ClOCSuffixingScore.class);
+			features.add(AF_ClOCSubstredScore.class);
+			features.add(AF_ClOCSubstringScore.class);
+			features.add(AF_ClOCMetaMatchScore.class);
+			features.add(AF_ClOMatchScore.class);
+			features.add(AF_ClOPrefixedScore.class);
+			features.add(AF_ClOPrefixingScore.class);
+			features.add(AF_ClOSuffixedScore.class);
+			features.add(AF_ClOSuffixingScore.class);
+			features.add(AF_ClOSubstredScore.class);
+			features.add(AF_ClOSubstringScore.class);
+			features.add(AF_ClOMetaMatchScore.class);
+			features.add(AF_EvDPrefixedScore.class);
+			features.add(AF_EvDPrefixingScore.class);
+			features.add(AF_EvDSuffixedScore.class);
+			features.add(AF_EvDSuffixingScore.class);
+			features.add(AF_EvDSubstredScore.class);
+			features.add(AF_EvDSubstringScore.class);
 			features.add(AF_TopAnswer.class);
 			features.add(AF_SolrHitsEv.class);
+			features.add(AF_SolrAHitsEv.class);
+			features.add(AF_SolrHitsANormEv.class);
 			features.add(AF_SolrMaxScoreEv.class);
 			features.add(AF_SolrHitsMaxScoreEv.class);
 			features.add(AF_Phase0Score.class);

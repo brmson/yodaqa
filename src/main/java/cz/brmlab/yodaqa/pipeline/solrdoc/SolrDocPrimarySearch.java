@@ -17,7 +17,7 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
@@ -55,7 +55,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	 * successively multiplied by proximity-base-factor; initial weight
 	 * is sum of individual weights and is successively halved. */
 	public static final String PARAM_PROXIMITY_NUM = "proximity-num";
-	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "2")
+	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "3")
 	protected int proximityNum;
 	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "2")
@@ -145,7 +145,12 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		String title = (String) doc.getFieldValue("titleText");
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
 
-		jcas.setDocumentText(title);
+		/* Chop any trailing (...) substring (e.g. Foo (disambiguation)
+		 * to just Foo).  N.B. it might be tempting to use this as
+		 * a LAT, but it might not be a type; e.g.
+		 * Socialist Party(France), ...  so at most this should be
+		 * a weak LAT signal. */
+		jcas.setDocumentText(title.replaceAll("\\s+\\([^)]*\\)\\s*$", ""));
 		jcas.setDocumentLanguage("en"); // XXX
 
 		ResultInfo ri = new ResultInfo(jcas);

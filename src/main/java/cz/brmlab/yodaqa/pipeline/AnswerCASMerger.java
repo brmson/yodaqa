@@ -19,13 +19,17 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
-import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRelation;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -34,10 +38,14 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
  * Take a set of per-answer CandidateAnswerCAS and merge them to
  * an AnswerHitlistCAS.
  *
- * We also deduplicate answers with identical text. */
+ * We also deduplicate answers with identical text.
+ *
+ * Otherwise, do not confuse with AnswerTextMerger, which merges answers
+ * in the AnswerHitlist that are textually different but heuristically
+ * equivalent. */
 
-public class AnswerMerger extends JCasMultiplier_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(AnswerMerger.class);
+public class AnswerCASMerger extends JCasMultiplier_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(AnswerCASMerger.class);
 
 	/** Number of CASes marked as isLast required to encounter before
 	 * the final merging is performed.  When multiple independent CAS
@@ -54,6 +62,12 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 	public static final String PARAM_HITLIST_REUSE = "hitlist-reuse";
 	@ConfigurationParameter(name = PARAM_HITLIST_REUSE, mandatory = false, defaultValue = "false")
 	protected boolean doReuseHitlist;
+
+	/** The phase number. If non-zero, confidence of the answer is
+	 * pre-set to AF_Phase(n-1)Score. */
+	public static final String PARAM_PHASE = "phase";
+	@ConfigurationParameter(name = PARAM_PHASE, mandatory = false, defaultValue = "0")
+	protected int phaseNum;
 
 	protected class AnswerFeatures {
 		Answer answer;
@@ -166,6 +180,7 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 		Answer answer = new Answer(finalAnswerHitlistView);
 		String text = canAnswer.getDocumentText();
 		answer.setText(text);
+		answer.setCanonText(ai.getCanonText());
 
 		// System.err.println("AR process: " + answer.getText());
 
@@ -202,13 +217,23 @@ public class AnswerMerger extends JCasMultiplier_ImplBase {
 				mainFV.merge(af.getFV());
 			}
 
+			/* XXX: Code duplication with AnswerTextMerger */
 			/* At this point we can generate some features
 			 * to be aggregated over all individual answer
 			 * instances. */
-			if (mainFV.getFeatureValue(AF_OriginPsgNP.class)
+			if (mainFV.getFeatureValue(AF_OriginPsgFirst.class)
+			    + mainFV.getFeatureValue(AF_OriginPsgNP.class)
 			    + mainFV.getFeatureValue(AF_OriginPsgNE.class)
-			    + mainFV.getFeatureValue(AF_OriginDocTitle.class) > 1.0)
+			    + mainFV.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
+			    + mainFV.getFeatureValue(AF_OriginDocTitle.class)
+			    + mainFV.getFeatureValue(AF_OriginDBpRelation.class) > 1.0)
 				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
+			/* Also restore confidence value if we already
+			 * determined it before. */
+			if (phaseNum == 1)
+				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase0Score.class));
+			else if (phaseNum == 2)
+				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase1Score.class));
 
 			mainAns.setFeatures(mainFV.toFSArray(finalAnswerHitlistView));
 			mainAns.addToIndexes();

@@ -14,7 +14,7 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
@@ -27,8 +27,8 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * each to-be-reanalyzed candidate answer.  However, first we return
  * AnswerHitlistCAS again to keep it flowing. */
 
-public class AnswerSplitter extends JCasMultiplier_ImplBase {
-	final static Logger logger = LoggerFactory.getLogger(AnswerSplitter.class);
+public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
+	final static Logger logger = LoggerFactory.getLogger(AnswerCASSplitter.class);
 
 	/**
 	 * Number of top answers to extract.
@@ -136,6 +136,7 @@ public class AnswerSplitter extends JCasMultiplier_ImplBase {
 
 		/* Generate the AnswerInfo singleton */
 		AnswerInfo ai = new AnswerInfo(jcas);
+		ai.setCanonText(answer.getCanonText());
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.addToIndexes();

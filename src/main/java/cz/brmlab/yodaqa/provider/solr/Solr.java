@@ -128,10 +128,12 @@ public class Solr implements Closeable {
 	protected String formulateQuery(Collection<SolrTerm> terms, SolrQuerySettings settings, Logger cLogger) {
 		StringBuffer result = new StringBuffer();
 		for (SolrTerm term : terms) {
-			// drop quote characters; more escaping is done in escapeQuery()
-			String keyterm = term.getTermStr().replace("\"", "");
+			if (settings.isProximityOnly())
+				continue;
 			if (term.isRequired() && settings.areCluesAllRequired())
 				result.append("+");
+			// drop quote characters; more escaping is done in escapeQuery()
+			String keyterm = term.getTermStr().replace("\"", "");
 			result.append("(");
 			boolean isFirstField = true;
 			for (String prefix : settings.getSearchPrefixes()) {
@@ -157,8 +159,9 @@ public class Solr implements Closeable {
 		int n_terms = 0;
 		double sumWeight = 0;
 		for (SolrTerm term : terms) {
-			// ignore optional terms in proximity queries
-			if (!term.isRequired())
+			// ignore optional terms in proximity queries, except
+			// when that'd mean we drop them completely
+			if (!term.isRequired() && !settings.isProximityOnly())
 				continue;
 			// drop quote characters; more escaping is done in escapeQuery()
 			String keyterm = term.getTermStr().replace("\"", "");

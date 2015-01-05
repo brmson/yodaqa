@@ -96,6 +96,7 @@ public abstract class CachedJenaLookup {
 			results.add(result);
 		}
 
+		qe.close();
 		return results;
 	}
 }

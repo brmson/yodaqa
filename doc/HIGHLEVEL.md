@@ -220,11 +220,34 @@ The answers are scored (by estimated probability of being correct, using
 a machine learned model based on the features) and ranked (by their score).
 This is taken care of the **AnswerScoringAE** pipeline.
 
+## Answer Pruning, Merging and Evidence Diffusion
+
+The answer hitlist is pruned to top N (let's say N=100); the idea is
+that scoring (esp. normalized) may work better with the most noise
+wed out.
+
+Within the collected answers, those which are deemed as equivalent
+or partially equivalent share their features - basically, each such
+answer includes the sum of scores of equivalent answers as a feature.
+
+If the answers are completely equivalent (e.g. just an extra "the -"
+etc.), the answers are **merged** by removing the answers equivalent
+to the top-scored one.  If the answers are only partially equivalent
+(e.g. country vs. its capital), the score is transferred but no removal
+is done and we call this **evidence diffusion**.
+
+(For merging, we might actually just merge the feature vectors themselves
+rather than transfer the score to a separate feature; the evidence is
+always diffused through features.)
+
 ## Answer Hitlist Scoring 1
 
-The answer hitlist is pruned to top N (let's say N=100) answers and
-re-scored; the idea is that scoring (esp. normalized) may work better
-with the most noise wed out.
+Answers are re-scored and re-ranked.
+
+In all scorings after Scoring 0, the classifier is trained while considering
+only a single correct answer for each question, not all of them - the idea is
+to focus the features more.  Also, the scores of previous scoring phases are
+included as features for the classifier.
 
 ## Answer Evidence Gathering
 

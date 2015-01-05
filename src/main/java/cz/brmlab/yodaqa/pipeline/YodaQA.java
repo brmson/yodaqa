@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.pipeline;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.FlowControllerFactory;
@@ -8,8 +9,8 @@ import org.apache.uima.flow.impl.FixedFlowController;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.analysis.ansevid.AnswerEvidencingAE;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
-import cz.brmlab.yodaqa.analysis.answer.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
@@ -125,10 +126,11 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerAnalysis = AnswerAnalysisAE.createEngineDescription();
 			builder.add(answerAnalysis);
 
-			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-					AnswerMerger.class,
-					AnswerMerger.PARAM_ISLAST_BARRIER, 4);
-			builder.add(answerMerger);
+			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASMerger.class,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 4,
+					AnswerCASMerger.PARAM_PHASE, 0);
+			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #0.) */
 		} else if (loadPhase == 0) {
@@ -154,7 +156,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		/* Next stage - initial scoring, and pruning all but the top N
 		 * answers; this should help us differentiate better selection
-		 * with most of the noisy low quality answers wed out. */
+		 * with most of the noisy low quality answers wed out. Also
+		 * merge textually equivalent answers. */
 		if (loadPhase < 1) {
 			System.err.println("1");
 			outputsNewCASes = true;
@@ -162,17 +165,34 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			/* Convert top N AnswerHitlist entries back to separate CASes,
 			 * then back to a hitlist, to get rid of them.  This is a bit
 			 * convoluted, but simple. */
-			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
-					AnswerSplitter.class,
-					AnswerSplitter.PARAM_TOPLISTLEN, 100,
-					AnswerSplitter.PARAM_HITLIST_EMIT, false);
-			builder.add(answerSplitter);
+			AnalysisEngineDescription answerCASSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASSplitter.class,
+					AnswerCASSplitter.PARAM_TOPLISTLEN, 100,
+					AnswerCASSplitter.PARAM_HITLIST_EMIT, false);
+			builder.add(answerCASSplitter);
 
-			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-					AnswerMerger.class,
-					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
-					AnswerMerger.PARAM_HITLIST_REUSE, false);
-			builder.add(answerMerger);
+			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASMerger.class,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerCASMerger.PARAM_HITLIST_REUSE, false,
+					AnswerCASMerger.PARAM_PHASE, 1);
+			builder.add(answerCASMerger);
+
+			/* XXX: Move the following to a separate scoring phase
+			 * so that we already capture the single correct answer
+			 * scoring preference. */
+
+			/* Merge textually equivalent answers. */
+			AnalysisEngineDescription answerTextMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerTextMerger.class);
+			builder.add(answerTextMerger,
+				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
+
+			/* Diffuse scores between textually similar answers. */
+			AnalysisEngineDescription evidenceDiffusion = AnalysisEngineFactory.createEngineDescription(
+					EvidenceDiffusion.class);
+			builder.add(evidenceDiffusion,
+				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		/* (Serialization / scoring point #1.) */
 		} else if (loadPhase == 1) {
@@ -204,18 +224,19 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			/* Convert top N AnswerHitlist entries back to separate CASes;
 			 * the original hitlist with the rest of questions is also
 			 * still passed through.. */
-			AnalysisEngineDescription answerSplitter = AnalysisEngineFactory.createEngineDescription(
-					AnswerSplitter.class);
-			builder.add(answerSplitter);
+			AnalysisEngineDescription answerCASSplitter = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASSplitter.class);
+			builder.add(answerCASSplitter);
 
 			AnalysisEngineDescription answerEvidencing = AnswerEvidencingAE.createEngineDescription();
 			builder.add(answerEvidencing);
 
-			AnalysisEngineDescription answerMerger = AnalysisEngineFactory.createEngineDescription(
-					AnswerMerger.class,
-					AnswerMerger.PARAM_ISLAST_BARRIER, 1,
-					AnswerMerger.PARAM_HITLIST_REUSE, true);
-			builder.add(answerMerger);
+			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
+					AnswerCASMerger.class,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
+					AnswerCASMerger.PARAM_HITLIST_REUSE, true,
+					AnswerCASMerger.PARAM_PHASE, 2);
+			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #2.) */
 		} else if (loadPhase == 2) {
@@ -249,7 +270,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 		/* Since each of these CAS multipliers will eventually produce
 		 * a single CAS marked as "isLast", if you add another one
-		 * here, you must also bump the AnswerMerger parameter
+		 * here, you must also bump the AnswerCASMerger parameter
 		 * PARAM_ISLAST_BARRIER. */
 
 		AnalysisEngineDescription dbpRel = DBpediaRelationAnswerProducer.createEngineDescription();

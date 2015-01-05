@@ -19,6 +19,11 @@
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>canonText</name>
+	    <description>Syntactically canonical form of the answer (without leading/trailing interpunction and the- and such)</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>confidence</name>
             <description>Confidence of the answer; this is an estimate of the probability that the answer is right</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>

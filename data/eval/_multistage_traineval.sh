@@ -97,7 +97,7 @@ if [ -z "$basecommit" ]; then
 	echo "First run..."
 	time ./gradlew tsvgs \
 		-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
-		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 		$args0
 
@@ -122,7 +122,7 @@ train_and_sync "" "$atrainfile0" "$modelfile0"
 # Re-score with new model
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 	$args0
@@ -130,7 +130,7 @@ time ./gradlew tsvgs \
 
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
 	$args1
@@ -140,7 +140,7 @@ train_and_sync "1" "$atrainfile1" "$modelfile1"
 # Re-score with new model
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
 	$args1
@@ -148,7 +148,7 @@ time ./gradlew tsvgs \
 
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
 	$args2
@@ -158,7 +158,7 @@ train_and_sync "2" "$atrainfile2" "$modelfile2"
 # Re-score with new model
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
-	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
+	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
 	$args2

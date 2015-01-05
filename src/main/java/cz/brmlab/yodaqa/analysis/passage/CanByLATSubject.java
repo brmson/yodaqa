@@ -12,7 +12,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.TreeUtil;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
@@ -94,22 +95,12 @@ public class CanByLATSubject extends JCasAnnotator_ImplBase {
 			if (subjlemma.equals(latlemma)) {
 				logger.debug("Passage subject {} matches question lat {}", subjlemma, latlemma);
 
-				Annotation np = widestCoveringNP(passagesView, nsubj.getGovernor());
+				Annotation np = TreeUtil.widestCoveringNP(nsubj.getGovernor());
 				if (np == null)
 					np = nsubj.getGovernor(); // cheat :)
 				addCandidateAnswer(passagesView, np, ri, p);
 			}
 		}
-	}
-
-	protected NP widestCoveringNP(JCas passagesView, Token t) {
-		NP bestnp = null;
-
-		for (NP np : JCasUtil.selectCovering(NP.class, t))
-			if (bestnp == null || bestnp.getBegin() > np.getBegin() || bestnp.getEnd() < np.getEnd())
-				bestnp = np;
-
-		return bestnp;
 	}
 
 	protected void addCandidateAnswer(JCas passagesView, Annotation np, ResultInfo ri, Passage p)

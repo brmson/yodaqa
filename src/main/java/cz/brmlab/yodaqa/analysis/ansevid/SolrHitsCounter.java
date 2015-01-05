@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.ansevid;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -16,13 +17,17 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.answer.AnswerFV;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrAHitsEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsEv;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsANormEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrMaxScoreEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsMaxScoreEv;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.ClueLAT;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
@@ -31,7 +36,8 @@ import cz.brmlab.yodaqa.provider.solr.SolrTerm;
 /**
  * For a given candidate answer, measure the number of results for
  * a search for question clues plus the answer.  We use the same
- * settings as for the baseline fulltext search. */
+ * settings as for the baseline fulltext search.  The values are
+ * normalized by number of hits for answer alone. */
 
 public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(SolrHitsCounter.class);
@@ -46,7 +52,7 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "2")
 	protected int proximityNum;
 	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
-	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "2")
+	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "3")
 	protected int proximityBaseDist;
 	public static final String PARAM_PROXIMITY_BASE_FACTOR = "proximity-base-factor";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
@@ -71,6 +77,9 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 
 		this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
 				new String[]{"", "titleText"}, true /* XXX? */);
+		/* Include only the answer and proximity terms in
+		 * the solr search query. */
+		this.settings.setProximityOnly(true);
 	}
 
 
@@ -86,27 +95,50 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 			return; // AnswerHitlistCAS
 		}
 
-		SolrDocumentList documents;
-		try {
-			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
-			Collection<SolrTerm> terms = SolrTerm.cluesToTerms(clues);
+		Collection<SolrTerm> terms;
+		SolrTerm answerTerm = new SolrTerm(answerView.getDocumentText(), 10 /* XXX */, true);
 
-			SolrTerm answerTerm = new SolrTerm(answerView.getDocumentText(), 10 /* XXX */, true);
-			terms.add(answerTerm);
+		/* Count hits of answer alone... */
+		terms = new ArrayList<SolrTerm>();
+		terms.add(answerTerm);
+		SolrDocumentList dAnswer = countTermsHits(terms);
 
-			documents = solr.runQuery(terms, 10000 /* XXX */, settings, logger);
-		} catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
+		/* ...and combined question + answer. */
+		Collection<Clue> clues = new ArrayList<Clue>();
+		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
+			// do not include the LAT
+			if (clue instanceof ClueLAT
+			    || (clue instanceof ClueConcept && ((ClueConcept) clue).getByLAT()))
+				continue;
+			clues.add(clue);
 		}
+		terms = SolrTerm.cluesToTerms(clues);
+		terms.add(answerTerm);
+		SolrDocumentList dCombined = countTermsHits(terms);
 
-		long n = documents.getNumFound();
-		float s = documents.getMaxScore();
-		logger.debug("{} => {}, {} => {}", answerView.getDocumentText(), n, s, n * s);
+		/* Compute the stats. */
+
+		long n = dCombined.getNumFound();
+		float s = dCombined.getMaxScore();
+		/* N.B. normalization by something like dQuestion is not needed
+		 * thanks to the generic all-answer feature normalization we
+		 * do. */
 
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(AF_SolrHitsEv.class, n);
-		fv.setFeature(AF_SolrMaxScoreEv.class, s);
-		fv.setFeature(AF_SolrHitsMaxScoreEv.class, n * s);
+		if (dAnswer.getNumFound() > 0)
+			fv.setFeature(AF_SolrAHitsEv.class, dAnswer.getNumFound());
+		if (n > 0) {
+			fv.setFeature(AF_SolrHitsEv.class, n);
+			if (dAnswer.getNumFound() > 0)
+				fv.setFeature(AF_SolrHitsANormEv.class, (float) n / dAnswer.getNumFound());
+			fv.setFeature(AF_SolrMaxScoreEv.class, s);
+			fv.setFeature(AF_SolrHitsMaxScoreEv.class, n * s);
+		}
+
+		logger.debug("{} => (a {}; c {}, {}) n {}, {} => {}", answerView.getDocumentText(),
+				dAnswer.getNumFound(),
+				dCombined.getNumFound(), dCombined.getMaxScore(),
+				n, s, n * s);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();
@@ -114,5 +146,15 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 
 		ai.setFeatures(fv.toFSArray(answerView));
 		ai.addToIndexes();
+	}
+
+	protected SolrDocumentList countTermsHits(Collection<SolrTerm> terms) throws AnalysisEngineProcessException {
+		SolrDocumentList documents;
+		try {
+			documents = solr.runQuery(terms, 10000 /* XXX */, settings, logger);
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+		return documents;
 	}
 }

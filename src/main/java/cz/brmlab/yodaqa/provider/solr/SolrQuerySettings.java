@@ -5,6 +5,7 @@ public class SolrQuerySettings {
 	protected int proximityBaseDist, proximityBaseFactor;
 	protected String[] searchFields;
 	protected boolean cluesAllRequired;
+	protected boolean proximityOnly;
 
 	/* searchField "" means document body; searchField "titleText"
 	 * means the title. */
@@ -59,5 +60,19 @@ public class SolrQuerySettings {
 	 */
 	public boolean areCluesAllRequired() {
 		return cluesAllRequired;
+	}
+
+	/**
+	 * @return the proximityOnly
+	 */
+	public boolean isProximityOnly() {
+		return proximityOnly;
+	}
+
+	/**
+	 * @param proximityOnly the proximityOnly to set
+	 */
+	public void setProximityOnly(boolean proximityOnly) {
+		this.proximityOnly = proximityOnly;
 	}
 }
