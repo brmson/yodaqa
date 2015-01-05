@@ -21,12 +21,7 @@ fairly volatile):
 
   * Revamp LAT features; try carrying wordnetSp values within
     the LAT features (WIP; so far overfitted)
-  * Features for clues that triggered the answer generating
-    passage (WIP; so far overfits)
 
-  * Problem with quantities like "What's the speed of light?"
-  * Improve qLAT generation re `data/eval/analysis/LAT-6bccbab.txt`
-  * Review Subject generation, aLAT generation
   * Generate a special "boring" feature for answers that contain
     no interesting information; this is important for SolrHitsCount
   * Special handling of "name" queries (simple focus proxy is
@@ -77,7 +72,7 @@ To get there, we have to take care of at least the following:
 We plan to publish our results in a paper when 1.0 is done.  For that,
 we will want to do some comparison benchmarks:
 
-  * Update to DBpedia 2014 and a more recent enwiki snapshot
+  * Update to DBpedia 2014 and a matching enwiki snapshot
   * Re-benchmark with other datasets:
     * Plain TREC QA dataset and regexes (full + curated-test questions
       only).
