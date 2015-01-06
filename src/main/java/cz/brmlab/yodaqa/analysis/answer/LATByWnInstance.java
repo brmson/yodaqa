@@ -79,7 +79,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	protected void addWordnetLAT(JCas jcas, Annotation base, Synset synset) throws Exception {
 		addLATFeature(jcas, AF_LATWnInstance.class);
 
-		String lemma = synset.getWord(0).getLemma();
+		String lemma = synset.getWord(0).getLemma().replace('_', ' ');
 
 		/* We have a synthetic noun(-ish), synthetize
 		 * a POS tag for it. */

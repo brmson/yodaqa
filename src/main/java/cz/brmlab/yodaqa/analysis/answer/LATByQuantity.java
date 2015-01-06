@@ -58,7 +58,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		// XXX: "quantity" is not the primary label for this wordnet sense
 		String text0 = "measure"; long synset0 = 33914;
 		// quantitative relation, e.g. speed:
-		String text1 = "magnitude_relation"; long synset1 = 13837364;
+		String text1 = "magnitude relation"; long synset1 = 13837364;
 		// positions and distances, e.g. altitude:
 		String text2 = "magnitude"; long synset2 = 5097645;
 		double spec = 0.0;

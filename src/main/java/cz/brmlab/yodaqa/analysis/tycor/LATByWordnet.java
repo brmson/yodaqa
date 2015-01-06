@@ -48,16 +48,16 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	 * would be more complicated to obtain.
 	 */
 	protected static String tops_list[] = {
-		"entity", "physical_entity", "abstraction", "thing", "object",
-		"whole", "congener", "living_thing", "organism", "benthos",
+		"entity", "physical entity", "abstraction", "thing", "object",
+		"whole", "congener", "living thing", "organism", "benthos",
 		"dwarf", "heterotroph", "parent", "life", "biont", "cell",
-		"causal_agent", "person", "animal", "plant", "native",
-		"natural_object", "substance", "substance1", "matter", "food",
-		"nutrient1", "artifact", "article", "psychological_feature",
+		"causal agent", "person", "animal", "plant", "native",
+		"natural object", "substance", "substance1", "matter", "food",
+		"nutrient1", "artifact", "article", "psychological feature",
 		"cognition", "motivation", "attribute", "state", "feeling",
-		"location", "shape", "time", "space", "absolute_space",
-		"phase_space", "event", "process", "act", "group", "relation",
-		"possession", "social_relation", "communication", "measure",
+		"location", "shape", "time", "space", "absolute space",
+		"phase space", "event", "process", "act", "group", "relation",
+		"possession", "social relation", "communication", "measure",
 		"phenomenon",
 	};
 	protected Set<String> tops;
@@ -244,7 +244,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			}
 			return;
 		}
-		String lemma = synset2.getWord(0).getLemma();
+		String lemma = synset2.getWord(0).getLemma().replace('_', ' ');
 
 		/* New LAT. */
 		l2 = new WordnetLAT(lat.getCAS().getJCas());
