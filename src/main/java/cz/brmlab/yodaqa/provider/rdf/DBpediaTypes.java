@@ -17,8 +17,19 @@ public class DBpediaTypes extends CachedJenaLookup {
 	private static final Log logger =
 		LogFactory.getLog(DBpediaTypes.class);
 
-	/** Query for a given title, returning a set of articles. */
+	/** Query for a given title, returning a set of types. */
 	public List<String> query(String title, Logger logger) {
+		for (String titleForm : cookedTitles(title)) {
+			List<String> results = queryTitleForm(titleForm, logger);
+			if (!results.isEmpty())
+				return results;
+		}
+		return new ArrayList<String>();
+	}
+
+	/** Query for a given specific title form, returning a set
+	 * of types. */
+	public List<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
 		 * by force-capitalizing the first letter in the sought

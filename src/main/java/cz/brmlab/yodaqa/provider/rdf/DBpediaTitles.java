@@ -38,6 +38,17 @@ public class DBpediaTitles extends CachedJenaLookup {
 
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title, Logger logger) {
+		for (String titleForm : cookedTitles(title)) {
+			List<Article> results = queryTitleForm(titleForm, logger);
+			if (!results.isEmpty())
+				return results;
+		}
+		return new ArrayList<Article>();
+	}
+
+	/** Query for a given specific title form, returning a set
+	 * of articles. */
+	public List<Article> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
 		 * by force-capitalizing the first letter in the sought
