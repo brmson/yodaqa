@@ -77,6 +77,14 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 
 		List<String> types = dbt.query(label, logger);
 		for (String type : types) {
+			if (type.toLowerCase().equals("function word")) {
+				/* Ignore function words: she, them, ... */
+				logger.debug(".. skipping function word <<{}>>", label);
+				return false;
+			}
+		}
+
+		for (String type : types) {
 			addTypeLAT(jcas, focus, type, typelist);
 		}
 
