@@ -1,7 +1,5 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
-import java.util.List;
-
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.PointerTarget;
 import net.didion.jwnl.data.PointerType;
@@ -26,12 +24,10 @@ import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
 import cz.brmlab.yodaqa.provider.JWordnet;
-import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /**
  * Generate LAT annotations in a CandidateAnswerCAS. This is based on the
@@ -46,8 +42,18 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		/* A Focus is a good LAT query source. */
+		/* Skip an empty answer. */
+		if (jcas.getDocumentText().matches("^\\s*$"))
+			return;
+
 		try {
+			/* First, try to look up the whole answer - that's ideal,
+			 * after all! */
+			if (processOne(jcas, null, jcas.getDocumentText())
+			    || processOne(jcas, null, SyntaxCanonization.getCanonText(jcas.getDocumentText())))
+				return;
+
+			/* A Focus is a good LAT query source. */
 			for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
 				/* ...however, prefer an overlapping named entity. */
 				boolean ne_found = false;
@@ -85,8 +91,14 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 		 * a POS tag for it. */
 		/* XXX: We assume a hypernym is always a noun. */
 		POS pos = new NN(jcas);
-		pos.setBegin(base.getBegin());
-		pos.setEnd(base.getEnd());
+		if (base != null) {
+			pos.setBegin(base.getBegin());
+			pos.setEnd(base.getEnd());
+		} else {
+			base = pos;
+			pos.setBegin(0);
+			pos.setEnd(jcas.getDocumentText().length());
+		}
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
