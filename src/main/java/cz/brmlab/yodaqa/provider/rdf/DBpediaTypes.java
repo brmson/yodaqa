@@ -1,7 +1,11 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
@@ -11,7 +15,9 @@ import org.slf4j.Logger;
 
 /** A wrapper around DBpedia dataset that maps concepts to
  * rdf:type ontology pieces. The main point of using this is to give
- * an evidence of the type of the concept. */
+ * an evidence of the type of the concept.
+ *
+ * We also weed out any abstractions, keeping only the leaf types. */
 
 public class DBpediaTypes extends CachedJenaLookup {
 	private static final Log logger =
@@ -46,30 +52,75 @@ public class DBpediaTypes extends CachedJenaLookup {
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
 			"  ?redir rdfs:label \"" + title + "\"@en .\n" +
 			"}\n" +
-			 // set the output variables
-			"?res rdf:type ?t .\n" +
+			 // set the output variable
+			"?res rdf:type ?type .\n" +
+
+			 // gather information about supertypes so that we can
+			 // remove them from the output set
+			"OPTIONAL {\n" +
+			"  ?res rdf:type ?superType .\n" +
+			"  ?type rdfs:subClassOf ?superType .\n" +
+			"}\n" +
 
 			 // weed out resources that are categories and other in-namespace junk
 			"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "t" });
+			new String[] { "type", "superType" });
 
-		List<String> results = new ArrayList<String>(rawResults.size());
+		/* Blacklist of abstractions (types that are supertypes
+		 * of other types) */
+		Set<String> abstractions = new HashSet<String>();
+
+		List<String> results = new LinkedList<String>();
 		for (Literal[] rawResult : rawResults) {
-			String typeLabel = rawResult[0].getString().
-				replaceAll("_", " ").
-				replaceAll("[0-9]*$", "").
-				replaceAll("([a-z])([A-Z])", "$1 $2");
-			if (typeLabel.equals("Thing")) {
+			String typeLabel = cookTypeLabel(rawResult[0].getString());
+			if (typeLabel.equals("Thing") || typeLabel.equals(" Feature")) {
 				// just skip this, about everything is tagged as owl#thing
+				// and most stuff is tagger as a " Feature" (sic)
 				continue;
 			}
-			//logger.debug("DBpedia {} type: [[{}]]", title, typeLabel);
+
+			// logger.debug("DBpedia {} type: [[{}]]", title, typeLabel);
 			results.add(typeLabel);
+
+			if (rawResult[1] != null) {
+				/* XXX: Yago has some "sub-leaf" types like
+				 * http://dbpedia.org/class/yago/OnlineEncyclopedias
+				 * that shouldn't cause blacklisting of true
+				 * concept leafs like
+				 * http://dbpedia.org/class/yago/Encyclopedia106427387 */
+				if (rawResult[1].getString().matches("^.*[0-9]{5}$")
+				    && !rawResult[0].getString().matches("^.*[0-9]{5}$")) {
+					// logger.debug("ignoring abstraction {}", rawResult[1].getString());
+					continue;
+				}
+				String superTypeLabel = cookTypeLabel(rawResult[1].getString());
+				// logger.debug("abstraction {}", superTypeLabel);
+				abstractions.add(superTypeLabel);
+			}
+		}
+
+		/* Revisit results and weed out blacklisted entries. */
+		Iterator<String> it = results.iterator();
+		while (it.hasNext()) {
+			String typeLabel = it.next();
+			// logger.debug("checking type {}", typeLabel);
+			if (abstractions.contains(typeLabel)) {
+				it.remove();
+				// logger.debug("removing type {}", typeLabel);
+			}
 		}
 
 		return results;
+	}
+
+	protected static String cookTypeLabel(String typeLabel) {
+		typeLabel = typeLabel.
+			replaceAll("_", " ").
+			replaceAll("[0-9]*$", "").
+			replaceAll("([a-z])([A-Z])", "$1 $2");
+		return typeLabel;
 	}
 }

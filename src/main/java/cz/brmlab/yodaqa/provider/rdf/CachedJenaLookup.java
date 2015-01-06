@@ -94,7 +94,9 @@ public abstract class CachedJenaLookup {
 			Literal[] result = new Literal[resources.length];
 			for (int i = 0; i < resources.length; i++) {
 				RDFNode node = s.get("?" + resources[i]);
-				if (node.isLiteral())
+				if (node == null)
+					result[i] = null;
+				else if (node.isLiteral())
 					result[i] = node.asLiteral();
 				else if (node.isResource())
 					result[i] = ResourceFactory.createPlainLiteral(node.asResource().getLocalName());

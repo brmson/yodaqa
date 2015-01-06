@@ -36,7 +36,10 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
  * - converting "Serbian Inventors" to LAT inventor or dealing with
  *   "Cultural Concepts" or "Peninsulas of Asia" is actually really tricky.
  * - recursive expansion of categories is problematic; "Serbian Invetors"
- *   expands to "Inventors"... which expands to "Inventions", oops? */
+ *   expands to "Inventors"... which expands to "Inventions", oops?
+ *
+ * We also take care to use only leaf (most specific) type entries
+ * and rely oo wordnet abstractions. */
 
 public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByDBpedia.class);

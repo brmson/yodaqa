@@ -71,21 +71,19 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Generate Wordnet instance-of based LATs */
 		builder.add(createPrimitiveDescription(LATByWnInstance.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Generate DBpedia LATs */
+		builder.add(createPrimitiveDescription(LATByDBpedia.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* ...and multiplicate LATs so far by wordnet hypernymy. */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* We do no LAT multiplication below here since all of our LATs
 		 * are already "on-the-spot" and won't benefit from further
-		 * generalization - either already sufficiently generic
-		 * (NamedEntity, Quantity, ...) or with their own abstraction
-		 * hierarchy (LATByDBpedia). */
+		 * generalization - already sufficiently generic. */
 
 		/* Generate NamedEntity type LATs */
 		builder.add(createPrimitiveDescription(LATByNE.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
-		/* Generate DBpedia LATs */
-		builder.add(createPrimitiveDescription(LATByDBpedia.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate LATs based on quantity statements. */
 		builder.add(createPrimitiveDescription(LATByQuantity.class),
