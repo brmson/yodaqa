@@ -74,6 +74,9 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Generate DBpedia LATs */
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Generate DBpedia LATs based on wordnet mappings */
+		builder.add(createPrimitiveDescription(LATByDBpediaWN.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* ...and multiplicate LATs so far by wordnet hypernymy. */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");

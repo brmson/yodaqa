@@ -45,11 +45,11 @@ public class AnswerFV {
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
-		"LATNE", "LATDBpType", "LATQuantity", "LATQuantityCD", "LATWnInstance",
-			"LATDBpRelation",
+		"LATNE", "LATDBpType", "LATDBpWNType", "LATQuantity", "LATQuantityCD",
+			"LATWnInstance", "LATDBpRelation",
 		"tyCorSpQHit", "tyCorSpAHit",
-		"tyCorANE", "tyCorADBp", "tyCorAQuantity", "tyCorAQuantityCD", "tyCorAWnInstance",
-			"tyCorADBpRelation",
+		"tyCorANE", "tyCorADBp", "tyCorADBpWN", "tyCorAQuantity", "tyCorAQuantityCD",
+			"tyCorAWnInstance", "tyCorADBpRelation",
 		"clOCMatchScore", "clOCPrefixedScore", "clOCPrefixingScore", "clOCSuffixedScore",
 			"clOCSuffixingScore", "clOCSubstredScore", "clOCSubstringScore",
 			"clOCMetaMatchScore",
@@ -109,6 +109,7 @@ public class AnswerFV {
 			features.add(AF_SimpleScore.class);
 			features.add(AF_LATNE.class);
 			features.add(AF_LATDBpType.class);
+			features.add(AF_LATDBpWNType.class);
 			features.add(AF_LATQuantity.class);
 			features.add(AF_LATQuantityCD.class);
 			features.add(AF_LATWnInstance.class);
@@ -117,6 +118,7 @@ public class AnswerFV {
 			features.add(AF_TyCorSpAHit.class);
 			features.add(AF_TyCorANE.class);
 			features.add(AF_TyCorADBp.class);
+			features.add(AF_TyCorADBpWN.class);
 			features.add(AF_TyCorAQuantity.class);
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
