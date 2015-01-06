@@ -58,7 +58,6 @@ public class DBpediaTypes extends CachedJenaLookup {
 			 // gather information about supertypes so that we can
 			 // remove them from the output set
 			"OPTIONAL {\n" +
-			"  ?res rdf:type ?superType .\n" +
 			"  ?type rdfs:subClassOf ?superType .\n" +
 			"}\n" +
 
