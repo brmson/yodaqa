@@ -29,6 +29,8 @@ Download Data Files
 	wget http://downloads.dbpedia.org/3.9/links/yago_taxonomy.nt.bz2
 	wget http://downloads.dbpedia.org/3.9/en/mappingbased_properties_cleaned_en.nt.bz2
 	wget http://downloads.dbpedia.org/3.9/en/specific_mappingbased_properties_en.nt.bz2
+	wget http://downloads.dbpedia.org/3.9/en/raw_infobox_properties_en.nt.bz2
+	wget http://downloads.dbpedia.org/3.9/en/raw_infobox_property_definitions_en.nt.bz2
 	bunzip2 -k *.bz2
 	cd ..
 
