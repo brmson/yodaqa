@@ -61,6 +61,9 @@ public class DBpediaTypes extends CachedJenaLookup {
 			"  ?type rdfs:subClassOf ?superType .\n" +
 			"}\n" +
 
+			 // keep only resources; e.g. /property/ objects also
+			 // have types!
+			"FILTER ( regex(str(?res), '^http://dbpedia.org/resource/', 'i') )\n" +
 			 // weed out resources that are categories and other in-namespace junk
 			"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			"";
