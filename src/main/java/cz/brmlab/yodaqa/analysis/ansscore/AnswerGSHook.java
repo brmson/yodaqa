@@ -126,12 +126,17 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * determining set of features to take for training. */
 		String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
 
-		/* Outside of the initial scoring phase, we also do not train
-		 * our model on any answer of a question that yields no correct
-		 * answer - because should we really give a negative bias to
-		 * all of the answer candidates? */
-		if (refAnswer == null && !scoringPhase.equals(""))
+		/* We also do not train our model on any answer of a question
+		 * that yields no correct answer - because should we really
+		 * give a negative bias to all of the answer candidates? */
+		if (refAnswer == null) {
+			logger.debug("not including any answers, no correct answer");
 			return;
+		}
+
+		/* Pass all correct answers in the initial scoring phase. */
+		if (scoringPhase.equals(""))
+			refAnswer = null;
 
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
@@ -147,10 +152,6 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	}
 
 	protected String getReferenceAnswer(JCas answerHitlist, Pattern ap, AnswerStats astats) {
-		/* Pass all correct answers in the initial scoring phase. */
-		if (scoringPhase.equals(""))
-			return null;
-
 		/* First, pick the best scored answer. */
 		Answer bestA = null;
 		double bestAScore = 0;
