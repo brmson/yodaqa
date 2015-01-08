@@ -30,6 +30,7 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaOntology;
+import cz.brmlab.yodaqa.provider.rdf.DBpediaProperties;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -43,6 +44,7 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(DBpediaRelationPrimarySearch.class);
 
 	final DBpediaOntology dbo = new DBpediaOntology();
+	final DBpediaProperties dbp = new DBpediaProperties();
 
 	protected JCas questionView;
 	protected Iterator<DBpediaOntology.PropertyValue> relIter;
@@ -60,8 +62,10 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 
 		List<DBpediaOntology.PropertyValue> properties = new ArrayList<DBpediaOntology.PropertyValue>();
 
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class))
+		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
 			properties.addAll(dbo.query(concept.getLabel(), logger));
+			properties.addAll(dbp.query(concept.getLabel(), logger));
+		}
 
 		relIter = properties.iterator();
 		i = 0;
