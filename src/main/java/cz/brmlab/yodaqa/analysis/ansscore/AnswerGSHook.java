@@ -126,6 +126,13 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * determining set of features to take for training. */
 		String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
 
+		/* Outside of the initial scoring phase, we also do not train
+		 * our model on any answer of a question that yields no correct
+		 * answer - because should we really give a negative bias to
+		 * all of the answer candidates? */
+		if (refAnswer == null && !scoringPhase.equals(""))
+			return;
+
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
 		while (answers.hasNext()) {
