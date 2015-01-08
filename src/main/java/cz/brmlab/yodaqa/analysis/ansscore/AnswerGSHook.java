@@ -76,57 +76,66 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
 
-		/* Possibly dump CSV data on answers, one file per question. */
+		dumpQuestionCSV(answerHitlist, qi, ap, astats);
+		dumpQuestionFV(answerHitlist, qi, ap, astats);
+	}
+
+	/** Possibly dump CSV data on answers, one file per question. */
+	protected void dumpQuestionCSV(JCas answerHitlist, QuestionInfo qi, Pattern ap, AnswerStats astats)
+			throws AnalysisEngineProcessException {
 		String csvDirName = System.getProperty("cz.brmlab.yodaqa.csv_answer" + scoringPhase);
-		if (csvDirName != null && !csvDirName.isEmpty()) {
-			(new File(csvDirName)).mkdir();
-			String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
-			PrintWriter csvFile = openAnswersCSV(csvFileName);
-			for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-				dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
-			}
+		if (csvDirName == null || csvDirName.isEmpty())
+			return;
+
+		(new File(csvDirName)).mkdir();
+		String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
+		PrintWriter csvFile = openAnswersCSV(csvFileName);
+		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
+			dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
 		}
+	}
 
-		/* Possibly dump model training data.  We also require gold
-		 * standard for this, otherwise there is no training to do. */
+	/** Possibly dump model training data.  We also require gold
+	 * standard for this, otherwise there is no training to do. */
+	protected void dumpQuestionFV(JCas answerHitlist, QuestionInfo qi, Pattern ap, AnswerStats astats)
+			throws AnalysisEngineProcessException {
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer" + scoringPhase);
-		if (ap != null && trainFileName != null && !trainFileName.isEmpty()) {
-			/* It turns out to make sense to include only a single
-			 * best correct answer in the training set.  We find
-			 * and store this in refAnswer and skip all correct
-			 * (matching) answers that are not refAnswer.
-			 *
-			 * To decide between multiple possible answers, we use
-			 * the one with the highest score from the previous
-			 * phase; use all correct answers in the initial phase.
-			 * If we used the current model, it would not be stable
-			 * across re-trainings on identical program version as
-			 * the selected correct answers would keep changing;
-			 * it turns out this introduces a significant
-			 * instability and (i) the performance degrades
-			 * (ii) it is very tricky to measure improvements.
-			 *
-			 * We also prefer correct answers which have lower
-			 * score but are contained in other correct answers.
-			 * Basically, we first pick the answer with the highest
-			 * score, then try to reduce this answer (by substring
-			 * relations) even at the cost of lowering the score
-			 * too.  The motivation is that shorter answers are
-			 * more precise and will therefore have a more
-			 * determining set of features to take for training. */
-			String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
+		if (ap == null || trainFileName == null || trainFileName.isEmpty())
+			return;
 
-			FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
-			FSIterator answers = idx.iterator();
-			while (answers.hasNext()) {
-				Answer a = (Answer) answers.next();
-				boolean isMatch = ap.matcher(a.getText()).find();
-				if (isMatch && refAnswer != null && !refAnswer.equals(a.getText())) {
-					logger.debug("not including correct answer: {} < {}", a.getText(), refAnswer);
-					continue; // output only the top positive match
-				}
-				dumpAnswerFV(trainFileName, qi.getQuestionId(), a, isMatch, astats);
+		/* It turns out to make sense to include only a single best
+		 * correct answer in the training set.  We find and store this
+		 * in refAnswer and skip all correct (matching) answers that
+		 * are not refAnswer.
+		 *
+		 * To decide between multiple possible answers, we use the one
+		 * with the highest score from the previous phase; use all
+		 * correct answers in the initial phase.  If we used the
+		 * current model, it would not be stable across re-trainings on
+		 * identical program version as the selected correct answers
+		 * would keep changing; it turns out this introduces
+		 * a significant instability and (i) the performance degrades
+		 * (ii) it is very tricky to measure improvements.
+		 *
+		 * We also prefer correct answers which have lower score but
+		 * are contained in other correct answers.  Basically, we first
+		 * pick the answer with the highest score, then try to reduce
+		 * this answer (by substring relations) even at the cost of
+		 * lowering the score too.  The motivation is that shorter
+		 * answers are more precise and will therefore have a more
+		 * determining set of features to take for training. */
+		String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
+
+		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
+		FSIterator answers = idx.iterator();
+		while (answers.hasNext()) {
+			Answer a = (Answer) answers.next();
+			boolean isMatch = ap.matcher(a.getText()).find();
+			if (isMatch && refAnswer != null && !refAnswer.equals(a.getText())) {
+				logger.debug("not including correct answer: {} < {}", a.getText(), refAnswer);
+				continue; // output only the top positive match
 			}
+			dumpAnswerFV(trainFileName, qi.getQuestionId(), a, isMatch, astats);
 		}
 	}
 
