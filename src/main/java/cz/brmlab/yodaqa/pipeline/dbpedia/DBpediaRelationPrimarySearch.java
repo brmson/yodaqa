@@ -63,8 +63,32 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 		List<DBpediaOntology.PropertyValue> properties = new ArrayList<DBpediaOntology.PropertyValue>();
 
 		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
+			/* Query the DBpedia ontology dataset - cleaned up
+			 * but quite sparse infobox based data. */
 			properties.addAll(dbo.query(concept.getLabel(), logger));
-			properties.addAll(dbp.query(concept.getLabel(), logger));
+			/* Query the DBpedia raw infobox dataset - uncleaned
+			 * but depnse infobox based data. */
+			/* We disable this again for the time being because
+			 * this dataset really is awful:
+			 *
+			 * (i) It actually is not complete; e.g. the <Sun>
+			 * resource is missing most of the infobox stuff.
+			 * Also, many values like dates are stripped to just
+			 * day-of-month number or such.
+			 *
+			 * (ii) It contains too much junk that is not relevant
+			 * as it is not presented to the user.  For example
+			 * image alts, alignments and links.  Various
+			 * properties like "date" for city are actually not
+			 * pertaining to the entity but just some part of the
+			 * infobox that describes e.g. the leader, and such
+			 * segmentation is lost.
+			 *
+			 * A useful raw infobox dataset needs to carry labels
+			 * *as they are shown to the user*, and needs to
+			 * actually render the infobox template internally to
+			 * determine any grouping and representation of data! */
+			// properties.addAll(dbp.query(concept.getLabel(), logger));
 		}
 
 		relIter = properties.iterator();
