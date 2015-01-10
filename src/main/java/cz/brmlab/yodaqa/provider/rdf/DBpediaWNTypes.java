@@ -9,6 +9,11 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.provider.JWordnet;
+
+import net.didion.jwnl.data.IndexWord;
+import net.didion.jwnl.data.Synset;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -26,7 +31,8 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 	private static final Log logger =
 		LogFactory.getLog(DBpediaWNTypes.class);
 
-	/** Query for a given title, returning a set of types. */
+	/** Query for a given title, returning a set of types. The type is in
+	 * the form of string/synset. */
 	public List<String> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			List<String> results = queryTitleForm(titleForm, logger);
@@ -37,7 +43,7 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 	}
 
 	/** Query for a given specific title form, returning a set
-	 * of types. */
+	 * of types. The type is in the form of string/synset. */
 	public List<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
@@ -67,17 +73,22 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 
 		List<String> results = new LinkedList<String>();
 		for (Literal[] rawResult : rawResults) {
-			String typeLabel = cookTypeLabel(rawResult[0].getString());
+			// XXX: we assume the type is always noun
+			int senseIdx = Integer.parseInt(rawResult[0].getString().replaceAll("^.*-([^-]*)$", "$1"));
+			String typeLabel = rawResult[0].getString().replaceAll("^synset-([^-]*)-.*$", "$1").replaceAll("_", " ");
 
-			// logger.debug("DBpedia {} wntype: [[{}]]", title, typeLabel);
-			results.add(typeLabel);
+			try {
+				IndexWord w = JWordnet.getDictionary().lookupIndexWord(net.didion.jwnl.data.POS.NOUN, typeLabel);
+				Synset s = w.getSenses()[senseIdx];
+				long synset = s.getOffset();
+
+				// logger.debug("DBpedia {} wntype: [[{}]]", title, typeLabel);
+				results.add(typeLabel + "/" + Long.toString(synset));
+			} catch (Exception e) {
+				logger.debug("DBpedia {} wntype [[{}]] exception: {}", title, typeLabel, e);
+			}
 		}
 
 		return results;
-	}
-
-	protected static String cookTypeLabel(String typeLabel) {
-		typeLabel = typeLabel.replaceAll("^synset-([^-]*)-.*$", "$1").replaceAll("_", " ");
-		return typeLabel;
 	}
 }
