@@ -89,7 +89,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 
 		for (String type : types) {
 			addLATFeature(jcas, AF_LATDBpType.class);
-			addTypeLAT(jcas, new DBpLAT(jcas), focus, type, typelist);
+			addTypeLAT(jcas, new DBpLAT(jcas), focus, type, 0, typelist);
 		}
 
 		if (typelist.length() > 0) {
@@ -103,7 +103,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addTypeLAT(JCas jcas, LAT lat, Focus focus, String type, StringBuilder typelist) throws AnalysisEngineProcessException {
+	protected void addTypeLAT(JCas jcas, LAT lat, Focus focus, String type, long synset, StringBuilder typelist) throws AnalysisEngineProcessException {
 		String ntype = type.toLowerCase();
 
 		/* We have a synthetic noun(-ish), synthetize
@@ -122,9 +122,13 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(lat, LATBase.getBegin(), LATBase.getEnd(), LATBase, ntype, pos, 0, 0.0);
+		addLAT(lat, LATBase.getBegin(), LATBase.getEnd(), LATBase, ntype, pos, synset, 0.0);
 
-		typelist.append(" | " + ntype);
+		if (synset == 0) {
+			typelist.append(" | " + ntype);
+		} else {
+			typelist.append(" | " + ntype + "/" + Long.toString(synset));
+		}
 	}
 
 	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {

@@ -1,15 +1,19 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpWNType;
 import cz.brmlab.yodaqa.model.Question.Focus;
+import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
 import cz.brmlab.yodaqa.model.TyCor.DBpWNLAT;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaWNTypes;
 
 /**
@@ -29,14 +33,27 @@ public class LATByDBpediaWN extends LATByDBpedia {
 
 		for (String type : types) {
 			addLATFeature(jcas, AF_LATDBpWNType.class);
-			addTypeLAT(jcas, new DBpWNLAT(jcas), focus, type, typelist);
+			String[] typeE = type.split("/");
+			addTypeLAT(jcas, new DBpWNLAT(jcas), focus, typeE[0], Long.parseLong(typeE[1]), typelist);
+
+			/* Override any DBpLAT with the same text. */
+			List<LAT> latrm = new ArrayList<LAT>();
+			for (LAT dbplat : JCasUtil.select(jcas, DBpLAT.class)) {
+				if (dbplat.getText().toLowerCase().equals(typeE[0].toLowerCase())) {
+					latrm.add(dbplat);
+				}
+			}
+			for (LAT lat : latrm) {
+				logger.debug("overriding DBpLAT {}", lat.getText());
+				lat.removeFromIndexes();
+			}
 		}
 
 		if (typelist.length() > 0) {
 			if (focus != null)
-				logger.debug(".. Focus {} => DBpedia WN LATs/0 {}", focus.getCoveredText(), typelist);
+				logger.debug(".. Focus {} => DBpedia WN LATs {}", focus.getCoveredText(), typelist);
 			else
-				logger.debug(".. Ans {} => DBpedia WN LATs/0 {}", label, typelist);
+				logger.debug(".. Ans {} => DBpedia WN LATs {}", label, typelist);
 			return true;
 		} else {
 			return false;
