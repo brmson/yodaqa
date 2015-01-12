@@ -79,7 +79,7 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 
 			try {
 				IndexWord w = JWordnet.getDictionary().lookupIndexWord(net.didion.jwnl.data.POS.NOUN, typeLabel);
-				Synset s = w.getSenses()[senseIdx];
+				Synset s = w.getSenses()[senseIdx - 1];
 				long synset = s.getOffset();
 
 				// logger.debug("DBpedia {} wntype: [[{}]]", title, typeLabel);
