@@ -160,6 +160,21 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(AF_OriginDBpRelation.class, 1.0);
 
+		/* Mark by concept-clue-origin AFs. */
+		// XXX: Carry the clue reference in property object.
+		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
+			if (!concept.getLabel().toLowerCase().equals(property.getObject().toLowerCase()))
+				continue;
+			// We don't set this since all our clues have concept origin
+			//afv.setFeature(AF_OriginConcept.class, 1.0);
+			if (concept.getBySubject())
+				fv.setFeature(AF_OriginConceptBySubject.class, 1.0);
+			if (concept.getByLAT())
+				fv.setFeature(AF_OriginConceptByLAT.class, 1.0);
+			if (concept.getByNE())
+				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
+		}
+
 		/* Match clues in relation name (esp. LAT or Focus clue
 		 * will be nice). */
 		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
