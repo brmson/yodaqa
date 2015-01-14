@@ -22,9 +22,6 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpRelation;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRelation;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -177,11 +174,15 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 
 		/* Match clues in relation name (esp. LAT or Focus clue
 		 * will be nice). */
+		boolean clueMatched = false;
 		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 			if (!property.getProperty().matches(PassByClue.getClueRegex(clue)))
 				continue;
+			clueMatched = true;
 			clueAnswerFeatures(fv, clue);
 		}
+		if (!clueMatched)
+			fv.setFeature(AF_OriginDBpRNoClue.class, -1.0);
 
 		/* Generate also a LAT for the answer right away. */
 		addTypeLAT(jcas, fv, property.getProperty());

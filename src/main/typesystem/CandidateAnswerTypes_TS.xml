@@ -123,6 +123,11 @@
         <description>Answer Feature: 1 if the origin of this answer is a DBpedia property.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRNoClue</name>
+        <description>Answer Feature: Negative evidence set to -1 if the origin of this answer is a DBpedia property that does not match any question clue in its label.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
       <!-- XXX: This looks kind of really awful, ugh. But how to do this sensibly? -->
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</name>

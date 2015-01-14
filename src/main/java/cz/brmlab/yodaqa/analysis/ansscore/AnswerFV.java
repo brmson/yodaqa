@@ -38,7 +38,7 @@ public class AnswerFV {
 			"originPsgByClueConcept",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 			"originPsgSurprise",
-		"originDocTitle", "originDBpRelation",
+		"originDocTitle", "originDBpRelation", "originDBpRNoClue",
 		"originDBpRClueToken", "originDBpRCluePhrase", "originDBpRClueSV",
 			"originDBpRClueNE", "originDBpRClueLAT",
 			"originDBpRClueSubject", "originDBpRClueSubjectNE",
@@ -98,6 +98,7 @@ public class AnswerFV {
 			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginDBpRelation.class);
+			features.add(AF_OriginDBpRNoClue.class);
 			features.add(AF_OriginDBpRClueToken.class);
 			features.add(AF_OriginDBpRCluePhrase.class);
 			features.add(AF_OriginDBpRClueSV.class);
