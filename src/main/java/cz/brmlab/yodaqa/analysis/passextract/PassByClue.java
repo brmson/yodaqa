@@ -161,7 +161,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected String getClueRegex(Clue clue) {
+	public static String getClueRegex(Clue clue) {
 		/* XXX: Maybe we should just tokenize and lemmatize
 		 * the passage instead? */
 		String label = clue.getLabel();

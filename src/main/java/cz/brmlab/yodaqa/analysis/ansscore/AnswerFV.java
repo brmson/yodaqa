@@ -39,6 +39,11 @@ public class AnswerFV {
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 			"originPsgSurprise",
 		"originDocTitle", "originDBpRelation",
+		"originDBpRClueToken", "originDBpRCluePhrase", "originDBpRClueSV",
+			"originDBpRClueNE", "originDBpRClueLAT",
+			"originDBpRClueSubject", "originDBpRClueSubjectNE",
+			"originDBpRClueSubjectToken", "originDBpRClueSubjectPhrase",
+			"originDBpRClueConcept",
 		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
 		"noTyCor", "LATANone",
@@ -93,6 +98,16 @@ public class AnswerFV {
 			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginDBpRelation.class);
+			features.add(AF_OriginDBpRClueToken.class);
+			features.add(AF_OriginDBpRCluePhrase.class);
+			features.add(AF_OriginDBpRClueSV.class);
+			features.add(AF_OriginDBpRClueNE.class);
+			features.add(AF_OriginDBpRClueLAT.class);
+			features.add(AF_OriginDBpRClueSubject.class);
+			features.add(AF_OriginDBpRClueSubjectNE.class);
+			features.add(AF_OriginDBpRClueSubjectToken.class);
+			features.add(AF_OriginDBpRClueSubjectPhrase.class);
+			features.add(AF_OriginDBpRClueConcept.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
 			features.add(AF_OriginConceptByLAT.class);

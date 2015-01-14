@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpRelation;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRelation;
@@ -31,6 +32,10 @@ import cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaOntology;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaProperties;
+
+/* XXX: The clue-specific features, ugh. */
+import cz.brmlab.yodaqa.model.Question.*;
+import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -155,6 +160,14 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(AF_OriginDBpRelation.class, 1.0);
 
+		/* Match clues in relation name (esp. LAT or Focus clue
+		 * will be nice). */
+		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
+			if (!property.getProperty().matches(PassByClue.getClueRegex(clue)))
+				continue;
+			clueAnswerFeatures(fv, clue);
+		}
+
 		/* Generate also a LAT for the answer right away. */
 		addTypeLAT(jcas, fv, property.getProperty());
 		if (property.getProperty().contains(" ")) {
@@ -233,5 +246,30 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 		lat.setSpecificity(spec);
 		lat.setSynset(synset);
 		lat.addToIndexes();
+	}
+
+	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
+		     if (clue instanceof ClueToken     ) afv.setFeature(AF_OriginDBpRClueToken.class, 1.0);
+		else if (clue instanceof CluePhrase    ) afv.setFeature(AF_OriginDBpRCluePhrase.class, 1.0);
+		else if (clue instanceof ClueSV        ) afv.setFeature(AF_OriginDBpRClueSV.class, 1.0);
+		else if (clue instanceof ClueNE        ) afv.setFeature(AF_OriginDBpRClueNE.class, 1.0);
+		else if (clue instanceof ClueLAT       ) afv.setFeature(AF_OriginDBpRClueLAT.class, 1.0);
+		else if (clue instanceof ClueSubject   ) {
+			afv.setFeature(AF_OriginDBpRClueSubject.class, 1.0);
+			     if (clue instanceof ClueSubjectNE) afv.setFeature(AF_OriginDBpRClueSubjectNE.class, 1.0);
+			else if (clue instanceof ClueSubjectToken) afv.setFeature(AF_OriginDBpRClueSubjectToken.class, 1.0);
+			else if (clue instanceof ClueSubjectPhrase) afv.setFeature(AF_OriginDBpRClueSubjectPhrase.class, 1.0);
+			else assert(false);
+		} else if (clue instanceof ClueConcept ) {
+			afv.setFeature(AF_OriginDBpRClueConcept.class, 1.0);
+			ClueConcept concept = (ClueConcept) clue;
+			if (concept.getBySubject())
+				afv.setFeature(AF_OriginDBpRClueSubject.class, 1.0);
+			if (concept.getByLAT())
+				afv.setFeature(AF_OriginDBpRClueLAT.class, 1.0);
+			if (concept.getByNE())
+				afv.setFeature(AF_OriginDBpRClueNE.class, 1.0);
+		}
+		else assert(false);
 	}
 }
