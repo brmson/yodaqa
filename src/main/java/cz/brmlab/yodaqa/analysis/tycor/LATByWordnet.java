@@ -46,6 +46,9 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	 *
 	 * XXX: It would be better to have these as synset IDs, but that
 	 * would be more complicated to obtain.
+	 *
+	 * N.B. there is another generalization limit instilled in
+	 * LATMatchTyCor.
 	 */
 	protected static String tops_list[] = {
 		"entity", "physical entity", "abstraction", "thing", "object",
