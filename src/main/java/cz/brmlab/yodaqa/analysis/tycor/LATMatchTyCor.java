@@ -1,7 +1,10 @@
 package cz.brmlab.yodaqa.analysis.tycor;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -83,7 +86,61 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		}
 	}
 
+	/* Synset blacklist - this blacklist will not permit using these
+	 * LATWordnet LATs for generalization.  Therefore, "language"
+	 * will not match "area" through "cognition" and "time" will
+	 * not match "region" via "measure".
+	 *
+	 * This covers only matching LATWordnet pairs!  So when
+	 * LATByQuantity generates "measure" answer LAT, this will still
+	 * match all measure-derived question LATs.
+	 *
+	 * N.B. this is a generalization limit applied in addition to the
+	 * LATByWordnet Tops synset list.
+	 *
+	 * XXX: Compiled manually by cursory logs investigation.  We should
+	 * build a TyCor dataset and train it by that. */
+	protected static Long wnwn_synsetbl_list[] = {
+		/* communication/ */ 33319L,
+		/* cognition/ */ 23451L,
+		/* ability/ */ 5624029L,
+		/* higher cognitive process/ */ 5778661L,
+		/* relation/ */ 32220L,
+		/* ability/ */ 5624029L,
+		/* measure/ */ 33914L,
+		/* instrumentality/ */ 3580409L,
+		/* artifact/ */ 22119L,
+		/* fundamental quantity/ */ 13597072L,
+		/* organization/ */ 8024893L,
+		/* group/ */ 31563L,
+		/* unit/ */ 8206589L,
+		/* attribute/ */ 24444L,
+		/* trait/ */ 4623416L,
+		/* device/ */ 3187746L,
+		/* social group/ */ 7967506L,
+		/* act/ */ 30657L,
+		/* activity/ */ 408356L,
+		/* state/ */ 24900L,
+		/* extent/ */ 5130681L,
+		/* magnitude/ */ 5097645L,
+		/* organism/ */ 4475L,
+		/* creation/ */ 3133774L,
+		/* product/ */ 4014270L,
+		/* abstraction/ */ 2137L,
+		/* medium/ */ 6264799L,
+		/* gathering/ */ 7991473L,
+		/* idea/ */ 5842164L,
+		/* kind/ */ 5847533L,
+		/* property/ */ 4923519L,
+		/* quality/ */ 4731092L,
+		/* concept/ */ 5844071L,
+	};
+	protected Set<Long> wnwn_synsetbl;
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+		if (wnwn_synsetbl == null)
+			wnwn_synsetbl = new HashSet<Long>(Arrays.asList(wnwn_synsetbl_list));
+
 		super.initialize(aContext);
 	}
 
@@ -196,8 +253,15 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				bestMatch = match;
 		}
 
-		if (bestMatch != null)
+		if (bestMatch != null) {
+			if (bestMatch.getLat1() instanceof WordnetLAT
+			    && bestMatch.getLat2() instanceof WordnetLAT
+			    && wnwn_synsetbl.contains(bestMatch.getLat1().getSynset())) {
+				bestMatch.logMatch(logger, ".. ignoring blacklisted TyCor");
+				return null;
+			}
 			bestMatch.logMatch(logger, ".. TyCor");
+		}
 		return bestMatch;
 	}
 }
