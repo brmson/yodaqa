@@ -1,6 +1,6 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
-import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordSegmenter;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
@@ -32,7 +32,9 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		/* Token features: */
 		// LanguageToolsSegmenter is the only one capable of dealing
 		// with incomplete sentences e.g. separated by paragraphs etc.
-		builder.add(createPrimitiveDescription(LanguageToolSegmenter.class),
+		// However, StanfordSegmenter handles numerical quantities
+		// (like 10,900) much better.
+		builder.add(createPrimitiveDescription(StanfordSegmenter.class),
 			CAS.NAME_DEFAULT_SOFA, "Result");
 
 		/* At this point, we can filter the source to keep
