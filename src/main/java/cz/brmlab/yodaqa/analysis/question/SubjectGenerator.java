@@ -94,6 +94,9 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 		if (np == null) {
 			// <<How long before bankruptcy is removed from a credit report?>>
 			return;
+		} else if (np.getCoveredText().equals(stok.getCoveredText())) {
+			// <<it>> is often a NP too, or other short tokens
+			return;
 		}
 		addSubject(jcas, np);
 
