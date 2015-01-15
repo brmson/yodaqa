@@ -30,7 +30,7 @@ questions (but 42% of questions have the correct answer in top three and
 Quick instructions for setting up, building and running (focused on Debian Wheezy):
 
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
-  * ``sudo apt-get install default-jdk maven uima-utils``
+  * ``sudo apt-get install default-jdk uima-utils``
   * Install the Wordnet ontological database:
 	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
   * ``./gradlew check``
