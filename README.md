@@ -30,7 +30,7 @@ questions (but 42% of questions have the correct answer in top three and
 Quick instructions for setting up, building and running (focused on Debian Wheezy):
 
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
-  * ``sudo apt-get install default-jdk uima-utils``
+  * ``sudo apt-get install java7-jdk``
   * Install the Wordnet ontological database:
 	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
   * ``./gradlew check``
@@ -41,6 +41,9 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
 
 By default, YodaQA will try to connect to a remote Solr core serving Wikipedia;
 see the section on Data Sources if connection fails.
+
+Brmson should run on Windows as well, in theory - just have a Java7 JDK
+installed and use ``gradlew.bat`` instead of ``./gradlew``.
 
 ## Usage
 
