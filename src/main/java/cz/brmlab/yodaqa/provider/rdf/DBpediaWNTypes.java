@@ -20,6 +20,7 @@ import net.sf.extjwnl.JWNLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 
 /** A wrapper around DBpedia dataset that maps concepts to
@@ -36,19 +37,13 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 	
 	Dictionary dictionary = null;
 	
-	public void initialize() throws JWNLException 
+	public void initialize() throws ResourceInitializationException
 	{
-	    try
-	    {	
-		/**
-		 * New style initialize librarary ExtJWNL.
-		 */
-		dictionary = Dictionary.getDefaultResourceInstance();
-	    } 
-	    catch (Exception e) 
-	    {
-			e.printStackTrace();
-	    }
+		try {
+			dictionary = Dictionary.getDefaultResourceInstance();
+		} catch (JWNLException e) {
+			throw new ResourceInitializationException(e);
+		}
 	}
 	
 	/** Query for a given title, returning a set of types. The type is in
