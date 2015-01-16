@@ -96,11 +96,18 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 					return t1.getBegin() - t2.getBegin();
 				}
 			});
-		for (Dependency d : JCasUtil.select(jcas, Dependency.class))
-			if (tokens.contains(d.getGovernor()))
+		for (Dependency d : JCasUtil.select(jcas, Dependency.class)) {
+			if (tokens.contains(d.getGovernor())) {
 				governors.add(d.getGovernor());
-		for (Dependency d : JCasUtil.select(jcas, Dependency.class))
-			governors.remove(d.getDependent());
+				// logger.debug("+ governor {}", d.getGovernor());
+			}
+		}
+		for (Dependency d : JCasUtil.select(jcas, Dependency.class)) {
+			if (tokens.contains(d.getGovernor())) {
+				governors.remove(d.getDependent());
+				// logger.debug("- dependent {}", d.getDependent());
+			}
+		}
 
 		for (Token t : governors) {
 			if (fp != null) {

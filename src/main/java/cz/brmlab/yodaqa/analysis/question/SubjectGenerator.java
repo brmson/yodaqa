@@ -67,16 +67,25 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 		if (cparent instanceof WHNP)
 			return;
 
+		String genSubject = null;
+
 		/* Prefer a covering Named Entity: */
+		boolean genSubjectNE = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, stok)) {
 			addSubject(jcas, ne);
-			return;
+			genSubject = ne.getCoveredText();
+			genSubjectNE = true;
 		}
 
 		/* N.B. Sometimes NamedEntity detection fails (e.g. "How high
 		 * is Pikes peak?"). So when there's none, just add the token
 		 * as the subject. */
-		addSubject(jcas, stok);
+		/* But do not add subjects like "it". */
+		if (genSubject == null
+		    && stok.getPos().getPosValue().matches(ClueByTokenConstituent.TOKENMATCH)) {
+			addSubject(jcas, stok);
+			genSubject = stok.getCoveredText();
+		}
 
 		/* However, just the token is often pretty useless, yielding
 		 * e.g.
@@ -94,14 +103,19 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 		if (np == null) {
 			// <<How long before bankruptcy is removed from a credit report?>>
 			return;
+		} else if (np.getCoveredText().equals(genSubject)) {
+			// <<it>> is often a NP too, or other short tokens
+			return;
 		}
 		addSubject(jcas, np);
 
 		/* However, if there *is* a NamedEntity in the covering NP,
 		 * add it as a subject too - NamedEntity subject clues can
 		 * be treated as reliable. */
-		for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, np)) {
-			addSubject(jcas, ne);
+		if (!genSubjectNE) {
+			for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, np)) {
+				addSubject(jcas, ne);
+			}
 		}
 	}
 

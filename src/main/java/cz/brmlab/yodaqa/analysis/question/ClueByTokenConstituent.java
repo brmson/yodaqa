@@ -34,8 +34,8 @@ import cz.brmlab.yodaqa.model.Question.ClueToken;
 public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(ClueByTokenConstituent.class);
 
-	protected String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
-	protected String CONSTITMATCH = "AD.*|NP|QP";
+	public static String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
+	public static String CONSTITMATCH = "AD.*|NP|QP";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -55,11 +55,24 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 			lifo.add(sentence);
 		while (!lifo.isEmpty()) {
 			Constituent c = lifo.poll();
-			if (c.getConstituentType().matches(CONSTITMATCH))
+			if (c.getConstituentType().matches(CONSTITMATCH)) {
+				/* Sometimes, we get an absurd NP like "it".
+				 * Guard against that. */
+				boolean absurd = true;
+				for (Token t : JCasUtil.selectCovered(Token.class, c)) {
+					if (t.getPos().getPosValue().matches(TOKENMATCH)) {
+						absurd = false;
+						break;
+					}
+				}
+				if (absurd)
+					continue;
+
 				/* <1.0 so that we slightly prefer tokens,
 				 * usable even for fulltext search, when
 				 * merging clues. */
 				addClue(new CluePhrase(jcas), c.getBegin(), c.getEnd(), c, false, 0.99);
+			}
 
 			for (FeatureStructure child : c.getChildren().toArray()) {
 				if (!(child instanceof Constituent)) {
