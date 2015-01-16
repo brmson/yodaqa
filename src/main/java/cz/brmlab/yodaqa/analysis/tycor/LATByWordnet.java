@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.didion.jwnl.data.IndexWord;
-import net.didion.jwnl.data.POS;
-import net.didion.jwnl.data.PointerTarget;
-import net.didion.jwnl.data.PointerType;
-import net.didion.jwnl.data.Synset;
-import net.didion.jwnl.data.Word;
+import net.sf.extjwnl.data.IndexWord;
+import net.sf.extjwnl.data.Word;
+import net.sf.extjwnl.dictionary.Dictionary;
+import net.sf.extjwnl.data.PointerTarget;
+import net.sf.extjwnl.data.PointerType;
+import net.sf.extjwnl.data.Synset;
+import net.sf.extjwnl.data.BaseDictionaryElement;
+import net.sf.extjwnl.JWNLException;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -26,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
-import cz.brmlab.yodaqa.provider.JWordnet;
 
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
@@ -37,7 +38,25 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
 public class LATByWordnet extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByWordnet.class);
-
+	
+	Dictionary dictionary = null;
+	
+	public LATByWordnet() throws JWNLException 
+	{
+		try
+		{
+			/**
+			 * New style initialize librarary ExtJWNL.
+			 */
+			dictionary = Dictionary.getDefaultResourceInstance();
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	
+	}
+	
 	/* We don't generalize further over the noun.Tops words that
 	 * represent the most abstract hierarchy and generally words
 	 * that have nothing in common anymore.
@@ -67,8 +86,10 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		if (tops == null)
+		{
 			tops = new HashSet<String>(Arrays.asList(tops_list));
-
+		}
+		
 		super.initialize(aContext);
 	}
 
@@ -100,17 +121,17 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		 * a fallback path that derives the noun.
 		 * (Typically: How hot is the sun? -> hotness) */
 
-		POS wnpos;
+		net.sf.extjwnl.data.POS wnpos;
 		if (lat.getBase() instanceof NamedEntity) {
-			wnpos = POS.NOUN;
+			wnpos = net.sf.extjwnl.data.POS.NOUN;
 		} else if (latpos.matches("^NN.*")) {
-			wnpos = POS.NOUN;
+			wnpos = net.sf.extjwnl.data.POS.NOUN;
 		} else if (latpos.matches("^JJ.*")) {
-			wnpos = POS.ADJECTIVE;
+			wnpos = net.sf.extjwnl.data.POS.ADJECTIVE;
 		} else if (latpos.matches("^RB.*")) {
-			wnpos = POS.ADVERB;
+			wnpos = net.sf.extjwnl.data.POS.ADVERB;
 		} else if (latpos.matches("^VB.*")) {
-			wnpos = POS.VERB;
+			wnpos = net.sf.extjwnl.data.POS.VERB;
 		} else {
 			logger.info("?! cannot expand LAT of POS " + latpos);
 			return;
@@ -122,13 +143,16 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		StringBuilder wnlist = new StringBuilder();
 
 		if (lat.getSynset() == 0) {
-			IndexWord w = JWordnet.getDictionary().lookupIndexWord(wnpos, lat.getText());
-			if (w == null) {
+			IndexWord w = dictionary.lookupIndexWord(wnpos, lat.getText());
+			
+			if (w == null) 
+			{
 				logger.info("?! word " + lat.getText() + " of POS " + latpos + " not in Wordnet");
 				return;
 			}
 
-			if (wnpos == POS.NOUN) {
+			if (wnpos == net.sf.extjwnl.data.POS.NOUN) 
+			{
 				/* Got a noun right away. */
 				genDerivedSynsets(latmap, lat, w, wnlist, lat.getSpecificity() - 1);
 				logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
@@ -139,7 +163,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			for (Synset synset : w.getSenses()) {
 				boolean fnhere = genNounSynsets(latmap, lat, synset, wnpos, wnlist);
 				foundNoun = foundNoun || fnhere;
-				if (wnpos == POS.VERB) {
+				if (wnpos == net.sf.extjwnl.data.POS.VERB) {
 					// ignore other senses since
 					// nominalization is highly noisy;
 					// see getNounSynsets() for details
@@ -147,13 +171,13 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 				}
 			}
 		} else {
-			Synset s = JWordnet.getDictionary().getSynsetAt(wnpos, lat.getSynset());
+			Synset s = dictionary.getSynsetAt(wnpos, lat.getSynset());
 			if (s == null) {
 				logger.warn("?! word " + lat.getText() + "/" + lat.getSynset() + " of POS " + latpos + " not in Wordnet even though it has Wordnet sense assigned");
 				return;
 			}
 
-			if (wnpos == POS.NOUN) {
+			if (wnpos == net.sf.extjwnl.data.POS.NOUN) {
 				/* Got a noun right away. */
 				for (PointerTarget t : s.getTargets(PointerType.HYPERNYM)) {
 					genDerivedSynsets(latmap, lat, (Synset) t, wnlist, lat.getSpecificity() - 1);
@@ -171,10 +195,10 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			 * we may need to flip adverb/adjective tag, e.g.
 			 * for "how long" we need to consider "long" as
 			 * an adjective to get to "length". */
-			if (wnpos == POS.ADVERB) {
+			if (wnpos == net.sf.extjwnl.data.POS.ADVERB) {
 				genDerivedLATs(latmap, lat, "JJXSURROGATE");
 				return;
-			} else if (wnpos == POS.ADJECTIVE) {
+			} else if (wnpos == net.sf.extjwnl.data.POS.ADJECTIVE) {
 				genDerivedLATs(latmap, lat, "RBXSURROGATE");
 				return;
 			}
@@ -186,26 +210,33 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	}
 
 	protected boolean genNounSynsets(Map<Synset, WordnetLAT> latmap, LAT lat,
-			Synset synset, POS wnpos, StringBuilder wnlist) throws Exception
+			Synset synset, net.sf.extjwnl.data.POS wnpos, StringBuilder wnlist) throws Exception
 	{
 		boolean foundNoun = false;
-		logger.debug("checking noun synsets of " + synset.getWord(0).getLemma() + "/" + synset.getOffset());
+		List<Word> nounWords = synset.getWords();
+		Word nounWord = nounWords.get(0);
+		
+		logger.debug("checking noun synsets of " + nounWord.getLemma() + "/" + synset.getOffset());
 		for (PointerTarget t : synset.getTargets(PointerType.ATTRIBUTE)) {
 			Synset noun = (Synset) t;
+			
+			List<Word> nounFoundWords = noun.getWords();
+			Word foundWord = nounFoundWords.get(0);
 			foundNoun = true;
-			logger.debug(".. adding LAT noun " + noun.getWord(0).getLemma());
+			
+			logger.debug(".. adding LAT noun " + foundWord.getLemma());
 			genDerivedSynsets(latmap, lat, noun, wnlist, lat.getSpecificity());
 			logger.debug("expanded LAT " + lat.getText() + " to wn LATs: " + wnlist.toString());
 		}
-		if (wnpos == POS.VERB) {
+		if (wnpos == net.sf.extjwnl.data.POS.VERB) {
 			/* For other non-nouns, this is too wide.  E.g. for
 			 * "how deep", we want "depth" but not "mystery",
 			 * "richness", "deepness", "obscureness", ... */
 			Word nominalw = null;
-			for (PointerTarget t : synset.getTargets(PointerType.NOMINALIZATION)) {
+			for (PointerTarget t : synset.getTargets(net.sf.extjwnl.data.PointerType.DERIVATION)) {
 				Word nounw = (Word) t;
 				foundNoun = true;
-				if (nounw.getPOS() != POS.NOUN)
+				if (nounw.getPOS() != net.sf.extjwnl.data.POS.NOUN)
 					continue;
 				nominalw = nounw;
 			}
@@ -247,8 +278,11 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			}
 			return;
 		}
-		String lemma = synset2.getWord(0).getLemma().replace('_', ' ');
-
+		
+		List<Word> words = synset2.getWords();
+		Word word = words.get(0);
+		String lemma = word.getLemma().replace('_', ' ');
+		
 		/* New LAT. */
 		l2 = new WordnetLAT(lat.getCAS().getJCas());
 		l2.setBegin(lat.getBegin());

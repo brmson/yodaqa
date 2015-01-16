@@ -9,10 +9,14 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
-import cz.brmlab.yodaqa.provider.JWordnet;
-
-import net.didion.jwnl.data.IndexWord;
-import net.didion.jwnl.data.Synset;
+import net.sf.extjwnl.data.IndexWord;
+import net.sf.extjwnl.data.Word;
+import net.sf.extjwnl.dictionary.Dictionary;
+import net.sf.extjwnl.data.PointerTarget;
+import net.sf.extjwnl.data.PointerType;
+import net.sf.extjwnl.data.Synset;
+import net.sf.extjwnl.data.BaseDictionaryElement;
+import net.sf.extjwnl.JWNLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +32,25 @@ import org.slf4j.Logger;
  * to synset numbers. */
 
 public class DBpediaWNTypes extends CachedJenaLookup {
-	private static final Log logger =
-		LogFactory.getLog(DBpediaWNTypes.class);
-
+	private static final Log logger = LogFactory.getLog(DBpediaWNTypes.class);
+	
+	Dictionary dictionary = null;
+	
+	public void initialize() throws JWNLException 
+	{
+	    try
+	    {	
+		/**
+		 * New style initialize librarary ExtJWNL.
+		 */
+		dictionary = Dictionary.getDefaultResourceInstance();
+	    } 
+	    catch (Exception e) 
+	    {
+			e.printStackTrace();
+	    }
+	}
+	
 	/** Query for a given title, returning a set of types. The type is in
 	 * the form of string/synset. */
 	public List<String> query(String title, Logger logger) {
@@ -78,8 +98,8 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 			String typeLabel = rawResult[0].getString().replaceAll("^synset-([^-]*)-.*$", "$1").replaceAll("_", " ");
 
 			try {
-				IndexWord w = JWordnet.getDictionary().lookupIndexWord(net.didion.jwnl.data.POS.NOUN, typeLabel);
-				Synset s = w.getSenses()[senseIdx - 1];
+				IndexWord w = dictionary.lookupIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
+				Synset s = w.getSenses().get(senseIdx - 1);
 				long synset = s.getOffset();
 
 				// logger.debug("DBpedia {} wntype: [[{}]]", title, typeLabel);

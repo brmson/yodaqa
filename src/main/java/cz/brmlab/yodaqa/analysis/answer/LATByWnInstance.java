@@ -1,9 +1,15 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
-import net.didion.jwnl.data.IndexWord;
-import net.didion.jwnl.data.PointerTarget;
-import net.didion.jwnl.data.PointerType;
-import net.didion.jwnl.data.Synset;
+import java.util.List;
+
+import net.sf.extjwnl.data.IndexWord;
+import net.sf.extjwnl.dictionary.Dictionary;
+import net.sf.extjwnl.data.PointerTarget;
+import net.sf.extjwnl.data.PointerType;
+import net.sf.extjwnl.data.Synset;
+import net.sf.extjwnl.data.BaseDictionaryElement;
+import net.sf.extjwnl.JWNLException;
+import net.sf.extjwnl.data.Word;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -23,7 +29,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
-import cz.brmlab.yodaqa.provider.JWordnet;
+
+import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -36,6 +43,24 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
 public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByWnInstance.class);
+	 	
+	Dictionary dictionary = null;
+	
+	public LATByWnInstance() throws JWNLException 
+	{
+		try
+		{	
+			/**
+			 * New style initialize librarary ExtJWNL.
+			 */
+			dictionary = Dictionary.getDefaultResourceInstance();
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	
+	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -71,7 +96,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	}
 
 	public boolean processOne(JCas jcas, Annotation base, String text) throws Exception {
-		IndexWord w = JWordnet.getDictionary().lookupIndexWord(net.didion.jwnl.data.POS.NOUN, text);
+		IndexWord w = dictionary.lookupIndexWord(net.sf.extjwnl.data.POS.NOUN, text);
 		if (w == null)
 			return false;
 		for (Synset synset : w.getSenses()) {
@@ -84,9 +109,11 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 
 	protected void addWordnetLAT(JCas jcas, Annotation base, Synset synset) throws Exception {
 		addLATFeature(jcas, AF_LATWnInstance.class);
-
-		String lemma = synset.getWord(0).getLemma().replace('_', ' ');
-
+		
+		List<Word> words = synset.getWords();
+		Word word = words.get(0);
+		String lemma = word.getLemma().replace('_', ' ');
+		
 		/* We have a synthetic noun(-ish), synthetize
 		 * a POS tag for it. */
 		/* XXX: We assume a hypernym is always a noun. */
