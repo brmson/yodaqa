@@ -143,7 +143,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		StringBuilder wnlist = new StringBuilder();
 
 		if (lat.getSynset() == 0) {
-			IndexWord w = dictionary.lookupIndexWord(wnpos, lat.getText());
+			IndexWord w = dictionary.getIndexWord(wnpos, lat.getText());
 			
 			if (w == null) 
 			{
