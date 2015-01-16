@@ -31,8 +31,6 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
 
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install java7-jdk``
-  * Install the Wordnet ontological database:
-	``cd data/wordnet; wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz; tar xf wn*tar.gz; cd ../..``
   * ``./gradlew check``
   * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
     of all sorts of NLP resources and models.  This will amount to several
