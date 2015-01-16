@@ -45,7 +45,6 @@ fi
 git clone "$baserepo" "$clonedir"
 pushd "$clonedir"
 git checkout "$cid"
-ln -vs "$baserepo"/data/wordnet/* data/wordnet/
 
 echo "Checked out in $clonedir"
 sleep 2
