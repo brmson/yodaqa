@@ -53,7 +53,7 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected void addClue(Clue clue, int begin, int end, Annotation base, boolean isReliable, double weight) {
+	protected void addClue(Clue clue, int begin, int end, Subject base, boolean isReliable, double weight) {
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
@@ -61,6 +61,6 @@ public class ClueBySubject extends JCasAnnotator_ImplBase {
 		clue.setLabel(clue.getCoveredText());
 		clue.setIsReliable(isReliable);
 		clue.addToIndexes();
-		logger.debug("new by {}: {}", base.getType().getShortName(), clue.getLabel());
+		logger.debug("new by {} {}: {}", base.getType().getShortName(), base.getBase().getType().getShortName(), clue.getLabel());
 	}
 }

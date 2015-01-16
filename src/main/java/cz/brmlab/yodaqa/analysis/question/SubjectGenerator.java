@@ -76,7 +76,9 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 		/* N.B. Sometimes NamedEntity detection fails (e.g. "How high
 		 * is Pikes peak?"). So when there's none, just add the token
 		 * as the subject. */
-		addSubject(jcas, stok);
+		/* But do not add subjects like "it". */
+		if (stok.getPos().getPosValue().matches(ClueByTokenConstituent.TOKENMATCH))
+			addSubject(jcas, stok);
 
 		/* However, just the token is often pretty useless, yielding
 		 * e.g.
@@ -93,6 +95,9 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 		NP np = TreeUtil.widestCoveringNP(stok);
 		if (np == null) {
 			// <<How long before bankruptcy is removed from a credit report?>>
+			return;
+		} else if (np.getCoveredText().equals(stok.getCoveredText())) {
+			// <<it>> is often a NP too, or other short tokens
 			return;
 		}
 		addSubject(jcas, np);
