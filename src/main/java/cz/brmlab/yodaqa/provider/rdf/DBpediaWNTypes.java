@@ -98,7 +98,7 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 			String typeLabel = rawResult[0].getString().replaceAll("^synset-([^-]*)-.*$", "$1").replaceAll("_", " ");
 
 			try {
-				IndexWord w = dictionary.lookupIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
+				IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.NOUN, typeLabel);
 				Synset s = w.getSenses().get(senseIdx - 1);
 				long synset = s.getOffset();
 

@@ -96,7 +96,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	}
 
 	public boolean processOne(JCas jcas, Annotation base, String text) throws Exception {
-		IndexWord w = dictionary.lookupIndexWord(net.sf.extjwnl.data.POS.NOUN, text);
+		IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.NOUN, text);
 		if (w == null)
 			return false;
 		for (Synset synset : w.getSenses()) {
