@@ -40,7 +40,8 @@ public class DBpediaWNTypes extends CachedJenaLookup {
 	public void initialize() throws ResourceInitializationException
 	{
 		try {
-			dictionary = Dictionary.getDefaultResourceInstance();
+			if (dictionary == null)
+				dictionary = Dictionary.getDefaultResourceInstance();
 		} catch (JWNLException e) {
 			throw new ResourceInitializationException(e);
 		}

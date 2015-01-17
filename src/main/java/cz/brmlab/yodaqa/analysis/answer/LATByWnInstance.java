@@ -46,24 +46,14 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	 	
 	Dictionary dictionary = null;
 	
-	public LATByWnInstance() throws JWNLException 
-	{
-		try
-		{	
-			/**
-			 * New style initialize librarary ExtJWNL.
-			 */
-			dictionary = Dictionary.getDefaultResourceInstance();
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
-	
-	}
-
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+		try {
+			if (dictionary == null)
+				dictionary = Dictionary.getDefaultResourceInstance();
+		} catch (JWNLException e) {
+			throw new ResourceInitializationException(e);
+		}
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {

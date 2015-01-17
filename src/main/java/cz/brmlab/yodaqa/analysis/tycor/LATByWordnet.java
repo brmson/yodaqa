@@ -41,22 +41,6 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	
 	Dictionary dictionary = null;
 	
-	public LATByWordnet() throws JWNLException 
-	{
-		try
-		{
-			/**
-			 * New style initialize librarary ExtJWNL.
-			 */
-			dictionary = Dictionary.getDefaultResourceInstance();
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
-	
-	}
-	
 	/* We don't generalize further over the noun.Tops words that
 	 * represent the most abstract hierarchy and generally words
 	 * that have nothing in common anymore.
@@ -91,6 +75,13 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		}
 		
 		super.initialize(aContext);
+
+		try {
+			if (dictionary == null)
+				dictionary = Dictionary.getDefaultResourceInstance();
+		} catch (JWNLException e) {
+			throw new ResourceInitializationException(e);
+		}
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
