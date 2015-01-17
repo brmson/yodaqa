@@ -259,7 +259,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("\"");
-		sb.append(a.getText().replaceAll("\"", "\\\""));
+		sb.append(a.getText().replaceAll("\"", "\"\""));
 		sb.append("\"");
 		sb.append(",");
 		sb.append(isMatch ? "+" : "-");
