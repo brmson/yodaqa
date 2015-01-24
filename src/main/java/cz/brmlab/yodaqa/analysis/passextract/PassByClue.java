@@ -162,6 +162,10 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 	}
 
 	public static String getClueRegex(Clue clue) {
+		return getClueRegex(clue, true);
+	}
+
+	public static String getClueRegex(Clue clue, boolean anywhere) {
 		/* XXX: Maybe we should just tokenize and lemmatize
 		 * the passage instead? */
 		String label = clue.getLabel();
@@ -169,7 +173,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			/* empty -> empties too */
 			label = label.substring(0, label.length() - 1) + "\\E[yi]\\Q";
 		}
-		String regex = "(?i).*\\b\\Q" + label + "\\E(.|e?d|e?s|ing)?\\b.*";
+		String regex = "(?i)" + (anywhere ? ".*" : "") + "\\b\\Q" + label + "\\E(.|e?d|e?s|ing)?\\b" + (anywhere ? ".*" : "");
 		// logger.debug("regex {}", regex);
 		return regex;
 	}
