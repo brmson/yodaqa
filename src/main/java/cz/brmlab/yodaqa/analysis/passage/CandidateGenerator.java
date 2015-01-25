@@ -15,7 +15,12 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageInside;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageSp;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
+import cz.brmlab.yodaqa.model.SearchResult.QuestionClueMatch;
 import cz.brmlab.yodaqa.model.SearchResult.QuestionLATMatch;
+
+/* XXX: The clue-specific features, ugh. */
+import cz.brmlab.yodaqa.model.Question.*;
+import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 /**
  * Abstract base class for generators of CandidateAnswer from PickedPassage.
@@ -28,9 +33,6 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 	protected void addCandidateAnswer(JCas passagesView, Passage p, Annotation np, AnswerFV fv)
 			throws AnalysisEngineProcessException {
 
-		if (logger == null)
-			System.err.println("logger is null");
-		logger.info("np {}", np);
 		logger.info("can {}", np.getCoveredText());
 
 		fv.setFeature(AF_Occurences.class, 1.0);
@@ -53,6 +55,30 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 			break;
 		}
 
+		for (QuestionClueMatch qlc : JCasUtil.selectCovered(QuestionClueMatch.class, p)) {
+			double distLeft = np.getBegin() - qlc.getEnd();
+			double distRight = qlc.getBegin() - np.getEnd();
+			double distance;
+			if (distLeft >= 0 && distRight >= 0) {
+				// contained inside!
+				distance = -1;
+			} else if (distLeft >= 0) {
+				distance = distLeft;
+			} else if (distRight >= 0) {
+				distance = distRight;
+			} else {
+				// some strange overlap
+				distance = -1;
+			}
+			double value = Math.exp(-distance);
+			clueDistAnswerFeature(fv, qlc.getBaseClue(), value);
+			logger.debug("ClueMatch {}/<{}> d {}",
+				qlc.getBaseClue().getClass().getSimpleName(),
+				qlc.getBaseClue().getLabel(), distance);
+			// this should be a singleton
+			break;
+		}
+
 		CandidateAnswer ca = new CandidateAnswer(passagesView);
 		ca.setBegin(np.getBegin());
 		ca.setEnd(np.getEnd());
@@ -60,5 +86,30 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 		ca.setBase(np);
 		ca.setFeatures(fv.toFSArray(passagesView));
 		ca.addToIndexes();
+	}
+
+	protected void clueDistAnswerFeature(AnswerFV afv, Clue clue, double value) {
+		     if (clue instanceof ClueToken     ) afv.setFeature(AF_PsgDistClueToken.class, value);
+		else if (clue instanceof CluePhrase    ) afv.setFeature(AF_PsgDistCluePhrase.class, value);
+		else if (clue instanceof ClueSV        ) afv.setFeature(AF_PsgDistClueSV.class, value);
+		else if (clue instanceof ClueNE        ) afv.setFeature(AF_PsgDistClueNE.class, value);
+		else if (clue instanceof ClueLAT       ) afv.setFeature(AF_PsgDistClueLAT.class, value);
+		else if (clue instanceof ClueSubject   ) {
+			afv.setFeature(AF_PsgDistClueSubject.class, value);
+			     if (clue instanceof ClueSubjectNE) afv.setFeature(AF_PsgDistClueSubjectNE.class, value);
+			else if (clue instanceof ClueSubjectToken) afv.setFeature(AF_PsgDistClueSubjectToken.class, value);
+			else if (clue instanceof ClueSubjectPhrase) afv.setFeature(AF_PsgDistClueSubjectPhrase.class, value);
+			else assert(false);
+		} else if (clue instanceof ClueConcept ) {
+			afv.setFeature(AF_PsgDistClueConcept.class, value);
+			ClueConcept concept = (ClueConcept) clue;
+			if (concept.getBySubject())
+				afv.setFeature(AF_PsgDistClueSubject.class, value);
+			if (concept.getByLAT())
+				afv.setFeature(AF_PsgDistClueLAT.class, value);
+			if (concept.getByNE())
+				afv.setFeature(AF_PsgDistClueNE.class, value);
+		}
+		else assert(false);
 	}
 }

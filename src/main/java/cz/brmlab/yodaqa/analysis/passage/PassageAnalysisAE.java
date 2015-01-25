@@ -65,6 +65,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Question LAT Text Matches: */
 		builder.add(createPrimitiveDescription(MatchQuestionLATs.class));
+		/* Question Clue Text Matches: */
+		builder.add(createPrimitiveDescription(MatchQuestionClues.class));
 
 
 		/* Okay! Now, we can proceed with our key tasks. */
