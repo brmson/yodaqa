@@ -28,9 +28,6 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 	protected void addCandidateAnswer(JCas passagesView, Passage p, Annotation np, AnswerFV fv)
 			throws AnalysisEngineProcessException {
 
-		if (logger == null)
-			System.err.println("logger is null");
-		logger.info("np {}", np);
 		logger.info("can {}", np.getCoveredText());
 
 		fv.setFeature(AF_Occurences.class, 1.0);
