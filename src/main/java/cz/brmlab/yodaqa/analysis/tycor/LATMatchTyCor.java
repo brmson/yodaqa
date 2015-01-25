@@ -207,9 +207,9 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		}
 
 		if (qNoWordnetLAT)
-			fv.setFeature(AF_LATQNoWordNet.class, 1.0);
+			fv.setFeature(AF_LATQNoWordNet.class, -1.0);
 		if (!aNoLAT && aNoWordnetLAT)
-			fv.setFeature(AF_LATANoWordNet.class, 1.0);
+			fv.setFeature(AF_LATANoWordNet.class, -1.0);
 
 		if (ai.getFeatures() != null)
 			for (FeatureStructure af : ai.getFeatures().toArray())

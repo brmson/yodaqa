@@ -295,11 +295,22 @@ public class AnswerFV {
 		boolean[] a2isSet = a2fv.getIsSet();
 
 		for (int i = 0; i < features.size(); i++) {
-			if (!a2isSet[i])
+			if (!a2isSet[i]) {
+				if (isSet[i] && values[i] < 0) {
+					/* Unset value wins over
+					 * negative value. */
+					isSet[i] = false;
+					values[i] = 0;
+				}
 				continue;
+			}
 			if (!isSet[i]) {
-				isSet[i] = true;
-				values[i] = a2values[i];
+				if (a2values[i] >= 0) {
+					/* Set the value only
+					 * if non-negative. */
+					isSet[i] = true;
+					values[i] = a2values[i];
+				}
 				continue;
 			}
 			/* Actual feature merge.  XXX: Fancier mechanism
