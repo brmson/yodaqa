@@ -64,7 +64,7 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 					PipelineLogger.PARAM_LOG_MESSAGE, "QA analysis"));
 
 		/* Question LAT Text Matches: */
-		builder.add(createPrimitiveDescription(MatchQuestionLATs.class));
+		//builder.add(createPrimitiveDescription(MatchQuestionLATs.class));
 		/* Question Clue Text Matches: */
 		builder.add(createPrimitiveDescription(MatchQuestionClues.class));
 
