@@ -154,5 +154,18 @@
           </featureDescription>
         </features>
       </typeDescription>
+
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.SearchResult.QuestionClueMatch</name>
+        <description>Match of a question clue for transfoer to answer features (based on neighborhood, parse tree path etc.).</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>baseClue</name>
+            <description>The matched question clue.</description>
+            <rangeTypeName>cz.brmlab.yodaqa.model.Question.Clue</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
     </types>
   </typeSystemDescription>
