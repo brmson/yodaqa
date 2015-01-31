@@ -21,7 +21,13 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveD
  * expensive annotators on the CandidateAnswerCAS.
  *
  * N.B. the AnswerHitlistCAS also enters this AE!  All the components
- * should just pass it through (typically). */
+ * should just pass it through (typically).
+ *
+ * XXX: So far, we did not manage to find a mode of answer confirmation
+ * that would be beneficial, this is just performance intensive but
+ * completely noisy.  Therefore, THIS PIPELINE PHASE DOES NOT DO ANYTHING
+ * at this point.  Having some more useful search-based answer verification
+ * is subject of further research. */
 
 public class AnswerEvidencingAE /* XXX: extends AggregateBuilder ? */ {
 	final static Logger logger = LoggerFactory.getLogger(AnswerEvidencingAE.class);
@@ -31,11 +37,11 @@ public class AnswerEvidencingAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Mark all answers that even *enter* this AE with
 		 * a special feature. */
-		builder.add(createPrimitiveDescription(AnswerTopMarker.class));
+		// builder.add(createPrimitiveDescription(AnswerTopMarker.class));
 
 		/* Run a fulltext search for each answer + question clues and
 		 * measure the number of hits. */
-		builder.add(createPrimitiveDescription(SolrHitsCounter.class));
+		// builder.add(createPrimitiveDescription(SolrHitsCounter.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */
