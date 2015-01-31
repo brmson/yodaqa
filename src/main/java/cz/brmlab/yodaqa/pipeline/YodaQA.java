@@ -164,10 +164,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			/* Convert top N AnswerHitlist entries back to separate CASes,
 			 * then back to a hitlist, to get rid of them.  This is a bit
-			 * convoluted, but simple. */
+			 * convoluted, but easiest dirty way. */
 			AnalysisEngineDescription answerCASSplitter = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASSplitter.class,
-					AnswerCASSplitter.PARAM_TOPLISTLEN, 100,
+					AnswerCASSplitter.PARAM_TOPLISTLEN, 150,
 					AnswerCASSplitter.PARAM_HITLIST_EMIT, false);
 			builder.add(answerCASSplitter);
 
