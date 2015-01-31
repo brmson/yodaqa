@@ -30,7 +30,9 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantityCD;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAWnInstance;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpNoHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
@@ -183,6 +185,19 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				else if (baselat2 instanceof DBpRelationLAT)
 					fv.setFeature(AF_TyCorADBpRelation.class, 1.0);
 				else assert(false);
+			}
+
+			if (match.lat1.getSpecificity() != 0 && match.lat2.getSpecificity() != 0) {
+				/* If we had to generalize both LATs, that
+				 * seems to be a negative signal that the
+				 * answer is less specifit than we want. */
+				logger.debug("generalizing both LATs for <<{}>>", answerView.getDocumentText());
+				fv.setFeature(AF_TyCorSpNoHit.class, -1.0);
+			} else if (match.lat1.getSpecificity() == 0 && match.lat2.getSpecificity() == 0) {
+				/* If both LATs match sharp, that's a good
+				 * sign OTOH. */
+				logger.debug("sharp LAT match <<{}>>", answerView.getDocumentText());
+				fv.setFeature(AF_TyCorSpQAHit.class, 1.0);
 			}
 
 		/* We were the only ones doing type coercion here. */
