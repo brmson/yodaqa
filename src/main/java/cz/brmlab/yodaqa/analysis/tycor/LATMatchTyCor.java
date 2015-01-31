@@ -96,7 +96,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 	 * match all measure-derived question LATs.
 	 *
 	 * N.B. this is a generalization limit applied in addition to the
-	 * LATByWordnet Tops synset list.
+	 * LATExpandWordnet Tops synset list.
 	 *
 	 * XXX: Compiled manually by cursory logs investigation.  We should
 	 * build a TyCor dataset and train it by that. */

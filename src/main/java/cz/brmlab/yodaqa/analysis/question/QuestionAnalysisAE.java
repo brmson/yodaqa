@@ -25,7 +25,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
+import cz.brmlab.yodaqa.analysis.tycor.LATExpandWordnet;
 import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
@@ -118,7 +118,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Prepare LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
 		/* Multiplicate LATs */
-		builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(LATExpandWordnet.class));
 
 		/* Generate clues; the order is less specific to more specific */
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByTokenConstituent.class));

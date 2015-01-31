@@ -7,7 +7,6 @@ import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.PointerTarget;
 import net.sf.extjwnl.data.PointerType;
 import net.sf.extjwnl.data.Synset;
-import net.sf.extjwnl.data.BaseDictionaryElement;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.Word;
 
@@ -30,8 +29,6 @@ import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
 
-import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
-
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
@@ -39,10 +36,10 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 /**
  * Generate LAT annotations in a CandidateAnswerCAS. This is based on the
  * answer focus (or NamedEntity) which is looked up in Wordnet and LATs
- * based on instance-of relations are generated. */
+ * based on instance-of and hypernymy relations are generated. */
 
-public class LATByWnInstance extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(LATByWnInstance.class);
+public class LATByWordnet extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATByWordnet.class);
 	 	
 	Dictionary dictionary = null;
 	
@@ -91,15 +88,14 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 			return false;
 		for (Synset synset : w.getSenses()) {
 			for (PointerTarget t : synset.getTargets(PointerType.INSTANCE_HYPERNYM)) {
-				addWordnetLAT(jcas, base, (Synset) t);
+				addLATFeature(jcas, AF_LATWnInstance.class);
+				addWordnetLAT(jcas, base, (Synset) t, "of-instance", new WnInstanceLAT(jcas));
 			}
 		}
 		return true;
 	}
 
-	protected void addWordnetLAT(JCas jcas, Annotation base, Synset synset) throws Exception {
-		addLATFeature(jcas, AF_LATWnInstance.class);
-		
+	protected void addWordnetLAT(JCas jcas, Annotation base, Synset synset, String kind, LAT lat) throws Exception {
 		List<Word> words = synset.getWords();
 		Word word = words.get(0);
 		String lemma = word.getLemma().replace('_', ' ');
@@ -119,8 +115,8 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
-		addLAT(new WnInstanceLAT(jcas), base.getBegin(), base.getEnd(), base, lemma, pos, synset.getOffset(), 0.0);
-		logger.debug(".. LAT {}/{} is Wordnet of-instance of {}", lemma, synset.getOffset(), base.getCoveredText());
+		addLAT(lat, base.getBegin(), base.getEnd(), base, lemma, pos, synset.getOffset(), 0.0);
+		logger.debug(".. LAT {}/{} is Wordnet {} of {}", lemma, synset.getOffset(), kind, base.getCoveredText());
 	}
 
 	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {

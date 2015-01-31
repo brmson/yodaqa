@@ -1,16 +1,11 @@
 package cz.brmlab.yodaqa.analysis.ansevid;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
-import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cz.brmlab.yodaqa.analysis.FindReqParse;
-import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
-import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 

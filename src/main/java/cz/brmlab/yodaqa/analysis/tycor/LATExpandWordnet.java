@@ -36,8 +36,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
  * based on Wordnet relationships.  At this point, we generate LATs
  * with gradually reduced specificity based on hypernymy. */
 
-public class LATByWordnet extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(LATByWordnet.class);
+public class LATExpandWordnet extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATExpandWordnet.class);
 	
 	Dictionary dictionary = null;
 	
