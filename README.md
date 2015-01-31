@@ -86,8 +86,8 @@ bandwidth to download 10GiB source file; indexing will require roughly 8GiB RAM.
 To index and then search in Wikipedia, we need to set it up as a standalone Solr
 source:
 
-  * Download solr (http://www.apache.org/dyn/closer.cgi/lucene/solr/),
-    unpack and cd to the ``example/`` subdirectory.
+  * Download solr (http://www.apache.org/dyn/closer.cgi/lucene/solr/ - we use
+    version 4.6.0), unpack and cd to the ``example/`` subdirectory.
   * Symlink or copy the ``data/enwiki/`` directory from this repository to the
     ``example/`` subdirectory; it contains the data import configuration.
   * Proceed with instructions in ``data/enwiki/README.md``.
