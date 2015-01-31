@@ -93,6 +93,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.WnHypernymLAT</name>
+        <description>LAT generated from Wordnet hypernym relationships (of the answer, not another LAT! c.f. WordnetLAT).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT</name>
         <description>LAT generated from DBpedia relation property name.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
@@ -100,7 +105,7 @@
 
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.WordnetLAT</name>
-        <description>LAT generated from other LATs by Wordnet hypernymy relationships.</description>
+        <description>LAT generated from other LATs by Wordnet hypernymy relationships, as a progression of generalizations for fuzzy LAT-LAT matching.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
     </types>

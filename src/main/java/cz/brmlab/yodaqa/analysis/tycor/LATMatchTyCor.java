@@ -28,6 +28,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantity;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantityCD;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAWnInstance;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAWnHypernym;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
@@ -40,6 +41,7 @@ import cz.brmlab.yodaqa.model.TyCor.NELAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
+import cz.brmlab.yodaqa.model.TyCor.WnHypernymLAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /**
@@ -180,6 +182,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 					fv.setFeature(AF_TyCorAQuantityCD.class, 1.0);
 				else if (baselat2 instanceof WnInstanceLAT)
 					fv.setFeature(AF_TyCorAWnInstance.class, 1.0);
+				else if (baselat2 instanceof WnHypernymLAT)
+					fv.setFeature(AF_TyCorAWnHypernym.class, 1.0);
 				else if (baselat2 instanceof DBpRelationLAT)
 					fv.setFeature(AF_TyCorADBpRelation.class, 1.0);
 				else assert(false);

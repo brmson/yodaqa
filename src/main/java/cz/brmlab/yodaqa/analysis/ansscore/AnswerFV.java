@@ -56,10 +56,10 @@ public class AnswerFV {
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
 		"LATNE", "LATDBpType", "LATDBpWNType", "LATQuantity", "LATQuantityCD",
-			"LATWnInstance", "LATDBpRelation",
+			"LATWnInstance", "LATWnHypernym", "LATDBpRelation",
 		"tyCorSpQHit", "tyCorSpAHit",
 		"tyCorANE", "tyCorADBp", "tyCorADBpWN", "tyCorAQuantity", "tyCorAQuantityCD",
-			"tyCorAWnInstance", "tyCorADBpRelation",
+			"tyCorAWnInstance", "LATWnHypernym", "tyCorADBpRelation",
 		"clOCMatchScore", "clOCPrefixedScore", "clOCPrefixingScore", "clOCSuffixedScore",
 			"clOCSuffixingScore", "clOCSubstredScore", "clOCSubstringScore",
 			"clOCMetaMatchScore",
@@ -144,6 +144,7 @@ public class AnswerFV {
 			features.add(AF_LATQuantity.class);
 			features.add(AF_LATQuantityCD.class);
 			features.add(AF_LATWnInstance.class);
+			features.add(AF_LATWnHypernym.class);
 			features.add(AF_LATDBpRelation.class);
 			features.add(AF_TyCorSpQHit.class);
 			features.add(AF_TyCorSpAHit.class);
@@ -153,6 +154,7 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantity.class);
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
+			features.add(AF_TyCorAWnHypernym.class);
 			features.add(AF_TyCorADBpRelation.class);
 			features.add(AF_ClOCMatchScore.class);
 			features.add(AF_ClOCPrefixedScore.class);

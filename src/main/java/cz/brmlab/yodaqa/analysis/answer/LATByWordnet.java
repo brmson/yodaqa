@@ -23,11 +23,13 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATWnInstance;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATWnHypernym;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
+import cz.brmlab.yodaqa.model.TyCor.WnHypernymLAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -90,6 +92,10 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 			for (PointerTarget t : synset.getTargets(PointerType.INSTANCE_HYPERNYM)) {
 				addLATFeature(jcas, AF_LATWnInstance.class);
 				addWordnetLAT(jcas, base, (Synset) t, "of-instance", new WnInstanceLAT(jcas));
+			}
+			for (PointerTarget t : synset.getTargets(PointerType.HYPERNYM)) {
+				addLATFeature(jcas, AF_LATWnHypernym.class);
+				addWordnetLAT(jcas, base, (Synset) t, "hypernym", new WnHypernymLAT(jcas));
 			}
 		}
 		return true;
