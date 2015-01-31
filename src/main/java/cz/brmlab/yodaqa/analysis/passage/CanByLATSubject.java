@@ -8,7 +8,6 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
@@ -18,6 +17,7 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJPASS;
@@ -88,16 +88,23 @@ public class CanByLATSubject extends CandidateGenerator {
 			if (subjlemma.equals(latlemma)) {
 				logger.debug("Passage subject {} matches question lat {}", subjlemma, latlemma);
 
-				Annotation np = TreeUtil.widestCoveringNP(nsubj.getGovernor());
-				if (np == null)
-					np = nsubj.getGovernor(); // cheat :)
+				Annotation base = TreeUtil.widestCoveringNP(nsubj.getGovernor());
+				if (base == null)
+					base = nsubj.getGovernor(); // cheat :)
+				if (base instanceof Token) {
+					String pos = ((Token) base).getPos().getPosValue();
+					if (pos.matches("^V.*")) {
+						logger.debug("Ignoring verb governor {} {}", pos, base.getCoveredText());
+						continue;
+					}
+				}
 
 				AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 				fv.merge(new AnswerFV(p.getAnsfeatures()));
 				/* This is both origin and tycor feature, essentially. */
 				fv.setFeature(AF_OriginPsgNPByLATSubj.class, 1.0);
 
-				addCandidateAnswer(passagesView, p, np, fv);
+				addCandidateAnswer(passagesView, p, base, fv);
 			}
 		}
 	}
