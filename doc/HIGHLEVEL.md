@@ -222,7 +222,7 @@ This is taken care of the **AnswerScoringAE** pipeline.
 
 ## Answer Pruning, Merging and Evidence Diffusion
 
-The answer hitlist is pruned to top N (let's say N=100); the idea is
+The answer hitlist may be pruned to top N (let's say N=100); the idea is
 that scoring (esp. normalized) may work better with the most noise
 wed out.
 
