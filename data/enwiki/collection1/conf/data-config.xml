@@ -18,7 +18,7 @@
       processor="XPathEntityProcessor"
       stream="true"
       forEach="/wikitext/doc"
-      url="enwiki/enwiki-20140102-text.xml"
+      url="enwiki/enwiki-20150112-text.xml"
       transformer="RegexTransformer,script:skipDisambiguation"
       >
       <field column="id"    xpath="/wikitext/doc/@id" />

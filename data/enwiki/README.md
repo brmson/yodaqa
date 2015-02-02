@@ -27,6 +27,9 @@ and somewhat smaller dump.  Then, we import this into Solr.
   * Download the [enwiki dump](http://dumps.wikimedia.org/enwiki/)
     (you want the ``enwiki-*-pages-articles.xml.bz2`` file),
     store in this directory.  (Its size is many gigabytes!)
+    As a reference version, we currently use the 20150112 dump; if you
+    want to reproduce our environment, it's long-time archived at:
+    ``http://v.or.cz/~pasky/brmson/``
   * Get our version of WikiExtractor by ``git clone https://github.com/brmson/wikipedia-extractor``
   * Prepare plaintext dump directory by ``mkdir enwiki-text``
   * Run WikiExtractor on the dump like
