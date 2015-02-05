@@ -93,6 +93,10 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 			// properties.addAll(dbp.query(concept.getLabel(), logger));
 		}
 
+		/* Actually consider only properties that have some plausible
+		 * relation to the question. */
+		properties = filterProperties(properties, questionView);
+
 		relIter = properties.iterator();
 		i = 0;
 	}
@@ -126,6 +130,29 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 		i++;
 		return jcas;
+	}
+
+	protected List<DBpediaOntology.PropertyValue> filterProperties(List<DBpediaOntology.PropertyValue> src, JCas questionView) {
+		List<DBpediaOntology.PropertyValue> dst = new ArrayList<>();
+		for (DBpediaOntology.PropertyValue p : src) {
+			/* Keep this property if its name matches some
+			 * question clue. */
+			String pName = p.getProperty().toLowerCase();
+			for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
+				String cText = clue.getCoveredText().toLowerCase();
+				String cLabel = clue.getLabel().toLowerCase();
+				// XXX: word boundaries?
+				if (pName.contains(cText) || pName.contains(cLabel)
+				    || cText.contains(pName) || cLabel.contains(pName)) {
+					/* We have a match! */
+					dst.add(p);
+					break;
+				}
+			}
+			// no-match logging is not necessary as DBpediaOntology
+			// logs found stuff
+		}
+		return dst;
 	}
 
 	protected void copyQuestion(JCas src, JCas dest) throws Exception {
