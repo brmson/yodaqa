@@ -55,7 +55,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "3")
 	protected int proximityNum;
 	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
-	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "2")
+	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "1.5")
 	protected int proximityBaseDist;
 	public static final String PARAM_PROXIMITY_BASE_FACTOR = "proximity-base-factor";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
