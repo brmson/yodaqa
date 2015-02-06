@@ -63,10 +63,10 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	protected int proximityNum;
 	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "1.5")
-	protected int proximityBaseDist;
+	protected double proximityBaseDist;
 	public static final String PARAM_PROXIMITY_BASE_FACTOR = "proximity-base-factor";
 	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
-	protected int proximityBaseFactor;
+	protected double proximityBaseFactor;
 
 	/** Search full text of articles in addition to their titles. */
 	public static final String PARAM_SEARCH_FULL_TEXT = "search-full-text";
