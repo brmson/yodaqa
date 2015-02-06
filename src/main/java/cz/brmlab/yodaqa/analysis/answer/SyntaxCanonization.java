@@ -36,7 +36,7 @@ public class SyntaxCanonization extends JCasAnnotator_ImplBase {
 		ai.addToIndexes();
 	}
 
-	/* Basically, throw away any DET and decorations at the
+	/* Basically, throw away any DET and POSS and decorations at the
 	 * beginning and end (like quotes, commas or apostrophes). */
 	/* XXX: This method is also called from entirely different
 	 * analysis classes. */
@@ -48,6 +48,7 @@ public class SyntaxCanonization extends JCasAnnotator_ImplBase {
 			text = text.replaceAll("^\\W*", "");
 		}
 		text = text.replaceAll("^(?i)(the|a|an|one)\\s+", "");
+		text = text.replaceAll("(?i)\\s*'s$", "");
 		if (!text.matches("^\\W*$"))
 			text = text.replaceAll("^\\W*", "");
 		return text;
