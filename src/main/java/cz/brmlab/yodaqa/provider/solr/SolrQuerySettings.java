@@ -2,14 +2,14 @@ package cz.brmlab.yodaqa.provider.solr;
 
 public class SolrQuerySettings {
 	protected int proximityNum;
-	protected int proximityBaseDist, proximityBaseFactor;
+	protected double proximityBaseDist, proximityBaseFactor;
 	protected String[] searchFields;
 	protected boolean cluesAllRequired;
 	protected boolean proximityOnly;
 
 	/* searchField "" means document body; searchField "titleText"
 	 * means the title. */
-	public SolrQuerySettings(int proximityNum_, int proximityBaseDist_, int proximityBaseFactor_, String[] searchFields_,
+	public SolrQuerySettings(int proximityNum_, double proximityBaseDist_, double proximityBaseFactor_, String[] searchFields_,
 			boolean cluesAllRequired_) {
 		proximityNum = proximityNum_;
 		proximityBaseDist = proximityBaseDist_;
@@ -28,14 +28,14 @@ public class SolrQuerySettings {
 	/**
 	 * @return the proximityBaseDist
 	 */
-	public int getProximityBaseDist() {
+	public double getProximityBaseDist() {
 		return proximityBaseDist;
 	}
 
 	/**
 	 * @return the proximityBaseFactor
 	 */
-	public int getProximityBaseFactor() {
+	public double getProximityBaseFactor() {
 		return proximityBaseFactor;
 	}
 
