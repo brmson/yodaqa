@@ -31,34 +31,21 @@ import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 public abstract class CachedJenaLookup {
 	final Logger logger = LoggerFactory.getLogger(CachedJenaLookup.class);
 
-	/* XXX: In theory, we should have an extra class in the hierachy
-	 * with these DBpedia specific defaults */
-	/* Replace this value with http://dbpedia.org/sparql to use the
-	 * public DBpedia SPARQL endpoint. */
-	protected String service = "http://pasky.or.cz:3030/dbpedia/query";
-	protected String prefixes =
-		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-		"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" +
-		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-		"PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
-		"PREFIX dc: <http://purl.org/dc/elements/1.1/>\n" +
-		"PREFIX : <http://dbpedia.org/resource/>\n" +
-		"PREFIX dbpedia2: <http://dbpedia.org/property/>\n" +
-		"PREFIX dbpedia: <http://dbpedia.org/>\n" +
-		"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n" +
-		"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
-		"";
+	protected String service;
+	protected String prefixes;
 
-	/** Initialize a CachedJenaLookup object.  Points at
-	 * the DBpedia SPARQL endpoint. */
-	public CachedJenaLookup() {
-	}
-
-	/** Initialize a CachedJenaLookup object.  Communicates
-	 * with the given SPARQL @service endpoint. */
-	public CachedJenaLookup(String service_) {
+	/** Initialize a CachedJenaLookup object. */
+	public CachedJenaLookup(String service_, String prefixes_) {
 		service = service_;
+		prefixes =
+			"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+			"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" +
+			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
+			"PREFIX dc: <http://purl.org/dc/elements/1.1/>\n" +
+			"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n" +
+			prefixes_;
 	}
 
 	/** Issue a select statement, returning list of resource
@@ -79,7 +66,7 @@ public abstract class CachedJenaLookup {
 				break; // Success!
 			} catch (QueryExceptionHTTP e) {
 				e.printStackTrace();
-				System.err.println("*** DBpedia SPARQL Query (temporarily?) failed, retrying in a moment...");
+				System.err.println("*** " + service + " SPARQL Query (temporarily?) failed, retrying in a moment...");
 				try {
 					TimeUnit.SECONDS.sleep(10);
 				} catch (InterruptedException e2) { // oof...

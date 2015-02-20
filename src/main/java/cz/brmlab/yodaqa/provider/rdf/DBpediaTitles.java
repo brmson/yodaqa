@@ -15,7 +15,7 @@ import org.slf4j.Logger;
  * Articles are represented as (label, pageId), where label is the
  * article title. The label is included as we pass through redirects. */
 
-public class DBpediaTitles extends CachedJenaLookup {
+public class DBpediaTitles extends DBpediaLookup {
 	public class Article {
 		protected int pageID;
 		protected String label;

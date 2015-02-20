@@ -19,7 +19,7 @@ import org.slf4j.Logger;
  *
  * We also weed out any abstractions, keeping only the leaf types. */
 
-public class DBpediaTypes extends CachedJenaLookup {
+public class DBpediaTypes extends DBpediaLookup {
 	private static final Log logger =
 		LogFactory.getLog(DBpediaTypes.class);
 

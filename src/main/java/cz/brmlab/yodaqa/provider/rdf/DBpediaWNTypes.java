@@ -1,21 +1,14 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import net.sf.extjwnl.data.IndexWord;
-import net.sf.extjwnl.data.Word;
 import net.sf.extjwnl.dictionary.Dictionary;
-import net.sf.extjwnl.data.PointerTarget;
-import net.sf.extjwnl.data.PointerType;
 import net.sf.extjwnl.data.Synset;
-import net.sf.extjwnl.data.BaseDictionaryElement;
 import net.sf.extjwnl.JWNLException;
 
 import org.apache.commons.logging.Log;
@@ -32,7 +25,7 @@ import org.slf4j.Logger;
  * We drop this information for now, instead of converting this
  * to synset numbers. */
 
-public class DBpediaWNTypes extends CachedJenaLookup {
+public class DBpediaWNTypes extends DBpediaLookup {
 	private static final Log logger = LogFactory.getLog(DBpediaWNTypes.class);
 	
 	Dictionary dictionary = null;

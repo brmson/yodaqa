@@ -16,7 +16,7 @@ import org.slf4j.Logger;
  * This is cleaner dataset than DBpediaProperties; see
  * DBpediaRelationPrimarySearch for detailed discussion. */
 
-public class DBpediaOntology extends CachedJenaLookup {
+public class DBpediaOntology extends DBpediaLookup {
 	private static final Log logger =
 		LogFactory.getLog(DBpediaOntology.class);
 
