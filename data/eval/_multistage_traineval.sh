@@ -100,30 +100,23 @@ if [ -z "$basecommit" ]; then
 		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 		$args0
+	base_xmidir="$xmidir"
+	base_atrainfile0="$atrainfile0"
 
 else
 	## Reuse data files from $basecommit
-	base_outfile0="$basedir/data/eval/tsv/curated-${type}-ovt-u${basecommit}.tsv"
+	echo "Reusing phase0 data from ${basecommit}"
 	base_xmidir="$basedir/data/eval/answer-xmi/${basecommit}-$type"
-	ln -s "$base_outfile0" "$outfile0"
-	rmdir "$xmidir"
-	ln -s "$base_xmidir" "$xmidir"
-
-	if [ "$type" = "train" ]; then
-		base_atrainfile0="$basedir/data/ml/tsv/training-answer-${basecommit}.tsv"
-		ln -s "$base_atrainfile0" "$atrainfile0"
-		ln -s "$basedir/data/ml/tsv/training-passextract-${basecommit}.tsv" "$basedir/data/ml/tsv/training-passextract-${cid}.tsv"
-		ln -s "$basedir/data/eval/answer-csv/${basecommit}" "$basedir/data/eval/answer-csv/${cid}"
-	fi
+	base_atrainfile0="$basedir/data/ml/tsv/training-answer-${basecommit}.tsv"
 fi
 
-train_and_sync "" "$atrainfile0" "$modelfile0"
+train_and_sync "" "$base_atrainfile0" "$modelfile0"
 
 # Re-score with new model
 time ./gradlew tsvgs \
 	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
-	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
+	-Dcz.brmlab.yodaqa.load_answerfvs="$base_xmidir" \
 	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 	$args0
 
