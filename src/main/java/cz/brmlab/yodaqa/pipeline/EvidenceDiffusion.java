@@ -36,6 +36,10 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
  * Right now, we just determine syntactic equivalence, looking for
  * full prefixes and full suffixes (modulo the- etc. junk).
  *
+ * XXX: We do not currently produce the full set of features defined
+ * for this purpose, since some of them led to massive overfitting.
+ * See below.
+ *
  * TODO: Produce more diffusion engines, especially based on semantic
  * relations (like capital vs. country).  Then, we would rename this to
  * EvidenceSyntacticDiffusion and make EvidenceDiffusion an aggregate AE.
@@ -132,6 +136,18 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 					continue;
 				}
 			}
+
+			/* XXX: We were detecting all kinds of overlaps, but we
+			 * actually diffuse only across some. Specifically,
+			 * we do not diffuse across the "prefixing" feature
+			 * and "suffixed" feature, i.e. along answer tuples like:
+			 * prefixing: "21 June" <- "21 June 2000" NOT (but -> YES)
+			 * suffixed:  "21 June 2000" <-    "2000" NOT (but -> YES)
+			 * These were the features that got assigned positive
+			 * weights - all the others end up serving as negative
+			 * feedback. */
+			prefixingScores.clear();
+			suffixedScores.clear();
 
 			if (!(prefixedScores.size() > 0
 				|| prefixingScores.size() > 0
