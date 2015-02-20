@@ -9,9 +9,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 
-/** A wrapper around DBpedia dataset that maps concepts to
- * rdf:type ontology pieces. The main point of using this is to give
- * an evidence of the type of the concept. */
+/** A wrapper around DBpedia dataset that maps concepts to curated
+ * infobox extracted entity properties. This can then serve as an
+ * information source.
+ *
+ * This is cleaner dataset than DBpediaProperties; see
+ * DBpediaRelationPrimarySearch for detailed discussion. */
 
 public class DBpediaOntology extends CachedJenaLookup {
 	private static final Log logger =

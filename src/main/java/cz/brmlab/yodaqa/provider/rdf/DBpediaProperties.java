@@ -11,7 +11,10 @@ import org.slf4j.Logger;
 
 /** A wrapper around DBpedia dataset that maps concepts to raw infobox
  * extracted entity properties. This can then serve as an information
- * source. */
+ * source.
+ *
+ * This is cleaner dataset than DBpediaProperties; see
+ * DBpediaRelationPrimarySearch for detailed discussion. */
 
 public class DBpediaProperties extends DBpediaOntology {
 	private static final Log logger =
