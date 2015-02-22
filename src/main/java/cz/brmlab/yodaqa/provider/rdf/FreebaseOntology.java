@@ -79,7 +79,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * no labels, like ns:chemistry.chemical_element.atomic_mass. */
 	/* FIXME: Some relationships could be useful but seem difficult
 	 * to traverse uniformly, like ns:people.person.sibling_s,
-	 * films (TODO Denzel Washington),
+	 * ns:film.person_or_entity_appearing_in_film.films,
 	 * ns:people.person.education or awards:
 	 * ns:base.nobelprizes.nobel_subject_area.nobel_awards,
 	 * ns:award.award_winner.awards_won. */
@@ -90,7 +90,14 @@ public class FreebaseOntology extends FreebaseLookup {
 		 */
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
-			"ns:" + mid + " ?property ?val .\n" +
+			"ns:" + mid + " ?prop ?val .\n" +
+			/* Check if property is a labelled type, and use that
+			 * label as property name if so. */
+			"OPTIONAL {\n" +
+			"  ?prop ns:type.object.name ?proplabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
+			"} .\n" +
+			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
 			/* Check if value is not a pointer to another topic
 			 * we could resolve to a label. */
 			"OPTIONAL {\n" +
@@ -102,41 +109,46 @@ public class FreebaseOntology extends FreebaseLookup {
 			 * i.e. pointers to an unlabelled topic. */
 			"FILTER( !ISURI(?value) )\n" +
 			/* Keep only ns: properties */
-			"FILTER( STRSTARTS(STR(?property), 'http://rdf.freebase.com/ns/') )\n" +
+			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
 			/* ...but ignore some common junk which yields mostly
 			 * no relevant data... */
-			"FILTER( !STRSTARTS(STR(?property), 'http://rdf.freebase.com/ns/type') )\n" +
-			"FILTER( !STRSTARTS(STR(?property), 'http://rdf.freebase.com/ns/common') )\n" +
-			"FILTER( !STRSTARTS(STR(?property), 'http://rdf.freebase.com/ns/freebase') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
 			/* ...stuff that's difficult to trust... */
-			"FILTER( !STRSTARTS(STR(?property), 'http://rdf.freebase.com/ns/user') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
 			/* ...and some more junk - this one is already a bit
 			 * trickier as it might contain relevant data, but
 			 * often hidden in relationship objects (like Nobel
 			 * prize awards), and also a lot of junk (like the
 			 * kwebbase experts - though some might be useful
 			 * in a specific context). */
-			"FILTER( !STRSTARTS(STR(?property), 'http://rdf.freebase.com/ns/base') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )\n" +
 			/* Eventually, a specific blacklist of bad things. */
 			/* "Sun" has some 550+ relations like this: */
-			"FILTER( !STRSTARTS(STR(?property), 'http://rdf.freebase.com/ns/astronomy.orbital_relationship.orbited_by') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/astronomy.orbital_relationship.orbited_by') )\n" +
 			"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop" }, PROP_LIMIT);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
 			/* ns:astronomy.star.temperature_k -> "temperature"
 			 * ns:astronomy.star.planet_s -> "planet"
 			 * ns:astronomy.star.spectral_type -> "spectral type"
-			 * ns:chemistry.chemical_element.periodic_table_block -> "periodic table block" */
+			 * ns:chemistry.chemical_element.periodic_table_block -> "periodic table block"
+			 *
+			 * But typically we fetch the property name from
+			 * the RDF store too, so this should be irrelevant
+			 * in that case.*/
 			String propLabel = rawResult[0].getString().
-				replaceAll("^.*\\.", "").
+				replaceAll("^.*\\.([^\\. ]*)$", "\\1").
 				replaceAll("_.$", "").
 				replaceAll("_", " ");
 			String value = rawResult[1].getString();
-			logger.debug("Freebase {}/{} property: {} -> {}", titleForm, mid, propLabel, value);
+			String prop = rawResult[2].getString();
+			logger.debug("Freebase {}/{} property: {}/{} -> {}", titleForm, mid, propLabel, prop, value);
 			results.add(new PropertyValue(titleForm, propLabel, value));
 		}
 
