@@ -29,6 +29,7 @@ import cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaOntology;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaProperties;
+import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 
 /* XXX: The clue-specific features, ugh. */
 import cz.brmlab.yodaqa.model.Question.*;
@@ -49,7 +50,7 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 	final DBpediaProperties dbp = new DBpediaProperties();
 
 	protected JCas questionView;
-	protected Iterator<DBpediaOntology.PropertyValue> relIter;
+	protected Iterator<PropertyValue> relIter;
 	protected int i;
 
 	@Override
@@ -62,7 +63,7 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		questionView = jcas;
 
-		List<DBpediaOntology.PropertyValue> properties = new ArrayList<DBpediaOntology.PropertyValue>();
+		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
 		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
 			/* Query the DBpedia ontology dataset - cleaned up
@@ -105,7 +106,7 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		DBpediaOntology.PropertyValue property = relIter.hasNext() ? relIter.next() : null;
+		PropertyValue property = relIter.hasNext() ? relIter.next() : null;
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -133,7 +134,7 @@ public class DBpediaRelationPrimarySearch extends JCasMultiplier_ImplBase {
 		copier.copyCasView(src.getCas(), dest.getCas(), true);
 	}
 
-	protected void propertyToAnswer(JCas jcas, DBpediaOntology.PropertyValue property,
+	protected void propertyToAnswer(JCas jcas, PropertyValue property,
 			boolean isLast, JCas questionView) throws Exception {
 		logger.info(" FOUND: {} {}", property.getProperty(), property.getValue());
 
