@@ -15,6 +15,7 @@ import cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT;
 import cz.brmlab.yodaqa.pipeline.StructuredPrimarySearch;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaOntology;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaProperties;
+import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 
 /* XXX: The clue-specific features, ugh. */
@@ -34,6 +35,7 @@ public class DBpediaRelationPrimarySearch extends StructuredPrimarySearch {
 
 	final DBpediaOntology dbo = new DBpediaOntology();
 	final DBpediaProperties dbp = new DBpediaProperties();
+	final FreebaseOntology fbo = new FreebaseOntology();
 
 	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
@@ -63,6 +65,8 @@ public class DBpediaRelationPrimarySearch extends StructuredPrimarySearch {
 			 * actually render the infobox template internally to
 			 * determine any grouping and representation of data! */
 			// properties.addAll(dbp.query(concept.getLabel(), logger));
+			/* Query the Freebase ontology dataset. */
+			properties.addAll(fbo.query(concept.getLabel(), logger));
 		return properties;
 	}
 
