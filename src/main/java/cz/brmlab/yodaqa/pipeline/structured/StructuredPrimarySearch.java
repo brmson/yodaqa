@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.pipeline.structured;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;

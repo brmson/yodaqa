@@ -1,9 +1,7 @@
-package cz.brmlab.yodaqa.pipeline.dbpedia;
+package cz.brmlab.yodaqa.pipeline.structured;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.resource.ResourceInitializationException;
-
-import cz.brmlab.yodaqa.pipeline.StructuredAnswerProducer;
 
 
 /**

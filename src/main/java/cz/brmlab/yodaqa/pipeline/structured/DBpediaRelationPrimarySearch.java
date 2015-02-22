@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline.dbpedia;
+package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,6 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpRelation;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRelation;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT;
-import cz.brmlab.yodaqa.pipeline.StructuredPrimarySearch;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaOntology;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaProperties;
 import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
