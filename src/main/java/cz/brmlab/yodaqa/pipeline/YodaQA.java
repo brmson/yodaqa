@@ -15,7 +15,9 @@ import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
-import cz.brmlab.yodaqa.pipeline.structured.DBpediaRelationAnswerProducer;
+import cz.brmlab.yodaqa.pipeline.structured.DBpediaOntologyAnswerProducer;
+import cz.brmlab.yodaqa.pipeline.structured.DBpediaPropertyAnswerProducer;
+import cz.brmlab.yodaqa.pipeline.structured.FreebaseOntologyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.AnswerHitlistSerialize;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
@@ -128,7 +130,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 4,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 5,
 					AnswerCASMerger.PARAM_PHASE, 0);
 			builder.add(answerCASMerger);
 
@@ -275,12 +277,21 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		 * here, you must also bump the AnswerCASMerger parameter
 		 * PARAM_ISLAST_BARRIER. */
 
-		AnalysisEngineDescription dbpRel = DBpediaRelationAnswerProducer.createEngineDescription();
-		builder.add(dbpRel);
+		/* Structured search: */
+		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
+		builder.add(dbpOnt);
+		/* We disable this dataset for now - see the class description
+		 * for detailed description. */
+		/*
+		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
+		builder.add(dbpProp);
+		*/
+		AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
+		builder.add(fbOnt);
 
+		/* Full-text search: */
 		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
-		builder.add(solrFull);
-
+		builder.add(solrFull); /* This one is worth 2 isLasts. */
 		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
 		builder.add(solrDoc);
 

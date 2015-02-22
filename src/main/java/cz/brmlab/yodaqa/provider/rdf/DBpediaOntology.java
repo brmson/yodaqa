@@ -13,8 +13,7 @@ import org.slf4j.Logger;
  * infobox extracted entity properties. This can then serve as an
  * information source.
  *
- * This is cleaner dataset than DBpediaProperties; see
- * DBpediaRelationPrimarySearch for detailed discussion. */
+ * This is cleaner dataset than DBpediaProperties. */
 
 public class DBpediaOntology extends DBpediaLookup {
 	private static final Log logger =

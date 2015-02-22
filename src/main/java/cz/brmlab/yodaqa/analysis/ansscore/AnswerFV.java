@@ -38,12 +38,25 @@ public class AnswerFV {
 			"originPsgByClueConcept",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 			"originPsgSurprise",
-		"originDocTitle", "originDBpRelation", "originDBpRNoClue",
-		"originDBpRClueToken", "originDBpRCluePhrase", "originDBpRClueSV",
-			"originDBpRClueNE", "originDBpRClueLAT",
-			"originDBpRClueSubject", "originDBpRClueSubjectNE",
-			"originDBpRClueSubjectToken", "originDBpRClueSubjectPhrase",
-			"originDBpRClueConcept",
+		"originDocTitle",
+		"originDBpOntology", "originDBpONoClue",
+		"originDBpOClueToken", "originDBpOCluePhrase", "originDBpOClueSV",
+			"originDBpOClueNE", "originDBpOClueLAT",
+			"originDBpOClueSubject", "originDBpOClueSubjectNE",
+			"originDBpOClueSubjectToken", "originDBpOClueSubjectPhrase",
+			"originDBpOClueConcept",
+		"originDBpProperty", "originDBpPNoClue",
+		"originDBpPClueToken", "originDBpPCluePhrase", "originDBpPClueSV",
+			"originDBpPClueNE", "originDBpPClueLAT",
+			"originDBpPClueSubject", "originDBpPClueSubjectNE",
+			"originDBpPClueSubjectToken", "originDBpPClueSubjectPhrase",
+			"originDBpPClueConcept",
+		"originFreebaseOntology", "originFBONoClue",
+		"originFBOClueToken", "originFBOCluePhrase", "originFBOClueSV",
+			"originFBOClueNE", "originFBOClueLAT",
+			"originFBOClueSubject", "originFBOClueSubjectNE",
+			"originFBOClueSubjectToken", "originFBOClueSubjectPhrase",
+			"originFBOClueConcept",
 		"originConcept", "originConceptBySubject", "originConceptByLAT", "originConceptByNE",
 		"originMultiple",
 		"AF_PsgDistClueToken", "AF_PsgDistCluePhrase", "AF_PsgDistClueSV",
@@ -56,10 +69,10 @@ public class AnswerFV {
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
 		"LATNE", "LATDBpType", "LATDBpWNType", "LATQuantity", "LATQuantityCD",
-			"LATWnInstance", "LATDBpRelation",
+			"LATWnInstance", "LATDBpOntology", "LATDBpProperty", "LATFBOntology",
 		"tyCorSpQHit", "tyCorSpAHit", "tyCorSpNoHit", "tyCorSpQAHit",
 		"tyCorANE", "tyCorADBp", "tyCorADBpWN", "tyCorAQuantity", "tyCorAQuantityCD",
-			"tyCorAWnInstance", "tyCorADBpRelation",
+			"tyCorAWnInstance", "tyCorADBpOntology", "tyCorADBpProperty", "tyCorAFBOntology",
 		"clOCMatchScore", "clOCPrefixedScore", "clOCPrefixingScore", "clOCSuffixedScore",
 			"clOCSuffixingScore", "clOCSubstredScore", "clOCSubstringScore",
 			"clOCMetaMatchScore",
@@ -102,18 +115,42 @@ public class AnswerFV {
 			features.add(AF_OriginPsgNPByLATSubj.class);
 			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
-			features.add(AF_OriginDBpRelation.class);
-			features.add(AF_OriginDBpRNoClue.class);
-			features.add(AF_OriginDBpRClueToken.class);
-			features.add(AF_OriginDBpRCluePhrase.class);
-			features.add(AF_OriginDBpRClueSV.class);
-			features.add(AF_OriginDBpRClueNE.class);
-			features.add(AF_OriginDBpRClueLAT.class);
-			features.add(AF_OriginDBpRClueSubject.class);
-			features.add(AF_OriginDBpRClueSubjectNE.class);
-			features.add(AF_OriginDBpRClueSubjectToken.class);
-			features.add(AF_OriginDBpRClueSubjectPhrase.class);
-			features.add(AF_OriginDBpRClueConcept.class);
+			features.add(AF_OriginDBpOntology.class);
+			features.add(AF_OriginDBpONoClue.class);
+			features.add(AF_OriginDBpOClueToken.class);
+			features.add(AF_OriginDBpOCluePhrase.class);
+			features.add(AF_OriginDBpOClueSV.class);
+			features.add(AF_OriginDBpOClueNE.class);
+			features.add(AF_OriginDBpOClueLAT.class);
+			features.add(AF_OriginDBpOClueSubject.class);
+			features.add(AF_OriginDBpOClueSubjectNE.class);
+			features.add(AF_OriginDBpOClueSubjectToken.class);
+			features.add(AF_OriginDBpOClueSubjectPhrase.class);
+			features.add(AF_OriginDBpOClueConcept.class);
+			features.add(AF_OriginDBpProperty.class);
+			features.add(AF_OriginDBpPNoClue.class);
+			features.add(AF_OriginDBpPClueToken.class);
+			features.add(AF_OriginDBpPCluePhrase.class);
+			features.add(AF_OriginDBpPClueSV.class);
+			features.add(AF_OriginDBpPClueNE.class);
+			features.add(AF_OriginDBpPClueLAT.class);
+			features.add(AF_OriginDBpPClueSubject.class);
+			features.add(AF_OriginDBpPClueSubjectNE.class);
+			features.add(AF_OriginDBpPClueSubjectToken.class);
+			features.add(AF_OriginDBpPClueSubjectPhrase.class);
+			features.add(AF_OriginDBpPClueConcept.class);
+			features.add(AF_OriginFreebaseOntology.class);
+			features.add(AF_OriginFBONoClue.class);
+			features.add(AF_OriginFBOClueToken.class);
+			features.add(AF_OriginFBOCluePhrase.class);
+			features.add(AF_OriginFBOClueSV.class);
+			features.add(AF_OriginFBOClueNE.class);
+			features.add(AF_OriginFBOClueLAT.class);
+			features.add(AF_OriginFBOClueSubject.class);
+			features.add(AF_OriginFBOClueSubjectNE.class);
+			features.add(AF_OriginFBOClueSubjectToken.class);
+			features.add(AF_OriginFBOClueSubjectPhrase.class);
+			features.add(AF_OriginFBOClueConcept.class);
 			features.add(AF_OriginConcept.class);
 			features.add(AF_OriginConceptBySubject.class);
 			features.add(AF_OriginConceptByLAT.class);
@@ -144,7 +181,9 @@ public class AnswerFV {
 			features.add(AF_LATQuantity.class);
 			features.add(AF_LATQuantityCD.class);
 			features.add(AF_LATWnInstance.class);
-			features.add(AF_LATDBpRelation.class);
+			features.add(AF_LATDBpOntology.class);
+			features.add(AF_LATDBpProperty.class);
+			features.add(AF_LATFBOntology.class);
 			features.add(AF_TyCorSpQHit.class);
 			features.add(AF_TyCorSpAHit.class);
 			features.add(AF_TyCorSpNoHit.class);
@@ -155,7 +194,9 @@ public class AnswerFV {
 			features.add(AF_TyCorAQuantity.class);
 			features.add(AF_TyCorAQuantityCD.class);
 			features.add(AF_TyCorAWnInstance.class);
-			features.add(AF_TyCorADBpRelation.class);
+			features.add(AF_TyCorADBpOntology.class);
+			features.add(AF_TyCorADBpProperty.class);
+			features.add(AF_TyCorAFBOntology.class);
 			features.add(AF_ClOCMatchScore.class);
 			features.add(AF_ClOCPrefixedScore.class);
 			features.add(AF_ClOCPrefixingScore.class);

@@ -118,32 +118,82 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
 
-      <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRelation</name>
-        <description>Answer Feature: 1 if the origin of this answer is a DBpedia property.</description>
-        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
-      </typeDescription>
-      <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRNoClue</name>
-        <description>Answer Feature: Negative evidence set to -1 if the origin of this answer is a DBpedia property that does not match any question clue in its label.</description>
-        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
-      </typeDescription>
       <!-- XXX: This looks kind of really awful, ugh. But how to do this sensibly? -->
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</name>
-        <description>Answer Feature: 1 if the origin of this answer is a DBpedia property with a clue matching a word in the property name.</description>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology</name>
+        <description>Answer Feature: 1 if the origin of this answer is the DBpedia curated ontology.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRCluePhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueSV</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueLAT</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueSubject</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueSubjectNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueSubjectToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueSubjectPhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
-      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpRClueConcept</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpRClue</supertypeName></typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpONoClue</name>
+        <description>Answer Feature: Negative evidence set to -1 if the origin of this answer is a DBpedia curated ontology property that does not match any question clue in its label.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</name>
+        <description>Answer Feature: 1 if the origin of this answer is a DBpedia curated ontology property with a clue matching a word in the property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOCluePhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueSV</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueLAT</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueSubject</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueSubjectNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueSubjectToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueSubjectPhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOClueConcept</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpOClue</supertypeName></typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty</name>
+        <description>Answer Feature: 1 if the origin of this answer is the DBpedia raw infobox property.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPNoClue</name>
+        <description>Answer Feature: Negative evidence set to -1 if the origin of this answer is a DBpedia raw infobox property that does not match any question clue in its label.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</name>
+        <description>Answer Feature: 1 if the origin of this answer is a DBpedia raw infobox property with a clue matching a word in the property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPCluePhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueSV</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueLAT</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueSubject</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueSubjectNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueSubjectToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueSubjectPhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpPClueConcept</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginDBpPClue</supertypeName></typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology</name>
+        <description>Answer Feature: 1 if the origin of this answer is the Freebase curated ontology.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBONoClue</name>
+        <description>Answer Feature: Negative evidence set to -1 if the origin of this answer is a DBpedia curated ontology property that does not match any question clue in its label.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</name>
+        <description>Answer Feature: 1 if the origin of this answer is a DBpedia curated ontology property with a clue matching a word in the property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOCluePhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueSV</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueLAT</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueSubject</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueSubjectNE</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueSubjectToken</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueSubjectPhrase</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
+      <typeDescription><name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBOClueConcept</name><supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature_OriginFBOClue</supertypeName></typeDescription>
 
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept</name>
@@ -265,8 +315,18 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpRelation</name>
-        <description>Answer Feature: Matched answer LAT has been generated by a DBpedia property.</description>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpOntology</name>
+        <description>Answer Feature: Matched answer LAT has been generated by a DBpedia curated ontology property.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpProperty</name>
+        <description>Answer Feature: Matched answer LAT has been generated by a DBpedia raw infobox property.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAFBOntology</name>
+        <description>Answer Feature: Matched answer LAT has been generated by a Freebase curated ontology property.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
@@ -320,8 +380,18 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpRelation</name>
-        <description>Answer Feature: Boolean value whether we generated a LAT that is a DBpedia property name.</description>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpOntology</name>
+        <description>Answer Feature: Boolean value whether we generated a LAT that is a DBpedia curated ontology property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpProperty</name>
+        <description>Answer Feature: Boolean value whether we generated a LAT that is a DBpedia raw infobox property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFBOntology</name>
+        <description>Answer Feature: Boolean value whether we generated a LAT that is a Freebase curated ontology property name.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>

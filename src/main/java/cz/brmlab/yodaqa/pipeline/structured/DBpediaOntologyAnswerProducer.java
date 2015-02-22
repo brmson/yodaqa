@@ -7,7 +7,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 /**
  * From the QuestionCAS, generate a bunch of CandidateAnswerCAS instances.
  *
- * In this case, this is just a thin wrapper of DBpediaRelationPrimarySearch,
+ * In this case, this is just a thin wrapper of DBpediaOntologyPrimarySearch,
  * producing infobox-extracted dbpedia:ontology relationships of ClueSubject
  * entities as answers.
  *
@@ -25,9 +25,9 @@ import org.apache.uima.resource.ResourceInitializationException;
  * shall produce answer "8.46 squared kilmetre" with LAT "area".
  */
 
-public class DBpediaRelationAnswerProducer extends StructuredAnswerProducer {
+public class DBpediaOntologyAnswerProducer extends StructuredAnswerProducer {
 	public static AnalysisEngineDescription createEngineDescription()
 			throws ResourceInitializationException {
-		return createEngineDescription(DBpediaRelationPrimarySearch.class);
+		return createEngineDescription(DBpediaOntologyPrimarySearch.class);
 	}
 }

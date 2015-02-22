@@ -93,8 +93,18 @@
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
       <typeDescription>
-        <name>cz.brmlab.yodaqa.model.TyCor.DBpRelationLAT</name>
-        <description>LAT generated from DBpedia relation property name.</description>
+        <name>cz.brmlab.yodaqa.model.TyCor.DBpOntologyLAT</name>
+        <description>LAT generated from DBpedia curated ontology property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.DBpPropertyLAT</name>
+        <description>LAT generated from DBpedia raw infobox property name.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT</name>
+        <description>LAT generated from Freebase curated ontology property name.</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
       </typeDescription>
 
