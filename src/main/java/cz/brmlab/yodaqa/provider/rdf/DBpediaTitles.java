@@ -83,7 +83,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "pageID", "label" });
+			new String[] { "pageID", "label" }, 0);
 
 		List<Article> results = new ArrayList<Article>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {

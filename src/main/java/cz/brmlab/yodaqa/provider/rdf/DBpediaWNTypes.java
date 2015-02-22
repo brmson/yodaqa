@@ -78,7 +78,7 @@ public class DBpediaWNTypes extends DBpediaLookup {
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "type" });
+			new String[] { "type" }, 0);
 
 		List<String> results = new LinkedList<String>();
 		for (Literal[] rawResult : rawResults) {

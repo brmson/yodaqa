@@ -49,13 +49,15 @@ public abstract class CachedJenaLookup {
 	}
 
 	/** Issue a select statement, returning list of resource
-	 * values.
+	 * values.  limit is the limit on number of results; pass 0
+	 * to specify no limit.
 	 *
-	 * Example: rawQuery("?lab rdfs:label \"Achilles\"@en", "lab"); */
-	public List<Literal[]> rawQuery(String selectWhere, String resources[]) {
+	 * Example: rawQuery("?lab rdfs:label \"Achilles\"@en", "lab", 0); */
+	public List<Literal[]> rawQuery(String selectWhere, String resources[], int limit) {
 		String queryExpr = prefixes + "SELECT ?"
 			+ StringUtils.join(resources, " ?")
-			+ " WHERE { " + selectWhere + " }";
+			+ " WHERE { " + selectWhere + " }"
+			+ (limit > 0 ? "LIMIT " + Integer.toString(limit) : "");
 		QueryExecution qe = QueryExecutionFactory.sparqlService(service, queryExpr);
 		// logger.debug(queryExpr);
 

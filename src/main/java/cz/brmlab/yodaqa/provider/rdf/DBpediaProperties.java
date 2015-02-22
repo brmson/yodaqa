@@ -60,7 +60,7 @@ public class DBpediaProperties extends DBpediaOntology {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "propName", "value" });
+			new String[] { "propName", "value" }, 0);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {

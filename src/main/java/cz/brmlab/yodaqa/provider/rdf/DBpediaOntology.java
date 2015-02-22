@@ -68,7 +68,7 @@ public class DBpediaOntology extends DBpediaLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value" });
+			new String[] { "property", "value" }, 0);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {

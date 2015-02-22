@@ -69,7 +69,7 @@ public class DBpediaTypes extends DBpediaLookup {
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "type", "superType" });
+			new String[] { "type", "superType" }, 0);
 
 		/* Blacklist of abstractions (types that are supertypes
 		 * of other types) */
