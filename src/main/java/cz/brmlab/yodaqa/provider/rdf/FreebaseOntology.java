@@ -58,7 +58,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"?topic ns:type.object.key ?key .\n" +
 			"FILTER( REGEX(STR(?key), '^/wikipedia/en/') )" +
 			"";
-		logger.debug("executing sparql query: {}", rawQueryStr);
+		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "topic", "key" }, TOPIC_LIMIT);
 
@@ -129,7 +129,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* "Sun" has some 550+ relations like this: */
 			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/astronomy.orbital_relationship.orbited_by') )\n" +
 			"";
-		logger.debug("executing sparql query: {}", rawQueryStr);
+		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "property", "value", "prop" }, PROP_LIMIT);
 
