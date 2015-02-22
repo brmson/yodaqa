@@ -19,15 +19,17 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
-/* XXX: The clue-specific features, ugh. */
-import cz.brmlab.yodaqa.model.Question.*;
-import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
