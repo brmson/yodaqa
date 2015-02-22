@@ -125,7 +125,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	 * especially AFs. */
 	protected void propertyToAnswer(JCas jcas, PropertyValue property,
 			boolean isLast, JCas questionView) throws Exception {
-		logger.info(" FOUND: {} {}", property.getProperty(), property.getValue());
+		logger.info(" FOUND: {} -- {}", property.getProperty(), property.getValue());
 
 		jcas.setDocumentText(property.getValue());
 		jcas.setDocumentLanguage("en"); // XXX
@@ -226,6 +226,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		pos.addToIndexes();
 
 		addLAT(lat, 0, len, null, ntype, pos, 0, 0.0);
+
+		logger.debug(".. Ans <<{}>> => Property LAT/0 {}", jcas.getDocumentText(), ntype);
 	}
 
 	protected void addLAT(LAT lat, int begin, int end, Annotation base, String text, POS pos, long synset, double spec) {
