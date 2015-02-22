@@ -117,6 +117,10 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		copier.copyCasView(src.getCas(), dest.getCas(), true);
 	}
 
+	/** This is the workhorse that converts a given PropertyValue
+	 * property to a candidate answer, to live in the given jcas.
+	 * So we set the jcas text and generate a bunch of featuresets,
+	 * especially AFs. */
 	protected void propertyToAnswer(JCas jcas, PropertyValue property,
 			boolean isLast, JCas questionView) throws Exception {
 		logger.info(" FOUND: {} {}", property.getProperty(), property.getValue());
@@ -142,41 +146,14 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(originFeature, 1.0);
 
 		/* Mark by concept-clue-origin AFs. */
-		// XXX: Carry the clue reference in property object.
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			if (!concept.getLabel().toLowerCase().equals(property.getObject().toLowerCase()))
-				continue;
-			// We don't set this since all our clues have concept origin
-			//afv.setFeature(AF_OriginConcept.class, 1.0);
-			if (concept.getBySubject())
-				fv.setFeature(AF_OriginConceptBySubject.class, 1.0);
-			if (concept.getByLAT())
-				fv.setFeature(AF_OriginConceptByLAT.class, 1.0);
-			if (concept.getByNE())
-				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
-		}
+		addConceptFeatures(questionView, fv, property.getObject());
 
 		/* Match clues in relation name (esp. LAT or Focus clue
 		 * will be nice). */
-		boolean clueMatched = false;
-		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
-			if (!property.getProperty().matches(PassByClue.getClueRegex(clue)))
-				continue;
-			clueMatched = true;
-			clueAnswerFeatures(fv, clue);
-		}
-		if (!clueMatched)
-			fv.setFeature(noClueFeature, -1.0);
+		matchCluesInName(questionView, property.getProperty(), fv);
 
-		/* Generate also a LAT for the answer right away. */
-		addTypeLAT(jcas, fv, property.getProperty());
-		if (property.getProperty().contains(" ")) {
-			/* If the property name is multi-word, well,
-			 * we may not handle multi-word LATs very well
-			 * so also generate a single-word LAT with the
-			 * first word ("KNOWN for", "AREA total", ...). */
-			addTypeLAT(jcas, fv, property.getProperty().replaceFirst(" .*$", ""));
-		}
+		/* Generate also an LAT for the answer right away. */
+		addTypeLATByName(jcas, property.getProperty(), fv);
 
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
@@ -220,6 +197,34 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		return bestQlat;
 	}
 
+	protected void addConceptFeatures(JCas questionView, AnswerFV fv, String text) {
+		// XXX: Carry the clue reference in property object.
+		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
+			if (!concept.getLabel().toLowerCase().equals(text.toLowerCase()))
+				continue;
+			// We don't set this since all our clues have concept origin
+			//afv.setFeature(AF_OriginConcept.class, 1.0);
+			if (concept.getBySubject())
+				fv.setFeature(AF_OriginConceptBySubject.class, 1.0);
+			if (concept.getByLAT())
+				fv.setFeature(AF_OriginConceptByLAT.class, 1.0);
+			if (concept.getByNE())
+				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
+		}
+	}
+
+
+	protected void addTypeLATByName(JCas jcas, String name, AnswerFV fv) throws AnalysisEngineProcessException {
+		addTypeLAT(jcas, fv, name);
+		if (name.contains(" ")) {
+			/* If the property name is multi-word, well,
+			 * we may not handle multi-word LATs very well
+			 * so also generate a single-word LAT with the
+			 * first word ("KNOWN for", "AREA total", ...). */
+			addTypeLAT(jcas, fv, name.replaceFirst(" .*$", ""));
+		}
+	}
+
 	/** Add an LAT of given type string. This should be an addTypeLAT()
 	 * wrapper that also generates an LAT feature and LAT instance
 	 * of the appropriate class. */
@@ -249,6 +254,19 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		lat.setSpecificity(spec);
 		lat.setSynset(synset);
 		lat.addToIndexes();
+	}
+
+
+	protected void matchCluesInName(JCas questionView, String name, AnswerFV fv) {
+		boolean clueMatched = false;
+		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
+			if (!name.matches(PassByClue.getClueRegex(clue)))
+				continue;
+			clueMatched = true;
+			clueAnswerFeatures(fv, clue);
+		}
+		if (!clueMatched)
+			fv.setFeature(noClueFeature, -1.0);
 	}
 
 	/** Generate primary search kind specific features indicating
