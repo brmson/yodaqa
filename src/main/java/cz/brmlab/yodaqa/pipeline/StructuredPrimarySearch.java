@@ -180,25 +180,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.addToIndexes();
 	}
 
-	protected LAT titleContainsLAT(String title, JCas questionView) {
-		LAT bestQlat = null;
-		for (LAT qlat : JCasUtil.select(questionView, LAT.class)) {
-			String text = qlat.getText().toLowerCase();
-			String textalt = qlat.getCoveredText().toLowerCase();
-
-			if (!title.toLowerCase().contains(text) && !title.toLowerCase().contains(textalt))
-				continue;
-
-			/* We have a match! But keep just the
-			 * most specific LAT match within the
-			 * passage. */
-			if (bestQlat != null && bestQlat.getSpecificity() > qlat.getSpecificity())
-				continue;
-			bestQlat = qlat;
-		}
-		return bestQlat;
-	}
-
 	protected void addConceptFeatures(JCas questionView, AnswerFV fv, String text) {
 		// XXX: Carry the clue reference in property object.
 		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
