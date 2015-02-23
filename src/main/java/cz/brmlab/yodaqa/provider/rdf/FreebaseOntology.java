@@ -125,6 +125,12 @@ public class FreebaseOntology extends FreebaseLookup {
 			 * kwebbase experts - though some might be useful
 			 * in a specific context). */
 			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )\n" +
+			/* topic_server has geolocation (not useful right now)
+			 * and population_number (which would be useful, but
+			 * needs special handling has a topic may have many
+			 * of these, e.g. White House). Also it has crappy
+			 * type labels. */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
 			/* Eventually, a specific blacklist of bad things. */
 			/* "Sun" has some 550+ relations like this: */
 			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/astronomy.orbital_relationship.orbited_by') )\n" +
