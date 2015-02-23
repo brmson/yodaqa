@@ -54,6 +54,21 @@ public class FreebaseOntology extends FreebaseLookup {
 		/* 58x People born here */ "location.location.people_born_here",
 		/* This one was already included before 8c3f62a: */
 		"astronomy.orbital_relationship.orbited_by",
+		/* Second pass with f620f16: */
+		/* 2x Competitions */ "olympics.olympic_games.competitions",
+		/* 2x People Who Died This Way */ "people.cause_of_death.people",
+		/* 2x Postal codes */ "location.citytown.postal_codes",
+		/* 2x Time zone(s) */ "location.location.time_zones",
+		/* 2x Titles */ "media_common.netflix_genre.titles",
+		/* 2x TV programs of this genre */ "tv.tv_genre.programs",
+		/* 3x Albums */ "music.genre.albums",
+		/* 3x Characters With This Occupation */ "fictional_universe.character_occupation.characters_with_this_occupation",
+		/* 3x Organizations with this scope */ "organization.organization_scope.organizations_with_this_scope",
+		/* 3x Works Composed */ "music.composer.compositions",
+		/* 4x Films On This Subject */ "film.film_subject.films",
+		/* 4x Tourist attractions */ "travel.travel_destination.tourist_attractions",
+		/* 7x Albums */ "music.artist.album",
+		/* 24x Events */ "location.location.events",
 	};
 
 	/** Query for a given title, returning a set of PropertyValue instances. */
