@@ -280,12 +280,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		/* Structured search: */
 		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
 		builder.add(dbpOnt);
-		/* We disable this dataset for now - see the class description
-		 * for detailed description. */
-		/*
 		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
 		builder.add(dbpProp);
-		*/
 		AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
 		builder.add(fbOnt);
 
