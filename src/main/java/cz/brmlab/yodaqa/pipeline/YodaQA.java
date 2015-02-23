@@ -130,7 +130,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 5,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 6,
 					AnswerCASMerger.PARAM_PHASE, 0);
 			builder.add(answerCASMerger);
 
