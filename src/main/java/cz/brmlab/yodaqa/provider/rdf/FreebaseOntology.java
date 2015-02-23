@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -23,6 +24,37 @@ public class FreebaseOntology extends FreebaseLookup {
 	public static final int TOPIC_LIMIT = 5;
 	/** Maximum number of properties per topic to return. */
 	public static final int PROP_LIMIT = 40;
+
+	/** Specific blacklist of Freebase relations. These properties may
+	 * sometimes carry useful information but they flush out all other
+	 * results, so we better avoid them completely.
+	 *
+	 * Our rule is to take a run on the test set and blacklist all
+	 * properties that ever appeared 20 times (50% of PROP_LIMIT)
+	 * in at least two topics, so it can be a pipeline like this:
+	 *   grep FreebaseOntology.*property: logs/curated-train-8c3f62a.log | sed 's#[^/]*./##; s# ->.*##' | uniq -c | sort -n | uniq | awk '$1>=20{print$0}' | sed 's/.*://' | sort | uniq -c | sort -n | awk '$1>1{print$0}' | sed -re 's#^ *([0-9]+) *([^/]*)/(.*)#\t\t/\* \1x \2 *\/ "\3",#'
+	 */
+	String propBlacklist[] = {
+		/* 2x Categories */ "award.award.category",
+		/* 2x Contains */ "location.location.contains",
+		/* 2x Editions */ "book.book.editions",
+		/* 2x Events */ "olympics.olympic_games.events",
+		/* 2x Isotopes */ "chemistry.chemical_element.isotopes",
+		/* 2x Military personnel involved */ "military.military_conflict.military_personnel_involved",
+		/* 2x Offices */ "government.government_office_category.offices",
+		/* 2x Works written */ "book.author.works_written",
+		/* 3x Episodes */ "tv.tv_program.episodes",
+		/* 4x Artists */ "music.genre.artists",
+		/* 4x Organizations in this sector */ "organization.organization_sector.organizations_in_this_sector",
+		/* 4x People With This Profession */ "people.profession.people_with_this_profession",
+		/* 5x Profession */ "people.person.profession",
+		/* 6x Recorded versions */ "music.composition.recordings",
+		/* 14x Works Written About This Topic */ "book.book_subject.works",
+		/* 39x Recordings */ "music.artist.track",
+		/* 58x People born here */ "location.location.people_born_here",
+		/* This one was already included before 8c3f62a: */
+		"astronomy.orbital_relationship.orbited_by",
+	};
 
 	/** Query for a given title, returning a set of PropertyValue instances. */
 	public List<PropertyValue> query(String title, Logger logger) {
@@ -131,9 +163,12 @@ public class FreebaseOntology extends FreebaseLookup {
 			 * of these, e.g. White House). Also it has crappy
 			 * type labels. */
 			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
-			/* Eventually, a specific blacklist of bad things. */
-			/* "Sun" has some 550+ relations like this: */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/astronomy.orbital_relationship.orbited_by') )\n" +
+			/* Eventually, a specific blacklist of *mostly*
+			 * useless data that flood out the useful results. */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/" +
+			StringUtils.join(propBlacklist,
+				"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/") +
+				"') )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
