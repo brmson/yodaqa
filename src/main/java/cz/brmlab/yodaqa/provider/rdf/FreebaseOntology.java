@@ -86,6 +86,24 @@ public class FreebaseOntology extends FreebaseLookup {
 		/* 3x Military units */ "military.military_unit_place_of_origin.military_units",
 		/*  And manually: */
 		"sports.sports_team_location.teams",
+		/*  Next pass, temporarily with PROP_LIMIT==80: */
+                /* 2x Awards in this discipline */ "award.award_discipline.awards_in_this_discipline",
+                /* 2x Beers from here */ "food.beer_country_region.beers_from_here",
+                /* 2x Books In This Genre */ "media_common.literary_genre.books_in_this_genre",
+                /* 2x Breeds orginating here */ "biology.breed_origin.breeds_originating_here",
+                /* 2x Characters of This Species */ "fictional_universe.character_species.characters_of_this_species",
+                /* 2x First level divisions */ "location.country.first_level_divisions",
+                /* 2x Recordings produced */ "music.producer.tracks_produced",
+                /* 2x Second level divisions */ "location.country.second_level_divisions",
+                /* 2x Wines */ "wine.wine_region.wines",
+                /* 3x Influenced */ "influence.influence_node.influenced",
+                /* 3x Locations */ "astronomy.celestial_object.locations",
+                /* 3x Lyrics Written */ "music.lyricist.lyrics_written",
+                /* 4x Languages spoken */ "location.country.languages_spoken",
+                /* 5x Administrative Divisions */ "location.country.administrative_divisions",
+                /* 5x Content */ "broadcast.artist.content",
+                /* 7x Agencies */ "government.governmental_jurisdiction.agencies",
+                /* 17x Quotations */ "people.person.quotations",
 	};
 
 	/** Query for a given title, returning a set of PropertyValue instances. */
