@@ -52,9 +52,9 @@ public class FreebaseOntology extends FreebaseLookup {
 		/* 14x Works Written About This Topic */ "book.book_subject.works",
 		/* 39x Recordings */ "music.artist.track",
 		/* 58x People born here */ "location.location.people_born_here",
-		/* This one was already included before 8c3f62a: */
+		/*  This one was already included before 8c3f62a: */
 		"astronomy.orbital_relationship.orbited_by",
-		/* Second pass with f620f16: */
+		/*  Second pass with f620f16: */
 		/* 2x Competitions */ "olympics.olympic_games.competitions",
 		/* 2x People Who Died This Way */ "people.cause_of_death.people",
 		/* 2x Postal codes */ "location.citytown.postal_codes",
@@ -69,6 +69,15 @@ public class FreebaseOntology extends FreebaseLookup {
 		/* 4x Tourist attractions */ "travel.travel_destination.tourist_attractions",
 		/* 7x Albums */ "music.artist.album",
 		/* 24x Events */ "location.location.events",
+		/*  Third pass with a751bd3: */
+		/* 2x Compositions */ "music.compositional_form.compositions",
+		/* 2x Computer games */ "cvg.cvg_genre.games",
+		/* 2x Featured In Films */ "film.film_location.featured_in_films",
+		/* 4x Includes event */ "time.event.includes_event",
+		/* 5x Newspapers */ "periodicals.newspaper_circulation_area.newspapers",
+		/* 6x Partially contains */ "location.location.partially_contains",
+		/*  And manually: */
+		"symbols.name_source.namesakes",
 	};
 
 	/** Query for a given title, returning a set of PropertyValue instances. */
