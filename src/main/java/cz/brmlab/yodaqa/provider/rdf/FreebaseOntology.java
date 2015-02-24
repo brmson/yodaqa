@@ -78,6 +78,14 @@ public class FreebaseOntology extends FreebaseLookup {
 		/* 6x Partially contains */ "location.location.partially_contains",
 		/*  And manually: */
 		"symbols.name_source.namesakes",
+		/*  Next pass with 1d51097: */
+		/* 2x Affected by cyclones */ "meteorology.cyclone_affected_area.cyclones",
+		/* 2x Fictional Characters Born Here */ "fictional_universe.fictional_setting.fictional_characters_born_here",
+		/* 2x Films of this genre */ "film.film_genre.films_in_this_genre",
+		/* 2x Organizations in this industry */ "business.industry.companies",
+		/* 3x Military units */ "military.military_unit_place_of_origin.military_units",
+		/*  And manually: */
+		"sports.sports_team_location.teams",
 	};
 
 	/** Query for a given title, returning a set of PropertyValue instances. */
