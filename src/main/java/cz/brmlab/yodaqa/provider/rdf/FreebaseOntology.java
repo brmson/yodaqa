@@ -104,6 +104,13 @@ public class FreebaseOntology extends FreebaseLookup {
                 /* 5x Content */ "broadcast.artist.content",
                 /* 7x Agencies */ "government.governmental_jurisdiction.agencies",
                 /* 17x Quotations */ "people.person.quotations",
+		/*  Next pass, temporarily with PROP_LIMIT==120: */
+                /* 2x Artwork on the Subject */ "visual_art.art_subject.artwork_on_the_subject",
+                /* 2x Content */ "broadcast.genre.content",
+                /* 2x Lower classifications */ "biology.organism_classification.lower_classifications",
+                /* 2x Subgenres */ "music.genre.subgenre",
+                /* 2x Websites of this genre */ "internet.website_category.sites",
+                /* 4x Book editions published */ "book.author.book_editions_published",
 	};
 
 	/** Query for a given title, returning a set of PropertyValue instances. */
