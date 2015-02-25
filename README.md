@@ -112,6 +112,19 @@ it too heavily anyway.  Simply edit the ``service`` attribute value in file
 Detailed instrutions for setup of local DBpedia SPARQL endpoint can be found
 in ``data/dbpedia/README.md``.
 
+### Freebase Data Source
+
+We can also leverage another structured data source, the Freebase.
+We use its RDF export with SPARQL endpoint, running on infrastructure
+provided by the author's academic group (Jan Šedivý's 3C Group at the
+Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
+for some reason, you can also simply disable Freebase usage by commenting
+out the FreebaseOntologyAnswerProducer initialization in the code of
+``src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java``.
+
+You can start your own instance by following the instructions in
+``data/freebase/README.md`` but it is quite arduous and resource intensive.
+
 ## Development Notes
 
 See the [High Level Design Notes](doc/HIGHLEVEL.md) document for
