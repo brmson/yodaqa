@@ -35,22 +35,38 @@ import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 /**
- * From plural word LATs, generate also their single word variants.
+ * Normalize various low quality LAT forms.  This annotator goes through
+ * all the LATs, runs them through a micro NLP analysis UIMA pipeline,
+ * possibly modifies them and generates some derived LATs (TODO: removes
+ * duplicate LATs).
+ *
+ * In practice, we:
+ *
+ * (i) Segment, pos tag and lemmatize each LAT.
+ *
+ * (ii) In case of multi-word LATs, we find the most important "head
+ * noun", using some silly heuristics.
+ *
+ * (iii) From plural word LATs, replace them with singular variants.
  * Type coercion needs an exact match, so "cities" is much less useful
  * than "city".
  *
- * Basically, what we do here is create a micro custom UIMA pipeline
- * to analyze LATs and generate their lemmas as LATs too.  We also
- * attempt to deal with multi-word LATs by a simple heuristic to lemmatize
- * the head noun.
+ * (iv) Spin off head nouns of multi-word LATs to separate LATs.
+ * Type coercion needs an exact match, but LAT "max. temperature"
+ * or "area total" will not match.  So we want to also produce
+ * "temperature" or "area" from these.  ("length meters" -> "length"
+ * is trickier with our current implementation of (ii) though.)
  *
- * We ignore all LATs that are already covered by Wordnet.
- *
- * XXX: Should we reduce specificity? Introducing another hiearchy
+ * We ignore all LATs that are already covered by Wordnet and keep
+ * a cache of the LAT transformations as the analysis is quite
+ * expensive. */
+/* XXX: Should we reduce specificity? Introducing another hiearchy
  * besides Wordnet hypernymy will need some work. */
+/* XXX: This should ideally be a more modular pipeline with isolated
+ * annotators. */
 
-public class LATByPlural extends JCasAnnotator_ImplBase {
-	final Logger logger = LoggerFactory.getLogger(LATByPlural.class);
+public class LATNormalize extends JCasAnnotator_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(LATNormalize.class);
 
 	Dictionary dictionary = null;
 
@@ -61,7 +77,10 @@ public class LATByPlural extends JCasAnnotator_ImplBase {
 
 	/* A global cache that stores the LAT transformations, as it
 	 * turns out that even lemmatization is quite slow. */
-	static Map<String, String> latCache;
+	public class LATCacheEntry {
+		String singularForm, singleWord;
+	};
+	static Map<String, LATCacheEntry> latCache;
 	{
 		latCache = new HashMap<>();
 	}
@@ -102,26 +121,30 @@ public class LATByPlural extends JCasAnnotator_ImplBase {
 
 		/* Process the LATs. */
 		for (LAT lat : lats) {
-			String sing = latCache.get(lat.getText());
-			if (sing == null) {
+			LATCacheEntry lce = latCache.get(lat.getText());
+			if (lce == null) {
 				try {
-					sing = singLAT(lat.getText(), jcas.getDocumentLanguage());
+					lce = processLAT(lat.getText(), jcas.getDocumentLanguage());
 				} catch (Exception e) {
 					throw new AnalysisEngineProcessException(e);
 				}
+				if (lce != null)
+					latCache.put(lat.getText(), lce);
 			}
 
-			if (sing == null)
+			if (lce == null)
 				continue;
-			latCache.put(lat.getText(), sing);
 
-			if (!sing.toLowerCase().equals(lat.getText().toLowerCase()))
-				copyLAT(lat, sing);
+			if (!lce.singularForm.toLowerCase().equals(lat.getText().toLowerCase()))
+				updateLAT(lat, lce.singularForm);
+			if (!lce.singleWord.toLowerCase().equals(lat.getText().toLowerCase())
+			    && !lce.singleWord.toLowerCase().equals(lce.singularForm.toLowerCase()))
+				copyLAT(lat, lce.singleWord);
 		}
 	}
 
-	protected String singLAT(String text, String language) throws Exception {
-		/* Prepare a tiny JCas with the multi-word LAT. */
+	protected LATCacheEntry processLAT(String text, String language) throws Exception {
+		/* Prepare a tiny JCas with the processed LAT. */
 		JCas jcas = JCasFactory.createJCas();
 		jcas.setDocumentText(text);
 		jcas.setDocumentLanguage(language);
@@ -144,9 +167,9 @@ public class LATByPlural extends JCasAnnotator_ImplBase {
 		/* Process the LAT sentence. */
 		pipeline.process(jcas);
 		//for (Token v : JCasUtil.select(jcas, Token.class))
-		//	logger.debug("{} | {}", v.getCoveredText(), v.getLemma().getValue());
+		//	logger.debug("{}   |   {} {}", v.getCoveredText(), v.getPos().getPosValue(), v.getLemma().getValue());
 
-		/* Deal with multi-word LATs. */
+		/* Find multi-word LAT head token. */
 		Token head = null;
 		if (head == null) {
 			/* Grab the last noun in the first sequence of nouns. */
@@ -171,11 +194,20 @@ public class LATByPlural extends JCasAnnotator_ImplBase {
 			try {
 				head = JCasUtil.select(jcas, Token.class).iterator().next();
 			} catch (NoSuchElementException e) {
-				head = null; // not even that?!
+				jcas.release();
+				return null; // not even that?! nothing to do
 			}
 		}
 
-		/* Now, rebuild the LAT with head replaced with its lemma.
+		/* --- analysis over, now generate results --- */
+
+		LATCacheEntry lce = new LATCacheEntry();
+
+		/* Generate a single-word, singular LAT form. */
+		lce.singleWord = head.getLemma().getValue();
+
+		/* Generate a multi-word, singular LAT form - rebuild
+		 * the LAT with head replaced with its lemma.
 		 * This also normalizes whitespaces as a side effect. */
 		List<String> words = new ArrayList<>();
 		for (Token t : JCasUtil.select(jcas, Token.class)) {
@@ -185,11 +217,19 @@ public class LATByPlural extends JCasAnnotator_ImplBase {
 				words.add(t.getCoveredText());
 			}
 		}
+		lce.singularForm = StringUtils.join(words, " ");
 
 		jcas.release();
 
-		String newText = StringUtils.join(words, " ");
-		return newText;
+		return lce;
+	}
+
+	/** Modify the text of a given LAT. */
+	protected void updateLAT(LAT lat, String text) {
+		String oldText = lat.getText();
+		lat.setText(text);
+		lat.addToIndexes();
+		logger.debug(".. LAT <<{}>> updated to <<{}>>", oldText, text);
 	}
 
 	/** Generate a copy of a given LAT, just with different text. */
@@ -197,7 +237,7 @@ public class LATByPlural extends JCasAnnotator_ImplBase {
 		LAT newLAT = (LAT) lat.clone();
 		newLAT.setText(text);
 		newLAT.addToIndexes();
-		logger.debug(".. LAT <<{}>> to singular <<{}>>", lat.getText(), text);
+		logger.debug(".. LAT <<{}>> copied to <<{}>>", lat.getText(), text);
 	}
 
 	public void destroy() {
@@ -209,3 +249,4 @@ public class LATByPlural extends JCasAnnotator_ImplBase {
 		pipeline.destroy();
 	}
 }
+

@@ -9,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.FindReqParse;
-import cz.brmlab.yodaqa.analysis.tycor.LATByMultiWord;
-import cz.brmlab.yodaqa.analysis.tycor.LATByPlural;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
+import cz.brmlab.yodaqa.analysis.tycor.LATNormalize;
 
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
@@ -81,11 +80,9 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Post-process LATs gathered so far: */
-		/* Generate singular LATs from plural word LATs. */
-		builder.add(createPrimitiveDescription(LATByPlural.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
-		/* Extract single-word LATs from multi-word LATs. */
-		builder.add(createPrimitiveDescription(LATByMultiWord.class),
+		/* Convert plurals to singulars, spin off single-word LATs
+		 * from multi-words. */
+		builder.add(createPrimitiveDescription(LATNormalize.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Multiplicate LATs by wordnet hypernymy. */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
