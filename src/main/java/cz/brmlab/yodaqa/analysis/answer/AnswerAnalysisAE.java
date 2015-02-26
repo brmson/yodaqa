@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.FindReqParse;
 import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
 import cz.brmlab.yodaqa.analysis.tycor.LATMatchTyCor;
+import cz.brmlab.yodaqa.analysis.tycor.LATNormalize;
 
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
@@ -77,7 +78,13 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Generate DBpedia LATs based on wordnet mappings */
 		builder.add(createPrimitiveDescription(LATByDBpediaWN.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		/* ...and multiplicate LATs so far by wordnet hypernymy. */
+
+		/* Post-process LATs gathered so far: */
+		/* Convert plurals to singulars, spin off single-word LATs
+		 * from multi-words. */
+		builder.add(createPrimitiveDescription(LATNormalize.class),
+			CAS.NAME_DEFAULT_SOFA, "Answer");
+		/* Multiplicate LATs by wordnet hypernymy. */
 		builder.add(createPrimitiveDescription(LATByWordnet.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
