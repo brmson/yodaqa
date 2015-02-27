@@ -85,6 +85,16 @@ public class DBpediaTypes extends DBpediaLookup {
 			}
 
 			// logger.debug("DBpedia {} type: [[{}]]", title, typeLabel);
+			/* There are these other really common labels that
+			 * just spam us and don't cary anything much useful. */
+			// ??? what is q?
+			if (typeLabel.equals("Q")
+			    // "English Language" has gazillion of these
+			    || typeLabel.startsWith("Languages Of ")
+			    // countries are economies etc.
+			    || typeLabel.equals("Economy"))
+				continue;
+
 			results.add(typeLabel);
 
 			if (rawResult[1] != null) {
