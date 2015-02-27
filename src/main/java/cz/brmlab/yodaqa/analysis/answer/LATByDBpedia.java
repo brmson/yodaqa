@@ -39,7 +39,10 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
  *   expands to "Inventors"... which expands to "Inventions", oops?
  *
  * We also take care to use only leaf (most specific) type entries
- * and rely oo wordnet abstractions. */
+ * and rely oo wordnet abstractions.
+ *
+ * This is only a fallback LAT source and is inhibited for any answers
+ * that already got an LAT from elsewhere. */
 
 public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByDBpedia.class);
@@ -53,6 +56,13 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		/* Skip an empty answer. */
 		if (jcas.getDocumentText().matches("^\\s*$"))
+			return;
+
+		/* Skip an answer that already carries any LAT, as we assume
+		 * basically anything is going to be sharply better than what
+		 * we generate here.  (XXX: There may be special cases like
+		 * years.) */
+		if (!JCasUtil.select(jcas, LAT.class).isEmpty())
 			return;
 
 		/* First, try to look up the whole answer - that's ideal,
