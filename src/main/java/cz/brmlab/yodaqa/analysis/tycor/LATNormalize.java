@@ -199,20 +199,25 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 			}
 		}
 
+		/* Singular head noun form. */
+		String singHead = head.getLemma().getValue();
+		if (singHead.equals("people"))
+			singHead = "person"; // special case, super-common
+
 		/* --- analysis over, now generate results --- */
 
 		LATCacheEntry lce = new LATCacheEntry();
 
 		/* Generate a single-word, singular LAT form. */
-		lce.singleWord = head.getLemma().getValue();
+		lce.singleWord = singHead;
 
 		/* Generate a multi-word, singular LAT form - rebuild
-		 * the LAT with head replaced with its lemma.
+		 * the LAT with head replaced with its singular form.
 		 * This also normalizes whitespaces as a side effect. */
 		List<String> words = new ArrayList<>();
 		for (Token t : JCasUtil.select(jcas, Token.class)) {
 			if (t == head) {
-				words.add(t.getLemma().getValue());
+				words.add(singHead);
 			} else {
 				words.add(t.getCoveredText());
 			}
