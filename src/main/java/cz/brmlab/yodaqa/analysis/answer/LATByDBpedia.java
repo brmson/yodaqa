@@ -43,9 +43,14 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
  *
  * This is only a fallback LAT source and is inhibited for any answers
  * that already got an LAT from elsewhere. */
+/* XXX: LATByDBpediaWN inehrits from this class. Instead, have an abc
+ * LATByLookup or something. */
 
 public class LATByDBpedia extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByDBpedia.class);
+
+	// XXX: For override by LATByDBpediaWN; FIXME cleanup class hiearchy
+	protected boolean fallbackOnly = true;
 
 	final DBpediaTypes dbt = new DBpediaTypes();
 
@@ -62,7 +67,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		 * basically anything is going to be sharply better than what
 		 * we generate here.  (XXX: There may be special cases like
 		 * years.) */
-		if (!JCasUtil.select(jcas, LAT.class).isEmpty())
+		if (fallbackOnly && !JCasUtil.select(jcas, LAT.class).isEmpty())
 			return;
 
 		/* First, try to look up the whole answer - that's ideal,

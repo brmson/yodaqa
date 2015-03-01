@@ -31,6 +31,7 @@ public class LATByDBpediaWN extends LATByDBpedia {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 		dbt.initialize();
+		fallbackOnly = false;
 	}
 
 	protected boolean addLATByLabel(JCas jcas, Focus focus, String label) throws AnalysisEngineProcessException {
