@@ -145,6 +145,12 @@ columns, csvtool can be convenient:
 
 	csvtool namedcol @noTyCor,@LATANone,q,answer
 
+Many of the brmson bugfixes and improvements are about adding a feature
+or fixing its generation - then it makes sense to compare the feature
+vectors of answers between two commits:
+
+	data/ml/answer-comparefv.py data/eval/answer-csv/COMMIT1 data/eval/answer-csv/COMMIT2 | less -S
+
 #### Weight Vector
 
 The answer score is computed by multiplying the feature vector with
