@@ -175,7 +175,12 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 
 			if (match.lat2.getSpecificity() == 0) {
 				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
+			}
 
+			if (match.lat1.getSpecificity() == 0 || match.lat2.getSpecificity() == 0) {
+				/* Generate a TyCor if this has been a direct
+				 * match from at least one direction (i.e. not
+				 * just a "semantic sibling"). */
 				LAT baselat2 = match.getBaseLat2();
 				if (baselat2 instanceof NELAT)
 					fv.setFeature(AF_TyCorANE.class, 1.0);
