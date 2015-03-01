@@ -5,6 +5,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
@@ -17,7 +18,9 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 /**
  * Take an input AnswerHitlistCAS and generate per-answer CandidateAnswerCAS
@@ -140,5 +143,17 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.addToIndexes();
+
+		/* Generate the Focus */
+		Focus f = new Focus(jcas);
+		f.setBegin(answer.getText().indexOf(answer.getFocus()));
+		f.setEnd(f.getBegin() + answer.getFocus().length());
+		f.addToIndexes();
+		/* Generate the LATs */
+		CasCopier copier = new CasCopier(answer.getCAS(), jcas.getCas());
+		for (FeatureStructure lat : answer.getLats().toArray()) {
+			LAT lat2 = (LAT) copier.copyFs(lat);
+			lat2.addToIndexes();
+		}
 	}
 }

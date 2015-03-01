@@ -29,6 +29,8 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /**
  * Merge textually similar answers in AnswerHitlistCAS.  Right now,
@@ -83,6 +85,25 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 			for (Answer oa : answers) {
 				logger.debug("subsumed <<{}>>:{} < <<{}>>", oa.getText(), oa.getConfidence(), bestAnswer.getText());
 				fv.merge(new AnswerFV(oa));
+				// XXX: Merge LATs?  First let's just warn
+				// if we are losing any.  Ugly hacky code.
+				if (oa.getLats() != null) {
+					for (FeatureStructure lat : oa.getLats().toArray()) {
+						boolean alreadyHave = false;
+						if (bestAnswer.getLats() != null) {
+							for (FeatureStructure lat0 : bestAnswer.getLats().toArray()) {
+								if (((LAT) lat0).getTypeIndexID() == ((LAT) lat).getTypeIndexID()
+								    && ((LAT) lat0).getText().equals(((LAT) lat).getText())) {
+									alreadyHave = true;
+									break;
+								}
+							}
+						}
+						if (!alreadyHave && !(lat instanceof WordnetLAT))
+							logger.warn(".. losing {} <<{}>>", ((LAT) lat).getClass().getSimpleName(), ((LAT) lat).getText());
+						((LAT) lat).removeFromIndexes();
+					}
+				}
 				removeAnswer(oa);
 			}
 

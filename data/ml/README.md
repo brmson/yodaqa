@@ -94,3 +94,7 @@ top (replacing previous content).
 (There is also a AnswerScoreSimple scorer which uses just a small set of
 features and is super-simplistic, what we used before; its performance is
 contrasted by the 'simple' performance rate output by answer-train.py.)
+
+The tool `data/ml/answer-comparefv.py` can be used for comparing effect
+of code changes on feacture vectors, and is further explained in
+data/eval/README.md.

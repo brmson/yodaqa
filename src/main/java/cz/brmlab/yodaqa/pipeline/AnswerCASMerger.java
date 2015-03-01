@@ -1,5 +1,7 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -20,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
@@ -74,14 +79,18 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	protected class AnswerFeatures {
 		Answer answer;
 		AnswerFV fv;
+		List<LAT> lats;
 
-		public AnswerFeatures(Answer answer_, AnswerFV fv_) {
+		public AnswerFeatures(Answer answer_, AnswerFV fv_, List<LAT> lats_) {
 			answer = answer_;
 			fv = fv_;
+			lats = lats_;
 		}
 
 		/** * @return the answer */
 		public Answer getAnswer() { return answer; }
+		/** * @return the lats */
+		public List<LAT> getLats() { return lats; }
 		/** * @return the fv */
 		public AnswerFV getFV() { return fv; }
 	}
@@ -120,20 +129,27 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 
 			for (Answer answer : JCasUtil.select(finalAnswerHitlistView, Answer.class)) {
 				String text = answer.getText();
+				List<LAT> lats = new ArrayList<>();
+				// XXX wahh, didn't find any better way than
+				// a for loop, java is sick!
+				for (FeatureStructure latfs : answer.getLats().toArray()) {
+					lats.add(((LAT) latfs.clone()));
+				}
+
 				List<AnswerFeatures> answers = answersByText.get(text);
 				if (answers == null) {
 					answers = new LinkedList<AnswerFeatures>();
 					answersByText.put(text, answers);
 				}
-				answers.add(new AnswerFeatures(answer, new AnswerFV(answer)));
+				answers.add(new AnswerFeatures(answer, new AnswerFV(answer), lats));
 			}
 
 			for (Entry<String, List<AnswerFeatures>> entry : answersByText.entrySet()) {
 				for (AnswerFeatures afs : entry.getValue()) {
-					for (FeatureStructure fs : afs.getAnswer().getFeatures().toArray()) {
-						AnswerFeature af = (AnswerFeature) fs;
-						af.removeFromIndexes();
-					}
+					for (FeatureStructure af : afs.getAnswer().getFeatures().toArray())
+						((AnswerFeature) af).removeFromIndexes();
+					for (FeatureStructure lat : afs.getAnswer().getLats().toArray())
+						((LAT) lat).removeFromIndexes();
 					afs.getAnswer().removeFromIndexes();
 				}
 			}
@@ -184,6 +200,31 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		answer.setText(text);
 		answer.setCanonText(ai.getCanonText());
 
+		/* Store the Focus. */
+		for (Focus focus : JCasUtil.select(canAnswer, Focus.class)) {
+			answer.setFocus(focus.getCoveredText());
+			break;
+		}
+		/* Store the LATs. */
+		List<LAT> latlist = new ArrayList<>();
+		for (LAT lat : JCasUtil.select(canAnswer, LAT.class)) {
+			/* We cannot just copy the LAT since it would bring
+			 * in the complete parse tree and things would be
+			 * getting pretty huge. */
+			LAT finalLAT;
+			try {
+				finalLAT = lat.getClass().getConstructor(JCas.class).newInstance(finalAnswerHitlistView);
+			} catch (Exception e) {
+				throw new AnalysisEngineProcessException(e);
+			}
+			finalLAT.setText(lat.getText());
+			finalLAT.setSpecificity(lat.getSpecificity());
+			finalLAT.setSynset(lat.getSynset());
+			// TODO: Carry over baseLAT
+			finalLAT.setIsHierarchical(lat.getIsHierarchical());
+			latlist.add(finalLAT);
+		}
+
 		// System.err.println("AR process: " + answer.getText());
 
 		List<AnswerFeatures> answers = answersByText.get(text);
@@ -191,7 +232,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			answers = new LinkedList<AnswerFeatures>();
 			answersByText.put(text, answers);
 		}
-		answers.add(new AnswerFeatures(answer, fv));
+		answers.add(new AnswerFeatures(answer, fv, latlist));
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {
@@ -206,6 +247,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		for (Entry<String, List<AnswerFeatures>> entry : answersByText.entrySet()) {
 			Answer mainAns = null;
 			AnswerFV mainFV = null;
+			List<LAT> mainLats = null;
 			for (AnswerFeatures af : entry.getValue()) {
 				Answer answer = af.getAnswer();
 				/* In case of hitlist-reuse, keep overriding
@@ -213,10 +255,24 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				if (mainAns == null || doReuseHitlist) {
 					mainAns = answer;
 					mainFV = af.getFV();
+					mainLats = af.getLats();
 					continue;
 				}
 				logger.debug("hitlist merge " + mainAns.getText() + "|" + answer.getText());
 				mainFV.merge(af.getFV());
+
+				/* Merge LATs: */
+				for (LAT lat : af.getLats()) {
+					boolean alreadyHave = false;
+					for (LAT mLat : mainLats) {
+						if (mLat.getClass() == lat.getClass() && mLat.getText().equals(lat.getText())) {
+							alreadyHave = true;
+							break;
+						}
+					}
+					if (!alreadyHave)
+						mainLats.add(lat);
+				}
 			}
 
 			/* XXX: Code duplication with AnswerTextMerger */
@@ -240,6 +296,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase1Score.class));
 
 			mainAns.setFeatures(mainFV.toFSArray(finalAnswerHitlistView));
+			for (LAT lat : mainLats)
+				lat.addToIndexes();
+			mainAns.setLats(FSCollectionFactory.createFSArray(finalAnswerHitlistView, mainLats));
 			mainAns.addToIndexes();
 		}
 
