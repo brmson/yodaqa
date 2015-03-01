@@ -6,6 +6,7 @@
     <version>1.0</version>
     <imports>
       <import name="CandidateAnswerTypes_TS"/>
+      <import name="TyCorTypes_TS"/>
     </imports>
     <types>
       <typeDescription>
@@ -33,6 +34,17 @@
             <description>A set of features of this answer, see CandidateAnswerTypes.</description>
             <rangeTypeName>uima.cas.FSArray</rangeTypeName>
             <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
+          </featureDescription>
+          <featureDescription>
+            <name>lats</name>
+            <description>A set of LATs associated with this answer. These are simply LAT annotations copied from the candidate answer CAS.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.TyCor.LAT</elementType>
+          </featureDescription>
+          <featureDescription>
+            <name>focus</name>
+            <description>The focus portion of the answer; typically a single word like the root noun or such.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
         </features>
       </typeDescription>
