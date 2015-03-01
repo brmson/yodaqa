@@ -115,6 +115,8 @@ TSV file).
 Analysis
 --------
 
+### Recall Analysis
+
 We are analyzing questions that failed recall in the analysis/
 subdirectory.  Systematic analysis is important especially for
 headroom (potential improvement) estimation of features that
@@ -127,3 +129,35 @@ reuse previous analysis results, e.g.:
 		>analysis/recall-curated-train-ovt-7b2a3f9.txt
 
 See the top of that scripts for some extra notes.
+
+### Answer Feature Analysis
+
+#### Feature Vector
+
+Each candidate answer for each evaluated question is assigned a feature
+vector (which is already growing quite long) and values of vector elements
+determine the score of the answer.  For each question, feature vectors
+of answers are stored in data/eval/answer-csv/COMMIT/QID.csv.
+
+If you open this in libreoffice, position cursor on cell B2 and use the
+Window -> Freeze tool for easier inspection.  To extract some specific
+columns, csvtool can be convenient:
+
+	csvtool namedcol @noTyCor,@LATANone,q,answer
+
+#### Weight Vector
+
+The answer score is computed by multiplying the feature vector with
+the weight vector; the weight vector is stored in
+
+	src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreLogistic.model
+
+and determined from the training set using data/ml/ toolkit, the new
+weights are then stored in:
+
+	data/ml/models/logistic-COMMIT.model
+
+If you tweak some features, it can be roughly estimated how good
+a predictor they are by comparing how the weights change.
+
+TODO: Build a tool that compares two models, vimdiff is clunky for this.
