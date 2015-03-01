@@ -103,7 +103,7 @@ data and such) so far, but just for enwiki pages metadata --- lookup by
 exact title string match (sort of named entity recognition, already linked
 to page id we can use to fetch the page from solr) and redirect walking.
 
-By default, we rely on a DBpedia-3.9 SPARQL endpoint running on the author's
+By default, we rely on a DBpedia-2014 SPARQL endpoint running on the author's
 computer.  In case it is offline, you can try to switch it to the public
 DBpedia SPARQL endpoint, though it is prone to outages and we shouldn't use
 it too heavily anyway.  Simply edit the ``service`` attribute value in file
@@ -111,6 +111,19 @@ it too heavily anyway.  Simply edit the ``service`` attribute value in file
 
 Detailed instrutions for setup of local DBpedia SPARQL endpoint can be found
 in ``data/dbpedia/README.md``.
+
+### Freebase Data Source
+
+We can also leverage another structured data source, the Freebase.
+We use its RDF export with SPARQL endpoint, running on infrastructure
+provided by the author's academic group (Jan Šedivý's 3C Group at the
+Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
+for some reason, you can also simply disable Freebase usage by commenting
+out the FreebaseOntologyAnswerProducer initialization in the code of
+``src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java``.
+
+You can start your own instance by following the instructions in
+``data/freebase/README.md`` but it is quite arduous and resource intensive.
 
 ## Development Notes
 
