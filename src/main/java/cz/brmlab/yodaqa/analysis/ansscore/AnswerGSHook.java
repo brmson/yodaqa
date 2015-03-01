@@ -9,6 +9,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
@@ -18,6 +19,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
+import cz.brmlab.yodaqa.model.TyCor.DBpOntologyLAT;
+import cz.brmlab.yodaqa.model.TyCor.DBpPropertyLAT;
+import cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.NELAT;
+import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
+import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
+import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
@@ -47,6 +57,22 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	public static final String PARAM_SCORING_PHASE = "SCORING_PHASE";
 	@ConfigurationParameter(name = PARAM_SCORING_PHASE, mandatory = true)
 	protected String scoringPhase;
+
+	/**
+	 * List of LAT categories for CSV dumping purposes.
+	 * FIXME: Deduplicate with other places where we list these. */
+	protected static final String[] LATLabels = {
+		"NELAT", "DBpLAT",
+		"QuantityLAT", "QuantityCDLAT",
+		"WnInstanceLAT",
+		"DBpOntologyLAT", "DBpPropertyLAT", "FBOntologyLAT",
+	};
+	protected static final Class[] LATClasses = {
+		NELAT.class, DBpLAT.class,
+		QuantityLAT.class, QuantityCDLAT.class,
+		WnInstanceLAT.class,
+		DBpOntologyLAT.class, DBpPropertyLAT.class, FBOntologyLAT.class,
+	};
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -239,6 +265,11 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		sb.append("answer,");
 		sb.append("iM,");
 		sb.append("confidence,");
+		sb.append("focus,");
+		for (String label : LATLabels) {
+			sb.append(label);
+			sb.append(",");
+		}
 		int i = 0;
 		for (String label : AnswerFV.getFVLabels()) {
 			/* Consider only primary values in the FV. */
@@ -266,6 +297,34 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		sb.append(",");
 		sb.append(a.getConfidence());
 		sb.append(",");
+		if (a.getFocus() != null) {
+			sb.append("\"");
+			sb.append(a.getFocus());
+			sb.append("\"");
+		}
+		sb.append(",");
+		for (Class LATClass : LATClasses) {
+			boolean isFirst = true;
+			for (FeatureStructure latfs : a.getLats().toArray()) {
+				if (!LATClass.isInstance(latfs))
+					continue;
+				LAT lat = (LAT) latfs;
+				if (isFirst) {
+					sb.append("\"");
+					isFirst = false;
+				} else {
+					sb.append(";");
+				}
+				sb.append(lat.getText());
+				if (lat.getSynset() != 0) {
+					sb.append("/");
+					sb.append(lat.getSynset());
+				}
+			}
+			if (!isFirst)
+				sb.append("\"");
+			sb.append(",");
+		}
 		int i = 0;
 		for (double value : fv.getFV()) {
 			if (i % 3 == 0) {
