@@ -165,12 +165,11 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			//outputsNewCASes = true;
 
 			/* Convert top N AnswerHitlist entries back to separate CASes,
-			 * then back to a hitlist, to get rid of them.  This is a bit
+			 * then back to a hitlist, to get rid of the rest.  This is a bit
 			 * convoluted, but easiest dirty way. */
-			/*
 			AnalysisEngineDescription answerCASSplitter = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASSplitter.class,
-					AnswerCASSplitter.PARAM_TOPLISTLEN, 150,
+					AnswerCASSplitter.PARAM_TOPLISTLEN, 25,
 					AnswerCASSplitter.PARAM_HITLIST_EMIT, false);
 			builder.add(answerCASSplitter);
 
@@ -180,7 +179,6 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerCASMerger.PARAM_HITLIST_REUSE, false,
 					AnswerCASMerger.PARAM_PHASE, 1);
 			builder.add(answerCASMerger);
-			*/
 
 			/* XXX: Move the following to a separate scoring phase
 			 * so that we already capture the single correct answer
