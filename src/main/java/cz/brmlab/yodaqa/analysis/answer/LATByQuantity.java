@@ -156,7 +156,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 
 	/** Determine whether a given answer is simply numeric as a whole.
 	 * This is often the case for structured data sources. */
-	public boolean answerIsNumber(String text) {
+	public static boolean answerIsNumber(String text) {
 		// return text.matches("^\\s*[-+]?[0-9]+([.,][0-9]+)?([eEx^][0-9]+)*\\s*$");
 		try {
 			Double.parseDouble(text);
