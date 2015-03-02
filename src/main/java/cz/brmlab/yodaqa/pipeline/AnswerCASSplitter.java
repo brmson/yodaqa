@@ -145,10 +145,12 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		ai.addToIndexes();
 
 		/* Generate the Focus */
-		Focus f = new Focus(jcas);
-		f.setBegin(answer.getText().indexOf(answer.getFocus()));
-		f.setEnd(f.getBegin() + answer.getFocus().length());
-		f.addToIndexes();
+		if (answer.getFocus() != null) {
+			Focus f = new Focus(jcas);
+			f.setBegin(answer.getText().indexOf(answer.getFocus()));
+			f.setEnd(f.getBegin() + answer.getFocus().length());
+			f.addToIndexes();
+		}
 		/* Generate the LATs */
 		CasCopier copier = new CasCopier(answer.getCAS(), jcas.getCas());
 		for (FeatureStructure lat : answer.getLats().toArray()) {
