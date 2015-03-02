@@ -41,20 +41,32 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		/* A Focus is also an LAT. */
+		/* First, check if the answer simply *is* a number.
+		 * E.g. just "593.0", "2014" or some such. */
+		if (answerIsNumber(jcas.getDocumentText())) {
+			addQuantityLAT(jcas, null, true);
+			return;
+		}
+
+		/* Otherwise, it may be the defining part of sentence.
+		 * E.g. "20 C", "190 meters" or "over 90 films".
+		 * The stuff after the number typically ends up
+		 * being the Focus. */
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
 			for (NUM num : JCasUtil.select(jcas, NUM.class)) {
 				/* Ignore if we are part of a named entity,
 				 * that's a better LAT determinator. */
-				if (num.getGovernor().equals(focus.getToken())
-				    && !isNERelated(jcas, num)) {
-					addQuantityLAT(jcas, num);
-				}
+				if (isNERelated(jcas, num))
+					continue;
+				if (!num.getGovernor().equals(focus.getToken()))
+					continue;
+				boolean isCD = num.getDependent().getPos().getPosValue().equals("CD");
+				addQuantityLAT(jcas, num, isCD);
 			}
 		}
 	}
 
-	protected void addQuantityLAT(JCas jcas, NUM num) throws AnalysisEngineProcessException {
+	protected void addQuantityLAT(JCas jcas, Annotation LATbase, boolean isCD) throws AnalysisEngineProcessException {
 		// XXX: "quantity" is not the primary label for this wordnet sense
 		String text0 = "measure"; long synset0 = 33914;
 		// quantitative relation, e.g. speed:
@@ -65,26 +77,34 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 
 		/* We have a synthetic LAT, synthetize a POS tag for it. */
 		POS pos = new NN(jcas);
-		pos.setBegin(num.getBegin());
-		pos.setEnd(num.getEnd());
+		if (LATbase != null) {
+			pos.setBegin(LATbase.getBegin());
+			pos.setEnd(LATbase.getEnd());
+		} else {
+			LATbase = pos;
+			pos.setBegin(0);
+			pos.setEnd(jcas.getDocumentText().length());
+		}
 		pos.setPosValue("NNS");
 		pos.addToIndexes();
 
 		/* Also set a feature when the quantity is an actual number
 		 * (as opposed to e.g. "many"). */
-		if (num.getDependent().getPos().getPosValue().equals("CD")) {
+		if (isCD) {
 			addLATFeature(jcas, AF_LATQuantityCD.class);
-			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text0, synset0, pos, spec);
-			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text1, synset1, pos, spec);
-			addLAT(new QuantityCDLAT(jcas), num.getBegin(), num.getEnd(), num, text2, synset2, pos, spec);
+			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text0, synset0, pos, spec);
+			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text1, synset1, pos, spec);
+			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text2, synset2, pos, spec);
 		} else {
 			addLATFeature(jcas, AF_LATQuantity.class);
-			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text0, synset0, pos, spec);
-			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text1, synset1, pos, spec);
-			addLAT(new QuantityLAT(jcas), num.getBegin(), num.getEnd(), num, text2, synset2, pos, spec);
+			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text0, synset0, pos, spec);
+			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text1, synset1, pos, spec);
+			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text2, synset2, pos, spec);
 		}
 
-		logger.debug(".. Quantity LAT {}/{}, {}/{}, {}/{} by NUM {}", text0, synset0, text1, synset1, text2, synset2, num.getCoveredText());
+		logger.debug(".. Quantity {} LAT {}/{}, {}/{}, {}/{} based on [{}] <<{}>>",
+			isCD ? "CD" : "noCD", text0, synset0, text1, synset1, text2, synset2,
+			LATbase.getClass().getSimpleName(), LATbase.getCoveredText());
 	}
 
 	/** Whether the annotation is covered by a named entity
@@ -132,5 +152,17 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.addToIndexes();
+	}
+
+	/** Determine whether a given answer is simply numeric as a whole.
+	 * This is often the case for structured data sources. */
+	public boolean answerIsNumber(String text) {
+		// return text.matches("^\\s*[-+]?[0-9]+([.,][0-9]+)?([eEx^][0-9]+)*\\s*$");
+		try {
+			Double.parseDouble(text);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
 	}
 }
