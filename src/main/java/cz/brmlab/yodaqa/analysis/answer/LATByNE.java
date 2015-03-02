@@ -1,5 +1,7 @@
 package cz.brmlab.yodaqa.analysis.answer;
 
+import java.util.Collection;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
@@ -20,7 +22,6 @@ import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -38,18 +39,36 @@ public class LATByNE extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		/* With no focus, make good with any NamedEntity inside. */
+		if (JCasUtil.select(jcas, Focus.class).isEmpty()) {
+			addNELAT(jcas, null, JCasUtil.select(jcas, NamedEntity.class));
+		}
+
 		for (Focus focus : JCasUtil.select(jcas, Focus.class)) {
-			addNELAT(jcas, focus);
+			addNELAT(jcas, focus, JCasUtil.selectCovering(NamedEntity.class, focus));
 		}
 	}
 
-	protected boolean addNELAT(JCas jcas, Focus focus) throws AnalysisEngineProcessException {
+	protected boolean addNELAT(JCas jcas, Focus focus, Collection<NamedEntity> NEs) throws AnalysisEngineProcessException {
 		boolean ne_found = false;
-		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
+		for (NamedEntity ne : NEs) {
 			ne_found = true;
+
 			long synset = OpenNlpNamedEntities.neValueToSynset(ne.getValue());
-			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), focus.getToken().getPos(), synset, 0.0);
+			POS pos = null;
+			if (focus != null) {
+				pos = focus.getToken().getPos();
+			} else {
+				/* the last token covered by a NamedEntity
+				 * (i.e. a noun if at all possible. */
+				for (Token t : JCasUtil.selectCovered(Token.class, ne))
+					pos = t.getPos();
+				assert(pos != null);
+			}
+
+			addLAT(new NELAT(jcas), ne.getBegin(), ne.getEnd(), ne, ne.getValue(), pos, synset, 0.0);
 			logger.debug(".. LAT {}/{} by NE {}", ne.getValue(), synset, ne.getCoveredText());
+
 			addLATFeature(jcas, AF_LATNE.class);
 		}
 		return ne_found;
