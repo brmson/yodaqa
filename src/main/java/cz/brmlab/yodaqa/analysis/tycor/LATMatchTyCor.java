@@ -110,9 +110,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			if (lat1.getSpecificity() == 0)
 				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
 
-			if (lat2.getSpecificity() == 0) {
+			if (lat2.getSpecificity() == 0)
 				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
-			}
 
 			if (lat1.getSpecificity() == 0 || lat2.getSpecificity() == 0) {
 				/* Generate a TyCor if this has been a direct
@@ -147,8 +146,16 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			} else if (lat1.getSpecificity() == 0 && lat2.getSpecificity() == 0) {
 				/* If both LATs match sharp, that's a good
 				 * sign OTOH. */
-				logger.debug("sharp LAT match <<{}>>", ansText);
+				logger.debug("sharp LAT match for <<{}>>", ansText);
 				fv.setFeature(AF_TyCorSpQAHit.class, 1.0);
+			} else {
+				/* Fuzzy match, just produce a debug print
+				 * as well for grep's sake. */
+				if (lat1.getSpecificity() == 0) {
+					logger.debug("q-hit LAT match for <<{}>>", ansText);
+				} else if (lat2.getSpecificity() == 0) {
+					logger.debug("a-hit LAT match for <<{}>>", ansText);
+				}
 			}
 		}
 	}
