@@ -88,7 +88,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 					+ getBaseLat1().getText() + "-" + getBaseLat2().getText()
 					+ " match " + getLat1().getText() /* == LAT2 text */
 					+ "/" + getLat1().getSynset()
-					+ " sp. " + getSpecificity());
+					+ " sp. " + getSpecificity()
+					+ " (q " + getLat1().getSpecificity() + ", a " + getLat2().getSpecificity() + ")");
 		}
 	}
 
