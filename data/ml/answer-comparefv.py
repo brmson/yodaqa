@@ -60,6 +60,13 @@ def delta2str(delta):
                 strdelta.append('+%s' % (f,))
             else:
                 strdelta.append('-%s' % (f,))
+        elif ';' in f1 or ';' in f2:
+            f1 = f1.split(';')
+            f2 = f2.split(';')
+            minus = ['-%s' % (e,) for e in f1 if e != '' and e not in f2]
+            plus = ['+%s' % (e,) for e in f2 if e != '' and e not in f1]
+            if minus or plus:
+                strdelta.append('%s(%s%s%s)' % (f, ','.join(minus), (' | ' if (plus and minus) else ''), ','.join(plus)))
         else:
             strdelta.append('%s(%s->%s)' % (f, f1[:4], f2[:4]))
     return ', '.join(strdelta)
