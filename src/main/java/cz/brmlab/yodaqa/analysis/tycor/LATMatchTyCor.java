@@ -50,8 +50,19 @@ import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /**
  * Estimate answer specificity in CandidateAnswerCAS via type coercion
- * by question LAT to answer LAT matching. We simply try to find the
- * most specific LAT match. */
+ * by question LAT to answer LAT matching.
+ *
+ * Basically, we try to find any matches of answer LAT set with the
+ * question LAT set, and generate AFs accordingly.  The crucial aspect
+ * is the mesh of LATWordnets that we pre-generated and that represent
+ * various generalizations of the (hopefully specific) LATs we
+ * generated earlier.
+ *
+ * There are many ways to approach this.  We allow generalizations
+ * of both the question and answer LATs to match, because e.g. when
+ * asking about a "site" of Lindbergh's flight, "New York" will be
+ * generated as a "city" and the match is "location".  But clearly
+ * direct ('hit') matches are better than 'sibling' matches. */
 
 public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATMatchTyCor.class);
