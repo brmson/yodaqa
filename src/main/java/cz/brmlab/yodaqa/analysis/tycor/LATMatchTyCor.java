@@ -231,15 +231,17 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		boolean qNoWordnetLAT = JCasUtil.select(questionView, WordnetLAT.class).isEmpty();
 		boolean aNoWordnetLAT = JCasUtil.select(answerView, WordnetLAT.class).isEmpty();
 		boolean aNoLAT = JCasUtil.select(answerView, LAT.class).isEmpty();
-		LATMatch match = matchLATs(questionView, answerView);
 
 		AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
 
+		/* Find the best match.  Note that this will also
+		 * process and generate features for other nice
+		 * (hit) matches encountered on the way. */
+		LATMatch match = matchLATs(questionView, answerView, fv);
+
 		if (match != null) {
 			fv.setFeature(AF_SpWordNet.class, Math.exp(match.getSpecificity()));
-
-			match.record(fv, answerView.getDocumentText());
 
 		/* We were the only ones doing type coercion here. */
 		} else if (!fv.isFeatureSet(AF_TyCorPassageDist.class)) {
@@ -276,7 +278,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		ai.addToIndexes();
 	}
 
-	protected LATMatch matchLATs(JCas questionView, JCas answerView) throws AnalysisEngineProcessException {
+	protected LATMatch matchLATs(JCas questionView, JCas answerView, AnswerFV fv)
+			throws AnalysisEngineProcessException {
 		Map<String, LAT> answerLats = new HashMap<String, LAT>();
 		LATMatch bestMatch = null;
 
@@ -303,8 +306,18 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				continue;
 			if (lq.getSynset() != 0 && la.getSynset() != 0 && lq.getSynset() != la.getSynset())
 				continue;
+
+			/* We have a match! */
 			LATMatch match = new LATMatch(lq, la);
 			// match.logMatch(logger, " maybe ");
+
+			if (match.getLat1().getSpecificity() == 0 || match.getLat2().getSpecificity() == 0) {
+				/* A hit match too!  Record it right away.
+				 * (We may encounter a variety of these. */
+				match.logMatch(logger, ".. TyCor hit");
+				match.record(fv, answerView.getDocumentText());
+			}
+
 			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity())
 				bestMatch = match;
 		}
@@ -316,7 +329,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				bestMatch.logMatch(logger, ".. ignoring blacklisted TyCor");
 				return null;
 			}
-			bestMatch.logMatch(logger, ".. TyCor");
+			bestMatch.logMatch(logger, ".. TyCor best");
 		}
 		return bestMatch;
 	}
