@@ -149,7 +149,15 @@ Many of the brmson bugfixes and improvements are about adding a feature
 or fixing its generation - then it makes sense to compare the feature
 vectors of answers between two commits:
 
-	data/ml/answer-comparefv.py data/eval/answer-csv/COMMIT1 data/eval/answer-csv/COMMIT2 | less -S
+	data/ml/answer-comparefv.py data/eval/curated-train.tsv data/eval/answer-csv/COMMIT1 data/eval/answer-csv/COMMIT2 | less -S
+
+Not all features are useful.  Feature selection is not a trivial problem
+because some features are useful only in an ensemble.  Still, exploring
+basic corellation between features and answer correctness is useful.
+Also, rarely occuring features *may* cause overfitting so we should count
+how often does a feature even occur.  A tool for counting the features is:
+
+	data/ml/answer-countfv.py data/eval/curated-train.tsv data/eval/answer-csv/COMMIT1
 
 #### Weight Vector
 
