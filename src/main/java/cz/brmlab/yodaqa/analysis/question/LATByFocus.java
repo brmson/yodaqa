@@ -58,6 +58,9 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 
 		/* If focus is the question word, convert to an appropriate
 		 * concept word or give up. */
+		/* N.B. since these LATs are generated with a precise synset,
+		 * they are not generalized and therefore any answer matches
+		 * will need to be qhits. */
 		if (text.equals("who") || text.equals("whom")) {
 			/* (6833){00007846} <noun.Tops>[03] S: (n) person#1 (person%1:03:00::), individual#1 (individual%1:03:00::), someone#1 (someone%1:03:00::), somebody#1 (somebody%1:03:00::), mortal#1 (mortal%1:03:00::), soul#2 (soul%1:03:00::) (a human being) "there was too much for oneperson to do" */
 			addFocusLAT(jcas, focus, "person", null, 7846, 0.0, new ImplicitQLAT(jcas));
@@ -80,6 +83,13 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
 
 		} else {
+			/* Generate an LAT, but since we do not specify
+			 * a synset, it will also be generalized by
+			 * LATByWordnet - this shall allow "city"-"town"
+			 * matches, matching various locations when answering
+			 * "From which site did X start his first flight?"
+			 * and so on. */
+
 			/* Primarily generate the non-lemmatized LAT.  For
 			 * example for "species", we also generate the original
 			 * form in addition to the (wrongly) lemmatized
@@ -107,6 +117,9 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 	}
 
 	protected boolean addNELAT(JCas jcas, Focus focus) {
+		/* N.B. since these LATs are generated with a precise synset,
+		 * they are not generalized and therefore any answer matches
+		 * will need to be qhits. */
 		boolean ne_found = false;
 		for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, focus)) {
 			ne_found = true;
