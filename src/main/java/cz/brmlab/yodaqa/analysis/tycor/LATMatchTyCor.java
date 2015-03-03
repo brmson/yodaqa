@@ -50,8 +50,19 @@ import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
 /**
  * Estimate answer specificity in CandidateAnswerCAS via type coercion
- * by question LAT to answer LAT matching. We simply try to find the
- * most specific LAT match. */
+ * by question LAT to answer LAT matching.
+ *
+ * Basically, we try to find any matches of answer LAT set with the
+ * question LAT set, and generate AFs accordingly.  The crucial aspect
+ * is the mesh of LATWordnets that we pre-generated and that represent
+ * various generalizations of the (hopefully specific) LATs we
+ * generated earlier.
+ *
+ * There are many ways to approach this.  We allow generalizations
+ * of both the question and answer LATs to match, because e.g. when
+ * asking about a "site" of Lindbergh's flight, "New York" will be
+ * generated as a "city" and the match is "location".  But clearly
+ * direct ('hit') matches are better than 'sibling' matches. */
 
 public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATMatchTyCor.class);
@@ -88,7 +99,64 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 					+ getBaseLat1().getText() + "-" + getBaseLat2().getText()
 					+ " match " + getLat1().getText() /* == LAT2 text */
 					+ "/" + getLat1().getSynset()
-					+ " sp. " + getSpecificity());
+					+ " sp. " + getSpecificity()
+					+ " (q " + getLat1().getSpecificity() + ", a " + getLat2().getSpecificity() + ")");
+		}
+
+		/** Record details on this LATMatch in the given AnswerFV
+		 * (and log it too).  This is worth calling for all LATMatches
+		 * that are hits for at least one side. */
+		public void record(AnswerFV fv, String ansText) {
+			if (lat1.getSpecificity() == 0)
+				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
+
+			if (lat2.getSpecificity() == 0)
+				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
+
+			if (lat1.getSpecificity() == 0 || lat2.getSpecificity() == 0) {
+				/* Generate a TyCor if this has been a direct
+				 * match from at least one direction (i.e. not
+				 * just a "semantic sibling"). */
+				LAT baselat2 = getBaseLat2();
+				if (baselat2 instanceof NELAT)
+					fv.setFeature(AF_TyCorANE.class, 1.0);
+				else if (baselat2 instanceof DBpLAT)
+					fv.setFeature(AF_TyCorADBp.class, 1.0);
+				else if (baselat2 instanceof QuantityLAT)
+					fv.setFeature(AF_TyCorAQuantity.class, 1.0);
+				else if (baselat2 instanceof QuantityCDLAT)
+					fv.setFeature(AF_TyCorAQuantityCD.class, 1.0);
+				else if (baselat2 instanceof WnInstanceLAT)
+					fv.setFeature(AF_TyCorAWnInstance.class, 1.0);
+				else if (baselat2 instanceof DBpOntologyLAT)
+					fv.setFeature(AF_TyCorADBpOntology.class, 1.0);
+				else if (baselat2 instanceof DBpPropertyLAT)
+					fv.setFeature(AF_TyCorADBpProperty.class, 1.0);
+				else if (baselat2 instanceof FBOntologyLAT)
+					fv.setFeature(AF_TyCorAFBOntology.class, 1.0);
+				else assert(false);
+			}
+
+			if (lat1.getSpecificity() != 0 && lat2.getSpecificity() != 0) {
+				/* If we had to generalize both LATs, that
+				 * seems to be a negative signal that the
+				 * answer is less specifit than we want. */
+				logger.debug("generalizing both LATs for <<{}>>", ansText);
+				fv.setFeature(AF_TyCorSpNoHit.class, -1.0);
+			} else if (lat1.getSpecificity() == 0 && lat2.getSpecificity() == 0) {
+				/* If both LATs match sharp, that's a good
+				 * sign OTOH. */
+				logger.debug("sharp LAT match for <<{}>>", ansText);
+				fv.setFeature(AF_TyCorSpQAHit.class, 1.0);
+			} else {
+				/* Fuzzy match, just produce a debug print
+				 * as well for grep's sake. */
+				if (lat1.getSpecificity() == 0) {
+					logger.debug("q-hit LAT match for <<{}>>", ansText);
+				} else if (lat2.getSpecificity() == 0) {
+					logger.debug("a-hit LAT match for <<{}>>", ansText);
+				}
+			}
 		}
 	}
 
@@ -163,56 +231,17 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		boolean qNoWordnetLAT = JCasUtil.select(questionView, WordnetLAT.class).isEmpty();
 		boolean aNoWordnetLAT = JCasUtil.select(answerView, WordnetLAT.class).isEmpty();
 		boolean aNoLAT = JCasUtil.select(answerView, LAT.class).isEmpty();
-		LATMatch match = matchLATs(questionView, answerView);
 
 		AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
 
+		/* Find the best match.  Note that this will also
+		 * process and generate features for other nice
+		 * (hit) matches encountered on the way. */
+		LATMatch match = matchLATs(questionView, answerView, fv);
+
 		if (match != null) {
 			fv.setFeature(AF_SpWordNet.class, Math.exp(match.getSpecificity()));
-			if (match.lat1.getSpecificity() == 0)
-				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
-
-			if (match.lat2.getSpecificity() == 0) {
-				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
-			}
-
-			if (match.lat1.getSpecificity() == 0 || match.lat2.getSpecificity() == 0) {
-				/* Generate a TyCor if this has been a direct
-				 * match from at least one direction (i.e. not
-				 * just a "semantic sibling"). */
-				LAT baselat2 = match.getBaseLat2();
-				if (baselat2 instanceof NELAT)
-					fv.setFeature(AF_TyCorANE.class, 1.0);
-				else if (baselat2 instanceof DBpLAT)
-					fv.setFeature(AF_TyCorADBp.class, 1.0);
-				else if (baselat2 instanceof QuantityLAT)
-					fv.setFeature(AF_TyCorAQuantity.class, 1.0);
-				else if (baselat2 instanceof QuantityCDLAT)
-					fv.setFeature(AF_TyCorAQuantityCD.class, 1.0);
-				else if (baselat2 instanceof WnInstanceLAT)
-					fv.setFeature(AF_TyCorAWnInstance.class, 1.0);
-				else if (baselat2 instanceof DBpOntologyLAT)
-					fv.setFeature(AF_TyCorADBpOntology.class, 1.0);
-				else if (baselat2 instanceof DBpPropertyLAT)
-					fv.setFeature(AF_TyCorADBpProperty.class, 1.0);
-				else if (baselat2 instanceof FBOntologyLAT)
-					fv.setFeature(AF_TyCorAFBOntology.class, 1.0);
-				else assert(false);
-			}
-
-			if (match.lat1.getSpecificity() != 0 && match.lat2.getSpecificity() != 0) {
-				/* If we had to generalize both LATs, that
-				 * seems to be a negative signal that the
-				 * answer is less specifit than we want. */
-				logger.debug("generalizing both LATs for <<{}>>", answerView.getDocumentText());
-				fv.setFeature(AF_TyCorSpNoHit.class, -1.0);
-			} else if (match.lat1.getSpecificity() == 0 && match.lat2.getSpecificity() == 0) {
-				/* If both LATs match sharp, that's a good
-				 * sign OTOH. */
-				logger.debug("sharp LAT match <<{}>>", answerView.getDocumentText());
-				fv.setFeature(AF_TyCorSpQAHit.class, 1.0);
-			}
 
 		/* We were the only ones doing type coercion here. */
 		} else if (!fv.isFeatureSet(AF_TyCorPassageDist.class)) {
@@ -249,7 +278,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		ai.addToIndexes();
 	}
 
-	protected LATMatch matchLATs(JCas questionView, JCas answerView) throws AnalysisEngineProcessException {
+	protected LATMatch matchLATs(JCas questionView, JCas answerView, AnswerFV fv)
+			throws AnalysisEngineProcessException {
 		Map<String, LAT> answerLats = new HashMap<String, LAT>();
 		LATMatch bestMatch = null;
 
@@ -276,8 +306,18 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				continue;
 			if (lq.getSynset() != 0 && la.getSynset() != 0 && lq.getSynset() != la.getSynset())
 				continue;
+
+			/* We have a match! */
 			LATMatch match = new LATMatch(lq, la);
 			// match.logMatch(logger, " maybe ");
+
+			if (match.getLat1().getSpecificity() == 0 || match.getLat2().getSpecificity() == 0) {
+				/* A hit match too!  Record it right away.
+				 * (We may encounter a variety of these. */
+				match.logMatch(logger, ".. TyCor hit");
+				match.record(fv, answerView.getDocumentText());
+			}
+
 			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity())
 				bestMatch = match;
 		}
@@ -289,7 +329,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				bestMatch.logMatch(logger, ".. ignoring blacklisted TyCor");
 				return null;
 			}
-			bestMatch.logMatch(logger, ".. TyCor");
+			bestMatch.logMatch(logger, ".. TyCor best");
 		}
 		return bestMatch;
 	}
