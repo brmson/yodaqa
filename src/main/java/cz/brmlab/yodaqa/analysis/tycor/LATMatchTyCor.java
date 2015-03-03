@@ -67,6 +67,8 @@ import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATMatchTyCor.class);
 
+	/** A single match of a (question, answer) LAT tuple.  The match
+	 * has a total specificity (sum of constituent specificities). */
 	protected class LATMatch {
 		public LAT lat1, lat2;
 		public double specificity;
@@ -228,8 +230,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		boolean qNoWordnetLAT = JCasUtil.select(questionView, WordnetLAT.class).isEmpty();
-		boolean aNoWordnetLAT = JCasUtil.select(answerView, WordnetLAT.class).isEmpty();
+		boolean qNoWordnetLAT = !hasWordnetLAT(questionView);
+		boolean aNoWordnetLAT = !hasWordnetLAT(answerView);
 		boolean aNoLAT = JCasUtil.select(answerView, LAT.class).isEmpty();
 
 		AnswerInfo ai = JCasUtil.selectSingle(answerView, AnswerInfo.class);
@@ -276,6 +278,19 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 
 		ai.setFeatures(fv.toFSArray(answerView));
 		ai.addToIndexes();
+	}
+
+	/** Check whether a given CAS (view) contains an LAT featureset
+	 * associated with a WordNet object.  This is an indicator that
+	 * there is some "non-weird" LAT generated. */
+	protected boolean hasWordnetLAT(JCas jcas) {
+		/* This is not a simple matter of checking for WordnetLAT
+		 * as we may have some other LAT with synset associated and
+		 * non-expanded to WordnetLATs. */
+		for (LAT lat : JCasUtil.select(jcas, LAT.class))
+			if (lat.getSynset() != 0)
+				return true;
+		return false;
 	}
 
 	protected LATMatch matchLATs(JCas questionView, JCas answerView, AnswerFV fv)
