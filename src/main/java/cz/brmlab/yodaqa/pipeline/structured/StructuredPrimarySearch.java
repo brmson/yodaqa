@@ -155,7 +155,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		matchCluesInName(questionView, property.getProperty(), fv);
 
 		/* Generate also an LAT for the answer right away. */
-		addTypeLATByName(jcas, property.getProperty(), fv);
+		addTypeLAT(jcas, fv, property.getProperty());
 
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
@@ -193,18 +193,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 				fv.setFeature(AF_OriginConceptByLAT.class, 1.0);
 			if (concept.getByNE())
 				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
-		}
-	}
-
-
-	protected void addTypeLATByName(JCas jcas, String name, AnswerFV fv) throws AnalysisEngineProcessException {
-		addTypeLAT(jcas, fv, name);
-		if (name.contains(" ")) {
-			/* If the property name is multi-word, well,
-			 * we may not handle multi-word LATs very well
-			 * so also generate a single-word LAT with the
-			 * first word ("KNOWN for", "AREA total", ...). */
-			addTypeLAT(jcas, fv, name.replaceFirst(" .*$", ""));
 		}
 	}
 
