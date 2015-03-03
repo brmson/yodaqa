@@ -96,5 +96,6 @@ features and is super-simplistic, what we used before; its performance is
 contrasted by the 'simple' performance rate output by answer-train.py.)
 
 The tool `data/ml/answer-comparefv.py` can be used for comparing effect
-of code changes on feacture vectors, and is further explained in
-data/eval/README.md.
+of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
+used for feature occurence statistics.  These analysis tools are further
+explained in data/eval/README.md.

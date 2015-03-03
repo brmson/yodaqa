@@ -9,33 +9,8 @@
 #
 # Example: data/ml/answer-comparefv.py data/eval/curated-train.tsv data/eval/answer-csv/52e712d data/eval/answer-csv/13a9870
 
-import csv
 import sys
-
-
-def load_questions(tsvfile):
-    qlist = list()
-    questions = dict()
-    tsv = open(tsvfile, mode='r')
-    for line in tsv:
-        qid, qtype, text, anspattern = line.rstrip().split("\t")
-        qid = int(qid)
-        questions[qid] = {'id': qid, 'type': qtype, 'text': text, 'anspattern': anspattern}
-        qlist.append(qid)
-    return qlist, questions
-
-
-def load_answers(csvdir, qid):
-    alist = list()
-    answers = dict()
-    csvfile = '%s/%d.csv' % (csvdir, qid)
-    with open(csvfile, mode='r') as csvf:
-        reader = csv.DictReader(csvf)
-        for answer in reader:
-            alist.append(answer['answer'])
-            answers[answer['answer']] = answer
-        answers['_header'] = reader.fieldnames
-    return alist, answers
+import answerfv
 
 
 def compare_fv(fields, a1, a2):
@@ -73,11 +48,11 @@ def delta2str(delta):
 
 
 if __name__ == "__main__":
-    qlist, questions = load_questions(sys.argv[1])
+    qlist, questions = answerfv.load_questions(sys.argv[1])
     for qid in qlist:
         print("[%s] %s  (%s)" % (questions[qid]['id'], questions[qid]['text'], questions[qid]['anspattern']))
-        alist1, ans1 = load_answers(sys.argv[2], qid)
-        alist2, ans2 = load_answers(sys.argv[3], qid)
+        alist1, ans1 = answerfv.load_answers(sys.argv[2], qid)
+        alist2, ans2 = answerfv.load_answers(sys.argv[3], qid)
         # List answers in the order of confidence in set #2
         for a in alist2:
             if a not in ans1:
