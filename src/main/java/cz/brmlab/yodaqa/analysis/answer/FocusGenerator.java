@@ -56,6 +56,15 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		FocusPair fp = null;
 
+		/* First, do not generate a focus in a number, particularly
+		 * one that might be segmented at a decimal dot.  Therefore,
+		 * further annotators will always be forced to consider the
+		 * answer only as a whole. */
+		if (LATByQuantity.answerIsNumber(jcas.getDocumentText())) {
+			logger.debug(".. No focus generated in all-number answer: " + jcas.getDocumentText());
+			return;
+		}
+
 		if (fp == null)
 			fp = fpDepRoot(jcas);
 		if (fp == null)
