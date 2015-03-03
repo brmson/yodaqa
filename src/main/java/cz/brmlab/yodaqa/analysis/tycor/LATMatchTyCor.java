@@ -35,6 +35,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpNoHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQAHit;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpMultiHit;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
@@ -347,6 +348,11 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				 * answer is less specifit than we want. */
 				logger.debug("generalizing both LATs for <<{}>>", answerView.getDocumentText());
 				fv.setFeature(AF_TyCorSpNoHit.class, -1.0);
+			} else if (hits > 0) {
+				/* Multiple hits, that's a positive signal
+				 * hopefully indicating strong evidence. */
+				logger.debug("multi-hit LAT match for <<{}>>", answerView.getDocumentText());
+				fv.setFeature(AF_TyCorSpMultiHit.class, -1.0);
 			}
 		}
 		return bestMatch;

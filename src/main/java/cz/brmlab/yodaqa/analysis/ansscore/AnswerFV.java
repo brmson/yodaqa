@@ -70,7 +70,7 @@ public class AnswerFV {
 		"simpleScore",
 		"LATNE", "LATDBpType", "LATDBpWNType", "LATQuantity", "LATQuantityCD",
 			"LATWnInstance", "LATDBpOntology", "LATDBpProperty", "LATFBOntology",
-		"tyCorSpQHit", "tyCorSpAHit", "tyCorSpNoHit", "tyCorSpQAHit",
+		"tyCorSpQHit", "tyCorSpAHit", "tyCorSpNoHit", "tyCorSpQAHit", "tyCorSpMultiHit",
 		"tyCorANE", "tyCorADBp", "tyCorADBpWN", "tyCorAQuantity", "tyCorAQuantityCD",
 			"tyCorAWnInstance", "tyCorADBpOntology", "tyCorADBpProperty", "tyCorAFBOntology",
 		"clOCMatchScore", "clOCPrefixedScore", "clOCPrefixingScore", "clOCSuffixedScore",
@@ -188,6 +188,7 @@ public class AnswerFV {
 			features.add(AF_TyCorSpAHit.class);
 			features.add(AF_TyCorSpNoHit.class);
 			features.add(AF_TyCorSpQAHit.class);
+			features.add(AF_TyCorSpMultiHit.class);
 			features.add(AF_TyCorANE.class);
 			features.add(AF_TyCorADBp.class);
 			features.add(AF_TyCorADBpWN.class);
