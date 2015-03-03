@@ -139,13 +139,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				else assert(false);
 			}
 
-			if (lat1.getSpecificity() != 0 && lat2.getSpecificity() != 0) {
-				/* If we had to generalize both LATs, that
-				 * seems to be a negative signal that the
-				 * answer is less specifit than we want. */
-				logger.debug("generalizing both LATs for <<{}>>", ansText);
-				fv.setFeature(AF_TyCorSpNoHit.class, -1.0);
-			} else if (lat1.getSpecificity() == 0 && lat2.getSpecificity() == 0) {
+			if (lat1.getSpecificity() == 0 && lat2.getSpecificity() == 0) {
 				/* If both LATs match sharp, that's a good
 				 * sign OTOH. */
 				logger.debug("sharp LAT match for <<{}>>", ansText);
@@ -297,6 +291,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			throws AnalysisEngineProcessException {
 		Map<String, LAT> answerLats = new HashMap<String, LAT>();
 		LATMatch bestMatch = null;
+		int hits = 0;
 
 		/* FIXME: Allow matching LATs that have same text but
 		 * different senses. */
@@ -331,6 +326,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				 * (We may encounter a variety of these. */
 				match.logMatch(logger, ".. TyCor hit");
 				match.record(fv, answerView.getDocumentText());
+				hits++;
 			}
 
 			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity())
@@ -345,6 +341,13 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				return null;
 			}
 			bestMatch.logMatch(logger, ".. TyCor best");
+			if (hits == 0) {
+				/* If we had to generalize both LATs, that
+				 * seems to be a negative signal that the
+				 * answer is less specifit than we want. */
+				logger.debug("generalizing both LATs for <<{}>>", answerView.getDocumentText());
+				fv.setFeature(AF_TyCorSpNoHit.class, -1.0);
+			}
 		}
 		return bestMatch;
 	}
