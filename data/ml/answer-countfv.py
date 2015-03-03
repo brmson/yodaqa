@@ -8,6 +8,12 @@
 # and not list any new/gone answers.
 #
 # Example: data/ml/answer-countfv.py data/eval/curated-train.tsv data/eval/answer-csv/83aae01
+#
+# Lists:
+# * % of questions containing this feature (very low == liable to overfit)
+# * average % of answers per question containing this feature
+# * average % of correct answers per question containing this feature
+#   (if BOTH of these two are very low == liable to overfit)
 
 from __future__ import print_function
 import sys
@@ -15,14 +21,22 @@ from collections import defaultdict
 import answerfv
 
 
-def stats_report(columns, all_occurs, correct_occurs):
-    print("%38.38s" % ('',) + "\tin %Q\tin avg%A\tin avg%CA")
+def stats_report(columns, all_occurs, correct_occurs, correct_xoccurs):
+    print("%38.38s" % ('',) + "\tin %Q\tavg%A\tavg%CA\tavg%CAp")
     for field in columns:
         all_occurs_nz = filter(lambda p: p != 0, all_occurs[field])
         correct_occurs_nz = filter(lambda p: p != 0, correct_occurs[field])
+
+        # % of questions that carry the feature
         portion_q = float(len(all_occurs_nz)) / len(all_occurs[field])
+
+        # average % of all answers to a question that carry the feature
         mean_a = float(sum(all_occurs_nz)) / len(all_occurs_nz) if len(all_occurs_nz) > 0 else 0
+        # average % of correct answers to a question that carry the feature
         mean_ca = float(sum(correct_occurs_nz)) / len(correct_occurs_nz) if len(correct_occurs_nz) > 0 else 0
+        # if mean_a and mean_ca are both low, liable to overfit; if just
+        # one is low, this means the feature is a good predictor!
+
         print("%38.38s\t%.3f\t%.3f\t%.3f" % (field, portion_q, mean_a, mean_ca))
 
 
