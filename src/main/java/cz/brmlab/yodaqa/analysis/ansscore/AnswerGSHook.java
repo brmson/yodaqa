@@ -299,7 +299,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		sb.append(",");
 		if (a.getFocus() != null) {
 			sb.append("\"");
-			sb.append(a.getFocus());
+			sb.append(a.getFocus().replaceAll("\"", "\"\""));
 			sb.append("\"");
 		}
 		sb.append(",");
@@ -315,7 +315,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 				} else {
 					sb.append(";");
 				}
-				sb.append(lat.getText());
+				sb.append(lat.getText().replaceAll("\"", "\"\""));
 				if (lat.getSynset() != 0) {
 					sb.append("/");
 					sb.append(lat.getSynset());
