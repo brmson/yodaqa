@@ -352,7 +352,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				/* Multiple hits, that's a positive signal
 				 * hopefully indicating strong evidence. */
 				logger.debug("multi-hit LAT match for <<{}>>", answerView.getDocumentText());
-				fv.setFeature(AF_TyCorSpMultiHit.class, -1.0);
+				fv.setFeature(AF_TyCorSpMultiHit.class, 1.0);
 			}
 		}
 		return bestMatch;
