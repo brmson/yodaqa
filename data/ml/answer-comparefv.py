@@ -22,7 +22,7 @@ def compare_fv(fields, a1, a2):
         f2 = a2.get(f, 0)
         if f1 == f2:
             continue
-        delta.append((f, f1, f2))
+        delta.append((f, str(f1), str(f2)))
     return delta
 
 
