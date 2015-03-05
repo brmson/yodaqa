@@ -206,6 +206,12 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		/* quality/ */ 4731092L,
 		/* concept/ */ 5844071L,
 		/* thing/ */ 2452L,
+		/* possession/ */ 32912L,
+		/* happening/ */ 7298313L,
+		/* signal/ */ 6804229L,
+		/* auditory communication/ */ 7123727L,
+		/* event/ */ 29677L,
+		/* group/ */ 31563L,
 	};
 	protected Set<Long> wnwn_synsetbl;
 
