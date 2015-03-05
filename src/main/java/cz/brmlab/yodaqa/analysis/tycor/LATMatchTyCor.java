@@ -330,17 +330,22 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				hits++;
 			}
 
-			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity())
+			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity()) {
+				/* XXX: Technically, we should apply the
+				 * blacklist check for match.record() above
+				 * as well; in practice, we should never get
+				 * hit matches on the WordnetLATs. */
+				if (match.getLat1() instanceof WordnetLAT
+				    && match.getLat2() instanceof WordnetLAT
+				    && wnwn_synsetbl.contains(match.getLat1().getSynset())) {
+					match.logMatch(logger, ".. ignoring blacklisted TyCor");
+					continue;
+				}
 				bestMatch = match;
+			}
 		}
 
 		if (bestMatch != null) {
-			if (bestMatch.getLat1() instanceof WordnetLAT
-			    && bestMatch.getLat2() instanceof WordnetLAT
-			    && wnwn_synsetbl.contains(bestMatch.getLat1().getSynset())) {
-				bestMatch.logMatch(logger, ".. ignoring blacklisted TyCor");
-				return null;
-			}
 			bestMatch.logMatch(logger, ".. TyCor best");
 			if (hits == 0) {
 				/* If we had to generalize both LATs, that
