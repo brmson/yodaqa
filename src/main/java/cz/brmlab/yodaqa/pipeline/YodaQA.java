@@ -130,7 +130,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 4,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 3,
 					AnswerCASMerger.PARAM_PHASE, 0);
 			builder.add(answerCASMerger);
 
@@ -286,8 +286,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		/* Full-text search: */
 		//AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
 		//builder.add(solrFull); /* This one is worth 2 isLasts. */
-		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
-		builder.add(solrDoc);
+		//AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
+		//builder.add(solrDoc);
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
