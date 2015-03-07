@@ -224,7 +224,7 @@ class QACounter:
         """
         Policy decision on whether the feature occurs extremely rarely.
         """
-        return qacounter.portion_answers(field) < 0.001
+        return qacounter.portion_answers(field) < 0.001 and qacounter.portion_questions(field) < 0.01
 
     def policy_bad_predictor(self, field):
         """
