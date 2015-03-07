@@ -30,6 +30,10 @@ fairly volatile):
   * Try a small decision forest instead of logistic regression
     to capture some simple feature dependencies
 
+(Note that this list is often getting stale.  Please ask pasky@ucw.cz
+if you are looking for some interesting tasks.  We will probably move
+to tracking these in GitHub issues in the futuer.)
+
 v1.0 Roadmap
 ------------
 
@@ -57,6 +61,16 @@ pipeline stages implemented.  More concretely:
 
 To get there, we have to take care of at least the following:
 
+  * Revise the curated dataset, especially numeric answers;
+    in other words, have humans annotate right/wrong answers and
+    update the regexes accordingly
+  * Answer Scoring
+    * We probably have a fair amount of overfitting at this stage;
+      try different classifiers and clean up the answer FV
+  * Passage Answer Extraction
+    * Our current strategy of going with all NPs is unreasonable,
+      as many answers are only part of larger answers which have
+      irrelevant focus
   * Evidence Gathering stage
     * Extra Fulltext Search: An answer feature for normalized
       number of fulltext search hits for clues + candidate answer
@@ -64,15 +78,10 @@ To get there, we have to take care of at least the following:
       from nouns in first sentence of concept enwiki base article.
     * Extra Type Coercion: An answer feature for normalized number
       of fulltext search hits for question LAT + candidate answer
-  * Structured Primary Search
-    * Try using WikiData in addition to DBpedia or create a custom
-      raw infobox/table dataset from the enwiki data; it turns out
-      that DBpedia is in fact really narrow :(
 
 We plan to publish our results in a paper when 1.0 is done.  For that,
 we will want to do some comparison benchmarks:
 
-  * Update to DBpedia 2014 and a matching enwiki snapshot
   * Re-benchmark with other datasets:
     * Plain TREC QA dataset and regexes (full + curated-test questions
       only).
