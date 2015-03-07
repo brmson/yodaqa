@@ -202,7 +202,9 @@ def train_model(fv_train, class_train):
     Train a classifier on the given (fv_train, class_train) training data.
     Returns the classifier.
     """
-    cfier = linear_model.LogisticRegression(class_weight={0: 1, 1: 2}, dual=False, fit_intercept=True)
+    class_ratio = float(np.sum(class_train == 1)) / np.size(class_train)
+    # print('// class ratio ', class_ratio)
+    cfier = linear_model.LogisticRegression(class_weight={0: 1, 1: 0.5/class_ratio}, dual=False, fit_intercept=True)
     cfier.fit(fv_train, class_train)
     return cfier
 
