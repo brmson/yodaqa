@@ -215,6 +215,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	}
 
 	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch, AnswerStats astats) {
+		String[] labels = AnswerFV.getFVLabels();
 		/* First, open the output file. */
 		if (trainFile == null) {
 			try {
@@ -226,7 +227,9 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			StringBuilder sb = new StringBuilder();
 			sb.append("qid");
 			sb.append("\t");
-			for (String label : AnswerFV.getFVLabels()) {
+			for (String label : labels) {
+				if (featureBlacklisted(label))
+					continue;
 				sb.append(label);
 				sb.append("\t");
 			}
@@ -240,7 +243,11 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		StringBuilder sb = new StringBuilder();
 		sb.append(qid);
 		sb.append("\t");
+		int i = -1;
 		for (double value : fv.getFV()) {
+			i++;
+			if (featureBlacklisted(labels[i]))
+				continue;
 			sb.append(value);
 			sb.append("\t");
 		}
@@ -336,5 +343,67 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 
 		csvFile.println(sb.toString());
 		csvFile.flush();
+	}
+
+	/* Do not include some features in the dumped feature vector.
+	 * These features are blacklisted because they occur too rarely
+	 * and therefore are liable to get overfitted.
+	 *
+	 * This list has been obtained by:
+	 *
+	 * data/ml/answer-countfv.py data/eval/curated-train.tsv data/eval/answer-csv/ffd67ef/ >/tmp/ffd67ef.fts
+	 * egrep '!! .$|!. !$' /tmp/ffd67ef.fts | tr -d @ | awk '{print$1}' | egrep -v '^evd|^topAnswer|^phase|^solr' | sed 's/^.*$/"&",/'
+	 * (the first egrep filters for at least two !s (second ! implies
+	 * first !), the second egrep prevents removal of non-phase0 features)
+	 */
+	/* XXX: This is a gross hack the way this is done now.
+	 * TODO: Also, this should be automated. */
+	String featureBlacklist[] = {
+		"originPsgByClueSubjectNE",
+		"originDBpOClueToken",
+		"originDBpOCluePhrase",
+		"originDBpOClueSV",
+		"originDBpOClueNE",
+		"originDBpOClueSubject",
+		"originDBpOClueSubjectNE",
+		"originDBpOClueSubjectToken",
+		"originDBpOClueSubjectPhrase",
+		"originDBpOClueConcept",
+		"originDBpPClueToken",
+		"originDBpPCluePhrase",
+		"originDBpPClueSV",
+		"originDBpPClueNE",
+		"originDBpPClueLAT",
+		"originDBpPClueSubject",
+		"originDBpPClueSubjectNE",
+		"originDBpPClueSubjectToken",
+		"originDBpPClueSubjectPhrase",
+		"originDBpPClueConcept",
+		"originFBOClueToken",
+		"originFBOCluePhrase",
+		"originFBOClueSV",
+		"originFBOClueNE",
+		"originFBOClueLAT",
+		"originFBOClueSubject",
+		"originFBOClueSubjectNE",
+		"originFBOClueSubjectToken",
+		"originFBOClueSubjectPhrase",
+		"originFBOClueConcept",
+		"AF_PsgDistClueSubjectNE",
+		"tyCorPassageSp",
+		"tyCorPassageDist",
+		"tyCorPassageInside",
+		"LATQuantity",
+		"tyCorADBpWN",
+		"tyCorAQuantity",
+		"clOCSubstringScore",
+	};
+
+	protected boolean featureBlacklisted(String label) {
+		String fName = label.substring(1); // drop the prefix char
+		for (String f : featureBlacklist)
+			if (f.equals(fName))
+				return true;
+		return false;
 	}
 }
