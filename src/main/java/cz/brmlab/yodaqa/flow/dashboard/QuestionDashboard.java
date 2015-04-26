@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.jcas.JCas;
+
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+
 /** A question tracking device.  This singleton class is used to keep
  * track of all questions posed and possibly answered so far, record
  * progress on answering them, and so on.  This is not useful for
@@ -49,5 +54,9 @@ public final class QuestionDashboard {
 
 	public synchronized Question get(int id) {
 		return questions.get(id);
+	}
+	public Question get(JCas questionCas) {
+		QuestionInfo qi = JCasUtil.selectSingle(questionCas, QuestionInfo.class);
+		return get(Integer.parseInt(qi.getQuestionId()));
 	}
 };

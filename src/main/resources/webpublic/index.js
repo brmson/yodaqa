@@ -7,6 +7,18 @@ function score_bar(score) {
 	return '<hr class="scorebar" style="width:'+(score*100)+'%; background-color:rgb('+red+','+green+',0)"> ';
 }
 
+/* Create a box with question summary. */
+function showSummary(container, summary) {
+	container.empty();
+	container.append("<p><b>Answer type:</b> " + summary.lats.join(', ') + "</p>");
+	summary.concepts.forEach(function(c) {
+		container.append('<p class="concept">'
+				+ '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
+				+ ' <a href="http://en.wikipedia.org/?curid='+c.pageId+'">'
+				+ c.title + '</a></p>'); // TODO also include the first sentence?
+	});
+}
+
 /* Create a table with answers. */
 function showAnswers(container, answers) {
 	container.empty();
@@ -20,19 +32,28 @@ function showAnswers(container, answers) {
 				+ '<td class="score">'+(a.confidence*100).toFixed(1)+'%</td></tr>');
 		i++;
 	});
-	console.log('c3', container, i);
 }
 
 /* Retrieve, process and display json question information. */
 function getQuestionJson() {
 	$.get("/q/"+qid, function(r) {
+		if (r.summary) {
+			/* Show the question summary. */
+			container = $("#summary");
+			if (!container.length) {
+				container = $('<div id="summary"></div>');
+				$("#output").prepend(container);
+				showSummary(container, r.summary);
+			}
+		}
+
 		if (r.answers) {
 			/* Show the list of answers. */
 			container = $("#answers");
 			if (!container.length) {
 				container = $('<table id="answers"></table>');
 				$("#output").prepend(container);
-			}
+			} // but keep re-rendering the answers in case the list gets updated
 			showAnswers(container, r.answers);
 		}
 

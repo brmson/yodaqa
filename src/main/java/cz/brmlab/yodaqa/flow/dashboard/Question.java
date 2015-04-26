@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 public class Question {
 	protected int id;
 	protected String text;
+	protected QuestionSummary summary = null;
 	protected List<QuestionAnswer> answers = null;
 	protected boolean finished = false;
 
@@ -26,6 +27,13 @@ public class Question {
 	public synchronized int getId() { return id; }
 	/** @return the text */
 	public synchronized String getText() { return text; }
+
+	/** @return the summary */
+	public synchronized QuestionSummary getSummary() { return summary; }
+	/** @param summary the summary to set */
+	public synchronized void setSummary(QuestionSummary summary) {
+		this.summary = summary;
+	}
 
 	/** @return the answer */
 	public synchronized List<QuestionAnswer> getAnswers() { return answers; }

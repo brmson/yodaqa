@@ -133,6 +133,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
 
 
+		builder.add(AnalysisEngineFactory.createEngineDescription(DashboardHook.class));
 		/* Some debug dumps of the intermediate CAS. */
 		if (logger.isDebugEnabled()) {
 			builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));

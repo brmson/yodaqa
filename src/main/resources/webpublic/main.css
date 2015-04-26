@@ -20,11 +20,31 @@ header h1 {
 	display: none;
 }
 
+#summary {
+	border: 1pt solid black;
+	padding: 1ex 1em;
+	width: 26em;
+	margin: 1ex 1em;
+}
+.concept a {
+	color: black;
+	text-decoration: none;
+}
+.concept a:hover {
+	color: #0000dd;
+	text-decoration: underline;
+}
+.wlogo {
+	width: 1.1em;
+	vertical-align: text-top;
+}
+
 #answers {
 	border: 1pt solid black;
 	table-layout: fixed;
 	padding: 1ex 1em;
 	width: 28em;
+	margin: 1ex 1em;
 }
 #answers .i {
 	width: 2em;
