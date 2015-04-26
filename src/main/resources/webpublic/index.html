@@ -9,15 +9,13 @@
 </head>
 <body>
 	<header><h1>brmson YodaQA</h1></header>
-	<section id="question">
+	<div id="question">
 		<form action="/q" id="ask" method="post">
 			<input type="search" name="text" size="80" placeholder="Who wrote Ender's Game?"/>
 			<button>Submit</button>
 		</form>
-	</section>
-	<section id="results">
-		<div id="spinner"><img src="ajax-loader.gif" alt="Please wait" /></div>
-		<table id="answers"></table>
-	</section>
+	</div>
+	<div id="spinner"><img src="ajax-loader.gif" alt="Please wait" /></div>
+	<div id="output"><!-- JavaScript scratchboard --></div>
 </body>
 </html>

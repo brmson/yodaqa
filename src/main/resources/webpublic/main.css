@@ -10,21 +10,14 @@ header h1 {
 	font-size: 2em;
 	font-family: monospace;
 }
-section h2 {
-	font-size: 1em;
-	font-family: monospace;
-}
-section#question {
+#question {
 	text-align: center;
 	margin-top: 6ex;
 	margin-bottom: 6ex;
 }
-section#results {
-	clear: all;
-}
 #spinner {
-	display: none;
 	text-align: center;
+	display: none;
 }
 
 #answers {
