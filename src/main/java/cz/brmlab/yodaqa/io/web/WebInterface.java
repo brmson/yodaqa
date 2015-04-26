@@ -36,6 +36,8 @@ public class WebInterface implements Runnable {
 	final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
 	public void run() {
+		staticFileLocation("/webpublic");
+
 		// Ask a question
 		post(new Route("/q") {
 			Random idgen = new Random();

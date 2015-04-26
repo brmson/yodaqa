@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>brmson YodaQA</title>
+	<link rel="stylesheet" href="main.css" />
+	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="//malsup.github.com/jquery.form.js"></script> 
+	<script src="index.js"></script>
+</head>
+<body>
+	<header><h1>brmson YodaQA</h1></header>
+	<section id="question">
+		<form action="/q" id="ask" method="post">
+			<input type="search" name="text" size="80" placeholder="Who wrote Ender's Game?"/>
+			<button>Submit</button>
+		</form>
+	</section>
+	<section id="results">
+		<div id="spinner"><img src="ajax-loader.gif" alt="Please wait" /></div>
+		<ol id="answers"></ol>
+	</section>
+</body>
+</html>

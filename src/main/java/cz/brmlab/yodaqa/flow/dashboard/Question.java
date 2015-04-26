@@ -36,7 +36,7 @@ public class Question {
 	/** @return the finished */
 	public synchronized boolean isFinished() { return finished; }
 	/** @param finished the finished to set */
-	public synchronized void setFinished(boolean finished) {
+	protected synchronized void setFinished(boolean finished) {
 		this.finished = finished;
 	}
 
