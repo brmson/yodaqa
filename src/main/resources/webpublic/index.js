@@ -1,3 +1,10 @@
+/* Create a fancy score bar representing confidence in the answer. */
+function score_bar(score) {
+	var green = Math.round(200 * score + 25);
+	var red = Math.round(200 * (1-score) + 25);
+	return '<hr class="scorebar" style="width:'+(score*100)+'%; background-color:rgb('+red+','+green+',0)"> ';
+}
+
 $(function() {
 var qid;
 
@@ -18,8 +25,15 @@ $("#ask").ajaxForm({
 				return;
 			}
 			$("#spinner").hide();
+			var i = 1;
 			r.answers.forEach(function(a) {
-				$("#answers").append("<li>"+a+"</li>");
+				// FIXME: also deal with < > &
+				text = a.text.replace(/"/g, "&#34;");
+				$('#answers').append('<tr><td class="i">'+i+'.</td>'
+						+ '<td class="text" title="'+text+'">'+text+'</td>'
+						+ '<td class="scorebar">'+score_bar(a.confidence)+'</td>'
+						+ '<td class="score">'+(a.confidence*100).toFixed(1)+'%</td></tr>');
+				i++;
 			})
 		}
 		function getResult() {

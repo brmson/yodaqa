@@ -12,6 +12,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.flow.dashboard.QuestionAnswer;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
@@ -39,9 +40,11 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answerit = idx.iterator();
-		List<String> answers = new ArrayList<>();
+		List<QuestionAnswer> answers = new ArrayList<>();
 		while (answerit.hasNext()) {
-			answers.add(((Answer) answerit.next()).getText());
+			Answer a = ((Answer) answerit.next());
+			QuestionAnswer qa = new QuestionAnswer(a.getText(), a.getConfidence());
+			answers.add(qa);
 		}
 		QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId())).setAnswers(answers);
 	}

@@ -26,3 +26,52 @@ section#results {
 	display: none;
 	text-align: center;
 }
+
+#answers {
+	border: 1pt solid black;
+	table-layout: fixed;
+	padding: 1ex 1em;
+	width: 28em;
+}
+#answers .i {
+	width: 2em;
+}
+#answers .text {
+	width: 15em;
+}
+#answers .scorebar {
+	width: 5em;
+}
+#answers .score {
+	width: 3em;
+	text-align: right;
+}
+
+/* Fade-out at right on overflow (ridiculously complex): */
+#answers td {
+	position: relative;
+	overflow: hidden;
+	white-space: nowrap;
+}
+#answers td.text:after {
+	content: "";
+	pointer-events: none;
+	position: absolute;
+	width: 1em;
+	height: 100%;
+	top: 0; right: 0;
+
+	background-image: -webkit-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -moz-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -ms-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -o-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: linear-gradient(to left, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+
+.scorebar {
+	height: 1.5ex;
+	margin-top: 0; margin-bottom: 0;
+	vertical-align: middle;
+	text-align: left; margin-left: 0.25em; margin-right: 0.25em;
+	border: 0pt;
+}

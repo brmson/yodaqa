@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 public class Question {
 	protected int id;
 	protected String text;
-	protected List<String> answers = null;
+	protected List<QuestionAnswer> answers = null;
 	protected boolean finished = false;
 
 	protected static Gson gson = new Gson();
@@ -28,9 +28,9 @@ public class Question {
 	public synchronized String getText() { return text; }
 
 	/** @return the answer */
-	public synchronized List<String> getAnswers() { return answers; }
+	public synchronized List<QuestionAnswer> getAnswers() { return answers; }
 	/** @param answer the answer to set */
-	public synchronized void setAnswers(List<String> answers) {
+	public synchronized void setAnswers(List<QuestionAnswer> answers) {
 		this.answers = answers;
 		setFinished(true);
 	}
