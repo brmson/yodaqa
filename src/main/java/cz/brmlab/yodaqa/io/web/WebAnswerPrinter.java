@@ -1,5 +1,8 @@
 package cz.brmlab.yodaqa.io.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
@@ -35,11 +38,11 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 		}
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
-		FSIterator answers = idx.iterator();
-		String answer = "";
-		if (answers.hasNext()) {
-			answer = ((Answer) answers.next()).getText();
+		FSIterator answerit = idx.iterator();
+		List<String> answers = new ArrayList<>();
+		while (answerit.hasNext()) {
+			answers.add(((Answer) answerit.next()).getText());
 		}
-		QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId())).setAnswer(answer);
+		QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId())).setAnswers(answers);
 	}
 }

@@ -1,5 +1,7 @@
 package cz.brmlab.yodaqa.flow.dashboard;
 
+import java.util.List;
+
 import com.google.gson.Gson;
 
 /** A stateful question.  This question has been asked, can be referred to
@@ -10,7 +12,7 @@ import com.google.gson.Gson;
 public class Question {
 	protected int id;
 	protected String text;
-	protected String answer = null;
+	protected List<String> answers = null;
 	protected boolean finished = false;
 
 	protected static Gson gson = new Gson();
@@ -26,10 +28,10 @@ public class Question {
 	public synchronized String getText() { return text; }
 
 	/** @return the answer */
-	public synchronized String getAnswer() { return answer; }
+	public synchronized List<String> getAnswers() { return answers; }
 	/** @param answer the answer to set */
-	public synchronized void setAnswer(String answer) {
-		this.answer = answer;
+	public synchronized void setAnswers(List<String> answers) {
+		this.answers = answers;
 		setFinished(true);
 	}
 

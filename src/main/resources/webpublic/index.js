@@ -18,7 +18,9 @@ $("#ask").ajaxForm({
 				return;
 			}
 			$("#spinner").hide();
-			$("#answers").append("<li>"+r.answer+"</li>");
+			r.answers.forEach(function(a) {
+				$("#answers").append("<li>"+a+"</li>");
+			})
 		}
 		function getResult() {
 			$.get("/q/"+qid, processResult);
