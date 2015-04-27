@@ -38,9 +38,9 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
     of all sorts of NLP resources and models.  This will amount to several
     hundreds of megabytes of download!
-  * ``./gradlew run -q``
+  * ``./gradlew run -q`` (command line) or ``./gradlew web -q`` (web interface)
 
-By default, YodaQA will try to connect to a remote Solr core serving Wikipedia;
+By default, YodaQA will try to connect to various remote databases;
 see the section on Data Sources if connection fails.
 
 Brmson should run on Windows as well, in theory - just have a Java7 JDK
@@ -54,6 +54,8 @@ answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
 
+Alternatively, you can use the "web" frontend by executing
+``./gradlew web -q`` and opening e.g. http://localhost:4567/ in your browser.
 It is also possible to let YodaQA answer many questions at once, e.g. to
 measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
 the curated testing dataset from data/eval/.  (See also data/eval/README.md
