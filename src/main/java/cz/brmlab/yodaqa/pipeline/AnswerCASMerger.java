@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionAnswer;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -233,6 +235,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			answersByText.put(text, answers);
 		}
 		answers.add(new AnswerFeatures(answer, fv, latlist));
+
+		QuestionAnswer qa = new QuestionAnswer(text, 0);
+		QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 	}
 
 	public boolean hasNext() throws AnalysisEngineProcessException {

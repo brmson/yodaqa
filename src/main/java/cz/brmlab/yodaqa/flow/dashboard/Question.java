@@ -15,11 +15,12 @@ public class Question {
 	protected String text;
 	protected QuestionSummary summary = null;
 	protected List<AnswerSource> sources = new ArrayList<>();
-	protected List<QuestionAnswer> answers = null;
+	protected List<QuestionAnswer> answers = new ArrayList<>();
 	protected boolean finished = false;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
 	protected int gen_sources = 0;
+	protected int gen_answers = 0;
 
 	protected static Gson gson = new Gson();
 
@@ -63,10 +64,28 @@ public class Question {
 
 	/** @return the answer */
 	public synchronized List<QuestionAnswer> getAnswers() { return answers; }
-	/** @param answer the answer to set */
+	public synchronized void addAnswer(QuestionAnswer qa) {
+		/* Do trivial text-based deduplication. */
+		QuestionAnswer dupe = null;
+		for (QuestionAnswer qa2 : answers) {
+			if (qa2.getText().equals(qa.getText())) {
+				dupe = qa2;
+				break;
+			}
+		}
+		if (dupe != null)
+			answers.remove(dupe);
+
+		// pre-pend this answer, so that the latest are at the top
+		this.answers.add(0, qa);
+		gen_answers ++;
+	}
+	/** Reset the answer list, typically when have scored them.
+	 * @param answer the answer to set */
 	public synchronized void setAnswers(List<QuestionAnswer> answers) {
 		this.answers = answers;
 		setFinished(true);
+		gen_answers ++;
 	}
 
 	/** @return the finished */

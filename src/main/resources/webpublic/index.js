@@ -1,5 +1,5 @@
 var qid;  // id of the last posed question
-var gen_sources;  // when this number changes, re-render
+var gen_sources, gen_answers;  // when this number changes, re-render
 
 /* Create a fancy score bar representing confidence of an answer. */
 function score_bar(score) {
@@ -73,14 +73,15 @@ function getQuestionJson() {
 			gen_sources = r.gen_sources;
 		}
 
-		if (r.answers) {
+		if (r.answers && gen_answers != r.gen_answers) {
 			/* Show the list of answers. */
 			container = $("#answers");
 			if (!container.length) {
 				container = $('<table id="answers"></table>');
 				$("#output").prepend(container);
-			} // but keep re-rendering the answers in case the list gets updated; TODO gen_answers
+			}
 			showAnswers(container, r.answers);
+			gen_answers = r.gen_answers;
 		}
 
 		if (r.finished) {
@@ -104,6 +105,7 @@ $("#ask").ajaxForm({
 		$("#spinner").show();
 		qid = response;
 		gen_sources = 0;
+		gen_answers = 0;
 		setTimeout(getQuestionJson, 500);
 	}});
 });
