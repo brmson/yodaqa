@@ -52,6 +52,8 @@ function showAnswers(container, answers) {
 /* Retrieve, process and display json question information. */
 function getQuestionJson() {
 	$.get("/q/"+qid, function(r) {
+		$('input[name="text"]').val(r.text);
+
 		if (r.summary) {
 			/* Show the question summary. */
 			container = $("#summary");
