@@ -20,6 +20,18 @@ header h1 {
 	display: none;
 }
 
+.twocolumn {
+	clear: both;
+}
+.twocolumn-left {
+	width: 50%;
+	float: left;
+}
+.twocolumn-right {
+	width: 50%;
+	float: right;
+}
+
 #summary {
 	border: 1pt solid black;
 	padding: 1ex 1em;

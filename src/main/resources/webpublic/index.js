@@ -57,7 +57,7 @@ function getQuestionJson() {
 			container = $("#summary");
 			if (!container.length) {
 				container = $('<div id="summary"></div>');
-				$("#output").prepend(container);
+				$("#metadata_area").prepend(container);
 				showSummary(container, r.summary);
 			}
 		}
@@ -67,7 +67,7 @@ function getQuestionJson() {
 			container = $("#sources");
 			if (!container.length) {
 				container = $('<div id="sources"></div>');
-				$("#output").prepend(container);
+				$("#metadata_area").prepend(container);
 			}
 			showSources(container, r.sources);
 			gen_sources = r.gen_sources;
@@ -78,7 +78,7 @@ function getQuestionJson() {
 			container = $("#answers");
 			if (!container.length) {
 				container = $('<table id="answers"></table>');
-				$("#output").prepend(container);
+				$("#answers_area").prepend(container);
 			}
 			showAnswers(container, r.answers);
 			gen_answers = r.gen_answers;
@@ -97,7 +97,8 @@ function getQuestionJson() {
 $(function() {
 $("#ask").ajaxForm({
 	beforeSubmit: function() {
-		$("#output").empty();
+		$("#metadata_area").empty();
+		$("#answers_area").empty();
 		return true;
 	},
 	success: function(response) {
