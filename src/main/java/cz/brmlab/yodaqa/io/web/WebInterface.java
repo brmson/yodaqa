@@ -52,7 +52,7 @@ public class WebInterface implements Runnable {
 					response.status(422);
 					return "missing parameter: text";
 				}
-				logger.info("{} :: new question {} <<{}>>", request.host(), id, text);
+				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
 				Question q = new Question(id, text);
 				QuestionDashboard.getInstance().askQuestion(q);
 				response.status(201);
@@ -74,12 +74,12 @@ public class WebInterface implements Runnable {
 				}
 				Question q = QuestionDashboard.getInstance().get(id);
 				if (q == null) {
-					logger.debug("{} :: /q <<{}>> ???", request.host(), id);
+					logger.debug("{} :: /q <<{}>> ???", request.ip(), id);
 					response.status(404);
 					return "{}";
 				}
 				String json = q.toJson();
-				logger.debug("{} :: /q <<{}>> -> <<{}>>", request.host(), id, json);
+				logger.debug("{} :: /q <<{}>> -> <<{}>>", request.ip(), id, json);
 				return json;
 			}
 		});
@@ -88,7 +88,7 @@ public class WebInterface implements Runnable {
 		get(new Route("/q/") {
 			@Override
 			public Object handle(Request request, Response response) {
-				logger.debug("{} :: /q list", request.host());
+				logger.debug("{} :: /q list", request.ip());
 				response.type("application/json");
 				QuestionDashboard qd = QuestionDashboard.getInstance();
 				List<String> qJson = new ArrayList<>();
