@@ -51,7 +51,7 @@ header h1 {
 }
 .wlogo {
 	width: 1.1em;
-	vertical-align: text-top;
+	vertical-align: baseline;
 }
 
 #sources {
