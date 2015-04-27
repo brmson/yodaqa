@@ -46,6 +46,20 @@ public class Question {
 		this.sources.add(source);
 		gen_sources ++;
 	}
+	/** Update state of a given AnswerSource.
+	 * XXX: The enwiki-specificity is a horrid hack now before we introduce
+	 * unique ids for search results. */
+	public synchronized void setSourceState(String origin, int pageId, int state) {
+		for (AnswerSource as : sources) {
+			AnswerSourceEnwiki ase = (AnswerSourceEnwiki) as;
+			if (ase.origin == origin && ase.pageId == pageId) {
+				as.setState(state);
+				gen_sources ++;
+				return;
+			}
+		}
+		// XXX: throw something?
+	}
 
 	/** @return the answer */
 	public synchronized List<QuestionAnswer> getAnswers() { return answers; }

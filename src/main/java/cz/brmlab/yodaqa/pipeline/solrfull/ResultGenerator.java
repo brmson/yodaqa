@@ -14,6 +14,8 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
@@ -77,6 +79,13 @@ public class ResultGenerator extends JCasMultiplier_ImplBase {
 			CasCopier rcopier = new CasCopier(searchView.getCas(), resultView.getCas());
 			if (ri != null) {
 				fillResult(rcopier, ri, resultView, (nextResult == null));
+				/* XXX: Ugh. We clearly need global result ids. */
+				QuestionDashboard.getInstance().get(questionView).setSourceState(
+						ri.getOrigin() == "cz.brmlab.yodaqa.pipeline.solrfull.fulltext"
+							? AnswerSourceEnwiki.ORIGIN_FULL
+							: AnswerSourceEnwiki.ORIGIN_TITLE,
+						Integer.parseInt(ri.getDocumentId()),
+						1);
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */

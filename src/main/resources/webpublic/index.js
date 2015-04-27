@@ -24,10 +24,13 @@ function showSummary(container, summary) {
 function showSources(container, sources) {
 	container.empty();
 	sources.forEach(function(s) {
+		var state_stags = ['<i>', '<b>', ''];
+		var state_etags = ['</i>', '</b>', ''];
 		container.append('<p class="source">'
 				+ '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
 				+ ' <a href="http://en.wikipedia.org/?curid='+s.pageId+'" target="_blank">'
-				+ s.title + '</a> (' + s.origin + ')</p>'); // TODO also include the first sentence?
+				+ state_stags[s.state] + s.title + state_etags[s.state]
+				+ '</a> (' + s.origin + ')</p>'); // TODO also include the first sentence?
 	});
 }
 

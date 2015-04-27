@@ -4,6 +4,8 @@ package cz.brmlab.yodaqa.flow.dashboard;
 public abstract class AnswerSource {
 	protected String type;
 	protected String title;
+	/* state 0: not processed, 1: being processed, 2: done */
+	protected int state = 0;
 
 	public AnswerSource(String type, String title) {
 		this.type = type;
@@ -12,4 +14,9 @@ public abstract class AnswerSource {
 
 	public String getType() { return type; }
 	public String getTitle() { return title; }
+
+	public int getState() { return state; }
+	public void setState(int state) {
+		this.state = state;
+	}
 };
