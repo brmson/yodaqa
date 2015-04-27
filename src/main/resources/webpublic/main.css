@@ -1,6 +1,13 @@
 body {
 	font-family: sans-serif;
 }
+a {
+	color: #0000dd;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
 header {
 	text-align: center;
 	margin-top: 4ex;
@@ -22,6 +29,7 @@ header h1 {
 
 .twocolumn {
 	clear: both;
+	overflow: auto; /* stretch to fit contents */
 }
 .twocolumn-left {
 	width: 50%;
@@ -40,13 +48,6 @@ header h1 {
 }
 .concept, .source {
 	margin-top: 0.5ex; margin-bottom: 0.5ex;
-}
-.concept a, .source a {
-	color: #0000dd;
-	text-decoration: none;
-}
-.concept a:hover, .source a:hover {
-	text-decoration: underline;
 }
 .wlogo {
 	width: 1.1em;
@@ -108,4 +109,42 @@ header h1 {
 	vertical-align: middle;
 	text-align: left; margin-left: 0.25em; margin-right: 0.25em;
 	border: 0pt;
+}
+
+#dashboard {
+	display: flex;
+	justify-content: space-around;
+	clear: both;
+	margin-top: 8ex;
+	border-top: 1pt dashed black;
+	padding-top: 4ex;
+}
+#answered, #inProgress, #toAnswer {
+	width: 30%;
+	border: 1pt solid black;
+	padding: 1ex 1em;
+	margin: 1ex 1em;
+	position: relative;
+	overflow: hidden;
+	white-space: nowrap;
+}
+#answered:after, #inProgress:after, #toAnswer:after {
+	content: "";
+	pointer-events: none;
+	position: absolute;
+	width: 1em;
+	height: 100%;
+	top: 0; right: 0;
+
+	background-image: -webkit-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -moz-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -ms-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -o-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: linear-gradient(to left, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+#answered h2, #inProgress h2, #toAnswer h2 {
+	font-size: 1em;
+}
+#answered .qline, #inProgress .qline, #toAnswer .qline {
+	margin-top: 0.5ex; margin-bottom: 0.5ex;
 }

@@ -9,8 +9,11 @@ package cz.brmlab.yodaqa.io.web;
  * */
 import static spark.Spark.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -78,6 +81,44 @@ public class WebInterface implements Runnable {
 				String json = q.toJson();
 				logger.debug("{} :: /q <<{}>> -> <<{}>>", request.host(), id, json);
 				return json;
+			}
+		});
+
+		// Retrieve sets of questions
+		get(new Route("/q/") {
+			@Override
+			public Object handle(Request request, Response response) {
+				logger.debug("{} :: /q list", request.host());
+				response.type("application/json");
+				QuestionDashboard qd = QuestionDashboard.getInstance();
+				List<String> qJson = new ArrayList<>();
+
+				if (request.queryParams("toAnswer") != null) {
+					for (Question q : qd.getQuestionsToAnswer())
+						qJson.add(q.toJson());
+
+				} else if (request.queryParams("inProgress") != null) {
+					for (Question q : qd.getQuestionsInProgress())
+						qJson.add(q.toJson());
+
+				} else if (request.queryParams("answered") != null) {
+					for (Question q : qd.getQuestionsAnswered())
+						qJson.add(q.toJson());
+
+				} else {
+					response.type("text/plain");
+					response.status(501);
+					return "for now, please use either ?toAnswer, ?inProgress or ?answered";
+				}
+
+				if (request.queryParams("all") == null)
+					try {
+						qJson = qJson.subList(0, 6); // yield just a few by default
+					} catch (IndexOutOfBoundsException e) {
+						// ignore
+					}
+
+				return "[" + StringUtils.join(qJson, ",\n") + "]";
 			}
 		});
 	}

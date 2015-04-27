@@ -12,6 +12,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.flow.dashboard.Question;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionAnswer;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -46,6 +47,8 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 			QuestionAnswer qa = new QuestionAnswer(a.getText(), a.getConfidence());
 			answers.add(qa);
 		}
-		QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId())).setAnswers(answers);
+		Question q = QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId()));
+		q.setAnswers(answers);
+		QuestionDashboard.getInstance().finishQuestion(q);
 	}
 }

@@ -93,20 +93,43 @@ function getQuestionJson() {
 	});
 }
 
+/* Create a titled listing of questions. */
+function showQuestionList(container, title, list) {
+	container.empty();
+	container.append('<h2>' + title + '</h2>');
+	list.forEach(function(q) {
+		container.append('<p class="qline"><a href="javascript:loadQuestion('+q.id+')">'+q.text+'</a></p>');
+	});
+}
+
+/* Retrieve, process and display json question list. */
+function getToAnswerJson() {
+	$.get("/q/?toAnswer", function(r) { showQuestionList($("#toAnswer"), "Question Queue", r); });
+}
+function getInProgressJson() {
+	$.get("/q/?inProgress", function(r) { showQuestionList($("#inProgress"), "In Progress", r); });
+}
+function getAnsweredJson() {
+	$.get("/q/?answered", function(r) { showQuestionList($("#answered"), "Answered", r); });
+}
+
+function loadQuestion(q) {
+	$("#metadata_area").empty();
+	$("#answers_area").empty();
+	$("#spinner").show();
+	qid = q;
+	gen_sources = 0;
+	gen_answers = 0;
+	getQuestionJson();
+}
 
 $(function() {
 $("#ask").ajaxForm({
-	beforeSubmit: function() {
-		$("#metadata_area").empty();
-		$("#answers_area").empty();
-		return true;
-	},
 	success: function(response) {
-		// we posed the question, start watching its info
-		$("#spinner").show();
-		qid = response;
-		gen_sources = 0;
-		gen_answers = 0;
-		setTimeout(getQuestionJson, 500);
+		setTimeout(function() { loadQuestion(response) }, 500);
 	}});
+
+getToAnswerJson(); setInterval(getToAnswerJson, 3100);
+getInProgressJson(); setInterval(getInProgressJson, 3000);
+getAnsweredJson(); setInterval(getAnsweredJson, 2900);
 });

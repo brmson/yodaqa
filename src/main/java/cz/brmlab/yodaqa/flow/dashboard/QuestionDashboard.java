@@ -1,8 +1,9 @@
 package cz.brmlab.yodaqa.flow.dashboard;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.uima.fit.util.JCasUtil;
@@ -33,7 +34,11 @@ public final class QuestionDashboard {
 	/* XXX: This could be also a queue.  But we might want to do
 	 * something smarter than FIFO in case of many questions, e.g.
 	 * preferring questions from different remote hosts. */
-	private Collection<Question> questionsToAnswer = new LinkedList<>();
+	private List<Question> questionsToAnswer = new LinkedList<>();
+	/* Questions that are currently being answered. */
+	private List<Question> questionsInProgress = new LinkedList<>();
+	/* Questions that have been answered, last coming first. */
+	private List<Question> questionsAnswered = new LinkedList<>();
 
 	public synchronized void askQuestion(Question q) {
 		questions.put(q.getId(), q);
@@ -49,6 +54,7 @@ public final class QuestionDashboard {
 		}
 		Question q = questionsToAnswer.iterator().next();
 		questionsToAnswer.remove(q);
+		questionsInProgress.add(q);
 		return q;
 	}
 
@@ -59,4 +65,14 @@ public final class QuestionDashboard {
 		QuestionInfo qi = JCasUtil.selectSingle(questionCas, QuestionInfo.class);
 		return get(Integer.parseInt(qi.getQuestionId()));
 	}
+
+	public synchronized void finishQuestion(Question q) {
+		q.setFinished(true);
+		questionsInProgress.remove(q);
+		questionsAnswered.add(0, q);
+	}
+
+	public synchronized List<Question> getQuestionsToAnswer() { return new ArrayList<>(questionsToAnswer); }
+	public synchronized List<Question> getQuestionsInProgress() { return new ArrayList<>(questionsInProgress); }
+	public synchronized List<Question> getQuestionsAnswered() { return new ArrayList<>(questionsAnswered); }
 };

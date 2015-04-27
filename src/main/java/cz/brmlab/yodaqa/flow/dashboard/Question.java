@@ -84,7 +84,6 @@ public class Question {
 	 * @param answer the answer to set */
 	public synchronized void setAnswers(List<QuestionAnswer> answers) {
 		this.answers = answers;
-		setFinished(true);
 		gen_answers ++;
 	}
 
