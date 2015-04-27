@@ -60,8 +60,7 @@ It is also possible to let YodaQA answer many questions at once, e.g. to
 measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
 the curated testing dataset from data/eval/.  (See also data/eval/README.md
 for more details, and a convenient wrapper script ``train-and-eval.sh``.)
-Support for connecting YodaQA to other programs (e.g. to IRC) is a work
-in progress, see ``contrib/irssi-brmson-pipe.pl`` for an example.
+To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.

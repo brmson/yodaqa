@@ -19,8 +19,9 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
  * 	contrib/irssi-brmson-pipe.pl
  * script uses it to connect YodaQA to IRC.
  *
- * The format of output is not stable yet, expected to evolve radically
- * (probably to JSON something). */
+ * XXX DEPRECATED - please use the REST API of the web interface instead.
+ * Whenever someone rewrites the irssi connector, this interface *will*
+ * go away. */
 
 public class YodaQA_Machine {
 	public static void main(String[] args) throws Exception {
