@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.flow.dashboard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -13,8 +14,12 @@ public class Question {
 	protected int id;
 	protected String text;
 	protected QuestionSummary summary = null;
+	protected List<AnswerSource> sources = new ArrayList<>();
 	protected List<QuestionAnswer> answers = null;
 	protected boolean finished = false;
+	/* Generation counts for various fields above, incremented every
+	 * time they are modified. */
+	protected int gen_sources = 0;
 
 	protected static Gson gson = new Gson();
 
@@ -33,6 +38,13 @@ public class Question {
 	/** @param summary the summary to set */
 	public synchronized void setSummary(QuestionSummary summary) {
 		this.summary = summary;
+	}
+
+	/** @return the sources */
+	public synchronized List<AnswerSource> getSources() { return sources; }
+	public synchronized void addSource(AnswerSource source) {
+		this.sources.add(source);
+		gen_sources ++;
 	}
 
 	/** @return the answer */

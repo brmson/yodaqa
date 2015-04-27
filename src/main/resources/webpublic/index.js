@@ -1,4 +1,5 @@
 var qid;  // id of the last posed question
+var gen_sources;  // when this number changes, re-render
 
 /* Create a fancy score bar representing confidence of an answer. */
 function score_bar(score) {
@@ -14,8 +15,19 @@ function showSummary(container, summary) {
 	summary.concepts.forEach(function(c) {
 		container.append('<p class="concept">'
 				+ '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
-				+ ' <a href="http://en.wikipedia.org/?curid='+c.pageId+'">'
+				+ ' <a href="http://en.wikipedia.org/?curid='+c.pageId+'" target="_blank">'
 				+ c.title + '</a></p>'); // TODO also include the first sentence?
+	});
+}
+
+/* Create a box with answer sources. */
+function showSources(container, sources) {
+	container.empty();
+	sources.forEach(function(s) {
+		container.append('<p class="source">'
+				+ '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
+				+ ' <a href="http://en.wikipedia.org/?curid='+s.pageId+'" target="_blank">'
+				+ s.title + '</a> (' + s.origin + ')</p>'); // TODO also include the first sentence?
 	});
 }
 
@@ -47,13 +59,24 @@ function getQuestionJson() {
 			}
 		}
 
+		if (r.sources.length && gen_sources != r.gen_sources) {
+			/* Show the answer sources. */
+			container = $("#sources");
+			if (!container.length) {
+				container = $('<div id="sources"></div>');
+				$("#output").prepend(container);
+			}
+			showSources(container, r.sources);
+			gen_sources = r.gen_sources;
+		}
+
 		if (r.answers) {
 			/* Show the list of answers. */
 			container = $("#answers");
 			if (!container.length) {
 				container = $('<table id="answers"></table>');
 				$("#output").prepend(container);
-			} // but keep re-rendering the answers in case the list gets updated
+			} // but keep re-rendering the answers in case the list gets updated; TODO gen_answers
 			showAnswers(container, r.answers);
 		}
 
@@ -77,6 +100,7 @@ $("#ask").ajaxForm({
 		// we posed the question, start watching its info
 		$("#spinner").show();
 		qid = response;
+		gen_sources = 0;
 		setTimeout(getQuestionJson, 500);
 	}});
 });

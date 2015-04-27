@@ -26,17 +26,26 @@ header h1 {
 	width: 26em;
 	margin: 1ex 1em;
 }
-.concept a {
-	color: black;
+.concept, .source {
+	margin-top: 0.5ex; margin-bottom: 0.5ex;
+}
+.concept a, .source a {
+	color: #0000dd;
 	text-decoration: none;
 }
-.concept a:hover {
-	color: #0000dd;
+.concept a:hover, .source a:hover {
 	text-decoration: underline;
 }
 .wlogo {
 	width: 1.1em;
 	vertical-align: text-top;
+}
+
+#sources {
+	border: 1pt solid black;
+	padding: 1ex 1em;
+	width: 26em;
+	margin: 1ex 1em;
 }
 
 #answers {
