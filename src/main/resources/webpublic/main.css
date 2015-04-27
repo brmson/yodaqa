@@ -157,3 +157,9 @@ header h1 {
 #answered .qline, #inProgress .qline, #toAnswer .qline {
 	margin-top: 0.5ex; margin-bottom: 0.5ex;
 }
+
+#extnav {
+	position: absolute;
+	right: 1em; top: 1ex;
+	text-align: right;
+}
