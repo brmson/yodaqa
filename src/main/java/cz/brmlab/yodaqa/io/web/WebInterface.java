@@ -45,6 +45,10 @@ public class WebInterface implements Runnable {
 			public Object handle(Request request, Response response) {
 				int id = idgen.nextInt(Integer.MAX_VALUE);
 				String text = request.queryParams("text");
+				if (text == null) {
+					response.status(422);
+					return "missing parameter: text";
+				}
 				logger.info("{} :: new question {} <<{}>>", request.host(), id, text);
 				Question q = new Question(id, text);
 				QuestionDashboard.getInstance().askQuestion(q);
