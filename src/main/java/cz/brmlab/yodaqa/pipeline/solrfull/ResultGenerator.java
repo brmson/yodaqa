@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.pipeline.solrfull;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.uima.UimaContext;
