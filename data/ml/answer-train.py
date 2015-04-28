@@ -209,7 +209,7 @@ def train_model(fv_train, class_train):
     return cfier
 
 
-def test_model(cfier, fv_test, class_test, test_answersets):
+def test_model(cfier, fv_test, class_test, test_answersets, labels):
     """
     Test a given classifier on the given (fv_test, class_test) training
     data (where the set of all answers for test questions is in
@@ -291,7 +291,7 @@ def dump_answers(cfier, fv_test, class_test):
         # print(list(cfier.predict_proba(fv_test)))
 
 
-def cross_validate(answersets, num_rounds):
+def cross_validate(answersets, num_rounds, labels):
     """
     Perform num_rounds-fold cross-validation of the model, returning
     the list of scores in each fold.
@@ -304,7 +304,7 @@ def cross_validate(answersets, num_rounds):
 
         cfier = train_model(fv_train, class_train)
 
-        (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx])
+        (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx], labels)
         print('// (test) ' + msg)
         scores.append(score)
 
@@ -325,7 +325,7 @@ if __name__ == "__main__":
 
     # Cross-validation phase
     print('// + Cross-validation:')
-    scores = cross_validate(answersets, num_rounds)
+    scores = cross_validate(answersets, num_rounds, labels)
     print('// Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
 
     # Train on the complete model now
@@ -340,7 +340,7 @@ if __name__ == "__main__":
     # Report the test results - the individual accuracy metrics are obviously
     # not very meaningful as we test on the training data, but it can still
     # be informative wrt. the answerset metrics, esp. 'any good'.
-    (score, msg) = test_model(cfier, fv_full, class_full, answersets)
+    (score, msg) = test_model(cfier, fv_full, class_full, answersets, labels)
     print("// (full) " + msg)
 
     # dump_weights(cfier.coef_, labels)
