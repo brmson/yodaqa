@@ -46,6 +46,18 @@ task(tsvgs, dependsOn: 'classes', type: JavaExec) {
   systemProperties = System.getProperties()
 }
 
+task(bioasqgs, dependsOn: 'classes', type: JavaExec) {
+  main = 'cz.brmlab.yodaqa.YodaQA_BioASQGS'
+  if (project.hasProperty('execArgs'))
+    args(execArgs.split(' '))
+  else
+    args = ['data/bioasq/test.json', 'test.tsv']
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
+}
+
 task(machine, dependsOn: 'classes', type: JavaExec) {
   standardInput = System.in
   main = 'cz.brmlab.yodaqa.YodaQA_Machine'
@@ -87,4 +99,5 @@ dependencies {
   compile 'xalan:xalan:+'
   compile 'net.sf.extjwnl:extjwnl:1.8.0'
   compile 'net.sf.extjwnl:extjwnl-data-wn31:1.2'
+  compile 'com.googlecode.json-simple:json-simple:1.1'
 }

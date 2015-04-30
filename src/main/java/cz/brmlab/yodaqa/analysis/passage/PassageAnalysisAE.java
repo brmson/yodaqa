@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.analysis.passage;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordSegmenter;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
@@ -35,8 +36,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * the giants we stand on the shoulders of) */
 		/* The mix below corresponds to what we use in
 		 * QuestionAnalysis, refer there for details. */
-		/* Our passages are already split to sentences
-		 * and tokenized. */
+		builder.add(createPrimitiveDescription(StanfordSegmenter.class),
+			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
 
 		/* POS, constituents, dependencies: */
 		builder.add(createPrimitiveDescription(PipelineLogger.class,

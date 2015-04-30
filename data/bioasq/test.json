@@ -1,0 +1,719 @@
+{
+  "questions": [
+    {
+      "body": "Inhibition of which enzyme is mechanism of action of alisertib?", 
+      "documents": [
+        "http://www.ncbi.nlm.nih.gov/pubmed/24240108", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/24101146", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/24043741", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23446853", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23153524", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22972611", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22863010", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22772063", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22767670", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22753585", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22488249", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22016509", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23723712", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23180582", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23847761", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/24501545", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23037716", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23755375", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23431463", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23755370", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22350019", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22940834"
+      ], 
+      "triples": [], 
+      "ideal_answer": "Alisertib (MLN8237) is selective Aurora kinase inhibitor that acts by interfering with spindle organization and chromosome alignment during mitosis. It has been tested in patients with gastric cancer, breast cancer, relapsed and refractory aggressive B- and T-cell non-Hodgkin lymphomas, epithelial ovarian, fallopian tube, and primary peritoneal carcinoma.", 
+      "exact_answer": [
+        "aurora kinase"
+      ], 
+      "concepts": [
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D045504", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D020228", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D004798"
+      ], 
+      "type": "factoid", 
+      "id": "531dd4af267d7dd05300000d", 
+      "snippets": [
+        {
+          "offsetInBeginSection": 1197, 
+          "offsetInEndSection": 1363, 
+          "text": "Inhibition of AURKA using an investigational small-molecule specific inhibitor, alisertib, decreased the HDM2 protein level and induced P53 transcriptional activity. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24240108", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 145, 
+          "text": "Preclinical pharmacokinetic/pharmacodynamic/efficacy relationships for alisertib, an investigational small-molecule inhibitor of Aurora A kinase.", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24101146", 
+          "endSection": "title"
+        }, 
+        {
+          "offsetInBeginSection": 9, 
+          "offsetInEndSection": 86, 
+          "text": "Alisertib (MLN8237) is an investigational inhibitor of Aurora A kinase (AAK).", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24101146", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 408, 
+          "offsetInEndSection": 680, 
+          "text": "The spindle organization defects induced by alisertib have been used to develop a pharmacodynamic (PD) assay for Aurora A inhibition based on the percentage of mitotic cells with proper chromosomal alignment at the metaphase plate (% aligned spindles, abbreviated as AS). ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24101146", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 142, 
+          "text": "Phase II study of alisertib, a selective Aurora A kinase inhibitor, in relapsed and refractory aggressive B- and T-cell non-Hodgkin lymphomas.", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24043741", 
+          "endSection": "title"
+        }, 
+        {
+          "offsetInBeginSection": 144, 
+          "offsetInEndSection": 298, 
+          "text": "We therefore designed a phase II study of alisertib, a selective AAK inhibitor, in patients with relapsed and refractory aggressive non-Hodgkin lymphomas.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24043741", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1017, 
+          "offsetInEndSection": 1204, 
+          "text": "In addition, we employed vMCF-7DRaf-1 cells that display high levels of endogenous cyclin-A and demonstrated that molecular targeting of Aurora-A by Alisertib reduces cyclin-A expression.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23446853", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 219, 
+          "text": "Alisertib (MLN8237) an investigational agent suppresses Aurora A and B activity, inhibits proliferation, promotes endo-reduplication and induces apoptosis in T-NHL cell lines supporting its importance in PTCL treatment.", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23153524", 
+          "endSection": "title"
+        }, 
+        {
+          "offsetInBeginSection": 159, 
+          "offsetInEndSection": 278, 
+          "text": "Alisertib (MLN8237) an investigational agent that inhibits Aurora A Ser/Thr kinase has shown activity in PTCL patients.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23153524", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 709, 
+          "offsetInEndSection": 951, 
+          "text": "We further find that MLN8237 (Alisertib), a selective inhibitor of AURKA, induced polyploidization and expression of mature megakaryocyte markers in acute megakaryocytic leukemia (AMKL) blasts and displayed potent anti-AMKL activity in vivo. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22863010", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 204, 
+          "text": "Phase II study of MLN8237 (alisertib), an investigational Aurora A kinase inhibitor, in patients with platinum-resistant or -refractory epithelial ovarian, fallopian tube, or primary peritoneal carcinoma.", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22772063", 
+          "endSection": "title"
+        }, 
+        {
+          "offsetInBeginSection": 139, 
+          "offsetInEndSection": 390, 
+          "text": "This single-arm phase II study assessed single-agent efficacy and safety of the investigational AAK inhibitor MLN8237 (alisertib), in patients with platinum-refractory or -resistant epithelial ovarian, fallopian tube, or primary peritoneal carcinoma. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22772063", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 9, 
+          "offsetInEndSection": 251, 
+          "text": "This phase I study evaluated the safety, pharmacokinetics, pharmacodynamics, and efficacy of the investigational oral drug MLN8237 (alisertib), a small-molecule Aurora A kinase (AAK) inhibitor, in 87 adult patients with advanced solid tumors.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22767670", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 107, 
+          "offsetInEndSection": 306, 
+          "text": "This phase I study investigated the safety, pharmacokinetics, and pharmacodynamics of MLN8237 (alisertib), an investigational, oral, selective AAK inhibitor, in 59 adults with advanced solid tumors. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22753585", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 148, 
+          "text": "Targeting Aurora A kinase activity with the investigational agent alisertib increases the efficacy of cytarabine through a FOXO-dependent mechanism.", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22488249", 
+          "endSection": "title"
+        }, 
+        {
+          "offsetInBeginSection": 113, 
+          "offsetInEndSection": 244, 
+          "text": "The investigational drug alisertib (MLN8237) is a novel Aurora A kinase inhibitor being studied in multiple Phase I and II studies.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22488249", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1215, 
+          "offsetInEndSection": 1382, 
+          "text": " Our collective data indicate that targeting Aurora A with alisertib represents a novel approach to increase the efficacy of ara-C that warrants further investigation.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22488249", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 147, 
+          "text": "Characterization of Alisertib (MLN8237), an investigational small-molecule inhibitor of aurora A kinase using novel in vivo pharmacodynamic assays.", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22016509", 
+          "endSection": "title"
+        }, 
+        {
+          "offsetInBeginSection": 266, 
+          "offsetInEndSection": 413, 
+          "text": "Here, we describe preclinical characterization of alisertib (MLN8237), a selective AAK inhibitor, incorporating these novel pharmacodynamic assays.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22016509", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 435, 
+          "offsetInEndSection": 587, 
+          "text": "We investigated the selectivity of alisertib for AAK and ABK and studied the antitumor and antiproliferative activity of alisertib in vitro and in vivo.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22016509", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 961, 
+          "offsetInEndSection": 1193, 
+          "text": "Alisertib inhibited AAK over ABK with a selectivity of more than 200-fold in cells and produced a dose-dependent decrease in bipolar and aligned chromosomes in the HCT-116 xenograft model, a phenotype consistent with AAK inhibition.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22016509", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1608, 
+          "offsetInEndSection": 1662, 
+          "text": "Alisertib is a selective and potent inhibitor of AAK. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22016509", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 646, 
+          "offsetInEndSection": 921, 
+          "text": "Treatment of cancer cells with small-molecule inhibitors of Cdk2 and Aurora-ATo inhibit Cdk2 or Aurora-A kinase activity, cancer cells were treated with 1 \u03bcM SU9516 or 1 \u03bcM Alisertib, and the resulting cellular phenotype was analyzed by immunofluorescence and immunoblotting.", 
+          "beginSection": "sections.1", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23446853", 
+          "endSection": "sections.1"
+        }, 
+        {
+          "offsetInBeginSection": 4109, 
+          "offsetInEndSection": 4561, 
+          "text": "To investigate the presence of a positive feed-back loop between cyclin-A/Cdk2 and Aurora-A oncogenic signalings, we treated MCF-7 and vMCF-7DRaf-1 cells with a novel Aurora-A inhibitor (Alisertib) to assess the expression of cyclin-A (Fig. 3). Importantly, treatment with Alisertib induced the reduction in cyclin-A expression in vMCF-7DRaf-1 cells demonstrating that Aurora-A kinase may modulate cyclin-A/Cdk2 activity during cell cycle progression. ", 
+          "beginSection": "sections.2", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23446853", 
+          "endSection": "sections.2"
+        }
+      ]
+    }, 
+    {
+      "body": "Which genes have been found mutated in Gray platelet syndrome patients?", 
+      "documents": [
+        "http://www.ncbi.nlm.nih.gov/pubmed/24325358", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23100277", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/21765412", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/17209061"
+      ], 
+      "triples": [], 
+      "ideal_answer": "The genetic defect responsible for gray platelet syndrome was recently identified in biallelic mutations in the NBEAL2 gene.\nA nonsense mutation in the gene encoding the transcription factor GFI1B (growth factor independent 1B) that causes autosomal dominant gray platelet syndrome.\nX-linked gray platelet syndrome due to a GATA1 Arg216Gln mutation.", 
+      "exact_answer": [
+        [
+          "NBEAL2"
+        ], 
+        [
+          "GFI1B"
+        ], 
+        [
+          "GATA1"
+        ]
+      ], 
+      "concepts": [
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D055652", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D009154"
+      ], 
+      "type": "list", 
+      "id": "52f89f4f2059c6d71c00004e", 
+      "snippets": [
+        {
+          "offsetInBeginSection": 145, 
+          "offsetInEndSection": 315, 
+          "text": "We detected a nonsense mutation in the gene encoding the transcription factor GFI1B (growth factor independent 1B) that causes autosomal dominant gray platelet syndrome. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24325358", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 155, 
+          "offsetInEndSection": 279, 
+          "text": "The genetic defect responsible for gray platelet syndrome was recently identified in biallelic mutations in the NBEAL2 gene.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23100277", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 136, 
+          "offsetInEndSection": 370, 
+          "text": "Here we show that mutations in NBEAL2 (neurobeachin-like 2), which encodes a BEACH/ARM/WD40 domain protein, cause GPS and that megakaryocytes and platelets from individuals with GPS express a unique combination of NBEAL2 transcripts. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/21765412", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 385, 
+          "offsetInEndSection": 665, 
+          "text": "Linkage analysis revealed a 63 cM region on the X chromosome between markers G10578 and DXS6797, which segregated with the platelet phenotype and included the GATA1 gene. Sequencing of GATA1 revealed a G-to-A mutation at position 759 corresponding to amino acid change Arg216Gln. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/17209061", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 92, 
+          "text": "We identified a family with gray platelet syndrome (GPS) segregating as a sex-linked trait. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/17209061", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 65, 
+          "text": "X-linked gray platelet syndrome due to a GATA1 Arg216Gln mutation", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/17209061", 
+          "endSection": "title"
+        }
+      ]
+    }, 
+    {
+      "body": "What type of enzyme is peroxiredoxin 2 (PRDX2)?", 
+      "documents": [
+        "http://www.ncbi.nlm.nih.gov/pubmed/23889121", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/23749642", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22989627", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/22916248", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/21902453", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/21248284", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/20646000", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/19969073", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/19812325", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/19375361", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/18479207", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/18222042", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/17522089", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/17105810", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/12943237"
+      ], 
+      "triples": [], 
+      "ideal_answer": "Peroxiredoxin 2 (PRDX2) is an antioxidant enzyme that uses cysteine residues to decompose peroxides. \nPeroxiredoxin-2 (PRDX2), an enzyme reducing hydrogen peroxide and lipid peroxides \nPeroxiredoxin 2 (Prx2) is a thiol-dependent peroxidase.", 
+      "exact_answer": [
+        "antioxidant"
+      ], 
+      "concepts": [
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D054464", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D004798"
+      ], 
+      "type": "factoid", 
+      "id": "52bf1f1303868f1b06000014", 
+      "snippets": [
+        {
+          "offsetInBeginSection": 11, 
+          "offsetInEndSection": 108, 
+          "text": "Peroxiredoxin-2 (PRDX-2) is an antioxidant and chaperone-like protein critical for cell function.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23889121", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 215, 
+          "offsetInEndSection": 349, 
+          "text": "We found that the antioxidant enzyme peroxiredoxin-2 (Prx2) inversely correlated with the metastatic capacity of human melanoma cells.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/23749642", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 51, 
+          "offsetInEndSection": 248, 
+          "text": "The aim of this study was to examine gonadotropin regulation of antioxidant enzyme sulfiredoxin (Srx) and peroxiredoxin 2 (PRDX2) expressions and modification during the ovulatory process in rats. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22989627", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1167, 
+          "offsetInEndSection": 1392, 
+          "text": "The mRNA profiler array showed more than 2-fold differential expression of 32 oxidative stress-related genes in unstimulated moDCs, including peroxiredoxin-2 (PRDX2), an enzyme reducing hydrogen peroxide and lipid peroxides. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/22916248", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 159, 
+          "offsetInEndSection": 254, 
+          "text": "Peroxiredoxin-2 (Prx-2) is an abundant mammalian enzyme that protects against oxidative stress.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/21902453", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 123, 
+          "text": "Peroxiredoxin 2 (PRDX2) has been known to act as an antioxidant enzyme whose main function is H(2)O(2) reduction in cells. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/21248284", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1067, 
+          "offsetInEndSection": 1347, 
+          "text": "These data indicate that Srx1 activity protects mice from the lethality of endotoxic shock, adding this enzyme to other host factors, as NRF2 and peroxiredoxin 2, which by regulating cellular reactive oxygen species levels act as important modifiers in the pathogenesis of sepsis.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/21083423", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 639, 
+          "offsetInEndSection": 722, 
+          "text": "One of the identified proteins was peroxiredoxin 2 (Prx2), an anti-oxidant enzyme. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20646000", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 185, 
+          "text": "Peroxiredoxin-2 (Prdx2), a potent peroxide reductant, is the third most abundant protein in the erythrocyte and might be expected to play a major role in the cell's oxidative defenses. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19969073", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 819, 
+          "offsetInEndSection": 940, 
+          "text": "Importantly, we also demonstrate the antioxidant enzyme Prx2 (peroxiredoxin 2) as a critical cytoplasmic target of cdk5. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19812325", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 143, 
+          "text": "Human erythrocyte peroxiredoxin 2 (Prx2) is a typical 2-cys cytosolic peroxiredoxin with thiol-dependent hydrogen peroxide scavenger activity. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19375361", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 99, 
+          "text": "Peroxiredoxin 2 (Prx2) is an antioxidant enzyme that uses cysteine residues to decompose peroxides.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/18479207", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 860, 
+          "offsetInEndSection": 1077, 
+          "text": "Peroxiredoxin 2 (PRDX2), an antioxidant enzyme, was the most upregulated while tribbles homolog 3 (TRB3), a pro-apoptotic protein, was the most downregulated, implying a beneficial effect of lithium on neuronal cells.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/18222042", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 204, 
+          "offsetInEndSection": 352, 
+          "text": "After 5 Gy irradiation, the relative abundance of peroxiredoxin 2, an antioxidant enzyme, and latexin, an inhibitor of carboxypeptidase, increased. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/17522089", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 175, 
+          "text": "Peroxiredoxin 2 (Prx2), a thiol-dependent peroxidase, is the third most abundant protein in the erythrocyte, and its absence in knock-out mice gives rise to hemolytic anemia. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/17105810", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 340, 
+          "text": "Suppression subtractive hybridization performed on Down syndrome (DS) versus control fetal brains revealed differential expression of peroxiredoxin 2 (PRDX2), mapped at 13q12. Peroxiredoxins are antioxidant enzymes involved in protein and lipid protection against oxidative injury and in cellular signalling pathways regulating apoptosis. T", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/12943237", 
+          "endSection": "abstract"
+        }
+      ]
+    }, 
+    {
+      "body": "Is c-myc subject to regulation by the circadian clock?", 
+      "documents": [
+        "http://www.ncbi.nlm.nih.gov/pubmed/24190490", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/20576619", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/20560708", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/19957060", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/19861541", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/19010825", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/17660446", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/16827798", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/16596306", 
+        "http://www.ncbi.nlm.nih.gov/pubmed/15817328"
+      ], 
+      "triples": [], 
+      "ideal_answer": "Yes, the expression of c-myc is regulated by the circadian clock protein Per2.", 
+      "exact_answer": "yes", 
+      "concepts": [
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D057906", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D016271", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D056950", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D016259", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D002940", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D001683", 
+        "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=GO:0097167", 
+        "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=GO:0071943", 
+        "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=GO:0042752", 
+        "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=GO:0032922", 
+        "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=GO:0007623", 
+        "http://www.uniprot.org/uniprot/MYC_ONCMY", 
+        "http://www.uniprot.org/uniprot/MYC_ASTRU", 
+        "http://www.uniprot.org/uniprot/MYC_CARAU", 
+        "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=GO:0042753", 
+        "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=GO:0042754", 
+        "http://www.uniprot.org/uniprot/MYC_GALVR"
+      ], 
+      "type": "yesno", 
+      "id": "531616bdb166e2b806000003", 
+      "snippets": [
+        {
+          "offsetInBeginSection": 611, 
+          "offsetInEndSection": 815, 
+          "text": "The current study encompasses the investigation of simultaneous expression of four circadian clock genes (Bmal1, Clock, Per1 and Per2) and three clock-controlled cell cycle genes (Myc, Cyclin D1 and Wee1)", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24190490", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1855, 
+          "offsetInEndSection": 2084, 
+          "text": "Our results suggest that aberrant expression of circadian clock genes can lead to aberrant expression of their downstream targets that are involved in cell proliferation and apoptosis and hence may result in manifestation of CLL.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/24190490", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 618, 
+          "offsetInEndSection": 761, 
+          "text": "Loss of Bmal1 reduced the expression of per1, per2, per3, wee1 and p53. The expression of p21 and c-myc was also altered in certain cell lines.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20576619", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 441, 
+          "offsetInEndSection": 534, 
+          "text": "In particular, the proto-oncogene c-Myc has been documented to be under circadian regulation.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20560708", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 0, 
+          "offsetInEndSection": 142, 
+          "text": "The circadian expression of c-MYC is modulated by the histone deacetylase inhibitor trichostatin A in synchronized murine neuroblastoma cells.", 
+          "beginSection": "title", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20560708", 
+          "endSection": "title"
+        }, 
+        {
+          "offsetInBeginSection": 1440, 
+          "offsetInEndSection": 1579, 
+          "text": "Our results, using the murine neuroblastoma cell line N2A, show that Per1 and c-Myc steady-state mRNA levels oscillate with the same phase.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20560708", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1872, 
+          "offsetInEndSection": 2160, 
+          "text": "These experiments demonstrate for the first time that a significant decrease in c-Myc transcript and protein levels can be achieved after a short TSA treatment applied only at specific circadian times. This is also followed by a reduction in the proliferation rate of the cell population.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20560708", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 895, 
+          "offsetInEndSection": 1166, 
+          "text": "Among the circadian output pathways, the rhythmic sympathetic signaling plays a key role in the central-peripheral timing mechanism that simultaneously activates the cell cycle clock via AP1-controlled Myc induction and p53 via peripheral clock-controlled ATM activation.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 1167, 
+          "offsetInEndSection": 1439, 
+          "text": "Jet-lag promptly desynchronizes the central clock-SNS-peripheral clock axis, abolishes the peripheral clock-dependent ATM activation, and activates myc oncogenic potential, leading to tumor development in the same organ systems in wild-type and circadian gene-mutant mice.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 262, 
+          "offsetInEndSection": 586, 
+          "text": "The results showed that over-expression of Per2 induced not only cell cycle arrest at G2/M phase but also an increase in apoptosis, which was confirmed by characteristic morphological changes, FCM and evident DNA fragmentation. Further experiments confirmed both up-regulation of P53 and down-regulation of CylinB1and C-myc.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19957060", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 587, 
+          "offsetInEndSection": 706, 
+          "text": "On the other hand, while P53 was found to be down-regulated. CylinB1 and C-myc were up-regulated. after Per2 knockdown.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19957060", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 925, 
+          "offsetInEndSection": 1154, 
+          "text": "We also show that BMAL1 epigenetic inactivation impairs the characteristic circadian clock expression pattern of genes such as C-MYC, catalase, and p300 in association with a loss of BMAL1 occupancy in their respective promoters.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19861541", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 230, 
+          "offsetInEndSection": 382, 
+          "text": "Per2 mutant (Per2(m/m)) mice show an increase in lymphomas and deregulated expression of cyclin D and c-Myc genes that are key to proliferation control.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19010825", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 221, 
+          "offsetInEndSection": 401, 
+          "text": "The expression of cell cycle genes such as Wee1, Cyclins, and c-Myc are under circadian control and could be directly under the regulation of the circadian transcriptional complex.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/17660446", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 483, 
+          "offsetInEndSection": 635, 
+          "text": "Overexpressed mPER2 also altered the expression of apoptosis-related genes. The mRNA and protein levels of c-Myc, Bcl-X(L) and Bcl-2 were downregulated,", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/16827798", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 787, 
+          "offsetInEndSection": 967, 
+          "text": "Temporal expression of genes involved in cell cycle regulation and tumor suppression, such as c-Myc, Cyclin D1, Cyclin A, Mdm-2 and Gadd45alpha is deregulated in mPer2 mutant mice.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/16596306", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 781, 
+          "offsetInEndSection": 967, 
+          "text": "The temporal expression of genes involved in cell cycle regulation and tumor suppression, such as c-Myc, Cyclin D1, Cyclin A, Mdm-2, and Gadd45alpha, is deregulated in mPer2 mutant mice.", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/15817328", 
+          "endSection": "abstract"
+        }, 
+        {
+          "offsetInBeginSection": 2155, 
+          "offsetInEndSection": 2192, 
+          "text": "BMAL1 suppresses proto-oncogene c-myc", 
+          "beginSection": "sections.0", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+          "endSection": "sections.0"
+        }, 
+        {
+          "offsetInBeginSection": 4499, 
+          "offsetInEndSection": 4781, 
+          "text": "all circadian gene-mutant mice studied show hyperplastic growth of osteoblasts in bone, and that \u03b2-adrenergic receptor (ADR\u03b2) activation leads to Per and Ap1 induction in primary osteoblasts. In addition, AP1 directly activates c-myc, whereas BMAL/CLOCK prevents myc over-expression", 
+          "beginSection": "sections.0", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+          "endSection": "sections.0"
+        }, 
+        {
+          "offsetInBeginSection": 5601, 
+          "offsetInEndSection": 5873, 
+          "text": "Disruption of circadian rhythm desynchronizes the central clock-SNS-peripheral clock axis, suppresses peripheral clock function and abolishes peripheral clock-dependent ATM activation, leading to myc oncogenic activation and increased incidence of tumors in wild-type mice", 
+          "beginSection": "sections.0", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+          "endSection": "sections.0"
+        }, 
+        {
+          "offsetInBeginSection": 16962, 
+          "offsetInEndSection": 17102, 
+          "text": "The accelerated proliferation of Per1\u2212/\u2212;Per2m/m osteoblasts correlated with the over-induction of c-myc and Cyclin D1 by iso in these cells", 
+          "beginSection": "sections.1", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+          "endSection": "sections.1"
+        }, 
+        {
+          "offsetInBeginSection": 4043, 
+          "offsetInEndSection": 4321, 
+          "text": "the central clock-controlled SNS signaling generates a coupled AP1, peripheral clock, and ATM activation. The activation of AP1 leads to myc-induced cell cycle progression, while the activation of the peripheral clock inhibits myc overexpression and is required for ATM activity", 
+          "beginSection": "sections.2", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/20539819", 
+          "endSection": "sections.2"
+        }
+      ]
+    }, 
+    {
+      "body": "Can Levoxyl (levothyroxine sodium) cause insomnia?", 
+      "documents": [
+        "http://www.ncbi.nlm.nih.gov/pubmed/19701833"
+      ], 
+      "triples": [], 
+      "ideal_answer": "Levoxyl monotherapy is associated with increased insomnia compared to a combination of levothyroxine and liothyronine.", 
+      "exact_answer": "yes", 
+      "concepts": [
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D013974", 
+        "http://www.nlm.nih.gov/cgi/mesh/2014/MB_cgi?field=uid&exact=Find+Exact+Term&term=D007319"
+      ], 
+      "type": "yesno", 
+      "id": "52b2ec744003448f55000001", 
+      "snippets": [
+        {
+          "offsetInBeginSection": 200, 
+          "offsetInEndSection": 987, 
+          "text": "METHODS: Seventy-one patients diagnosed with primary hypothyroidism were randomly allocated into two study groups: the first group received usual dose of levothyroxine and the second group received combination of levothyroxine and liothyronine for at least 4 months. The main outcomes were psychosocial problems (Goldberg's General Health Questionnaire, GHQ-28), bodyweight, heart rate, blood pressure, and serum lipid levels. RESULTS: In both groups serum thyroid-stimulating hormone levels remained unchanged compared with baseline. Psychosocial scores, body weight, heart rate, blood pressure, and lipid profile in the two groups remained constant. The only exception was a small but significant reduction in anxiety/insomnia in combined treatment group as compared with monotherapy. ", 
+          "beginSection": "abstract", 
+          "document": "http://www.ncbi.nlm.nih.gov/pubmed/19701833", 
+          "endSection": "abstract"
+        }
+      ]
+    }, 
+  ],
+}

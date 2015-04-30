@@ -66,6 +66,36 @@
         </features>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.GSAnswer</name>
+	<description>Gold Standard answer (for benchmarking; there may be multiple for list questions)</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>texts</name>
+            <description>The possible answer texts; multiple elements in case of synonymes.</description>
+            <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+            <elementType>uima.cas.String</elementType>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.Snippet</name>
+	<description>Externally suggested question-related snippet which might have bearing for the answer</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>text</name>
+            <description>The snippet text.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>document</name>
+            <description>The snippet origin document URI.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.SV</name>
         <description>Selective Verb</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
