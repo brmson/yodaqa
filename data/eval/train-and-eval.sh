@@ -56,9 +56,9 @@ echo "Starting evaluation in $clonedir"
 sleep 2
 
 screen -m sh -c '
-	screen "'"$baserepo"'/data/eval/_multistage_traineval.sh" "'"$baserepo"'" "train" '"$basecid"';
+	screen "'"$baserepo"'/data/eval/_multistage_traineval.sh" "'"$baserepo"'" "curated-train" 1 0 '"$basecid"';
 	sleep 10;
-	screen "'"$baserepo"'/data/eval/_multistage_traineval.sh" "'"$baserepo"'" "test" '"$basecid"'
+	screen "'"$baserepo"'/data/eval/_multistage_traineval.sh" "'"$baserepo"'" "curated-test" 0 1 '"$basecid"'
 '
 
 popd
