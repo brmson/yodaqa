@@ -106,9 +106,10 @@ def load_answers(f):
             continue
 
         # Line is qid \t f0 \t f1 \t ... \t fN \t class
-        fv = [float(x) for x in line.split()]
-        qid = int(fv.pop(0))
-        cl = fv.pop()
+        items = line.split()
+        qid = items.pop(0)
+        cl = int(items.pop())
+        fv = [float(x) for x in items]
 
         # First item is occurences; skip dummy answers representing
         # no occurences
