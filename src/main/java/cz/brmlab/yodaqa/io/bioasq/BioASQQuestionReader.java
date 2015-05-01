@@ -63,6 +63,10 @@ public class BioASQQuestionReader extends CasCollectionReader_ImplBase {
 			throw new ResourceInitializationException(io);
 		}
 		for (Object o : (JSONArray) data.get("questions")) {
+			if (((String) ((JSONObject) o).get("type")).equals("yesno")) {
+				// we ignore yesno answers completely for now
+				continue;
+			}
 			questions.add((JSONObject) o);
 		}
 	}
