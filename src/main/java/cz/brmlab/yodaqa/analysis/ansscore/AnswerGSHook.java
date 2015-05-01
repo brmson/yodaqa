@@ -3,7 +3,7 @@ package cz.brmlab.yodaqa.analysis.ansscore;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
+import java.util.Collection;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -18,6 +18,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.io.bioasq.GoldStandardAnswerPrinter;
+import cz.brmlab.yodaqa.model.Question.GSAnswer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
 import cz.brmlab.yodaqa.model.TyCor.DBpOntologyLAT;
@@ -29,8 +31,6 @@ import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
 
 /**
  * A GoldStandard hook in the process of answer extraction.  We scan all the
@@ -97,17 +97,14 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		*/
 
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
-		Pattern ap = null;
-		if (qi.getAnswerPattern() != null) {
-			ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-		}
+		Collection<GSAnswer> gs = JCasUtil.select(questionView, GSAnswer.class);
 
-		dumpQuestionCSV(answerHitlist, qi, ap, astats);
-		dumpQuestionFV(answerHitlist, qi, ap, astats);
+		dumpQuestionCSV(answerHitlist, qi, gs, astats);
+		dumpQuestionFV(answerHitlist, qi, gs, astats);
 	}
 
 	/** Possibly dump CSV data on answers, one file per question. */
-	protected void dumpQuestionCSV(JCas answerHitlist, QuestionInfo qi, Pattern ap, AnswerStats astats)
+	protected void dumpQuestionCSV(JCas answerHitlist, QuestionInfo qi, Collection<GSAnswer> gs, AnswerStats astats)
 			throws AnalysisEngineProcessException {
 		String csvDirName = System.getProperty("cz.brmlab.yodaqa.csv_answer" + scoringPhase);
 		if (csvDirName == null || csvDirName.isEmpty())
@@ -117,16 +114,16 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
 		PrintWriter csvFile = openAnswersCSV(csvFileName);
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-			dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
+			dumpAnswerCSV(csvFile, a, GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs), astats);
 		}
 	}
 
 	/** Possibly dump model training data.  We also require gold
 	 * standard for this, otherwise there is no training to do. */
-	protected void dumpQuestionFV(JCas answerHitlist, QuestionInfo qi, Pattern ap, AnswerStats astats)
+	protected void dumpQuestionFV(JCas answerHitlist, QuestionInfo qi, Collection<GSAnswer> gs, AnswerStats astats)
 			throws AnalysisEngineProcessException {
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer" + scoringPhase);
-		if (ap == null || trainFileName == null || trainFileName.isEmpty())
+		if (gs.isEmpty() || trainFileName == null || trainFileName.isEmpty())
 			return;
 
 		/* It turns out to make sense to include only a single best
@@ -150,7 +147,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * lowering the score too.  The motivation is that shorter
 		 * answers are more precise and will therefore have a more
 		 * determining set of features to take for training. */
-		String refAnswer = getReferenceAnswer(answerHitlist, ap, astats);
+		String refAnswer = getReferenceAnswer(answerHitlist, gs, astats);
 
 		/* We also do not train our model on any answer of a question
 		 * that yields no correct answer - because should we really
@@ -161,14 +158,16 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		}
 
 		/* Pass all correct answers in the initial scoring phase. */
-		if (scoringPhase.equals(""))
+		// XXX in case of list-based answers, pass all?
+		// for now, let's pass all unconditionally
+		//if (scoringPhase.equals(""))
 			refAnswer = null;
 
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
 		while (answers.hasNext()) {
 			Answer a = (Answer) answers.next();
-			boolean isMatch = ap.matcher(a.getText()).find();
+			boolean isMatch = GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs);
 			if (isMatch && refAnswer != null && !refAnswer.equals(a.getText())) {
 				logger.debug("not including correct answer: {} < {}", a.getText(), refAnswer);
 				continue; // output only the top positive match
@@ -177,12 +176,12 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		}
 	}
 
-	protected String getReferenceAnswer(JCas answerHitlist, Pattern ap, AnswerStats astats) {
+	protected String getReferenceAnswer(JCas answerHitlist, Collection<GSAnswer> gs, AnswerStats astats) {
 		/* First, pick the best scored answer. */
 		Answer bestA = null;
 		double bestAScore = 0;
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-			if (!ap.matcher(a.getText()).find())
+			if (!GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs))
 				continue;
 
 			double score = a.getConfidence();
@@ -199,7 +198,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * the shortest one. */
 		Answer bestShorterA = bestA;
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-			if (!ap.matcher(a.getText()).find())
+			if (!GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs))
 				continue;
 			if (!bestA.getText().contains(a.getText()))
 				continue;
