@@ -113,7 +113,7 @@ fi
 train_and_sync "" "$base_atrainfile0" "$modelfile0"
 
 # Re-score with new model
-time ./gradlew tsvgs \
+time ./gradlew bioasqgs \
 	-PexecArgs="$basedir/data/bioasq/${type}-main.json $outfile0" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$base_xmidir" \
@@ -121,7 +121,7 @@ time ./gradlew tsvgs \
 	$args0
 
 
-time ./gradlew tsvgs \
+time ./gradlew bioasqgs \
 	-PexecArgs="$basedir/data/bioasq/${type}-main.json $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
@@ -131,7 +131,7 @@ time ./gradlew tsvgs \
 train_and_sync "1" "$atrainfile1" "$modelfile1"
 
 # Re-score with new model
-time ./gradlew tsvgs \
+time ./gradlew bioasqgs \
 	-PexecArgs="$basedir/data/bioasq/${type}-main.json $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
@@ -139,7 +139,7 @@ time ./gradlew tsvgs \
 	$args1
 
 
-time ./gradlew tsvgs \
+time ./gradlew bioasqgs \
 	-PexecArgs="$basedir/data/bioasq/${type}-main.json $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
@@ -149,7 +149,7 @@ time ./gradlew tsvgs \
 train_and_sync "2" "$atrainfile2" "$modelfile2"
 
 # Re-score with new model
-time ./gradlew tsvgs \
+time ./gradlew bioasqgs \
 	-PexecArgs="$basedir/data/bioasq/${type}-main.json $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
