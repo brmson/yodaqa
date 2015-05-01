@@ -133,7 +133,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 				}
 				// FIXME incorrect for list-based
 				if (match < 0) {
-					if (isCorrectAnswer(text, JCasUtil.select(jcas, GSAnswer.class))) {
+					if (isCorrectAnswer(text, JCasUtil.select(questionView, GSAnswer.class))) {
 						match = i;
 						matchText = text;
 						break;
