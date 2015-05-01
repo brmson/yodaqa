@@ -66,8 +66,10 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(AnswerClueOverlap.class));
 
 		/* Determine the focus of each answer. */
-		builder.add(createPrimitiveDescription(FocusGenerator.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+		// Except don't; we need exact answer matches, so allow only
+		// whole-answer LATs
+		//builder.add(createPrimitiveDescription(FocusGenerator.class),
+		//	CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Generate Wordnet instance-of based LATs */
 		builder.add(createPrimitiveDescription(LATByWnInstance.class),
