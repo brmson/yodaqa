@@ -1,14 +1,18 @@
 #!/bin/bash
 #
-# Usage: _multistage-traineval.sh BASEDIR {train,test} [BASECOMMIT]
+# Usage: _multistage-traineval.sh BASEDIR DATASET RETRAIN WAIT_FOR_TRAIN [BASECOMMIT]
 #
-# In training mode, run the pipeline for all questions up to the
-# answer scoring, stop there, perform training, update the model
-# and re-run just the answer scoring to get the final results.
+# Run the pipeline for all questions in DATASET, but pause and
+# restart the pipeline at each train/test checkpoint.  If RETRAIN
+# is 1, retrain the scoring models; if WAIT_FOR_TRAIN is 1,
+# we expect that a RETRAIN evaluation is running in parallel
+# and we wait on each checkpoint for the new model.
 #
-# Testing mode (evaluation on test set) is designed to run in
-# parallel with the training mode and works in lock-step, stopping
-# before scoring to wait and use the new model.
+# Typically, this script is run on training dataset with
+# RETRAIN 1, WAIT_FOR_TRAIN 0, and on testing dataset with
+# RETRAIN 0, WAIT_FOR_TRAIN 1.  But if we want to do additional
+# evaluation on another dataset, we may invoke it as RETRAIN 0,
+# WAIT_FOR_TRAIN 0.
 #
 # If BASECOMMIT is specified, the pipeline phase 0 is not run
 # but instead data files are symlinked from BASECOMMIT evals.
@@ -22,21 +26,23 @@
 cid=$(git rev-parse --short HEAD)
 
 basedir="$1"
-type="$2"
-basecommit="$3"
+dataset="$2"
+retrain="$3"
+wait_for_train="$4"
+basecommit="$5"
 args0=
 argsF=
 
-outfile0="$basedir/data/eval/tsv/curated-${type}-ovt-u${cid}.tsv"
-outfile1="$basedir/data/eval/tsv/curated-${type}-ovt-v${cid}.tsv"
-outfile2="$basedir/data/eval/tsv/curated-${type}-ovt-${cid}.tsv"
-atrainfile0="$basedir/data/ml/tsv/training-answer-${cid}.tsv"
-atrainfile1="$basedir/data/ml/tsv/training-answer1-${cid}.tsv"
-atrainfile2="$basedir/data/ml/tsv/training-answer2-${cid}.tsv"
+outfile0="$basedir/data/eval/tsv/${dataset}-ovt-u${cid}.tsv"
+outfile1="$basedir/data/eval/tsv/${dataset}-ovt-v${cid}.tsv"
+outfile2="$basedir/data/eval/tsv/${dataset}-ovt-${cid}.tsv"
+atrainfile0="$basedir/data/ml/tsv/${dataset}-answer-${cid}.tsv"
+atrainfile1="$basedir/data/ml/tsv/${dataset}-answer1-${cid}.tsv"
+atrainfile2="$basedir/data/ml/tsv/${dataset}-answer2-${cid}.tsv"
 modelfile0="$basedir/data/ml/models/logistic-${cid}.model"
 modelfile1="$basedir/data/ml/models/logistic1-${cid}.model"
 modelfile2="$basedir/data/ml/models/logistic2-${cid}.model"
-xmidir="$basedir/data/eval/answer-xmi/${cid}-$type"
+xmidir="$basedir/data/eval/answer-xmi/${cid}-$dataset"
 barrierfile=_multistage-barrier
 mkdir -p $basedir/data/eval/tsv
 mkdir -p $basedir/data/eval/answer-csv
@@ -45,16 +51,12 @@ mkdir -p $basedir/data/eval/answer2-csv
 mkdir -p $basedir/data/ml/models
 mkdir -p "$xmidir" "$xmidir"1 "$xmidir"2
 
-case $type in
-	test) ;;
-	train)
-		args0="-Dcz.brmlab.yodaqa.train_passextract=$basedir/data/ml/tsv/training-passextract-${cid}.tsv
-		       -Dcz.brmlab.yodaqa.train_answer=$atrainfile0 -Dcz.brmlab.yodaqa.csv_answer=$basedir/data/eval/answer-csv/${cid}"
-		args1="-Dcz.brmlab.yodaqa.train_answer1=$atrainfile1 -Dcz.brmlab.yodaqa.csv_answer1=$basedir/data/eval/answer1-csv/${cid}"
-		args2="-Dcz.brmlab.yodaqa.train_answer2=$atrainfile2 -Dcz.brmlab.yodaqa.csv_answer2=$basedir/data/eval/answer2-csv/${cid}"
-		;;
-	*) echo "Usage: $0 BASEDIR {test,train}; but use the train-and-eval wrapper." >&2; exit 1;;
-esac
+if [ "$retrain" = 1 ]; then
+	args0="-Dcz.brmlab.yodaqa.train_passextract=$basedir/data/ml/tsv/${dataset}-passextract-${cid}.tsv
+	       -Dcz.brmlab.yodaqa.train_answer=$atrainfile0 -Dcz.brmlab.yodaqa.csv_answer=$basedir/data/eval/answer-csv/${cid}-$dataset"
+	args1="-Dcz.brmlab.yodaqa.train_answer1=$atrainfile1 -Dcz.brmlab.yodaqa.csv_answer1=$basedir/data/eval/answer1-csv/${cid}-$dataset"
+	args2="-Dcz.brmlab.yodaqa.train_answer2=$atrainfile2 -Dcz.brmlab.yodaqa.csv_answer2=$basedir/data/eval/answer2-csv/${cid}-$dataset"
+fi
 
 if [ -e $barrierfile -o -e ${barrierfile}1 -o -e ${barrierfile}2 ]; then
 	echo "$barrierfile: Already exists" >&2
@@ -68,7 +70,7 @@ train_and_sync() {
 	modelfile=$3
 
 	## Train the model
-	if [ "$type" = "train" ]; then
+	if [ "$retrain" = "1" ]; then
 		echo "Training ${i}..."
 		data/ml/answer-train.py <"$atrainfile" | tee "$modelfile"
 		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreLogistic${i}.model
@@ -76,7 +78,7 @@ train_and_sync() {
 		./gradlew check
 		touch "$barrierfile$i" # testing is go, too!
 
-	else  # test
+	elif [ "$wait_for_train" = "1" ]; then  # test
 		# Just wait for the training to finish; XXX ugly this way
 		echo "Waiting for $barrierfile$i, #${i}"
 		while [ ! -e "$barrierfile$i" ]; do
@@ -96,7 +98,7 @@ if [ -z "$basecommit" ]; then
 	## Gather answers once, also storing the answerfvs
 	echo "First run..."
 	time ./gradlew tsvgs \
-		-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
+		-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile0" \
 		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 		$args0
@@ -106,15 +108,15 @@ if [ -z "$basecommit" ]; then
 else
 	## Reuse data files from $basecommit
 	echo "Reusing phase0 data from ${basecommit}"
-	base_xmidir="$basedir/data/eval/answer-xmi/${basecommit}-$type"
-	base_atrainfile0="$basedir/data/ml/tsv/training-answer-${basecommit}.tsv"
+	base_xmidir="$basedir/data/eval/answer-xmi/${basecommit}-$dataset"
+	base_atrainfile0="$basedir/data/ml/tsv/${dataset}-answer-${basecommit}.tsv"
 fi
 
 train_and_sync "" "$base_atrainfile0" "$modelfile0"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile0" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$base_xmidir" \
 	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
@@ -122,7 +124,7 @@ time ./gradlew tsvgs \
 
 
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -132,7 +134,7 @@ train_and_sync "1" "$atrainfile1" "$modelfile1"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -140,7 +142,7 @@ time ./gradlew tsvgs \
 
 
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
@@ -150,7 +152,7 @@ train_and_sync "2" "$atrainfile2" "$modelfile2"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
@@ -159,4 +161,4 @@ time ./gradlew tsvgs \
 
 echo "$outfile2"
 
-} 2>&1 | tee "$basedir/logs/curated-${type}-${cid}.log"
+} 2>&1 | tee "$basedir/logs/${dataset}-${cid}.log"
