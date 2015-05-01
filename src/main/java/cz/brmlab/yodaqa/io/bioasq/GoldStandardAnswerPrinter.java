@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.io.bioasq;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.Math;
+import java.util.Collection;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -92,6 +93,18 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		TSVOutput.flush();
 	}
 
+	public static boolean isCorrectAnswer(String text, Collection<GSAnswer> gs) {
+		for (GSAnswer gsa : gs) {
+			StringArray sa = gsa.getTexts();
+			for (String s : sa.toStringArray()) {
+				if (s.toLowerCase().equals(text.toLowerCase())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		JCas questionView, answerHitlist;
 		try {
@@ -120,15 +133,10 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 				}
 				// FIXME incorrect for list-based
 				if (match < 0) {
-					for (GSAnswer gsa : JCasUtil.select(jcas, GSAnswer.class)) {
-						StringArray sa = gsa.getTexts();
-						for (String s : sa.toStringArray()) {
-							if (s.toLowerCase().equals(text.toLowerCase())) {
-								match = i;
-								matchText = text;
-								break;
-							}
-						}
+					if (isCorrectAnswer(text, JCasUtil.select(jcas, GSAnswer.class))) {
+						match = i;
+						matchText = text;
+						break;
 					}
 				}
 				i++;
