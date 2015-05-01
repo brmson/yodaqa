@@ -27,9 +27,9 @@ basecommit="$3"
 args0=
 argsF=
 
-outfile0="$basedir/data/eval/tsv/curated-${type}-ovt-u${cid}.tsv"
-outfile1="$basedir/data/eval/tsv/curated-${type}-ovt-v${cid}.tsv"
-outfile2="$basedir/data/eval/tsv/curated-${type}-ovt-${cid}.tsv"
+outfile0="$basedir/data/eval/tsv/bioasq-${type}-ovt-u${cid}.tsv"
+outfile1="$basedir/data/eval/tsv/bioasq-${type}-ovt-v${cid}.tsv"
+outfile2="$basedir/data/eval/tsv/bioasq-${type}-ovt-${cid}.tsv"
 atrainfile0="$basedir/data/ml/tsv/training-answer-${cid}.tsv"
 atrainfile1="$basedir/data/ml/tsv/training-answer1-${cid}.tsv"
 atrainfile2="$basedir/data/ml/tsv/training-answer2-${cid}.tsv"
@@ -95,8 +95,8 @@ train_and_sync() {
 if [ -z "$basecommit" ]; then
 	## Gather answers once, also storing the answerfvs
 	echo "First run..."
-	time ./gradlew tsvgs \
-		-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
+	time ./gradlew bioasqgs \
+		-PexecArgs="$basedir/data/bioasq/${type}-main.tsv $outfile0" \
 		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 		$args0
@@ -114,7 +114,7 @@ train_and_sync "" "$base_atrainfile0" "$modelfile0"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile0" \
+	-PexecArgs="$basedir/data/bioasq/${type}-main.tsv $outfile0" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$base_xmidir" \
 	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
@@ -122,7 +122,7 @@ time ./gradlew tsvgs \
 
 
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
+	-PexecArgs="$basedir/data/bioasq/${type}-main.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -132,7 +132,7 @@ train_and_sync "1" "$atrainfile1" "$modelfile1"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile1" \
+	-PexecArgs="$basedir/data/bioasq/${type}-main.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -140,7 +140,7 @@ time ./gradlew tsvgs \
 
 
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
+	-PexecArgs="$basedir/data/bioasq/${type}-main.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
@@ -150,7 +150,7 @@ train_and_sync "2" "$atrainfile2" "$modelfile2"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/curated-${type}.tsv $outfile2" \
+	-PexecArgs="$basedir/data/bioasq/${type}-main.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
@@ -159,4 +159,4 @@ time ./gradlew tsvgs \
 
 echo "$outfile2"
 
-} 2>&1 | tee "$basedir/logs/curated-${type}-${cid}.log"
+} 2>&1 | tee "$basedir/logs/bioasq-${type}-${cid}.log"
