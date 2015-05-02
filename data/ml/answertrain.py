@@ -1,30 +1,13 @@
-#!/usr/bin/python -u
-#
-# Train an sklearn classifier on the given answer TSV dataset.
-#
-# Usage: answer-train.py <training-answer.tsv
-#
-# Currently, this script trains a logistic regression classifier.
-# The output is a java code with the classifier configuration, to be
-# pasted into:
-# src/main/java/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic.java
-#
-# Training is performed by 20-round 1:1 train:test random splits
-# (with question granularity), picking the model with best rate of
-# including the correct answer in top 5 answers on the test set.
-#
-# (Note that "test set" here is picked from the same measurements
-# as "train set", has nothing to do with e.g. curated-test.tsv.)
-#
-# N.B. scikit-learn 0.14 or later (tested with 0.15.2) is required.
-#
-# TODO: Make use of the question id for actual training (rewarding when
-# good question ranks first or in top N).
+"""
+Generic framework for training answer classifiers using sklearn
+on an answer TSV dataset.
+
+This module contains a generic train / test function and cross-validation
+routine, but does not define the actual classifier to use; it is expected
+that the calling scripts will provide these.
+"""
 
 import math
-import sys
-import time
-from sklearn import linear_model
 import numpy as np
 import numpy.random as random
 
@@ -141,6 +124,8 @@ def sets_by_idx(answersets, idx_set):
 
 
 def traintest(answersets):
+    """ Create a random split of answersets to training and test set
+    in the (fv, class) format. """
     numrows = len(answersets)
     allidx = np.arange(numrows)
     random.shuffle(allidx)
@@ -152,6 +137,16 @@ def traintest(answersets):
     (fv_test, class_test) = sets_by_idx(answersets, testidx)
 
     return (fv_train, class_train, trainidx, fv_test, class_test, testidx)
+
+
+def fullset(answersets):
+    """ Return the full answersets as a (fv, class) format set. """
+    fv_full = []
+    class_full = []
+    for aset in answersets:
+        fv_full += list(aset.fv_set)
+        class_full += list(aset.class_set)
+    return np.array(fv_full), np.array(class_full)
 
 
 def measure(scorer, answersets, could_picked):
@@ -177,35 +172,16 @@ def simple_score(labels, fvset):
     return score
 
 
-def dump_weights(weights, labels):
-    for i in range(len(weights[0]) / 3):
-        print(' * %28s % 2.4f  %28s % 2.4f  %28s % 2.4f' %
-              (labels[i*3], weights[0][i*3],
-               labels[i*3 + 1], weights[0][i*3 + 1],
-               labels[i*3 + 2], weights[0][i*3 + 2]))
-
-
-def dump_model(weights, labels, intercept):
-    for i in range(len(weights[0]) / 3):
-        # d01 is roughly estimated delta between feature not present and
-        # feature present and set to 1 - basically, the baseline influence
-        # of the feature (it has some meaning even for non-binary features)
-        d01 = weights[0][i*3] + weights[0][i*3 + 1] - weights[0][i*3 + 2]
-        print('\t/* %27s @,%%,! */ % 2.6f, % 2.6f, % 2.6f, /* %27s d01: % 2.6f */' %
-              (labels[i*3][1:],
-               weights[0][i*3], weights[0][i*3 + 1], weights[0][i*3 + 2],
-               labels[i*3][1:], d01))
-    print('/* intercept */ %f' % intercept)
-
-
-def train_model(fv_train, class_train):
+def train_model(fv_train, class_train, cfier_factory):
     """
     Train a classifier on the given (fv_train, class_train) training data.
     Returns the classifier.
+
+    The classifier is built by calling cfier_factory(class_ratio).
     """
     class_ratio = float(np.sum(class_train == 1)) / np.size(class_train)
     # print('// class ratio ', class_ratio)
-    cfier = linear_model.LogisticRegression(class_weight={0: 1, 1: 0.5/class_ratio}, dual=False, fit_intercept=True)
+    cfier = cfier_factory(class_ratio)
     cfier.fit(fv_train, class_train)
     return cfier
 
@@ -304,7 +280,7 @@ def dump_answers(cfier, fv_test, class_test):
         # print(list(cfier.predict_proba(fv_test)))
 
 
-def cross_validate(answersets, num_rounds, labels):
+def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     """
     Perform num_rounds-fold cross-validation of the model, returning
     the list of scores in each fold.
@@ -315,56 +291,10 @@ def cross_validate(answersets, num_rounds, labels):
         (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
         # print np.size(fv_train, axis=0), np.size(class_train), np.size(fv_test, axis=0), np.size(class_test)
 
-        cfier = train_model(fv_train, class_train)
+        cfier = train_model(fv_train, class_train, cfier_factory)
 
         (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx], labels)
         print('// (test) ' + msg)
         scores.append(score)
 
     return np.array(scores)
-
-
-if __name__ == "__main__":
-    # Seed always to the same number to get reproducible builds
-    # TODO: Make this configurable on the command line or in the environment
-    random.seed(17151713)
-
-    (answersets, labels) = load_answers(sys.stdin)
-
-    print('/// The weights of individual elements of the FV.  These weights')
-    print('// are output by data/ml/answer-train.py as this:')
-    print('//')
-    print('// %d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
-
-    # Cross-validation phase
-    print('// + Cross-validation:')
-    scores = cross_validate(answersets, num_rounds, labels)
-    print('// Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
-
-    # Train on the complete model now
-    print('// + Full training set:')
-    fv_full = []
-    class_full = []
-    for aset in answersets:
-        fv_full += list(aset.fv_set)
-        class_full += list(aset.class_set)
-    t_start = time.clock()
-    cfier = train_model(np.array(fv_full), np.array(class_full))
-    t_end = time.clock()
-    print('// training took %d seconds' % (t_end-t_start,))
-
-    # Report the test results - the individual accuracy metrics are obviously
-    # not very meaningful as we test on the training data, but it can still
-    # be informative wrt. the answerset metrics, esp. 'any good'.
-    (score, msg) = test_model(cfier, fv_full, class_full, answersets, labels)
-    print("// (full) " + msg)
-
-    # dump_weights(cfier.coef_, labels)
-
-    print("// Full model is " + str(cfier).replace("\n", " "))
-    print('//')
-    dump_model(cfier.coef_, labels, cfier.intercept_)
-
-    if False:
-        dump_answers(cfier, fv_full, class_full)
-        dump_weights(cfier.coef_, labels)
