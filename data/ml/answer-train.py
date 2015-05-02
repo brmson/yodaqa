@@ -25,7 +25,6 @@ import math
 import sys
 import time
 from sklearn import linear_model
-from sklearn import ensemble
 import numpy as np
 import numpy.random as random
 
@@ -206,8 +205,7 @@ def train_model(fv_train, class_train):
     """
     class_ratio = float(np.sum(class_train == 1)) / np.size(class_train)
     # print('// class ratio ', class_ratio)
-    # cfier = linear_model.LogisticRegression(class_weight={0: 1, 1: 0.5/class_ratio}, dual=False, fit_intercept=True)
-    cfier = ensemble.GradientBoostingClassifier()
+    cfier = linear_model.LogisticRegression(class_weight={0: 1, 1: 0.5/class_ratio}, dual=False, fit_intercept=True)
     cfier.fit(fv_train, class_train)
     return cfier
 
