@@ -143,8 +143,8 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			}
 
 			double score = 0.0;
-			if (match >= 0)
-				score = 1.0 - Math.log(1 + match) / Math.log(1 + i);
+			//if (match >= 0)
+			//	score = 1.0 - Math.log(1 + match) / Math.log(1 + i);
 
 			output(qi, procTime, score, match, i, matchText, toplist);
 
