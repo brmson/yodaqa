@@ -17,6 +17,7 @@
 import sys
 import time
 from sklearn import ensemble
+from sklearn.utils.class_weight import compute_sample_weight
 import joblib
 import numpy as np
 import numpy.random as random
@@ -30,7 +31,8 @@ class GBFactory:
 
     def __call__(self, class_ratio, fv_train, class_train):
         cfier = ensemble.GradientBoostingClassifier(**self.cfier_params)
-        cfier.fit(fv_train, class_train)
+        sample_weight = compute_sample_weight({0: 1, 1: 0.5/class_ratio}, class_train)
+        cfier.fit(fv_train, class_train, sample_weight=sample_weight)
         return cfier
 
 
