@@ -180,12 +180,11 @@ def train_model(fv_train, class_train, cfier_factory):
     Train a classifier on the given (fv_train, class_train) training data.
     Returns the classifier.
 
-    The classifier is built by calling cfier_factory(class_ratio).
+    The classifier is built and trained by calling cfier_factory(class_ratio).
     """
     class_ratio = float(np.sum(class_train == 1)) / np.size(class_train)
     # print('// class ratio ', class_ratio)
-    cfier = cfier_factory(class_ratio)
-    cfier.fit(fv_train, class_train)
+    cfier = cfier_factory(class_ratio, fv_train, class_train)
     return cfier
 
 

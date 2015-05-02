@@ -44,8 +44,10 @@ def dump_model(weights, labels, intercept):
     print('/* intercept */ %f' % intercept)
 
 
-def cfier_factory(class_ratio):
-    return linear_model.LogisticRegression(class_weight={0: 1, 1: 0.5/class_ratio}, dual=False, fit_intercept=True)
+def cfier_factory(class_ratio, fv_train, class_train):
+    cfier = linear_model.LogisticRegression(class_weight={0: 1, 1: 0.5/class_ratio}, dual=False, fit_intercept=True)
+    cfier.fit(fv_train, class_train)
+    return cfier
 
 
 if __name__ == "__main__":
