@@ -4,15 +4,8 @@
 #
 # Usage: answer-train-gradboost.py MODELPARAM... <training-answer.tsv
 #
-# Currently, this script trains a logistic regression classifier.
-# The output is a java code with the classifier configuration, to be
-# pasted into:
-# src/main/java/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic.java
-#
-# N.B. scikit-learn 0.14 or later (tested with 0.15.2) is required.
-#
-# TODO: Make use of the question id for actual training (rewarding when
-# good question ranks first or in top N).
+# MODELPARAM can be argument of GradientBoostingClassifier(), or
+# * base_class_ratio, controlling class balance (1 is fully balanced)
 
 import sys
 import time
@@ -28,10 +21,11 @@ from answertrain import *
 class GBFactory:
     def __init__(self, cfier_params):
         self.cfier_params = cfier_params
+        self.base_class_ratio = self.cfier_params.pop('base_class_ratio', 0.5)
 
     def __call__(self, class_ratio, fv_train, class_train):
         cfier = ensemble.GradientBoostingClassifier(**self.cfier_params)
-        sample_weight = compute_sample_weight({0: 1, 1: 0.5/class_ratio}, class_train)
+        sample_weight = compute_sample_weight({0: 1, 1: self.base_class_ratio/class_ratio}, class_train)
         cfier.fit(fv_train, class_train, sample_weight=sample_weight)
         return cfier
 
