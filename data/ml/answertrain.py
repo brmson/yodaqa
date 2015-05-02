@@ -8,8 +8,10 @@ that the calling scripts will provide these.
 """
 
 import math
+from multiprocessing import Pool
 import numpy as np
 import numpy.random as random
+import os
 
 
 num_picked = 5  # Our aim is to get our to the top N here
@@ -280,21 +282,33 @@ def dump_answers(cfier, fv_test, class_test):
         # print(list(cfier.predict_proba(fv_test)))
 
 
+def cross_validate_one(data):
+    idx, answersets, labels, cfier_factory = data
+    # Make sure each worker has a different random seed
+    random.seed(random.randint(0,2**31) + idx)
+    # Generate a random train/test set split
+    (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
+    # print np.size(fv_train, axis=0), np.size(class_train), np.size(fv_test, axis=0), np.size(class_test)
+
+    cfier = train_model(fv_train, class_train, cfier_factory)
+
+    return test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx], labels)
+
+
 def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     """
     Perform num_rounds-fold cross-validation of the model, returning
     the list of scores in each fold.
     """
+    processes = os.environ.get('YODAQA_N_THREADS', None)
+    if processes is not None:  processes = int(processes)
+    pool = Pool(processes=processes)
+
+    cv_params = [(i, answersets, labels, cfier_factory) for i in range(num_rounds)]
     scores = []
-    for i in range(num_rounds):
-        # Generate a random train/test set split
-        (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
-        # print np.size(fv_train, axis=0), np.size(class_train), np.size(fv_test, axis=0), np.size(class_test)
-
-        cfier = train_model(fv_train, class_train, cfier_factory)
-
-        (score, msg) = test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx], labels)
+    for score, msg in pool.imap(cross_validate_one, cv_params):
         print('// (test) ' + msg)
         scores.append(score)
+    pool.close()
 
     return np.array(scores)
