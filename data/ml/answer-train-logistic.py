@@ -2,7 +2,12 @@
 #
 # Train a LogisticRegression classifier on the given answer TSV dataset.
 #
-# Usage: answer-train-logistic.py <training-answer.tsv
+# Usage: answer-train-logistic.py MODELPARAM... <training-answer.tsv
+#
+# MODELPARAM can be argument of GradientBoostingClassifier(), or
+# * base_class_ratio, controlling class balance (1 is fully balanced)
+# * exclude, list-syntax listing of feature label regexes to exclude
+#   from training, e.g. "exclude=['.simpleScore','\!.*']"
 #
 # Currently, this script trains a logistic regression classifier.
 # The output is a java code with the classifier configuration, to be
@@ -44,10 +49,17 @@ def dump_model(weights, labels, intercept):
     print('/* intercept */ %f' % intercept)
 
 
-def cfier_factory(class_ratio, fv_train, class_train):
-    cfier = linear_model.LogisticRegression(class_weight={0: 1, 1: 0.5/class_ratio}, dual=False, fit_intercept=True)
-    cfier.fit(fv_train, class_train)
-    return cfier
+class GBFactory:
+    def __init__(self, cfier_params):
+        self.cfier_params = cfier_params
+        self.base_class_ratio = self.cfier_params.pop('base_class_ratio', 0.5)
+
+    def __call__(self, class_ratio, fv_train, class_train):
+        cfier = linear_model.LogisticRegression(
+                    class_weight={0: 1, 1: self.base_class_ratio/class_ratio},
+                    dual=False, fit_intercept=True, **self.cfier_params)
+        cfier.fit(fv_train, class_train)
+        return cfier
 
 
 if __name__ == "__main__":
@@ -55,6 +67,14 @@ if __name__ == "__main__":
     # TODO: Make this configurable on the command line or in the environment
     random.seed(17151713)
 
+    modelparams = sys.argv[1:]
+    cfier_opts = dict()
+    for p in modelparams:
+        k, v = p.split('=')
+        cfier_opts[k] = eval(v)
+    cfier_factory = GBFactory(cfier_opts)
+
+    exclude_labels = cfier_opts.pop('exclude', [])
     (answersets, labels) = load_answers(sys.stdin)
 
     print('/// The weights of individual elements of the FV.  These weights')
