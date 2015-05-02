@@ -70,7 +70,7 @@ if __name__ == "__main__":
     print('// training took %d seconds' % (t_end-t_start,))
 
     # Store the model
-    modelfile = 'GradientBoostingClassifier-%s.pkl' % (','.join(modelparams),)
+    modelfile = ('GradientBoostingClassifier-%s.pkl' % (','.join(modelparams),)).replace('/', '%')
     joblib.dump(cfier, modelfile, compress=3)
     print('// model file ' + modelfile)
 
