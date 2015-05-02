@@ -83,8 +83,7 @@ def fi_by_label(labels, regex):
     """ Return feature index by (whole-)label regex """
     for i in range(len(labels)):
         if re.match('^'+regex+'$', labels[i]):
-            return i
-    return None
+            yield i
 
 
 def load_answers(f, exclude=[]):
@@ -112,8 +111,8 @@ def load_answers(f, exclude=[]):
             continue
 
         for labelre in exclude:
-            i = fi_by_label(labels, labelre)
-            fv = fv[0:i] + fv[i+1:]
+            for i in fi_by_label(labels, labelre):
+                fv[i] = 0
 
         if qid != qid_last:
             if len(fv_set) > 0:
@@ -128,9 +127,6 @@ def load_answers(f, exclude=[]):
     if len(fv_set) > 0:
         answersets.append(AnswerSet(fv_set, class_set))
 
-    for labelre in exclude:
-        i = fi_by_label(labels, labelre)
-        labels = labels[0:i] + labels[i+1:]
     return (answersets, labels)
 
 
