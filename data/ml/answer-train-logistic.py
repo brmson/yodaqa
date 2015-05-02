@@ -53,11 +53,12 @@ class GBFactory:
     def __init__(self, cfier_params):
         self.cfier_params = cfier_params
         self.base_class_ratio = self.cfier_params.pop('base_class_ratio', 0.5)
+        self.fit_intercept = self.cfier_params.pop('fit_intercept', True)
 
     def __call__(self, class_ratio, fv_train, class_train):
         cfier = linear_model.LogisticRegression(
                     class_weight={0: 1, 1: self.base_class_ratio/class_ratio},
-                    dual=False, fit_intercept=True, **self.cfier_params)
+                    dual=False, fit_intercept=self.fit_intercept, **self.cfier_params)
         cfier.fit(fv_train, class_train)
         return cfier
 
