@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     # Store the model
     modelfile = ('GradientBoostingClassifier-%s.pkl' % (','.join(modelparams),)).replace('/', '%')
-    joblib.dump(cfier, modelfile, compress=3)
+    joblib.dump((cfier, labels), modelfile, compress=3)
     print('// model file ' + modelfile)
 
     # Report the test results - the individual accuracy metrics are obviously
