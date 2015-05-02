@@ -6,6 +6,8 @@
 #
 # MODELPARAM can be argument of GradientBoostingClassifier(), or
 # * base_class_ratio, controlling class balance (1 is fully balanced)
+# * exclude, list-syntax listing of feature label regexes to exclude
+#   from training, e.g. "exclude=['.simpleScore','\!.*']"
 
 import sys
 import time
@@ -42,7 +44,8 @@ if __name__ == "__main__":
         cfier_opts[k] = eval(v)
     cfier_factory = GBFactory(cfier_opts)
 
-    (answersets, labels) = load_answers(sys.stdin)
+    exclude_labels = cfier_opts.pop('exclude', [])
+    (answersets, labels) = load_answers(sys.stdin, exclude_labels)
 
     print('/// The weights of individual elements of the FV.  These weights')
     print('// are output by data/ml/answer-train-logistic.py as this:')
