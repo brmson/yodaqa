@@ -76,8 +76,8 @@ if __name__ == "__main__":
     # Report the test results - the individual accuracy metrics are obviously
     # not very meaningful as we test on the training data, but it can still
     # be informative wrt. the answerset metrics, esp. 'any good'.
-    (score, msg) = test_model(cfier, fv_full, class_full, answersets, labels)
-    print("// (full) " + msg)
+    testres = test_model(cfier, fv_full, class_full, answersets, labels)
+    print("// (full) " + test_msg(*testres))
 
     # dump_weights(cfier.coef_, labels)
 

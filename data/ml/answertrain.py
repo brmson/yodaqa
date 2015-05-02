@@ -264,12 +264,12 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
             return score
     (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
 
-    msg = "PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F2 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" % \
-          (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked)
+    return (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked)
 
-    # Our decisive factor is proportion of answers that are correctly
-    # estimated as good on the 70% confidence level.
-    return (cfier_any_picked, msg)
+
+def test_msg(accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked):
+    return "PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F2 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" % \
+           (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked)
 
 
 def dump_answers(cfier, fv_test, class_test):
@@ -306,8 +306,9 @@ def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
 
     cv_params = [(i, answersets, labels, cfier_factory) for i in range(num_rounds)]
     scores = []
-    for score, msg in pool.imap(cross_validate_one, cv_params):
-        print('// (test) ' + msg)
+    for res in pool.imap(cross_validate_one, cv_params):
+        print('// (test) ' + test_msg(*res))
+        score = res[8]
         scores.append(score)
     pool.close()
 
