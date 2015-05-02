@@ -298,7 +298,7 @@ def cross_validate_one(data):
 def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     """
     Perform num_rounds-fold cross-validation of the model, returning
-    the list of scores in each fold.
+    the list of test scores in each fold.
     """
     processes = os.environ.get('YODAQA_N_THREADS', None)
     if processes is not None:  processes = int(processes)
@@ -308,8 +308,7 @@ def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     scores = []
     for res in pool.imap(cross_validate_one, cv_params):
         print('// (test) ' + test_msg(*res))
-        score = res[8]
-        scores.append(score)
+        scores.append(list(res))
     pool.close()
 
     return np.array(scores)

@@ -63,7 +63,8 @@ if __name__ == "__main__":
     # Cross-validation phase
     print('// + Cross-validation:')
     scores = cross_validate(answersets, labels, cfier_factory)
-    print('// Cross-validation score mean %.3f%% S.D. %.3f%%' % (np.mean(scores) * 100, np.std(scores) * 100))
+    print('// (mean) ' + test_msg(*list(np.mean(scores, axis=0))))
+    print('// (S.D.) ' + test_msg(*list(np.std(scores, axis=0))))
 
     # Train on the complete model now
     print('// + Full training set:')
