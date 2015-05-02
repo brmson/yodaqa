@@ -23,6 +23,7 @@
 
 import math
 import sys
+import time
 from sklearn import linear_model
 from sklearn import ensemble
 import numpy as np
@@ -349,7 +350,10 @@ if __name__ == "__main__":
     for aset in answersets:
         fv_full += list(aset.fv_set)
         class_full += list(aset.class_set)
+    t_start = time.clock()
     cfier = train_model(np.array(fv_full), np.array(class_full))
+    t_end = time.clock()
+    print('// training took %d seconds' % (t_end-t_start,))
 
     # Report the test results - the individual accuracy metrics are obviously
     # not very meaningful as we test on the training data, but it can still
