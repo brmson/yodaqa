@@ -72,10 +72,27 @@ class AnswerSet:
             any_picked += 1
         if true_picked == 0 and true_tiedlast > 0:
             any_picked += float(true_tiedlast) / float(all_tiedlast)
-        if true_picked == 3:
+        if true_picked == num_picked:
+            # XXX: all_picked doesn't really make sense; it would be more
+            # interesting to separately trace the top answer class
             all_picked += 1
 
-        return (any_picked, all_picked)
+        # Compute MRR
+        mrr = 0
+        scores_classes = zip(list(score_set), list(self.class_set))
+        rank = 1
+        next_rank = rank
+        last_s = 1e10
+        for s, c in sorted(scores_classes, key=lambda k: k[0], reverse=True):
+            if s < last_s - 0.0001:
+                rank = next_rank
+            last_s = s
+            if c > 0:
+                mrr = 1.0 / rank
+                break
+            next_rank += 1
+
+        return (any_picked, all_picked, mrr)
 
 
 def load_answers(f):
@@ -155,13 +172,16 @@ def fullset(answersets):
 def measure(scorer, answersets, could_picked):
     any_picked = 0
     all_picked = 0
+    mrr = 0
     for pset in answersets:
-        (any_picked_1, all_picked_1) = pset.measure(scorer)
+        (any_picked_1, all_picked_1, mrr_1) = pset.measure(scorer)
         any_picked += any_picked_1
         all_picked += all_picked_1
+        mrr += mrr_1
     any_picked = float(any_picked) / could_picked
     all_picked = float(all_picked) / could_picked
-    return (any_picked, all_picked)
+    mrr = float(mrr) / could_picked
+    return (any_picked, all_picked, mrr)
 
 
 # AnswerScoreSimple-alike scoring for performance comparison
@@ -253,7 +273,7 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
         def __call__(self, fvset):
             score = self.cfier.predict_proba(fvset)[:, 1]
             return score
-    (cfier_any_picked, cfier_all_picked) = measure(CfierScorer(cfier), test_answersets, could_picked)
+    (cfier_any_picked, cfier_all_picked, cfier_mrr) = measure(CfierScorer(cfier), test_answersets, could_picked)
 
     # AnswerScoreSimple-alike scoring for performance comparison
     class SimpleScorer:
@@ -262,14 +282,14 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
         def __call__(self, fvset):
             score = simple_score(labels, fvset)
             return score
-    (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
+    (simple_any_picked, simple_all_picked, simple_mrr) = measure(SimpleScorer(labels), test_answersets, could_picked)
 
-    return (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, simple_any_picked)
+    return (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, cfier_mrr)
 
 
-def test_msg(accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, simple_any_picked):
-    return "PERANS acc/prec/rcl/F1 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F1 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" % \
-           (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, simple_any_picked)
+def test_msg(accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, cfier_mrr):
+    return "PERANS acc/prec/rcl/F1 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F1 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f] MRR %.3f" % \
+           (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, cfier_mrr)
 
 
 def dump_answers(cfier, fv_test, class_test):
