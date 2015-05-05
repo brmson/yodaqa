@@ -19,7 +19,7 @@ for us.  We also draw some inspiration from the OpenQA project and the Taming
 Text book.
 
 The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarassingly often wrong; on the testing
+some questions, even though it's embarrassingly often wrong; on the testing
 corpus, while about 79.3% of questions have the correct answer *suggested*
 in the process, it can currently choose the correct answer for about 32.6%
 of questions (but 47.6% of questions have the correct answer in top three
