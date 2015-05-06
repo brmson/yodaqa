@@ -125,7 +125,7 @@ Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
 for some reason, you can also disable Freebase usage by commenting
 out the fbo.query() line in the code of:
 
-	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyAnswerProducer.java
+	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
 
 You can start your own instance by following the instructions in
 ``data/freebase/README.md`` but it is quite arduous and resource intensive.
