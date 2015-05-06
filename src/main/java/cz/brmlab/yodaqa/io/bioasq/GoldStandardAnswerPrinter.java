@@ -136,7 +136,6 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 					if (isCorrectAnswer(text, JCasUtil.select(questionView, GSAnswer.class))) {
 						match = i;
 						matchText = text;
-						break;
 					}
 				}
 				i++;
