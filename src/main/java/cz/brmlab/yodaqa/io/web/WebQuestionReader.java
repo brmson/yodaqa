@@ -1,8 +1,4 @@
-package cz.brmlab.yodaqa.io.machine;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
+package cz.brmlab.yodaqa.io.web;
 
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
 
@@ -23,78 +19,51 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 
 /**
- * A collection that reads the raw question from stdin. */
+ * A collection that reads the question from WebInterface. */
 
-public class MachineQuestionReader extends CasCollectionReader_ImplBase {
+public class WebQuestionReader extends CasCollectionReader_ImplBase {
 	/**
 	 * Name of optional configuration parameter that contains the language
 	 * of questions. This is mandatory as x-unspecified will break e.g. OpenNLP.
 	 */
 	public static final String PARAM_LANGUAGE = ComponentParameters.PARAM_LANGUAGE;
 	@ConfigurationParameter(name = PARAM_LANGUAGE, mandatory = true)
-	private String language;
-
-	BufferedReader br;
-
-	private int index;
-	private String input;
+	protected String language;
 
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
-
-		index = -1;
-		br = new BufferedReader(new InputStreamReader(System.in));;
-	}
-
-	protected void acquireInput() {
-		index++;
-		try {
-			input = br.readLine();
-		} catch (IOException io) {
-			io.printStackTrace();
-			input = null;
-		}
 	}
 
 	@Override
 	public boolean hasNext() throws CollectionException {
-		if (input == null)
-			acquireInput();
-		return input != null;
+		return true;
 	}
 
-	protected void initCas(JCas jcas) {
+	protected void initCas(JCas jcas, Question q) {
 		jcas.setDocumentLanguage(language);
 
 		QuestionInfo qInfo = new QuestionInfo(jcas);
-		qInfo.setSource("machine");
-		qInfo.setQuestionId(Integer.toString(index));
+		qInfo.setSource("web");
+		qInfo.setQuestionId(Integer.toString(q.getId()));
 		qInfo.addToIndexes(jcas);
 	}
 
 	@Override
 	public void getNext(CAS aCAS) throws CollectionException {
-		if (input == null)
-			acquireInput();
-
-		Question q = new Question(index, input);
-		QuestionDashboard.getInstance().askQuestion(q);
-		QuestionDashboard.getInstance().getQuestionToAnswer();
-
+		Question q = QuestionDashboard.getInstance().getQuestionToAnswer();
 		try {
 			JCas jcas = aCAS.getJCas();
-			initCas(jcas);
-			jcas.setDocumentText(input);
+			initCas(jcas, q);
+			jcas.setDocumentText(q.getText());
 		} catch (CASException e) {
 			throw new CollectionException(e);
 		}
-		input = null;
 	}
 
 	@Override
 	public Progress[] getProgress() {
-		return new Progress[]{new ProgressImpl(index, -1, Progress.ENTITIES)};
+		return new Progress[]{new ProgressImpl(0, -1, Progress.ENTITIES)};
 	}
 
 	@Override

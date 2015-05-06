@@ -10,8 +10,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.analysis.passage.PassageAnalysisAE;
 import cz.brmlab.yodaqa.analysis.passextract.PassageExtractorAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
-import cz.brmlab.yodaqa.pipeline.AnswerGenerator;
-import cz.brmlab.yodaqa.pipeline.ResultGenerator;
 
 /**
  * From the QuestionCAS, generate a bunch of CandidateAnswerCAS instances.

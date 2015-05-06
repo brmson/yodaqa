@@ -1,4 +1,7 @@
-package cz.brmlab.yodaqa.io.machine;
+package cz.brmlab.yodaqa.io.web;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -10,19 +13,18 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionAnswer;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 /**
- * A trivial consumer that will extract the final answer and print it
- * on the standard output.
+ * A consumer that records answers back in WebInterface.
  *
- * Pair this with MachineQuestionReader.
+ * Pair this with WebQuestionReader.
  */
 
-public class MachineAnswerPrinter extends JCasConsumer_ImplBase {
-
+public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 	public void initialize(UimaContext context)
 			throws ResourceInitializationException {
 		super.initialize(context);
@@ -38,22 +40,15 @@ public class MachineAnswerPrinter extends JCasConsumer_ImplBase {
 		}
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
-		FSIterator answers = idx.iterator();
-		if (answers.hasNext()) {
-			int i = 1;
-			while (answers.hasNext() && i <= 4) {
-				Answer answer = (Answer) answers.next();
-				if (i > 1)
-					System.out.print("  |  ");
-				System.out.print(answer.getText() + " (" + String.format("%.2f", answer.getConfidence()) + ")");
-				i++;
-			}
-			System.out.println();
-		} else {
-			System.out.println("No answer found.");
+		FSIterator answerit = idx.iterator();
+		List<QuestionAnswer> answers = new ArrayList<>();
+		while (answerit.hasNext()) {
+			Answer a = ((Answer) answerit.next());
+			QuestionAnswer qa = new QuestionAnswer(a.getText(), a.getConfidence());
+			answers.add(qa);
 		}
 		Question q = QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId()));
-		// q.setAnswers(answers); XXX
+		q.setAnswers(answers);
 		QuestionDashboard.getInstance().finishQuestion(q);
 	}
 }

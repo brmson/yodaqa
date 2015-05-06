@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -16,6 +17,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 
@@ -84,6 +87,11 @@ public class InteractiveQuestionReader extends CasCollectionReader_ImplBase {
 	public void getNext(CAS aCAS) throws CollectionException {
 		if (input == null)
 			acquireInput();
+
+		Question q = new Question(index, input);
+		QuestionDashboard.getInstance().askQuestion(q);
+		QuestionDashboard.getInstance().getQuestionToAnswer();
+
 		try {
 			JCas jcas = aCAS.getJCas();
 			initCas(jcas);

@@ -19,7 +19,7 @@ for us.  We also draw some inspiration from the OpenQA project and the Taming
 Text book.
 
 The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarassingly often wrong; on the testing
+some questions, even though it's embarrassingly often wrong; on the testing
 corpus, while about 79.3% of questions have the correct answer *suggested*
 in the process, it can currently choose the correct answer for about 32.6%
 of questions (but 47.6% of questions have the correct answer in top three
@@ -42,9 +42,9 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
     of all sorts of NLP resources and models.  This will amount to several
     hundreds of megabytes of download!
-  * ``./gradlew run -q``
+  * ``./gradlew run -q`` (command line) or ``./gradlew web -q`` (web interface)
 
-By default, YodaQA will try to connect to a remote Solr core serving Wikipedia;
+By default, YodaQA will try to connect to various remote databases;
 see the section on Data Sources if connection fails.
 
 Brmson should run on Windows as well, in theory - just have a Java7 JDK
@@ -58,12 +58,13 @@ answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
 
+Alternatively, you can use the "web" frontend by executing
+``./gradlew web -q`` and opening e.g. http://localhost:4567/ in your browser.
 It is also possible to let YodaQA answer many questions at once, e.g. to
 measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
 the curated testing dataset from data/eval/.  (See also data/eval/README.md
 for more details, and a convenient wrapper script ``train-and-eval.sh``.)
-Support for connecting YodaQA to other programs (e.g. to IRC) is a work
-in progress, see ``contrib/irssi-brmson-pipe.pl`` for an example.
+To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
@@ -125,9 +126,10 @@ We can also leverage another structured data source, the Freebase.
 We use its RDF export with SPARQL endpoint, running on infrastructure
 provided by the author's academic group (Jan Šedivý's 3C Group at the
 Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
-for some reason, you can also simply disable Freebase usage by commenting
-out the FreebaseOntologyAnswerProducer initialization in the code of
-``src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java``.
+for some reason, you can also disable Freebase usage by commenting
+out the fbo.query() line in the code of:
+
+	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
 
 You can start your own instance by following the instructions in
 ``data/freebase/README.md`` but it is quite arduous and resource intensive.

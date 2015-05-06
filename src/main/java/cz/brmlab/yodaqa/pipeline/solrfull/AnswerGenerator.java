@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.pipeline;
+package cz.brmlab.yodaqa.pipeline.solrfull;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -12,6 +12,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
@@ -71,7 +73,18 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
 			if (answer != null) {
-				generateAnswer(answer, canAnswerView, !answers.hasNext());
+				boolean isLast = !answers.hasNext();
+				generateAnswer(answer, canAnswerView, isLast);
+
+				if (isLast) {
+					/* XXX: Ugh. We clearly need global result ids. */
+					QuestionDashboard.getInstance().get(questionView).setSourceState(
+							ri.getOrigin() == "cz.brmlab.yodaqa.pipeline.solrfull.fulltext"
+								? AnswerSourceEnwiki.ORIGIN_FULL
+								: AnswerSourceEnwiki.ORIGIN_TITLE,
+							Integer.parseInt(ri.getDocumentId()),
+							2);
+				}
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */

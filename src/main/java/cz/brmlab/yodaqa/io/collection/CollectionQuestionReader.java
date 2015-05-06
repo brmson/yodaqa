@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -16,6 +17,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 
@@ -94,6 +97,11 @@ public class CollectionQuestionReader extends CasCollectionReader_ImplBase {
 		if (input == null)
 			acquireInput();
 		String[] fields = input.split("\t");
+
+		Question q = new Question(Integer.parseInt(fields[0]) /* id */, fields[2] /* text */);
+		QuestionDashboard.getInstance().askQuestion(q);
+		QuestionDashboard.getInstance().getQuestionToAnswer();
+
 		try {
 			JCas jcas = aCAS.getJCas();
 			initCas(jcas, /* id */ fields[0],

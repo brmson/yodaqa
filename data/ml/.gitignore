@@ -1,3 +1,4 @@
 tsv
 tsv-local
 models
+*.pyc
