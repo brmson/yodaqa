@@ -18,7 +18,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.io.bioasq.GoldStandardAnswerPrinter;
+import cz.brmlab.yodaqa.io.qald5.GoldStandardAnswerPrinter;
 import cz.brmlab.yodaqa.model.Question.GSAnswer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
