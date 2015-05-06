@@ -69,6 +69,7 @@ public abstract class CachedJenaLookup {
 			} catch (QueryExceptionHTTP e) {
 				e.printStackTrace();
 				System.err.println("*** " + service + " SPARQL Query (temporarily?) failed, retrying in a moment...");
+				System.err.println("Please refer to the README.md for tips on disabling this lookup.");
 				try {
 					TimeUnit.SECONDS.sleep(10);
 				} catch (InterruptedException e2) { // oof...
