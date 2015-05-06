@@ -46,6 +46,18 @@ task(tsvgs, dependsOn: 'classes', type: JavaExec) {
   systemProperties = System.getProperties()
 }
 
+task(qald5gs, dependsOn: 'classes', type: JavaExec) {
+  main = 'cz.brmlab.yodaqa.YodaQA_QALD5GS'
+  if (project.hasProperty('execArgs'))
+    args(execArgs.split(' '))
+  else
+    args = ['data/qald/sample.xml', 'sample.tsv']
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
+}
+
 task(machine, dependsOn: 'classes', type: JavaExec) {
   standardInput = System.in
   main = 'cz.brmlab.yodaqa.YodaQA_Machine'

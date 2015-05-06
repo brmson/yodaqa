@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<dataset id="qald-5_train">
+
+<question id="10" onlydbo="true" answertype="resource" aggregation="false" hybrid="false">
+<string lang="en"><![CDATA[In which country does the Ganges start?]]></string>
+<string lang="de"><![CDATA[In welchem Land entspringt der Ganges?]]></string>
+<string lang="es"><![CDATA[¿En qué país nace el Ganges?]]></string>
+<string lang="it"><![CDATA[In quale stato nasce il Gange?]]></string>
+<string lang="fr"><![CDATA[Dans quel pays commence le Gange?]]></string>
+<string lang="nl"><![CDATA[In welk land ontspringt de Ganges?]]></string>
+<string lang="ro"><![CDATA[Din ce țară izvorăște Ganga?]]></string>
+<keywords lang="en"><![CDATA[Ganges, start, country]]></keywords>
+<keywords lang="de"><![CDATA[Ganges, entspringen, Land]]></keywords>
+<keywords lang="es"><![CDATA[Ganges, país, orígen]]></keywords>
+<keywords lang="it"><![CDATA[Gange, stato, origine]]></keywords>
+<keywords lang="fr"><![CDATA[pays, commence, Gange]]></keywords>
+<keywords lang="nl"><![CDATA[ontspringt, Ganges]]></keywords>
+<keywords lang="ro"><![CDATA[Gangele, izvor, țară]]></keywords>
+<query><![CDATA[ 
+PREFIX dbo: <http://dbpedia.org/ontology/> 
+PREFIX res: <http://dbpedia.org/resource/> 
+SELECT DISTINCT ?uri 
+WHERE { 
+        res:Ganges dbo:sourceCountry ?uri .
+} 
+]]>
+</query>
+<answers><answer>http://dbpedia.org/resource/India</answer></answers></question>
+
+<question id="102" onlydbo="true" answertype="resource" aggregation="false" hybrid="false">
+<string lang="en"><![CDATA[Who was John F. Kennedy's vice president?]]></string>
+<string lang="de"><![CDATA[Wer war der Vizepräsident unter John F. Kennedy?]]></string>
+<string lang="es"><![CDATA[¿Quién fué el vicepresidente de John F. Kennedy?]]></string>
+<string lang="it"><![CDATA[Chi fu il vicepresidente di John F. Kennedy?]]></string>
+<string lang="fr"><![CDATA[Qui était le vice-président de John F. Kennedy?]]></string>
+<string lang="nl"><![CDATA[Wie was de vicepresident onder John F. Kennedy?]]></string>
+<string lang="ro"><![CDATA[Cine a fost vicepreședintele lui John F. Kennedy?]]></string>
+<keywords lang="en"><![CDATA[John F. Kennedy, vice president]]></keywords>
+<keywords lang="de"><![CDATA[John F. Kennedy, Vizepräsident]]></keywords>
+<keywords lang="es"><![CDATA[John F. Kennedy, vicepresidente]]></keywords>
+<keywords lang="it"><![CDATA[John F. Kennedy, vicepresidente]]></keywords>
+<keywords lang="fr"><![CDATA[John F. Kennedy, vice-président]]></keywords>
+<keywords lang="nl"><![CDATA[John F. Kennedy, vicepresident]]></keywords>
+<keywords lang="ro"><![CDATA[John F. Kennedy, vicepreședinte]]></keywords>
+<query><![CDATA[ 
+PREFIX dbo: <http://dbpedia.org/ontology/> 
+PREFIX res: <http://dbpedia.org/resource/> 
+SELECT DISTINCT ?uri 
+WHERE { res:John_F._Kennedy dbo:vicePresident ?uri . 
+} 
+]]>
+</query>
+<answers><answer>http://dbpedia.org/resource/Lyndon_B._Johnson</answer></answers></question>
+
+<question id="339" answertype="string" aggregation="false" onlydbo="true" hybrid="true">
+<string lang="en"><![CDATA[Under which pseudonym did Charles Dickens publish some of his books?]]></string>
+<pseudoquery><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?s
+WHERE { 
+        ?x dbo:author res:Charles_Dickens . 
+        ?x text:"published under pseudonyn" ?s . 
+}
+]]></pseudoquery>
+<answers>
+<answer>Boz</answer>
+</answers>
+</question>
+
+<question id="324" answertype="date" aggregation="false" onlydbo="true" hybrid="true">
+<string lang="en"><![CDATA[When was the composer of the opera Madame Butterfly born?]]></string>
+<pseudoquery><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?date 
+WHERE {
+    res:Madama_Butterfly text:"composer" ?x .
+    ?x dbo:birthDate ?date .
+}
+]]></pseudoquery>
+<answers>
+<answer>1858-12-22</answer>
+</answers>
+</question>
+
+<question aggregation="false" hybrid="false" answertype="number" id="280" onlydbo="true">
+<string lang="en"><![CDATA[What is the total population of Melbourne, Florida?]]></string>
+<string lang="de"><![CDATA[Was ist die Gesamteinwohnerzahl von Melbourne, Florida?]]></string>
+<string lang="es"><![CDATA[¿Cuál es la población total de Melbourne, Florida?]]></string>
+<string lang="it"><![CDATA[Qual è la popolazione totale di Melbourne, Florida?]]></string>
+<string lang="fr"><![CDATA[Quelle est la population totale de Melbourne, Floride?]]></string>
+<string lang="nl"><![CDATA[Wat is de bevolking van Melbourne, Florida?]]></string>
+<string lang="ro"><![CDATA[Care este populația totală a Melbourne, Florida?]]></string>
+<keywords lang="en"><![CDATA[total population, Melbourne Florida]]></keywords>
+<keywords lang="de"><![CDATA[Gesamteinwohnerzahl, Melbourne Florida]]></keywords>
+<keywords lang="es"><![CDATA[población total, Melbourne Florida]]></keywords>
+<keywords lang="it"><![CDATA[popolazione totale, Melbourne, Florida]]></keywords>
+<keywords lang="fr"><![CDATA[population totale, Melbourne, Floride]]></keywords>
+<keywords lang="nl"><![CDATA[bevolking, Melbourne Florida]]></keywords>
+<keywords lang="ro"><![CDATA[populația totală, Melbourne Florida]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/> 
+SELECT ?uri 
+WHERE { 
+        <http://dbpedia.org/resource/Melbourne,_Florida> dbo:populationTotal ?uri .
+}
+]]></query>
+<answers><answer>76068</answer></answers></question>
+
+<question id="329" answertype="boolean" aggregation="false" onlydbo="true" hybrid="true">
+<string lang="en"><![CDATA[Did Napoleon's first wife die in France?]]></string>
+<pseudoquery><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+ASK 
+WHERE {
+        ?x text:"first wife of" text:"Napoleon" .
+        ?x dbo:deathPlace res:France .  
+}
+]]></pseudoquery>
+<answers>
+<answer>true</answer>
+</answers>
+</question>
+
+<question id="1" onlydbo="true" answertype="resource" aggregation="false" hybrid="false">
+<string lang="en"><![CDATA[Give me all cosmonauts.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Kosmonauten.]]></string>
+<string lang="es"><![CDATA[Dame todas las cosmonautas.]]></string>
+<string lang="it"><![CDATA[Dammi tutte le cosmonaute.]]></string>
+<string lang="fr"><![CDATA[Donnes-moi tous les cosmonautes.]]></string>
+<string lang="nl"><![CDATA[Geef alle kosmonauten.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toți cosmonauții.]]></string>
+<keywords lang="en"><![CDATA[cosmonauts]]></keywords>
+<keywords lang="de"><![CDATA[Kosmonauten]]></keywords>
+<keywords lang="es"><![CDATA[cosmonautas]]></keywords>
+<keywords lang="it"><![CDATA[cosmonaute]]></keywords>
+<keywords lang="fr"><![CDATA[cosmonautes]]></keywords>
+<keywords lang="nl"><![CDATA[kosmonauten]]></keywords>
+<keywords lang="ro"><![CDATA[cosmonauți]]></keywords>
+<query><![CDATA[ 
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+PREFIX dbo: <http://dbpedia.org/ontology/> 
+PREFIX res: <http://dbpedia.org/resource/> 
+SELECT DISTINCT ?uri 
+WHERE { 
+        ?uri rdf:type dbo:Astronaut . 
+      { ?uri dbo:nationality res:Russia . } 
+      UNION 
+      { ?uri dbo:nationality res:Soviet_Union . } 
+} 
+]]>
+</query>
+<answers><answer>http://dbpedia.org/resource/Mikhail_Korniyenko</answer><answer>http://dbpedia.org/resource/Anatoli_Ivanishin</answer><answer>http://dbpedia.org/resource/Sergey_Alexandrovich_Volkov</answer><answer>http://dbpedia.org/resource/Yelena_Kondakova</answer><answer>http://dbpedia.org/resource/Sergei_Revin</answer><answer>http://dbpedia.org/resource/Evgeny_Tarelkin</answer><answer>http://dbpedia.org/resource/Oleg_Atkov</answer><answer>http://dbpedia.org/resource/Aleksandr_Poleshchuk</answer><answer>http://dbpedia.org/resource/Gennady_Padalka</answer><answer>http://dbpedia.org/resource/Anatoly_Solovyev</answer><answer>http://dbpedia.org/resource/Boris_Morukov</answer><answer>http://dbpedia.org/resource/Fyodor_Yurchikhin</answer><answer>http://dbpedia.org/resource/Mikhail_Tyurin</answer><answer>http://dbpedia.org/resource/Roman_Romanenko</answer><answer>http://dbpedia.org/resource/Salizhan_Sharipov</answer><answer>http://dbpedia.org/resource/Sergei_Treshchov</answer><answer>http://dbpedia.org/resource/Valeri_Tokarev</answer><answer>http://dbpedia.org/resource/Vladimir_Dezhurov</answer><answer>http://dbpedia.org/resource/Yury_Onufriyenko</answer><answer>http://dbpedia.org/resource/Yury_Usachov</answer><answer>http://dbpedia.org/resource/Yuri_Shargin</answer><answer>http://dbpedia.org/resource/Aleksandr_Ivanchenkov</answer><answer>http://dbpedia.org/resource/Aleksandr_Lazutkin</answer><answer>http://dbpedia.org/resource/Aleksandr_Serebrov</answer><answer>http://dbpedia.org/resource/Aleksandr_Viktorenko</answer><answer>http://dbpedia.org/resource/Gennadi_Manakov</answer><answer>http://dbpedia.org/resource/Sergei_Avdeyev</answer><answer>http://dbpedia.org/resource/Vasily_Tsibliyev</answer><answer>http://dbpedia.org/resource/Viktor_Savinykh</answer><answer>http://dbpedia.org/resource/Nikolai_Tikhonov_(cosmonaut)</answer><answer>http://dbpedia.org/resource/Oleg_Artemyev</answer><answer>http://dbpedia.org/resource/Svetlana_Savitskaya</answer><answer>http://dbpedia.org/resource/Valentina_Tereshkova</answer><answer>http://dbpedia.org/resource/Aleksandr_Kaleri</answer><answer>http://dbpedia.org/resource/Vladimir_Solovyov_(cosmonaut)</answer><answer>http://dbpedia.org/resource/Nikolai_Budarin</answer><answer>http://dbpedia.org/resource/Sergei_Zalyotin</answer><answer>http://dbpedia.org/resource/Yury_Lonchakov</answer><answer>http://dbpedia.org/resource/Vladimir_Georgiyevich_Titov</answer><answer>http://dbpedia.org/resource/Sergei_Krikalev</answer><answer>http://dbpedia.org/resource/Valery_Korzun</answer><answer>http://dbpedia.org/resource/Viktor_Mikhailovich_Afanasyev</answer><answer>http://dbpedia.org/resource/Yuri_Gidzenko</answer><answer>http://dbpedia.org/resource/Boris_Andreyev_(cosmonaut)</answer><answer>http://dbpedia.org/resource/Dmitri_Kondratyev</answer><answer>http://dbpedia.org/resource/Oleg_Skripochka</answer><answer>http://dbpedia.org/resource/Oleg_Grigoryevich_Makarov</answer><answer>http://dbpedia.org/resource/Talgat_Musabayev</answer><answer>http://dbpedia.org/resource/Yuri_Baturin</answer><answer>http://dbpedia.org/resource/Yuri_Malenchenko</answer><answer>http://dbpedia.org/resource/Oleg_Kotov</answer><answer>http://dbpedia.org/resource/Oleg_Novitskiy</answer><answer>http://dbpedia.org/resource/Aleksandr_Aleksandrovich_Skvortsov</answer><answer>http://dbpedia.org/resource/Andrei_Borisenko</answer><answer>http://dbpedia.org/resource/Pavel_Vinogradov</answer><answer>http://dbpedia.org/resource/Vladimir_Kovalyonok</answer><answer>http://dbpedia.org/resource/Oleg_Kononenko</answer><answer>http://dbpedia.org/resource/Maksim_Surayev</answer><answer>http://dbpedia.org/resource/Aleksandr_Nikolayevich_Balandin</answer><answer>http://dbpedia.org/resource/Alexander_Misurkin</answer><answer>http://dbpedia.org/resource/Anton_Shkaplerov</answer><answer>http://dbpedia.org/resource/Konstantin_Valkov</answer><answer>http://dbpedia.org/resource/Yury_Romanenko</answer><answer>http://dbpedia.org/resource/Yelena_Serova</answer><answer>http://dbpedia.org/resource/Anatoly_Artsebarsky</answer><answer>http://dbpedia.org/resource/Sergey_Ryazansky</answer><answer>http://dbpedia.org/resource/Aleksandr_Samokutyayev</answer><answer>http://dbpedia.org/resource/Toktar_Aubakirov</answer><answer>http://dbpedia.org/resource/Vladimir_Komarov</answer><answer>http://dbpedia.org/resource/Gennadi_Strekalov</answer><answer>http://dbpedia.org/resource/Valery_Ryumin</answer><answer>http://dbpedia.org/resource/Aleksandr_Laveykin</answer><answer>http://dbpedia.org/resource/Aleksandr_Pavlovich_Aleksandrov</answer><answer>http://dbpedia.org/resource/Anatoli_Levchenko</answer><answer>http://dbpedia.org/resource/Anatoly_Berezovoy</answer><answer>http://dbpedia.org/resource/Igor_Volk</answer><answer>http://dbpedia.org/resource/Leonid_Kizim</answer><answer>http://dbpedia.org/resource/Musa_Manarov</answer><answer>http://dbpedia.org/resource/Vladimir_Vasyutin</answer><answer>http://dbpedia.org/resource/Vyacheslav_Zudov</answer><answer>http://dbpedia.org/resource/Yury_Glazkov</answer><answer>http://dbpedia.org/resource/Yury_Vasilyevich_Malyshev</answer><answer>http://dbpedia.org/resource/Aleksei_Yeliseyev</answer><answer>http://dbpedia.org/resource/Anatoly_Filipchenko</answer><answer>http://dbpedia.org/resource/Andriyan_Nikolayev</answer><answer>http://dbpedia.org/resource/Boris_Volynov</answer><answer>http://dbpedia.org/resource/Georgy_Dobrovolsky</answer><answer>http://dbpedia.org/resource/Georgy_Shonin</answer><answer>http://dbpedia.org/resource/Gherman_Titov</answer><answer>http://dbpedia.org/resource/Nikolay_Rukavishnikov</answer><answer>http://dbpedia.org/resource/Pavel_Belyayev</answer><answer>http://dbpedia.org/resource/Pavel_Popovich</answer><answer>http://dbpedia.org/resource/Valeri_Kubasov</answer><answer>http://dbpedia.org/resource/Valery_Bykovsky</answer><answer>http://dbpedia.org/resource/Viktor_Gorbatko</answer><answer>http://dbpedia.org/resource/Viktor_Patsayev</answer><answer>http://dbpedia.org/resource/Vitaly_Sevastyanov</answer><answer>http://dbpedia.org/resource/Vladimir_Shatalov</answer><answer>http://dbpedia.org/resource/Vladislav_Volkov</answer><answer>http://dbpedia.org/resource/Yevgeny_Khrunov</answer><answer>http://dbpedia.org/resource/Leonid_Popov</answer><answer>http://dbpedia.org/resource/Aleksei_Gubarev</answer><answer>http://dbpedia.org/resource/Gennadi_Sarafanov</answer><answer>http://dbpedia.org/resource/Georgy_Grechko</answer><answer>http://dbpedia.org/resource/Lev_Dyomin</answer><answer>http://dbpedia.org/resource/Pyotr_Klimuk</answer><answer>http://dbpedia.org/resource/Valentin_Lebedev</answer><answer>http://dbpedia.org/resource/Vasily_Lazarev</answer><answer>http://dbpedia.org/resource/Yury_Artyukhin</answer><answer>http://dbpedia.org/resource/Vitaly_Zholobov</answer><answer>http://dbpedia.org/resource/Vladimir_Dzhanibekov</answer><answer>http://dbpedia.org/resource/Vladimir_Aksyonov</answer><answer>http://dbpedia.org/resource/Mars_Rafikov</answer><answer>http://dbpedia.org/resource/Valery_Rozhdestvensky</answer><answer>http://dbpedia.org/resource/Ivan_Anikeyev</answer><answer>http://dbpedia.org/resource/Aleksandr_Aleksandrovich_Volkov</answer></answers></question>
+
+</dataset>

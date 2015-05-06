@@ -28,6 +28,10 @@ paper on YodaQA at:
 
 	http://pasky.or.cz/dev/brmson/yodaqa-poster2015.pdf
 
+**Note: This is a fork of the default YodaQA pipeline that is aimed
+at hybrid question answering over linked data at the QALD-5 challenge
+of CLEF15 QA Labs.**
+
 ## Installation Instructions
 
 Quick instructions for setting up, building and running (focused on Debian Wheezy):

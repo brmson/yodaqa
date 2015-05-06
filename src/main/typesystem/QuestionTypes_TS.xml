@@ -66,6 +66,18 @@
         </features>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.GSAnswer</name>
+        <description>Gold Standard answer (for benchmarking; there may be multiple for list questions)</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>text</name>
+            <description>The possible answer text.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.SV</name>
         <description>Selective Verb</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
