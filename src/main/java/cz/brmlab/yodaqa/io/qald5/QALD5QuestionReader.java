@@ -81,7 +81,7 @@ public class QALD5QuestionReader extends CasCollectionReader_ImplBase {
 		// read answers
 		NodeList answers = question.getElementsByTagName("answer");
 		for (int j = 0; j < answers.getLength(); j++) {
-			Element e = (Element) strings.item(j);
+			Element e = (Element) answers.item(j);
 			GSAnswer gs = new GSAnswer(jcas);
 			gs.setText(e.getTextContent());
 			gs.addToIndexes(jcas);
