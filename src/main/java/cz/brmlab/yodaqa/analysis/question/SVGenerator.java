@@ -36,7 +36,7 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 
 	// Unfortunately, it seems our lemmatizer doesn't handle contractions
 	// and verb forms? XXX: We should just roll our own lemmatizer
-	protected String SVBLACKLIST = "be|have|do|'s|'re|'d|'ve|doe|has|get";
+	protected String SVBLACKLIST = "be|have|do|'s|'re|'d|'ve|doe|has|get|give";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
