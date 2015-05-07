@@ -4,6 +4,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -18,6 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.GSAnswer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
@@ -104,12 +107,19 @@ public class QALD5QuestionReader extends CasCollectionReader_ImplBase {
 	@Override
 	public void getNext(CAS aCAS) throws CollectionException {
 		Element question = (Element) questionNodes.item(index);
+
+		JCas jcas;
 		try {
-			JCas jcas = aCAS.getJCas();
+			jcas = aCAS.getJCas();
 			initCas(jcas, question);
 		} catch (CASException e) {
 			throw new CollectionException(e);
 		}
+
+		Question q = new Question(Integer.parseInt(question.getAttribute("id")), jcas.getDocumentText());
+		QuestionDashboard.getInstance().askQuestion(q);
+		QuestionDashboard.getInstance().getQuestionToAnswer();
+
 		index++;
 	}
 
