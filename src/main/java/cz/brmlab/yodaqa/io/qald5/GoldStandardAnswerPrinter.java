@@ -133,19 +133,24 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 					// otherwise, return a dbpedia IRI
 					if (answer.getResources() == null)
 						continue;
+					boolean gotResource = false;
 					for (FeatureStructure resfs : answer.getResources().toArray()) {
 						String iri = ((AnswerResource) resfs).getIri();
 						if (iri.startsWith("http://en.wikipedia.org/wiki/")) {
 							// hope for the best
 							text = iri.replace("http://en.wikipedia.org/wiki/", "http://dbpedia.org/resource/");
+							gotResource = true;
 							break;
 						} else if (iri.startsWith("http://dbpedia.org/resource/")) {
 							text = iri;
+							gotResource = true;
 							break;
 						} else {
 							// skip
 						}
 					}
+					if (!gotResource)
+						continue;
 				}
 				if (i < topListLen) {
 					toplist[i] = text + ":" + answer.getConfidence();
