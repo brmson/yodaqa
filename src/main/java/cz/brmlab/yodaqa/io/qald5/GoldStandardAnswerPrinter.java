@@ -96,6 +96,31 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		TSVOutput.flush();
 	}
 
+	public static String answerText(Answer answer, String questionType) {
+		String text = answer.getText();
+		if (questionType.equals("resource") || questionType.equals("uri")) {
+			// skip answers that have no resource;
+			// otherwise, return a dbpedia IRI
+			if (answer.getResources() == null)
+				return null;
+			for (FeatureStructure resfs : answer.getResources().toArray()) {
+				String iri = ((AnswerResource) resfs).getIri();
+				if (iri.startsWith("http://en.wikipedia.org/wiki/")) {
+					// hope for the best
+					text = iri.replace("http://en.wikipedia.org/wiki/", "http://dbpedia.org/resource/");
+					return text;
+				} else if (iri.startsWith("http://dbpedia.org/resource/")) {
+					text = iri;
+					return text;
+				} else {
+					// skip
+				}
+			}
+			return null;
+		}
+		return text;
+	}
+
 	public static boolean isCorrectAnswer(String text, Collection<GSAnswer> gs) {
 		for (GSAnswer gsa : gs) {
 			if (gsa.getText().toLowerCase().equals(text.toLowerCase())) {
@@ -127,31 +152,9 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			int i = 0;
 			while (answers.hasNext()) {
 				Answer answer = (Answer) answers.next();
-				String text = answer.getText();
-				if (qi.getQuestionType().equals("resource") || qi.getQuestionType().equals("uri")) {
-					// skip answers that have no resource;
-					// otherwise, return a dbpedia IRI
-					if (answer.getResources() == null)
-						continue;
-					boolean gotResource = false;
-					for (FeatureStructure resfs : answer.getResources().toArray()) {
-						String iri = ((AnswerResource) resfs).getIri();
-						if (iri.startsWith("http://en.wikipedia.org/wiki/")) {
-							// hope for the best
-							text = iri.replace("http://en.wikipedia.org/wiki/", "http://dbpedia.org/resource/");
-							gotResource = true;
-							break;
-						} else if (iri.startsWith("http://dbpedia.org/resource/")) {
-							text = iri;
-							gotResource = true;
-							break;
-						} else {
-							// skip
-						}
-					}
-					if (!gotResource)
-						continue;
-				}
+				String text = answerText(answer, qi.getQuestionType());
+				if (text == null)
+					continue;
 				if (i < topListLen) {
 					toplist[i] = text + ":" + answer.getConfidence();
 				}

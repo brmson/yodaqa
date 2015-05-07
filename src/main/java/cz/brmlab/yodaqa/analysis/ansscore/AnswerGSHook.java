@@ -114,7 +114,10 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
 		PrintWriter csvFile = openAnswersCSV(csvFileName);
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-			dumpAnswerCSV(csvFile, a, GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs), astats);
+			String text = GoldStandardAnswerPrinter.answerText(a, qi.getQuestionType());
+			if (text == null)
+				continue;
+			dumpAnswerCSV(csvFile, a, text, GoldStandardAnswerPrinter.isCorrectAnswer(text, gs), astats);
 		}
 	}
 
@@ -126,91 +129,16 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		if (gs.isEmpty() || trainFileName == null || trainFileName.isEmpty())
 			return;
 
-		/* It turns out to make sense to include only a single best
-		 * correct answer in the training set.  We find and store this
-		 * in refAnswer and skip all correct (matching) answers that
-		 * are not refAnswer.
-		 *
-		 * To decide between multiple possible answers, we use the one
-		 * with the highest score from the previous phase; use all
-		 * correct answers in the initial phase.  If we used the
-		 * current model, it would not be stable across re-trainings on
-		 * identical program version as the selected correct answers
-		 * would keep changing; it turns out this introduces
-		 * a significant instability and (i) the performance degrades
-		 * (ii) it is very tricky to measure improvements.
-		 *
-		 * We also prefer correct answers which have lower score but
-		 * are contained in other correct answers.  Basically, we first
-		 * pick the answer with the highest score, then try to reduce
-		 * this answer (by substring relations) even at the cost of
-		 * lowering the score too.  The motivation is that shorter
-		 * answers are more precise and will therefore have a more
-		 * determining set of features to take for training. */
-		String refAnswer = getReferenceAnswer(answerHitlist, gs, astats);
-
-		/* We also do not train our model on any answer of a question
-		 * that yields no correct answer - because should we really
-		 * give a negative bias to all of the answer candidates? */
-		if (refAnswer == null) {
-			logger.debug("not including any answers, no correct answer");
-			return;
-		}
-
-		/* Pass all correct answers in the initial scoring phase. */
-		// XXX in case of list-based answers, pass all?
-		// for now, let's pass all unconditionally
-		//if (scoringPhase.equals(""))
-			refAnswer = null;
-
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
 		while (answers.hasNext()) {
 			Answer a = (Answer) answers.next();
-			boolean isMatch = GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs);
-			if (isMatch && refAnswer != null && !refAnswer.equals(a.getText())) {
-				logger.debug("not including correct answer: {} < {}", a.getText(), refAnswer);
-				continue; // output only the top positive match
-			}
+			String text = GoldStandardAnswerPrinter.answerText(a, qi.getQuestionType());
+			if (text == null)
+				continue;
+			boolean isMatch = GoldStandardAnswerPrinter.isCorrectAnswer(text, gs);
 			dumpAnswerFV(trainFileName, qi.getQuestionId(), a, isMatch, astats);
 		}
-	}
-
-	protected String getReferenceAnswer(JCas answerHitlist, Collection<GSAnswer> gs, AnswerStats astats) {
-		/* First, pick the best scored answer. */
-		Answer bestA = null;
-		double bestAScore = 0;
-		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-			if (!GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs))
-				continue;
-
-			double score = a.getConfidence();
-			if (score > bestAScore) {
-				bestA = a;
-				bestAScore = score;
-			}
-		}
-		if (bestA == null)
-			return null;  // no luck
-
-		/* Now, check again if we can find a shorter but still
-		 * correct version of the best answer.  If so, take
-		 * the shortest one. */
-		Answer bestShorterA = bestA;
-		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-			if (!GoldStandardAnswerPrinter.isCorrectAnswer(a.getText(), gs))
-				continue;
-			if (!bestA.getText().contains(a.getText()))
-				continue;
-			if (bestShorterA.getText().length() < a.getText().length())
-				continue;
-			if (bestShorterA.getText().length() == a.getText().length()
-			    && bestShorterA.getConfidence() > a.getConfidence())
-				continue;  // tie-breaker is score
-			bestShorterA = a;
-		}
-
-		return bestShorterA.getText();
 	}
 
 	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch, AnswerStats astats) {
@@ -291,12 +219,12 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		return csvFile;
 	}
 
-	protected void dumpAnswerCSV(PrintWriter csvFile, Answer a, boolean isMatch, AnswerStats astats) {
+	protected void dumpAnswerCSV(PrintWriter csvFile, Answer a, String text, boolean isMatch, AnswerStats astats) {
 		AnswerFV fv = new AnswerFV(a, astats);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("\"");
-		sb.append(a.getText().replaceAll("\"", "\"\""));
+		sb.append(text.replaceAll("\"", "\"\""));
 		sb.append("\"");
 		sb.append(",");
 		sb.append(isMatch ? "+" : "-");
