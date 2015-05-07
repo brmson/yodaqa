@@ -41,6 +41,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
 /**
@@ -82,11 +83,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		Answer answer;
 		AnswerFV fv;
 		List<LAT> lats;
+		List<AnswerResource> resources;
 
-		public AnswerFeatures(Answer answer_, AnswerFV fv_, List<LAT> lats_) {
+		public AnswerFeatures(Answer answer_, AnswerFV fv_, List<LAT> lats_, List<AnswerResource> resources_) {
 			answer = answer_;
 			fv = fv_;
 			lats = lats_;
+			resources = resources_;
 		}
 
 		/** * @return the answer */
@@ -95,6 +98,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		public List<LAT> getLats() { return lats; }
 		/** * @return the fv */
 		public AnswerFV getFV() { return fv; }
+		public List<AnswerResource> getResources() { return resources; }
 	}
 
 	Map<String, List<AnswerFeatures>> answersByText;
@@ -137,13 +141,17 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				for (FeatureStructure latfs : answer.getLats().toArray()) {
 					lats.add(((LAT) latfs.clone()));
 				}
+				List<AnswerResource> resources = new ArrayList<>();
+				if (answer.getResources() != null)
+					for (FeatureStructure resfs : answer.getResources().toArray())
+						resources.add(((AnswerResource) resfs.clone()));
 
 				List<AnswerFeatures> answers = answersByText.get(text);
 				if (answers == null) {
 					answers = new LinkedList<AnswerFeatures>();
 					answersByText.put(text, answers);
 				}
-				answers.add(new AnswerFeatures(answer, new AnswerFV(answer), lats));
+				answers.add(new AnswerFeatures(answer, new AnswerFV(answer), lats, resources));
 			}
 
 			for (Entry<String, List<AnswerFeatures>> entry : answersByText.entrySet()) {
@@ -152,6 +160,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 						((AnswerFeature) af).removeFromIndexes();
 					for (FeatureStructure lat : afs.getAnswer().getLats().toArray())
 						((LAT) lat).removeFromIndexes();
+					if (afs.getAnswer().getResources() != null)
+						for (FeatureStructure res : afs.getAnswer().getResources().toArray())
+							((AnswerResource) res).removeFromIndexes();
 					afs.getAnswer().removeFromIndexes();
 				}
 			}
@@ -226,6 +237,16 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			finalLAT.setIsHierarchical(lat.getIsHierarchical());
 			latlist.add(finalLAT);
 		}
+		/* Store the resources. */
+		List<AnswerResource> resources = new ArrayList<>();
+		if (ai.getResources() != null) {
+			for (FeatureStructure resfs : ai.getResources().toArray()) {
+				// XXX: Use CasCopier?
+				AnswerResource res = new AnswerResource(finalAnswerHitlistView);
+				res.setIri(((AnswerResource) resfs).getIri());
+				resources.add(res);
+			}
+		}
 
 		// System.err.println("AR process: " + answer.getText());
 
@@ -234,7 +255,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			answers = new LinkedList<AnswerFeatures>();
 			answersByText.put(text, answers);
 		}
-		answers.add(new AnswerFeatures(answer, fv, latlist));
+		answers.add(new AnswerFeatures(answer, fv, latlist, resources));
 
 		QuestionAnswer qa = new QuestionAnswer(text, 0);
 		QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
@@ -253,6 +274,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			Answer mainAns = null;
 			AnswerFV mainFV = null;
 			List<LAT> mainLats = null;
+			List<AnswerResource> mainResources = null;
 			for (AnswerFeatures af : entry.getValue()) {
 				Answer answer = af.getAnswer();
 				/* In case of hitlist-reuse, keep overriding
@@ -261,6 +283,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 					mainAns = answer;
 					mainFV = af.getFV();
 					mainLats = af.getLats();
+					mainResources = af.getResources();
 					continue;
 				}
 				logger.debug("hitlist merge " + mainAns.getText() + "|" + answer.getText());
@@ -277,6 +300,19 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 					}
 					if (!alreadyHave)
 						mainLats.add(lat);
+				}
+
+				/* Merge resources: */
+				for (AnswerResource res : af.getResources()) {
+					boolean alreadyHave = false;
+					for (AnswerResource mRes : mainResources) {
+						if (mRes.getIri().equals(res.getIri())) {
+							alreadyHave = true;
+							break;
+						}
+					}
+					if (!alreadyHave)
+						mainResources.add(res);
 				}
 			}
 
@@ -304,6 +340,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			for (LAT lat : mainLats)
 				lat.addToIndexes();
 			mainAns.setLats(FSCollectionFactory.createFSArray(finalAnswerHitlistView, mainLats));
+			for (AnswerResource res : mainResources)
+				res.addToIndexes();
+			mainAns.setResources(FSCollectionFactory.createFSArray(finalAnswerHitlistView, mainResources));
 			mainAns.addToIndexes();
 		}
 
