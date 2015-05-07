@@ -11,6 +11,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
@@ -20,6 +21,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.flow.dashboard.Question;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.GSAnswer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
@@ -126,6 +128,25 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			while (answers.hasNext()) {
 				Answer answer = (Answer) answers.next();
 				String text = answer.getText();
+				if (qi.getQuestionType().equals("resource") || qi.getQuestionType().equals("uri")) {
+					// skip answers that have no resource;
+					// otherwise, return a dbpedia IRI
+					if (answer.getResources() == null)
+						continue;
+					for (FeatureStructure resfs : answer.getResources().toArray()) {
+						String iri = ((AnswerResource) resfs).getIri();
+						if (iri.startsWith("http://en.wikipedia.org/wiki/")) {
+							// hope for the best
+							text = iri.replace("http://en.wikipedia.org/wiki/", "http://dbpedia.org/resource/");
+							break;
+						} else if (iri.startsWith("http://dbpedia.org/resource/")) {
+							text = iri;
+							break;
+						} else {
+							// skip
+						}
+					}
+				}
 				if (i < topListLen) {
 					toplist[i] = text + ":" + answer.getConfidence();
 				}
