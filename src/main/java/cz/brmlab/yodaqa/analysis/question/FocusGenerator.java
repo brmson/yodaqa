@@ -7,6 +7,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.ADVMOD;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DEP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DET;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DOBJ;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 
 import org.apache.uima.UimaContext;
@@ -123,6 +124,19 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				focusTok = nsubj.getDependent();
 				focus = nsubj;
 				logger.debug("NSUBJ {}", focus.getCoveredText());
+				break;
+			}
+		}
+
+		/* If the question is actually an imperative sentence,
+		 * take DOBJ:
+		 * List all games by GMT. -> DOBJ:games
+		 */
+		if (focus == null) {
+			for (DOBJ dobj : JCasUtil.selectCovered(DOBJ.class, sentence)) {
+				focusTok = dobj.getDependent();
+				focus = dobj;
+				logger.debug("DOBJ {}", focus.getCoveredText());
 				break;
 			}
 		}
