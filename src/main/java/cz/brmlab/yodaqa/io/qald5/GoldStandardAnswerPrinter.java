@@ -105,6 +105,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 				return null;
 			for (FeatureStructure resfs : answer.getResources().toArray()) {
 				String iri = ((AnswerResource) resfs).getIri();
+				iri.replace("_(disambiguation)", "");
 				if (iri.startsWith("http://en.wikipedia.org/wiki/")) {
 					// hope for the best
 					text = iri.replace("http://en.wikipedia.org/wiki/", "http://dbpedia.org/resource/");
