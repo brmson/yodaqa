@@ -100,6 +100,8 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 
 	public static String answerText(Answer answer, String questionType) {
 		String text = answer.getText();
+		if (questionType == null)
+			return text; // when called from AnswerGSHook with different io
 		if (questionType.equals("resource") || questionType.equals("uri")) {
 			// skip answers that have no resource;
 			// otherwise, return a dbpedia IRI
