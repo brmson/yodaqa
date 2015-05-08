@@ -127,11 +127,12 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			return "true";
 		} else if (questionType.equals("number")) {
 			// pass only numbers
-			if (text.matches("^\\d+$")) {
-				return text;
-			} else {
+			try {
+				Float.parseFloat(text);
+			} catch (Exception e) {
 				return null;
 			}
+			return text;
 		}
 		return text;
 	}
