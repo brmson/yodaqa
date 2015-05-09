@@ -214,9 +214,9 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
     except ZeroDivisionError:
         recall = 0
     try:
-        f2 = 5 * (prec * recall) / (4 * prec + recall)
+        f1 = 2 * (prec * recall) / (prec + recall)
     except ZeroDivisionError:
-        f2 = 0
+        f1 = 0
 
     classpred70_test = (proba[:,1] >= 0.7).astype('float')
     tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
@@ -233,9 +233,9 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
     except ZeroDivisionError:
         recall70 = 0
     try:
-        f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
+        f1_70 = 2 * (prec70 * recall70) / (prec70 + recall70)
     except ZeroDivisionError:
-        f2_70 = 0
+        f1_70 = 0
 
     # Test the model on whole questions
 
@@ -264,12 +264,12 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
             return score
     (simple_any_picked, simple_all_picked) = measure(SimpleScorer(labels), test_answersets, could_picked)
 
-    return (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked)
+    return (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, simple_any_picked)
 
 
-def test_msg(accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked):
-    return "PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F2 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" % \
-           (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, simple_any_picked)
+def test_msg(accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, simple_any_picked):
+    return "PERANS acc/prec/rcl/F1 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F1 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f], simple %.3f" % \
+           (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, simple_any_picked)
 
 
 def dump_answers(cfier, fv_test, class_test):
