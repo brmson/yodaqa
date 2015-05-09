@@ -83,6 +83,11 @@ correct answer at a given rank, run:
 	data/eval/tsvout-ranks.sh data/eval/tsv/curated-train-ovt-3b46430.tsv
 	data/eval/tsvout-rankgraph.sh data/eval/tsv/curated-train-ovt-3b46430.tsv
 
+Note that parts or the whole re-training process may be parallelized,
+by default using all the logical CPUs of your machine.  To limit the
+run to a smaller number of threads, use the YODAQA_N_THREADS environment
+variable.
+
 Legacy Benchmarking
 -------------------
 
