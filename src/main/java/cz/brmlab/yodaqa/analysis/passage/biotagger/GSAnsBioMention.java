@@ -18,6 +18,8 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+
 /**
  * Create AnswerMantion annotations based on gold standard answer
  * pattern matches, when training the tagger.  If the tagger is not
@@ -62,6 +64,11 @@ public class GSAnsBioMention extends JCasAnnotator_ImplBase {
 			abm.setBegin(p.getBegin() + m.start());
 			abm.setEnd(p.getBegin() + m.end());
 			abm.addToIndexes();
+			/* An imperfect check against partial-word matches
+			 * (e.g. /Japan/ matching Japanese).  Such matches
+			 * would also crash CanByAnsBioMention. */
+			if (JCasUtil.selectCovered(Token.class, abm).isEmpty())
+				abm.removeFromIndexes();
 		}
 	}
 }
