@@ -58,14 +58,11 @@ public class CanByAnsBioMention extends CandidateGenerator {
 			throws AnalysisEngineProcessException {
 		Passage p = JCasUtil.selectCovering(Passage.class, abm).get(0);
 
-		// XXX: we just grab the first token as a base
-		Token base = JCasUtil.selectCovered(Token.class, abm).get(0);
-
 		AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 		fv.merge(new AnswerFV(p.getAnsfeatures()));
 		fv.setFeature(AF_OriginPsgBIO.class, 1.0);
 		fv.setFeature(AF_BIOScore.class, abm.getScore());
 
-		addCandidateAnswer(passagesView, p, base, fv);
+		addCandidateAnswer(passagesView, p, abm, fv);
 	}
 }
