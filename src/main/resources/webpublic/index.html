@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>YodaQA Live</title>
+	<link rel="stylesheet" href="main.css" />
+	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="//malsup.github.com/jquery.form.js"></script> 
+	<script src="index.js"></script>
+</head>
+<body>
+	<header><h1>YodaQA Live</h1></header>
+	<div id="question">
+		<form action="/q" id="ask" method="post">
+			<input type="search" name="text" size="80" placeholder="Who wrote Ender's Game?"/>
+			<button>Submit</button>
+		</form>
+	</div>
+	<div id="spinner"><img src="ajax-loader.gif" alt="Please wait" /></div>
+	<div class="twocolumn">
+	<div class="twocolumn-left"><div id="answers_area"><!-- JavaScript scratchboard --></div></div>
+	<div class="twocolumn-right"><div id="metadata_area"><!-- JavaScript scratchboard --></div></div>
+	</div>
+	<div id="dashboard">
+		<div id="answered"><!-- JavaScript scratchboard --></div>
+		<div id="inProgress"><!-- JavaScript scratchboard --></div>
+		<div id="toAnswer"><!-- JavaScript scratchboard --></div>
+	</div>
+	<p id="extnav">
+	<a href="http://ailao.eu/yodaqa/" target="_blank">Homepage</a><br />
+	<a href="https://github.com/brmson/yodaqa" target="_blank">GitHub</a>
+	</p>
+</body>
+</html>

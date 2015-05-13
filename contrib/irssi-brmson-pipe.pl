@@ -8,6 +8,10 @@
 #
 # Start irssi and load this script.  Anything said to this user
 # will be interpreted as a question.
+#
+# XXX: The machine io interface of YodaQA is deprecated.
+# Please use the REST API (via the web io interface) in new programs,
+# the machine interface may disappear at any moment.
 
 
 use strict;

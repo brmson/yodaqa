@@ -1,0 +1,165 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto+Slab:300&subset=latin,latin-ext);
+body {
+	font-family: 'Roboto Slab';
+	font-size: 14pt;
+}
+input, select, textarea, button {
+	font-family: inherit;
+	font-size: inherit;
+}
+a {
+	color: #0000dd;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+p {
+	margin-top: 0.5ex;
+}
+header {
+	text-align: center;
+	margin-top: 4ex;
+	margin-bottom: 4ex;
+}
+header h1 {
+	font-size: 2em;
+}
+#question {
+	text-align: center;
+	margin-top: 6ex;
+	margin-bottom: 6ex;
+}
+#spinner {
+	text-align: center;
+	display: none;
+}
+
+.twocolumn {
+	clear: both;
+	overflow: auto; /* stretch to fit contents */
+}
+.twocolumn-left {
+	width: 50%;
+	float: left;
+}
+.twocolumn-right {
+	width: 50%;
+	float: right;
+}
+
+#summary {
+	border: 1pt solid black;
+	padding: 1ex 1em;
+	width: 26em;
+	margin: 1ex 1em;
+}
+.concept, .source {
+	margin-top: 0.5ex; margin-bottom: 0.5ex;
+}
+.wlogo {
+	width: 1.1em;
+	vertical-align: baseline;
+}
+
+#sources {
+	border: 1pt solid black;
+	padding: 1ex 1em;
+	width: 26em;
+	margin: 1ex 1em;
+}
+
+#answers {
+	border: 1pt solid black;
+	table-layout: fixed;
+	padding: 1ex 1em;
+	width: 28em;
+	margin: 1ex 1em;
+}
+#answers .i {
+	width: 2em;
+}
+#answers .text {
+	width: 15em;
+}
+#answers .scorebar {
+	width: 5em;
+}
+#answers .score {
+	width: 3em;
+	text-align: right;
+}
+
+/* Fade-out at right on overflow (ridiculously complex): */
+#answers td {
+	position: relative;
+	overflow: hidden;
+	white-space: nowrap;
+}
+#answers td.text:after {
+	content: "";
+	pointer-events: none;
+	position: absolute;
+	width: 1em;
+	height: 100%;
+	top: 0; right: 0;
+
+	background-image: -webkit-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -moz-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -ms-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -o-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: linear-gradient(to left, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+
+.scorebar {
+	height: 1.5ex;
+	margin-top: 0; margin-bottom: 0;
+	vertical-align: middle;
+	text-align: left; margin-left: 0.25em; margin-right: 0.25em;
+	border: 0pt;
+}
+
+#dashboard {
+	display: flex;
+	justify-content: space-around;
+	clear: both;
+	margin-top: 8ex;
+	border-top: 1pt dashed black;
+	padding-top: 4ex;
+}
+#answered, #inProgress, #toAnswer {
+	width: 30%;
+	border: 1pt solid black;
+	padding: 1ex 1em;
+	margin: 1ex 1em;
+	position: relative;
+	overflow: hidden;
+	white-space: nowrap;
+}
+#answered:after, #inProgress:after, #toAnswer:after {
+	content: "";
+	pointer-events: none;
+	position: absolute;
+	width: 1em;
+	height: 100%;
+	top: 0; right: 0;
+
+	background-image: -webkit-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -moz-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -ms-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: -o-linear-gradient(right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+	background-image: linear-gradient(to left, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+#answered h2, #inProgress h2, #toAnswer h2 {
+	font-size: 1em;
+	margin-top: 0.5ex;
+}
+#answered .qline, #inProgress .qline, #toAnswer .qline {
+	margin-top: 0.5ex; margin-bottom: 0.5ex;
+}
+
+#extnav {
+	position: absolute;
+	right: 1em; top: 1ex;
+	text-align: right;
+}

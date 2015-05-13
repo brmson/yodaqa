@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
@@ -154,7 +156,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			}
 			assert(concept != null);
 			/* Generate the result. */
-			generateSolrResult(searchView, doc, concept);
+			generateSolrResult(searchView, questionView, doc, concept);
 		}
 
 		/* Run a search for text clues. */
@@ -174,7 +176,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 				continue;
 			}
 			visitedIDs.add(docID);
-			generateSolrResult(searchView, doc, null);
+			generateSolrResult(searchView, questionView, doc, null);
 		}
 	}
 
@@ -185,7 +187,8 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		return terms;
 	}
 
-	protected void generateSolrResult(JCas jcas, SolrDocument document, ClueConcept concept)
+	protected void generateSolrResult(JCas searchView, JCas questionView,
+					  SolrDocument document, ClueConcept concept)
 			throws AnalysisEngineProcessException {
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
@@ -204,13 +207,18 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 				afv.setFeature(AF_OriginConceptByNE.class, 1.0);
 		}
 
-		ResultInfo ri = new ResultInfo(jcas);
+		ResultInfo ri = new ResultInfo(searchView);
 		ri.setDocumentId(id.toString());
 		ri.setDocumentTitle(title);
 		ri.setSource(srcName);
 		ri.setRelevance(score);
 		ri.setOrigin(resultInfoOrigin);
-		ri.setAnsfeatures(afv.toFSArray(jcas));
+		ri.setAnsfeatures(afv.toFSArray(searchView));
 		ri.addToIndexes();
+
+		AnswerSourceEnwiki as = new AnswerSourceEnwiki(
+				searchFullText ? AnswerSourceEnwiki.ORIGIN_FULL : AnswerSourceEnwiki.ORIGIN_TITLE,
+				title, id);
+		QuestionDashboard.getInstance().get(questionView).addSource(as);
 	}
 }
