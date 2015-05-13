@@ -63,6 +63,18 @@ task(web, dependsOn: 'classes', type: JavaExec) {
   systemProperties = System.getProperties()
 }
 
+task(biocrftrain, dependsOn: 'classes', type: JavaExec) {
+  main = 'cz.brmlab.yodaqa.BIOTagger_CRFTrain'
+  if (project.hasProperty('execArgs'))
+    args(execArgs.split(' '))
+  else
+    args = ['data/ml/biocrf']
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
+}
+
 repositories {
   mavenCentral()
   maven {

@@ -12,7 +12,7 @@ Right now, we consider machine learned models in three cases:
   * Candidate answer extraction based on B-I-O tagging and chunking;
     this token sequence model does not share the rest of this infrastructure
     (using Cleartk instead) and the rest of this document does not cover it;
-    its model data lives in ``data/ml/bioasq``.
+    its model data lives in ``data/ml/bioasq``, refer to the README there.
 
 In general, to train models, we first need to gather training data.
 We run YodaQA with the tsvgs frontend like during gold standard measurements,
