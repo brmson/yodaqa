@@ -18,6 +18,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.Question.GSAnswer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
@@ -151,5 +153,9 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			/* Special case, no answer found. */
 			output(qi, procTime, 0.0, 0, 0, ".");
 		}
+
+		Question q = QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId()));
+		// q.setAnswers(answers); XXX
+		QuestionDashboard.getInstance().finishQuestion(q);
 	}
 }

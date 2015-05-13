@@ -22,6 +22,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.GSAnswer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.Question.Snippet;
@@ -53,7 +55,7 @@ public class BioASQQuestionReader extends CasCollectionReader_ImplBase {
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
-		index = -1;
+		index = 0;
 
 		JSONParser parser = new JSONParser();
 		JSONObject data;
@@ -152,13 +154,20 @@ public class BioASQQuestionReader extends CasCollectionReader_ImplBase {
 		 * alwaysB: documents, triples, concepts, snippets
 		 * optional: ideal_answer, exact_answer */
 
+		JCas jcas;
 		try {
-			JCas jcas = aCAS.getJCas();
+			jcas = aCAS.getJCas();
 			initCas(jcas, question);
 			jcas.setDocumentText((String) question.get("body"));
 		} catch (CASException e) {
 			throw new CollectionException(e);
 		}
+
+		Question q = new Question(index, jcas.getDocumentText());
+		QuestionDashboard.getInstance().askQuestion(q);
+		QuestionDashboard.getInstance().getQuestionToAnswer();
+
+		index++;
 	}
 
 	@Override
