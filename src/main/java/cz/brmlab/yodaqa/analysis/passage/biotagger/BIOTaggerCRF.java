@@ -151,10 +151,15 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			// during training, convert existing mentions in the CAS into expected classifier outcomes
 
 			List<AnswerBioMention> abms = JCasUtil.selectCovered(passagesView, AnswerBioMention.class, p);
-			// convert the mention annotations into token-level BIO outcome labels
-			List<String> outcomes = this.chunking.createOutcomes(passagesView, tokens, abms);
-			// write the features and outcomes as training instances
-			this.dataWriter.write(Instances.toInstances(outcomes, featureLists));
+			if (!abms.isEmpty()) {
+				/* Do not train on passages with no answer
+				 * mentions, the set would be too negatively
+				 * biased then. */
+				// convert the mention annotations into token-level BIO outcome labels
+				List<String> outcomes = this.chunking.createOutcomes(passagesView, tokens, abms);
+				// write the features and outcomes as training instances
+				this.dataWriter.write(Instances.toInstances(outcomes, featureLists));
+			}
 
 		} else {
 			// during classification, convert classifier outcomes into mentions in the CAS
