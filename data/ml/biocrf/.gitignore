@@ -1,3 +1,4 @@
 MANIFEST.MF
 crfsuite.training
+crfsuite.model
 encoders.ser
