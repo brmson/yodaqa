@@ -98,7 +98,7 @@ public class CollectionQuestionReader extends CasCollectionReader_ImplBase {
 			acquireInput();
 		String[] fields = input.split("\t");
 
-		Question q = new Question(Integer.parseInt(fields[0]) /* id */, fields[2] /* text */);
+		Question q = new Question(fields[0] /* id */, fields[2] /* text */);
 		QuestionDashboard.getInstance().askQuestion(q);
 		QuestionDashboard.getInstance().getQuestionToAnswer();
 

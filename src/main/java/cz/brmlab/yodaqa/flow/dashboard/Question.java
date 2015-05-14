@@ -11,7 +11,7 @@ import com.google.gson.Gson;
  * Important: Multiple threads can look and poke at a Question at once.
  * Be careful, always deal with it only through synchronized methods. */
 public class Question {
-	protected int id;
+	protected String id;
 	protected String text;
 	protected QuestionSummary summary = null;
 	protected List<AnswerSource> sources = new ArrayList<>();
@@ -24,13 +24,13 @@ public class Question {
 
 	protected static Gson gson = new Gson();
 
-	public Question(int id, String text) {
+	public Question(String id, String text) {
 		this.id = id;
 		this.text = text;
 	}
 
 	/** @return the id */
-	public synchronized int getId() { return id; }
+	public synchronized String getId() { return id; }
 	/** @return the text */
 	public synchronized String getText() { return text; }
 

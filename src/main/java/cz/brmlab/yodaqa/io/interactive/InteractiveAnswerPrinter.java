@@ -63,7 +63,7 @@ public class InteractiveAnswerPrinter extends JCasConsumer_ImplBase {
 		} else {
 			System.out.println("No answer found.");
 		}
-		Question q = QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId()));
+		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
 		// q.setAnswers(answers); XXX
 		QuestionDashboard.getInstance().finishQuestion(q);
 	}

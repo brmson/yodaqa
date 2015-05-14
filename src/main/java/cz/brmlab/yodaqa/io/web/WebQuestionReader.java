@@ -45,7 +45,7 @@ public class WebQuestionReader extends CasCollectionReader_ImplBase {
 
 		QuestionInfo qInfo = new QuestionInfo(jcas);
 		qInfo.setSource("web");
-		qInfo.setQuestionId(Integer.toString(q.getId()));
+		qInfo.setQuestionId(q.getId());
 		qInfo.addToIndexes(jcas);
 	}
 

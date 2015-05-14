@@ -78,7 +78,7 @@ public class MachineQuestionReader extends CasCollectionReader_ImplBase {
 		if (input == null)
 			acquireInput();
 
-		Question q = new Question(index, input);
+		Question q = new Question(Integer.toString(index), input);
 		QuestionDashboard.getInstance().askQuestion(q);
 		QuestionDashboard.getInstance().getQuestionToAnswer();
 
