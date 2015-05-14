@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.passage.biotagger;
 
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,10 +11,12 @@ import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.SofaCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.model.Question.GSAnswer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
@@ -48,15 +51,24 @@ public class GSAnsBioMention extends JCasAnnotator_ImplBase {
 		}
 
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
-		assert(qi.getAnswerPattern() != null); // training the CRF makes no sense otherwise
+		Collection<GSAnswer> gs = JCasUtil.select(questionView, GSAnswer.class);
 
 		for (Passage p : JCasUtil.select(passagesView, Passage.class))
-			processPassage(passagesView, qi, p);
+			processPassage(passagesView, qi, gs, p);
 	}
 
-	protected void processPassage(JCas passagesView, QuestionInfo qi, Passage p)
+	protected void processPassage(JCas passagesView, QuestionInfo qi, Collection<GSAnswer> gs, Passage p)
 			throws AnalysisEngineProcessException {
-		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+		StringBuilder pat = new StringBuilder();
+                for (GSAnswer gsa : gs) {
+                        StringArray sa = gsa.getTexts();
+                        for (String s : sa.toStringArray()) {
+				pat.append(s);
+				pat.append("|");
+			}
+			pat.append("nevermatchingtext");
+		}
+		Pattern ap = Pattern.compile(pat.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		Matcher m = ap.matcher(p.getCoveredText());
 
 		while (m.find()) {
