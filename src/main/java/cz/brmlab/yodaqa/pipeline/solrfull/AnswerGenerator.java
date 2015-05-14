@@ -78,12 +78,14 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 
 				if (isLast) {
 					/* XXX: Ugh. We clearly need global result ids. */
+					/*
 					QuestionDashboard.getInstance().get(questionView).setSourceState(
 							ri.getOrigin() == "cz.brmlab.yodaqa.pipeline.solrfull.fulltext"
 								? AnswerSourceEnwiki.ORIGIN_FULL
 								: AnswerSourceEnwiki.ORIGIN_TITLE,
 							Integer.parseInt(ri.getDocumentId()),
 							2);
+							*/
 				}
 			} else {
 				/* We will just generate a single dummy CAS
