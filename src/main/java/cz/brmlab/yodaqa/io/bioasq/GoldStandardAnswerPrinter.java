@@ -154,7 +154,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			output(qi, procTime, 0.0, 0, 0, ".");
 		}
 
-		Question q = QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId()));
+		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
 		// q.setAnswers(answers); XXX
 		QuestionDashboard.getInstance().finishQuestion(q);
 	}
