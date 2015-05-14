@@ -159,7 +159,7 @@ public class BioASQQuestionReader extends CasCollectionReader_ImplBase {
 			throw new CollectionException(e);
 		}
 
-		Question q = new Question(Integer.toString(index), jcas.getDocumentText());
+		Question q = new Question((String) question.get("id"), jcas.getDocumentText());
 		QuestionDashboard.getInstance().askQuestion(q);
 		QuestionDashboard.getInstance().getQuestionToAnswer();
 
