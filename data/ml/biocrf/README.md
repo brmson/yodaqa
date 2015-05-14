@@ -3,5 +3,5 @@ generator) engine.
 
 To re-train the model, run:
 
-	./gradlew tsvgs -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug -Dcz.brmlab.yodaqa.train_ansbiocrf=1 2>&1 | tee train_ansbiocrf.log
+	./gradlew bioasqgs -PexecArgs="data/eval/bioasq-train.json train.tsv" -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug -Dcz.brmlab.yodaqa.train_ansbiocrf=1 2>&1 | tee train_ansbiocrf.log
 	./gradlew biocrftrain
