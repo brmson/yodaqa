@@ -33,10 +33,11 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * done by postprocessing.
  *
  * The output format is, tab separated
- * 	ID TIME QUESTION SCORE RANK NRANKS _ CORRECTANSWER TOPANSWERS...
+ * 	ID TIME QUESTION SCORE RANK NRANKS ANSWERPATTERN CORRECTANSWER TOPANSWERS...
  * where TIME is the processing time in seconds (fractional),
  * SCORE is (1.0 - log(correctrank)/log(#answers)), RANK is
- * the corretrank and NRANKS is #answers.
+ * the corretrank and NRANKS is #answers. ANSWERPATTERN is
+ * the *first* of the specified correct answers.
  *
  * XXX how to represent list-type answers?
  */
@@ -70,6 +71,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 	}
 
 	protected void output(QuestionInfo qi, double procTime,
+			GSAnswer goodAnswer,
 			double score, int rank, int nranks,
 			String aMatch, String... toplist)
 	{
@@ -78,7 +80,9 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			qi.getQuestionText(),
 			Double.toString(score),
 			Integer.toString(rank), Integer.toString(nranks),
-			"_", aMatch,
+			goodAnswer == null || goodAnswer.getTexts() == null || goodAnswer.getTexts().size() == 0 ? "_"
+				: goodAnswer.getTexts().get(0),
+			aMatch,
 			Integer.toString(qi.getPassE_scored()),
 			Integer.toString(qi.getPassE_gsscored()),
 			Integer.toString(qi.getPassE_picked()),
@@ -147,11 +151,16 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			//if (match >= 0)
 			//	score = 1.0 - Math.log(1 + match) / Math.log(1 + i);
 
-			output(qi, procTime, score, match, i, matchText, toplist);
+			GSAnswer goodAnswer = null;
+			for (GSAnswer a : JCasUtil.select(questionView, GSAnswer.class)) {
+				goodAnswer = a;
+				break;
+			}
+			output(qi, procTime, goodAnswer, score, match, i, matchText, toplist);
 
 		} else {
 			/* Special case, no answer found. */
-			output(qi, procTime, 0.0, 0, 0, ".");
+			output(qi, procTime, null, 0.0, 0, 0, ".");
 		}
 
 		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());

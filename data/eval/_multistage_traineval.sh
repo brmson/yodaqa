@@ -72,7 +72,7 @@ train_and_sync() {
 	## Train the model
 	if [ "$retrain" = "1" ]; then
 		echo "Training ${i}..."
-		data/ml/answer-train.py <"$atrainfile" | tee "$modelfile"
+		data/ml/answer-train-logistic.py <"$atrainfile" | tee "$modelfile"
 		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreLogistic${i}.model
 		echo "Rebuilding with new model..."
 		./gradlew check
