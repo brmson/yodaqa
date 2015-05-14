@@ -71,6 +71,8 @@ public class LATByGeneOntology extends JCasAnnotator_ImplBase {
 		StringBuilder typelist = new StringBuilder();
 
 		Collection<String> types = go.getTypes(label);
+		if (types == null)
+			return false;
 		for (String type : types) {
 			addLATFeature(jcas, AF_LATGeneOntology.class);
 			addTypeLAT(jcas, new GeneOntologyLAT(jcas), focus, type, 0, typelist);
