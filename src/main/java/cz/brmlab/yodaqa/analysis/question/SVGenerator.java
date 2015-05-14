@@ -36,7 +36,7 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 
 	// Unfortunately, it seems our lemmatizer doesn't handle contractions
 	// and verb forms? XXX: We should just roll our own lemmatizer
-	protected String SVBLACKLIST = "be|have|do|'s|'re|'d|'ve|doe|has|get|give|list";
+	protected static String SVBLACKLIST = "be|have|do|'s|'re|'d|'ve|doe|has|get|give|list";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -63,8 +63,10 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 				v = ((NSUBJ) focus).getGovernor();
 
 				/* In "What is the X that Y?", "What" can be
-				 * the governor.  That won't do. */
-				if (!v.getPos().getPosValue().matches("^V.*")) {
+				 * the governor.  That won't do.  Also ignore
+				 * aux verbs. */
+				if (!v.getPos().getPosValue().matches("^V.*")
+				    || isAux(v)) {
 					logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
 					v = null;
 				}
@@ -108,7 +110,7 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 		return null;
 	}
 
-	protected boolean isAux(Token v) {
+	public static boolean isAux(Token v) {
 		/* What was the name... -> "was" is useless for us.
 		 * Ignore over-generic verbs. */
 		return v.getLemma().getValue().toLowerCase().matches(SVBLACKLIST);

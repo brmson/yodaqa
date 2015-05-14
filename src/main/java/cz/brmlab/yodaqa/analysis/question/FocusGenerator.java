@@ -109,6 +109,11 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 						focusTok = dep.getDependent();
 					} else {
 						/* A verb like 'lays'. */
+						if (SVGenerator.isAux(dep.getGovernor())) {
+							/* But skip a verb "be", e.g.
+							 * <<Which *are* the cardiac manifestations of Marfan syndrome?>> */
+							continue;
+						}
 						focusTok = dep.getGovernor();
 					}
 					focus = focusTok;
