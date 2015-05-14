@@ -37,7 +37,8 @@ public class AnswerFV {
 			"originPsgByClueSubjectToken", "originPsgByClueSubjectPhrase",
 			"originPsgByClueConcept",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
-			"originPsgSurprise",
+			"originPsgBIO",
+		"originPsgSurprise",
 		"originDocTitle",
 		"originDBpOntology", "originDBpONoClue",
 		"originDBpOClueToken", "originDBpOCluePhrase", "originDBpOClueSV",
@@ -64,6 +65,7 @@ public class AnswerFV {
 			"AF_PsgDistClueSubject", "AF_PsgDistClueSubjectNE",
 			"AF_PsgDistClueSubjectToken", "AF_PsgDistClueSubjectPhrase",
 			"AF_PsgDistClueConcept",
+		"bioScore",
 		"noTyCor", "LATANone",
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
@@ -113,6 +115,7 @@ public class AnswerFV {
 			features.add(AF_OriginPsgNP.class);
 			features.add(AF_OriginPsgNE.class);
 			features.add(AF_OriginPsgNPByLATSubj.class);
+			features.add(AF_OriginPsgBIO.class);
 			features.add(AF_OriginPsgSurprise.class);
 			features.add(AF_OriginDocTitle.class);
 			features.add(AF_OriginDBpOntology.class);
@@ -166,6 +169,7 @@ public class AnswerFV {
 			features.add(AF_PsgDistClueSubjectToken.class);
 			features.add(AF_PsgDistClueSubjectPhrase.class);
 			features.add(AF_PsgDistClueConcept.class);
+			features.add(AF_BIOScore.class);
 			features.add(AF_NoTyCor.class);
 			features.add(AF_LATANone.class);
 			features.add(AF_SpWordNet.class);

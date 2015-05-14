@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.PipelineLogger;
+import cz.brmlab.yodaqa.analysis.passage.biotagger.CanByBIOTaggerAE;
 import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
@@ -80,6 +81,10 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(CanByNESurprise.class));
 		/* Passages like: The <question focus> is <CandidateAnswer>. */
 		builder.add(createPrimitiveDescription(CanByLATSubject.class));
+		/* CandidateAnswer based on token sequence tagging with B-I-O
+		 * labels; basically a custom answer-specific named entity
+		 * recognizer. */
+		builder.add(CanByBIOTaggerAE.createEngineDescription());
 
 		/* Blacklist some answers that are just linguistic artifacts */
 		builder.add(createPrimitiveDescription(CanBlacklist.class),
