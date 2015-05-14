@@ -63,11 +63,11 @@ public class GSAnsBioMention extends JCasAnnotator_ImplBase {
                 for (GSAnswer gsa : gs) {
                         StringArray sa = gsa.getTexts();
                         for (String s : sa.toStringArray()) {
-				pat.append(s);
+				pat.append(Pattern.quote(s));
 				pat.append("|");
 			}
-			pat.append("nevermatchingtext");
 		}
+		pat.append("nevermatchingtext");
 		Pattern ap = Pattern.compile(pat.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		Matcher m = ap.matcher(p.getCoveredText());
 
