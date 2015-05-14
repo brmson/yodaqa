@@ -64,10 +64,13 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		Annotation focus = null;
 
 		/* What -- and Which -- are DET dependencies; the governor
-		 * may be either a noun or a verb. */
+		 * may be either a noun or a verb, accept only a noun.
+		 * ("Which is the genetic defect causing Neurofibromatosis type 1?"
+		 * has "is" as a governor). */
 		if (focus == null) {
 			for (DET det : JCasUtil.selectCovered(DET.class, sentence)) {
-				if (det.getDependent().getPos().getPosValue().matches("^W.*")) {
+				if (det.getDependent().getPos().getPosValue().matches("^W.*")
+				    && !det.getGovernor().getPos().getPosValue().matches("^V.*")) {
 					focusTok = det.getGovernor();
 					focus = focusTok;
 					logger.debug("DET+W {}", focus.getCoveredText());
