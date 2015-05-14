@@ -72,9 +72,11 @@ public class AnswerFV {
 		"simpleScore",
 		"LATNE", "LATDBpType", "LATDBpWNType", "LATQuantity", "LATQuantityCD",
 			"LATWnInstance", "LATDBpOntology", "LATDBpProperty", "LATFBOntology",
+			"LATGeneOntology",
 		"tyCorSpQHit", "tyCorSpAHit", "tyCorSpNoHit", "tyCorSpQAHit", "tyCorSpMultiHit",
 		"tyCorANE", "tyCorADBp", "tyCorADBpWN", "tyCorAQuantity", "tyCorAQuantityCD",
 			"tyCorAWnInstance", "tyCorADBpOntology", "tyCorADBpProperty", "tyCorAFBOntology",
+			"tyCorAGeneOntology",
 		"clOCMatchScore", "clOCPrefixedScore", "clOCPrefixingScore", "clOCSuffixedScore",
 			"clOCSuffixingScore", "clOCSubstredScore", "clOCSubstringScore",
 			"clOCMetaMatchScore",
@@ -188,6 +190,7 @@ public class AnswerFV {
 			features.add(AF_LATDBpOntology.class);
 			features.add(AF_LATDBpProperty.class);
 			features.add(AF_LATFBOntology.class);
+			features.add(AF_LATGeneOntology.class);
 			features.add(AF_TyCorSpQHit.class);
 			features.add(AF_TyCorSpAHit.class);
 			features.add(AF_TyCorSpNoHit.class);
@@ -202,6 +205,7 @@ public class AnswerFV {
 			features.add(AF_TyCorADBpOntology.class);
 			features.add(AF_TyCorADBpProperty.class);
 			features.add(AF_TyCorAFBOntology.class);
+			features.add(AF_TyCorAGeneOntology.class);
 			features.add(AF_ClOCMatchScore.class);
 			features.add(AF_ClOCPrefixedScore.class);
 			features.add(AF_ClOCPrefixingScore.class);

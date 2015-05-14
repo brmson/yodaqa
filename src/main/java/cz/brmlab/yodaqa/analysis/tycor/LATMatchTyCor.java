@@ -26,6 +26,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBp;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpProperty;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAFBOntology;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAGeneOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantity;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantityCD;
@@ -42,6 +43,7 @@ import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
 import cz.brmlab.yodaqa.model.TyCor.DBpOntologyLAT;
 import cz.brmlab.yodaqa.model.TyCor.DBpPropertyLAT;
 import cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT;
+import cz.brmlab.yodaqa.model.TyCor.GeneOntologyLAT;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.NELAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
@@ -137,6 +139,8 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 					fv.setFeature(AF_TyCorADBpProperty.class, 1.0);
 				else if (baselat2 instanceof FBOntologyLAT)
 					fv.setFeature(AF_TyCorAFBOntology.class, 1.0);
+				else if (baselat2 instanceof GeneOntologyLAT)
+					fv.setFeature(AF_TyCorAGeneOntology.class, 1.0);
 				else assert(false);
 			}
 
