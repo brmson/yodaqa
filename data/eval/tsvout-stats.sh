@@ -17,7 +17,7 @@ showstats() {
 	perfectp="$(echo "100*$perfect/$total" | bc -l)"
 	anyp="$(echo "100*$any/$total" | bc -l)"
 
-	avgscore="$(echo "($(cat "$tsvout" | cut -f4 | tr '\n' '+')0)/$total" | bc -l)"
+	avgscore="$(echo "($(cat "$tsvout" | cut -f4 | grep -v Inf | grep -v NaN | tr '\n' '+')0)/$total" | bc -l)"
 	mrr="$(echo "($(cat "$tsvout" | cut -f5 | sed 's/-1/10000/; s/.*/1\/(1+&)/' | tr '\n' '+')0)/$total" | bc -l)"
 	avgtime="$(echo "($(cat "$tsvout" | cut -f2 | tr '\n' '+')0)/$total" | bc -l)"
 
