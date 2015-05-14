@@ -63,8 +63,10 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 				v = ((NSUBJ) focus).getGovernor();
 
 				/* In "What is the X that Y?", "What" can be
-				 * the governor.  That won't do. */
-				if (!v.getPos().getPosValue().matches("^V.*")) {
+				 * the governor.  That won't do.  Also ignore
+				 * aux verbs. */
+				if (!v.getPos().getPosValue().matches("^V.*")
+				    || isAux(v)) {
 					logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
 					v = null;
 				}
