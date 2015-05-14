@@ -81,7 +81,7 @@ class (1) if the answer regex matches it.
 We use a Logistic Regression classifier, sorting answers by the
 estimated probability of class 1.  You can invoke this classifier as:
 
-	data/ml/answer-train.py <data/ml/tsv/training-answer-COMMIT.tsv | tee logistic.txt
+	data/ml/answer-train-logistic.py <data/ml/tsv/training-answer-COMMIT.tsv | tee logistic.txt
 
 The Java implementation of logistic classifier is stored in
 
@@ -93,7 +93,7 @@ top (replacing previous content).
 
 (There is also a AnswerScoreSimple scorer which uses just a small set of
 features and is super-simplistic, what we used before; its performance is
-contrasted by the 'simple' performance rate output by answer-train.py.)
+contrasted by the 'simple' performance rate output by answer-train.)
 
 The tool `data/ml/answer-comparefv.py` can be used for comparing effect
 of code changes on feacture vectors; `data/ml/answer-countfv.py` can be

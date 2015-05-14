@@ -229,7 +229,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -247,8 +247,9 @@ public class FreebaseOntology extends FreebaseLookup {
 				replaceAll("_", " ");
 			String value = rawResult[1].getString();
 			String prop = rawResult[2].getString();
-			logger.debug("Freebase {}/{} property: {}/{} -> {}", titleForm, mid, propLabel, prop, value);
-			results.add(new PropertyValue(titleForm, propLabel, value));
+			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
+			results.add(new PropertyValue(titleForm, propLabel, value, valRes));
 		}
 
 		return results;

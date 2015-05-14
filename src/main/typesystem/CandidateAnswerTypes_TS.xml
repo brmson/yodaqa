@@ -16,6 +16,12 @@
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>resources</name>
+	    <description>Set of resources corresponding to this answer. (There may be multiple, of course.) Duplicates should not appear, order should not matter.</description>
+            <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource</elementType>
+          </featureDescription>
+          <featureDescription>
             <name>features</name>
             <description>A set of features of this answer. Unmatched features should simply not be present, and order does not matter. Duplicates should NOT appear.</description>
             <rangeTypeName>uima.cas.FSArray</rangeTypeName>
@@ -33,6 +39,19 @@
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing</name>
         <description>A passage on which a parser should be run</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
+      </typeDescription>
+
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource</name>
+        <description>A resource (e.g. DBpedia, Freebase, enwiki article) corresponding to an answer.</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>iri</name>
+            <description>The IRI (resource identifier, think URL) of the resource.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
       </typeDescription>
 
       <typeDescription>

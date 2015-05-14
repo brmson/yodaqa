@@ -19,7 +19,7 @@ for us.  We also draw some inspiration from the OpenQA project and the Taming
 Text book.
 
 The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarassingly often wrong; on the testing
+some questions, even though it's embarrassingly often wrong; on the testing
 corpus, while about 79.3% of questions have the correct answer *suggested*
 in the process, it can currently choose the correct answer for about 32.6%
 of questions (but 47.6% of questions have the correct answer in top three
@@ -126,9 +126,10 @@ We can also leverage another structured data source, the Freebase.
 We use its RDF export with SPARQL endpoint, running on infrastructure
 provided by the author's academic group (Jan Šedivý's 3C Group at the
 Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
-for some reason, you can also simply disable Freebase usage by commenting
-out the FreebaseOntologyAnswerProducer initialization in the code of
-``src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java``.
+for some reason, you can also disable Freebase usage by commenting
+out the fbo.query() line in the code of:
+
+	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
 
 You can start your own instance by following the instructions in
 ``data/freebase/README.md`` but it is quite arduous and resource intensive.

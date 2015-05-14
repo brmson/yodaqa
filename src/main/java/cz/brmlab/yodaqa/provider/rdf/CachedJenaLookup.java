@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,10 +53,19 @@ public abstract class CachedJenaLookup {
 	 * values.  limit is the limit on number of results; pass 0
 	 * to specify no limit.
 	 *
+	 * The resources[] array lists list of variables to fetch.
+	 * The variable names can be prefixed by '/' to indicate
+	 * that a resource identifier, instead of literal, is to
+	 * be fetched (or null, failing that).
+	 *
 	 * Example: rawQuery("?lab rdfs:label \"Achilles\"@en", "lab", 0); */
 	public List<Literal[]> rawQuery(String selectWhere, String resources[], int limit) {
+		ArrayList<String> varNames = new ArrayList<>();
+		for (String r : resources)
+			varNames.add(r.replace("/", ""));
+
 		String queryExpr = prefixes + "SELECT ?"
-			+ StringUtils.join(resources, " ?")
+			+ StringUtils.join(varNames, " ?")
 			+ " WHERE { " + selectWhere + " }"
 			+ (limit > 0 ? "LIMIT " + Integer.toString(limit) : "");
 		QueryExecution qe = QueryExecutionFactory.sparqlService(service, queryExpr);
@@ -69,6 +79,7 @@ public abstract class CachedJenaLookup {
 			} catch (QueryExceptionHTTP e) {
 				e.printStackTrace();
 				System.err.println("*** " + service + " SPARQL Query (temporarily?) failed, retrying in a moment...");
+				System.err.println("Please refer to the README.md for tips on disabling this lookup.");
 				try {
 					TimeUnit.SECONDS.sleep(10);
 				} catch (InterruptedException e2) { // oof...
@@ -82,14 +93,25 @@ public abstract class CachedJenaLookup {
 			QuerySolution s = rs.nextSolution();
 			Literal[] result = new Literal[resources.length];
 			for (int i = 0; i < resources.length; i++) {
-				RDFNode node = s.get("?" + resources[i]);
-				if (node == null)
-					result[i] = null;
-				else if (node.isLiteral())
-					result[i] = node.asLiteral();
-				else if (node.isResource())
-					result[i] = ResourceFactory.createPlainLiteral(node.asResource().getLocalName());
-				else assert(false);
+				RDFNode node = s.get("?" + varNames.get(i));
+				if (resources[i].startsWith("/")) {
+					// resource-only mode
+					if (node == null)
+						result[i] = null;
+					else if (node.isLiteral())
+						result[i] = null;
+					else if (node.isResource())
+						result[i] = ResourceFactory.createPlainLiteral(node.asResource().getURI());
+					else assert(false);
+				} else {
+					if (node == null)
+						result[i] = null;
+					else if (node.isLiteral())
+						result[i] = node.asLiteral();
+					else if (node.isResource())
+						result[i] = ResourceFactory.createPlainLiteral(node.asResource().getLocalName());
+					else assert(false);
+				}
 			}
 			results.add(result);
 		}

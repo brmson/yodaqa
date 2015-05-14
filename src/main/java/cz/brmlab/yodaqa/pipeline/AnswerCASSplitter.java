@@ -1,5 +1,8 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -8,6 +11,7 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -18,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -142,7 +147,6 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		ai.setCanonText(answer.getCanonText());
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
-		ai.addToIndexes();
 
 		/* Generate the Focus */
 		if (answer.getFocus() != null) {
@@ -157,5 +161,15 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 			LAT lat2 = (LAT) copier.copyFs(lat);
 			lat2.addToIndexes();
 		}
+		/* Generate the Resources */
+		List<AnswerResource> resources = new ArrayList<>();
+		for (FeatureStructure resfs : answer.getResources().toArray()) {
+			AnswerResource res2 = (AnswerResource) copier.copyFs(resfs);
+			res2.addToIndexes();
+			resources.add(res2);
+		}
+
+		ai.setResources(FSCollectionFactory.createFSArray(jcas, resources));
+		ai.addToIndexes();
 	}
 }
