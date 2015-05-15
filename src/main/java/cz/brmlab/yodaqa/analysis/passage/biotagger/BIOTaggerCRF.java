@@ -162,18 +162,6 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 				lats.add(2L /* special indicator for quantity LATs */);
 			}
 		}
-		if (lats.isEmpty()) {
-			/* Add at least some synthetic indicators distinguishing
-			 * between an "other" LAT (basically what-x questions)
-			 * and "no" LAT. */
-			// TODO: Also try using LAT synsets more aggressively
-			// or conversely getting rid of this.
-			if (qLats.isEmpty()) {
-				lats.add(0L); // no LAT
-			} else {
-				lats.add(1L); // other LAT
-			}
-		}
 		return lats;
 	}
 
