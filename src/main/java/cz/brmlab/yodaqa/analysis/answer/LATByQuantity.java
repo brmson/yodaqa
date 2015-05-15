@@ -36,6 +36,20 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NUM;
 public class LATByQuantity extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByQuantity.class);
 
+	protected static String texts[] = {
+		// XXX: "quantity" is not the primary label for this wordnet sense
+		"measure",
+		// quantitative relation, e.g. speed:
+		"magnitude relation",
+		// positions and distances, e.g. altitude:
+		"magnitude",
+	};
+	protected static long synsets[] = {
+		33914,
+		13837364,
+		5097645,
+	};
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -67,12 +81,6 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addQuantityLAT(JCas jcas, Annotation LATbase, boolean isCD) throws AnalysisEngineProcessException {
-		// XXX: "quantity" is not the primary label for this wordnet sense
-		String text0 = "measure"; long synset0 = 33914;
-		// quantitative relation, e.g. speed:
-		String text1 = "magnitude relation"; long synset1 = 13837364;
-		// positions and distances, e.g. altitude:
-		String text2 = "magnitude"; long synset2 = 5097645;
 		double spec = 0.0;
 
 		/* We have a synthetic LAT, synthetize a POS tag for it. */
@@ -92,18 +100,19 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		 * (as opposed to e.g. "many"). */
 		if (isCD) {
 			addLATFeature(jcas, AF_LATQuantityCD.class);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text0, synset0, pos, spec);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text1, synset1, pos, spec);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text2, synset2, pos, spec);
+			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
+			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
+			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
 		} else {
 			addLATFeature(jcas, AF_LATQuantity.class);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text0, synset0, pos, spec);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text1, synset1, pos, spec);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, text2, synset2, pos, spec);
+			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
+			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
+			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
 		}
 
 		logger.debug(".. Quantity {} LAT {}/{}, {}/{}, {}/{} based on [{}] <<{}>>",
-			isCD ? "CD" : "noCD", text0, synset0, text1, synset1, text2, synset2,
+			isCD ? "CD" : "noCD",
+			texts[0], synsets[0], texts[1], synsets[1], texts[2], synsets[2],
 			LATbase.getClass().getSimpleName(), LATbase.getCoveredText());
 	}
 
@@ -164,5 +173,11 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 			return false;
 		}
 		return true;
+	}
+
+	/** Check if a given LAT could be coerced to a quantity LAT. */
+	public static boolean latIsQuantity(LAT lat) {
+		long latSynset = lat.getSynset();
+		return latSynset == synsets[0] || latSynset == synsets[1] || latSynset == synsets[2];
 	}
 }
