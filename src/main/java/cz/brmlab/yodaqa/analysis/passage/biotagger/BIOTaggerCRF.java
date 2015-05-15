@@ -1,6 +1,8 @@
 package cz.brmlab.yodaqa.analysis.passage.biotagger;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.uima.UimaContext;
@@ -23,8 +25,11 @@ import org.cleartk.ml.feature.extractor.CombinedExtractor1;
 import org.cleartk.ml.feature.extractor.FeatureExtractor1;
 import org.cleartk.ml.feature.extractor.TypePathExtractor;
 
+import cz.brmlab.yodaqa.analysis.answer.LATByQuantity;
 import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.QuestionWordLAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
@@ -126,13 +131,49 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		/* We may want to generate question-specific features
+		 * based on a question LAT.  Decide on the set of LATs
+		 * (or rather just their synset ids) to use for this. */
+		Collection<Long> lats = getSpecializingLATs(questionView);
+
 		// for each sentence in the document, generate training/classification instances
 		for (Passage p : JCasUtil.select(passagesView, Passage.class)) {
-			processPassage(passagesView, p);
+			processPassage(passagesView, p, lats);
 		}
 	}
 
-	protected void processPassage(JCas passagesView, Passage p) throws AnalysisEngineProcessException {
+	protected Collection<Long> getSpecializingLATs(JCas questionView) {
+		Collection<LAT> qLats = JCasUtil.select(questionView, LAT.class);
+		Collection<Long> lats = new HashSet<Long>();
+		for (LAT lat : qLats) {
+			if (lat.getSynset() == 0)
+				continue; // no synset
+			if (lats.contains(lat.getSynset()))
+				continue; // dupe
+
+			if (lat instanceof QuestionWordLAT) {
+				lats.add(lat.getSynset());
+			} else if (LATByQuantity.latIsQuantity(lat)) {
+				lats.add(2L /* special indicator for quantity LATs */);
+			}
+		}
+		if (lats.isEmpty()) {
+			/* Add at least some synthetic indicators distinguishing
+			 * between an "other" LAT (basically what-x questions)
+			 * and "no" LAT. */
+			// TODO: Also try using LAT synsets more aggressively
+			// or conversely getting rid of this.
+			if (qLats.isEmpty()) {
+				lats.add(0L); // no LAT
+			} else {
+				lats.add(1L); // other LAT
+			}
+		}
+		return lats;
+	}
+
+	protected void processPassage(JCas passagesView, Passage p, Collection<Long> lats)
+			throws AnalysisEngineProcessException {
 		List<List<Feature>> featureLists = new ArrayList<List<Feature>>();
 
 		// for each token, extract features and the outcome
@@ -143,7 +184,13 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			tokenFeatures.addAll(this.tokenFeatureExtractor.extract(passagesView, token));
 			for (CleartkExtractor<Token, Token> ngramExtractor : ngramFeatureExtractors)
 				tokenFeatures.addAll(ngramExtractor.extractWithin(passagesView, token, p));
-			// TODO combine with question LAT (all hypernymes?)
+			/* Combine with question LAT info, so each feature
+			 * will have specific weight for the given class
+			 * of questions.  N.B. non-combined features are also
+			 * still kept and used!  (The motivation is to provide
+			 * a reasonable baseline for LATs unseen during
+			 * training.) */
+			tokenFeatures.addAll(expandFeaturesByLats(tokenFeatures, lats));
 			featureLists.add(tokenFeatures);
 		}
 
@@ -169,5 +216,15 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			// create the AnswerBioMention annotations in the CAS
 			this.chunking.createChunks(passagesView, tokens, outcomes);
 		}
+	}
+
+	protected List<Feature> expandFeaturesByLats(List<Feature> features, Collection<Long> lats) {
+		List<Feature> xFeatures = new ArrayList<>();
+		for (Feature f : features) {
+			for (Long l : lats) {
+				xFeatures.add(new Feature(Long.toString(l) + "|" + f.getName(), f.getValue()));
+			}
+		}
+		return xFeatures;
 	}
 }
