@@ -69,7 +69,13 @@ public class LblTreeCASFactory {
 		sb.append("-1:{"); // "virtual" root (we can have multiple true roots)
 		for (Token root : roots) {
 			sb.append("root");
-			appendTokenToSB(sb, root, "root");
+			try {
+				appendTokenToSB(sb, root, "root");
+			} catch (StackOverflowError e) {
+				// sometimes we get lost in recursion of appendTokenToSB(); FIXME look into why
+				e.printStackTrace();
+				return null;
+			}
 		}
 		sb.append("}}");
 		logger.debug(sb.toString());
