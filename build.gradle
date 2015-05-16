@@ -112,4 +112,5 @@ dependencies {
   compile 'com.google.code.gson:gson:2.3.1'
   compile 'org.cleartk:cleartk-ml:2.0.0'
   compile 'org.cleartk:cleartk-ml-crfsuite:2.0.0'
+  compile 'com.google.guava:guava:18.0'
 }

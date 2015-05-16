@@ -25,6 +25,9 @@ import org.cleartk.ml.feature.extractor.CombinedExtractor1;
 import org.cleartk.ml.feature.extractor.FeatureExtractor1;
 import org.cleartk.ml.feature.extractor.TypePathExtractor;
 
+import approxlib.distance.EditDist;
+import approxlib.tree.LblTree;
+
 import cz.brmlab.yodaqa.analysis.answer.LATByQuantity;
 import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
@@ -135,10 +138,12 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		 * based on a question LAT.  Decide on the set of LATs
 		 * (or rather just their synset ids) to use for this. */
 		Collection<Long> lats = getSpecializingLATs(questionView);
+		/* A tree representation of the question dependency tree. */
+		LblTree qTree = LblTreeCASFactory.casToTree(questionView);
 
 		// for each sentence in the document, generate training/classification instances
 		for (Passage p : JCasUtil.select(passagesView, Passage.class)) {
-			processPassage(passagesView, p, lats);
+			processPassage(passagesView, p, lats, qTree);
 		}
 	}
 
@@ -172,18 +177,42 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		return lats;
 	}
 
-	protected void processPassage(JCas passagesView, Passage p, Collection<Long> lats)
+	protected void processPassage(JCas passagesView, Passage p, Collection<Long> lats, LblTree qTree)
 			throws AnalysisEngineProcessException {
 		List<List<Feature>> featureLists = new ArrayList<List<Feature>>();
 
+		/* Compare the dependency tree of the passage and the question;
+		 * this will be used to produce alignment-related features.
+		 * In other words, we are trying to find a way to rewrite
+		 * the passage to the question, and take note which tokens
+		 * we can keep as they are, which we need to delete and which
+		 * we should rename (i.e. change their tagging). */
+		LblTree aTree = LblTreeCASFactory.spanToTree(passagesView, p);
+		EditFeatureGenerator editExtractor = null;
+		/* N.B. dependency tree may be missing, e.g. due to the #tokens
+		 * limit parser hit. */
+		if (aTree != null && qTree != null) {
+			EditDist editDist = new EditDist(/* normalized */ true);
+			editDist.treeDist(aTree, qTree);
+			editDist.printHumaneEditScript();
+			editExtractor = new EditFeatureGenerator(editDist);
+		}
+
 		// for each token, extract features and the outcome
-		List<Token> tokens = JCasUtil.selectCovered(passagesView, Token.class, p);
+		List<Token> tokens = JCasUtil.selectCovered(Token.class, p);
+		int i = 0;
 		for (Token token : tokens) {
 			// apply the feature extractors
 			List<Feature> tokenFeatures = new ArrayList<Feature>();
 			tokenFeatures.addAll(this.tokenFeatureExtractor.extract(passagesView, token));
 			for (CleartkExtractor<Token, Token> ngramExtractor : ngramFeatureExtractors)
 				tokenFeatures.addAll(ngramExtractor.extractWithin(passagesView, token, p));
+			// tokenFeatures.add(new Feature("lemma", token.getLemma().getValue())); // for debugging
+
+			// apply the edit feature generator
+			if (editExtractor != null)
+				tokenFeatures.addAll(editExtractor.extract(tokenFeatures, i, token, aTree, qTree));
+
 			/* Combine with question LAT info, so each feature
 			 * will have specific weight for the given class
 			 * of questions.  N.B. non-combined features are also
@@ -192,12 +221,13 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			 * training.) */
 			tokenFeatures.addAll(expandFeaturesByLats(tokenFeatures, lats));
 			featureLists.add(tokenFeatures);
+			i++;
 		}
 
 		if (this.isTraining()) {
 			// during training, convert existing mentions in the CAS into expected classifier outcomes
 
-			List<AnswerBioMention> abms = JCasUtil.selectCovered(passagesView, AnswerBioMention.class, p);
+			List<AnswerBioMention> abms = JCasUtil.selectCovered(AnswerBioMention.class, p);
 			if (!abms.isEmpty()) {
 				/* Do not train on passages with no answer
 				 * mentions, the set would be too negatively
