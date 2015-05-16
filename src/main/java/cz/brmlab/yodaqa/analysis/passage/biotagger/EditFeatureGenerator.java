@@ -85,8 +85,12 @@ public class EditFeatureGenerator {
 					features.add(new Feature("edit(" + editType + ")_NE", f.getValue()));
 				}
 			}
+		}
 
-		} else if (questionPOMapping.containsKey(wordOrderIdx)) {
+		/* XXX: This is not an else branch as we apparently
+		 * sometimes generate both edit and align.  FIXME
+		 * investigate why */
+		if (questionPOMapping.containsKey(wordOrderIdx)) {
 			/* Rename or full alignment. */
 			// XXX use editDist.get*() consistently?
 			int questionPO = questionPOMapping.get(wordOrderIdx);
@@ -106,13 +110,12 @@ public class EditFeatureGenerator {
 			features.add(new Feature("edit(align)_Pos", t.getPos().getPosValue() + "_" + editDist.getPos2()[questionPO]));
 			features.add(new Feature("edit(align)_Dep", passageDep + "_" + editDist.getRel2()[questionPO]));
 			// TODO: NE renames
-
-		} else {
-			/* This is also possible - we don't know about this
-			 * token.  For example, prepositions are not part
-			 * of dependency structure in StanfordParser's NN
-			 * based output. */
 		}
+
+		/* (N.B. it is also possible we don't generate anything;
+		 * we don't know about some tokens.  For example, prepositions
+		 * are not part of dependency structure in StanfordParser's NN
+		 * based output, they instead specialize dependency rels. */
 
 		return features;
 	}
