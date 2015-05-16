@@ -32,6 +32,7 @@ public class EditFeatureGenerator {
 	protected Map<Integer, Integer> postOrderMapping = new HashMap<>();
 	protected Map<Integer, Integer> questionPOMapping = new HashMap<>();
 	protected Map<Integer, TYPE> editTypeMapping = new HashMap<>();
+	protected int maxWOIdx = 0;
 
 	public EditFeatureGenerator(EditDist editDist) {
 		this.editDist = editDist;
@@ -55,6 +56,8 @@ public class EditFeatureGenerator {
 
 			postOrderMapping.put(wordOrderIdx, postOrderIdx);
 			editTypeMapping.put(wordOrderIdx, editType);
+			if (wordOrderIdx > maxWOIdx)
+				maxWOIdx = wordOrderIdx;
 		}
 
 		/* Process non-edits or just renames (alignment). */
@@ -67,7 +70,26 @@ public class EditFeatureGenerator {
 
 			postOrderMapping.put(wordOrderIdx, postOrderIdx);
 			questionPOMapping.put(wordOrderIdx, questionPOIdx);
+			if (wordOrderIdx > maxWOIdx)
+				maxWOIdx = wordOrderIdx;
 		}
+	}
+
+	/** Get word order index of the nearest aligned token to the token
+	 * with a given index. */
+	protected Integer getNearestAligned(int fromIdx) {
+		// XXX: Preindex this
+		Integer bestAligned = null, best_d = 99999;
+		for (int i = 0; i < maxWOIdx; i++) {
+			if (!questionPOMapping.containsKey(i))
+				continue;
+			/* Aligned. */
+			if (bestAligned == null || Math.abs(fromIdx - i) < best_d) {
+				best_d = Math.abs(fromIdx - i);
+				bestAligned = i;
+			}
+		}
+		return bestAligned;
 	}
 
 	public Collection<Feature> extract(List<Feature> featuresSoFar, int wordOrderIdx, Token t, LblTree aTree, LblTree qTree) {
@@ -112,10 +134,24 @@ public class EditFeatureGenerator {
 			// TODO: NE renames
 		}
 
-		/* (N.B. it is also possible we don't generate anything;
+		/* (N.B. it is also possible we don't generate any edit feature;
 		 * we don't know about some tokens.  For example, prepositions
 		 * are not part of dependency structure in StanfordParser's NN
 		 * based output, they instead specialize dependency rels. */
+
+		/* Also make a feature about the nearest alignment, unless
+		 * we are aligned. */
+		if (!questionPOMapping.containsKey(wordOrderIdx)) {
+			Integer nearestAlignedWOIdx = getNearestAligned(wordOrderIdx);
+			if (nearestAlignedWOIdx != null) {  // (we cannot just questionPOMapping.isEmpty() as it always contains -1 key
+				//System.err.println(wordOrderIdx + " " + nearestAlignedWOIdx + " " + maxWOIdx + " " + questionPOMapping);
+				int alignedPOIdx = postOrderMapping.get(nearestAlignedWOIdx);
+				features.add(new Feature("nearest_aligned", Integer.toString(Math.abs(nearestAlignedWOIdx - wordOrderIdx))));
+				features.add(new Feature("nearest_aligned_Pos", editDist.getPos1()[alignedPOIdx]));
+				features.add(new Feature("nearest_aligned_Dep", editDist.getRel1()[alignedPOIdx]));
+				// TODO NE
+			}
+		}
 
 		return features;
 	}

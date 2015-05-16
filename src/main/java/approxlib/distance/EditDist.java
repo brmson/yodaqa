@@ -10,7 +10,7 @@ import approxlib.tree.LblTree;
 public class EditDist extends EditBasedDist {
 	
 	public static HashSet<String> stopWordPosTags = new HashSet<String>() {{
-		add("dt"); add("."); add("pos"); add("in"); add("to");
+		add("dt"); add("."); add("pos"); add("in"); add("to"); add("``"); add("''");
 	}};
 	
 	// in some sentences, stopwords get renamed first and the dynamic programming algorithm
