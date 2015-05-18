@@ -18,19 +18,11 @@ and they should be stored in the data/eval/tsv/ directory.
 Datasets
 --------
 
-Our base dataset of questions consists of 867 questions that were adapted
-by us from the TREC QA track dataset and a #brmson IRC dataset; the raw
-datasets and detailed notes can be found in the data/trec/ directory.
+We use the factoid-curated dataset v1, as maintained in:
 
-For evaluation purposes, we shuffle the questions randomly
+	https://github.com/brmson/dataset-factoid-curates
 
-	cat ../trec/trecnew-curated.tsv ../trec/irc-curated.tsv | shuf >curated-full.tsv
-
-and then use the first 430 questions for the training dataset curated-train.tsv
-and the following 430 questions for the test dataset curated-test.tsv.
-The extra 7 questions are reserved for further use.
-
-These two datasets have the following designation:
+In particular:
 
   * Training dataset data/eval/curated-train.tsv:  We use this dataset for
     primary development, detailed performance analysis and training (and
@@ -41,15 +33,7 @@ These two datasets have the following designation:
     "blind" and do not analyze or optimize performance for individual
     questions in this dataset.
 
-Ideally, humans should be doing all stages of evaluation instead of just
-using regex matches, as time by time an unconcieved legitimate answer
-pops up and on the other hand, sometimes the regex is unintentionally
-over-permissive.
-
-N.B. up to early September 2014, we were using a "trecnew-single200"
-dataset - we used it for both the "training" and "testing" purposes
-and it was uncurated, i.e. with many unsatisfactory answer patterns
-and suspect questions.
+See the README in that other repo for more details on the dataset.
 
 Tools
 -----
