@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.analysis.passage.biotagger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -28,11 +29,9 @@ import org.cleartk.ml.feature.extractor.TypePathExtractor;
 import approxlib.distance.EditDist;
 import approxlib.tree.LblTree;
 
-import cz.brmlab.yodaqa.analysis.answer.LATByQuantity;
 import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
-import cz.brmlab.yodaqa.model.TyCor.QuestionWordLAT;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
@@ -151,16 +150,32 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		Collection<LAT> qLats = JCasUtil.select(questionView, LAT.class);
 		Collection<String> lats = new HashSet<String>();
 		for (LAT lat : qLats) {
-			if (lat.getSynset() == 0)
-				continue; // no synset
-			if (lats.contains(Long.toString(lat.getSynset())))
-				continue; // dupe
+			/* Top ten LATs in our training set:
+			      5 DEBUG LATByFocus - new LAT by Focus: <<color>>/0
+			      5 DEBUG LATByFocus - new LAT by Focus: <<number>>/0
+			      5 DEBUG LATByFocus - new LAT by Focus: <<state>>/0
+			     12 DEBUG LATByFocus - new LAT by Focus: <<year>>/0
+			     14 DEBUG LATByFocus - new LAT by Focus: <<location>>/27365
+			     15 DEBUG LATByFocus - new LAT by Focus: <<die>>/0
+			     16 DEBUG LATByFocus - new LAT by Focus: <<country>>/0
+			     16 DEBUG LATByFocus - new LAT by Focus: <<person>>/7846
+			     20 DEBUG LATByFocus - new LAT by Focus: <<city>>/0
+			     29 DEBUG LATByFocus - new LAT by Focus: <<amount>>/33914
+			     55 DEBUG LATByFocus - new LAT by Focus: <<date>>/15184543
+			     55 DEBUG LATByFocus - new LAT by Focus: <<time>>/15147173 */
+			final String allowLats[] = { "color", "number", "state", "year",
+				"location", "die", "country", "person", "city",
+				"amount", "date", "time" };
+			/* Allow just these LATs, to avoid overfitting; we do
+			 * not restrict the LAT source, which also allows many
+			 * generalizations. */
+			if (!Arrays.asList(allowLats).contains(lat.getText()))
+				continue;
 
-			if (lat instanceof QuestionWordLAT) {
-				lats.add(Long.toString(lat.getSynset()));
-			} else if (LATByQuantity.latIsQuantity(lat)) {
-				lats.add("2" /* special indicator for quantity LATs */);
-			}
+			if (lats.contains(lat.getText()))
+				continue; // dupe (probably rare?)
+
+			lats.add(lat.getText());
 		}
 		return lats;
 	}
