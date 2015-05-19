@@ -243,10 +243,17 @@ public class EditDist extends EditBasedDist {
 		}
 		return treedist[nc1 - 1][nc2 - 1];
 	}
+
+	/** Check whether two lemmas i, j do not require an edit transform.
+	 * This typically means simply "equal text", but some subclasses
+	 * may allow a more fuzzy compatibility. */
+	protected boolean compatibleLemmas(int i, int j) {
+		return lemma1[i].equals(lemma2[j]);
+	}
 	
 	public double getDel(int i, int j) {
 		if (this.isDep)
-			if (i != 0 && j != 0 && lemma1[i].equals(lemma2[j]))
+			if (i != 0 && j != 0 && compatibleLemmas(i, j))
 				// we want a good renaming cost, so set deletion cost to be high
 				return Double.MAX_VALUE;
 			else
@@ -258,7 +265,7 @@ public class EditDist extends EditBasedDist {
 	
 	public double getIns(int i, int j) {
 		if (this.isDep)
-			if (i != 0 && j != 0 && lemma1[i].equals(lemma2[j]))
+			if (i != 0 && j != 0 && compatibleLemmas(i, j))
 				// we want a good renaming cost, so set insertion cost to be high
 				return Double.MAX_VALUE;
 			else
@@ -274,7 +281,7 @@ public class EditDist extends EditBasedDist {
 			return 0.0;
 		}
 		if (this.isDep)
-			if (lemma1[i].equals(lemma2[j])) {
+			if (compatibleLemmas(i, j)) {
 				if (higherCostForStopWordsAlign && stopWordPosTags.contains(pos1[i]) &&
 						stopWordPosTags.contains(pos2[j])) {
 					// why 2.5 here: it should be lower than a cost of insertion/deletion, which is 3
