@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import approxlib.distance.EditDist;
+import approxlib.distance.WordnetDist;
 import approxlib.tree.LblTree;
 
 import cz.brmlab.yodaqa.analysis.answer.LATByQuantity;
@@ -185,7 +186,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		/* N.B. dependency tree may be missing, e.g. due to the #tokens
 		 * limit parser hit. */
 		if (aTree != null && qTree != null) {
-			EditDist editDist = new EditDist(/* normalized */ true);
+			EditDist editDist = new WordnetDist(/* normalized */ true);
 			editDist.treeDist(aTree, qTree);
 			yodaLogger.debug("edit {}", editDist.printHumaneEditScript());
 			editExtractor = new EditFeatureGenerator(editDist);
