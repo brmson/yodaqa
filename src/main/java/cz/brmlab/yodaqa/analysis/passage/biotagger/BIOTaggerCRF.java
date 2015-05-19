@@ -24,6 +24,8 @@ import org.cleartk.ml.feature.extractor.CleartkExtractor.Preceding;
 import org.cleartk.ml.feature.extractor.CombinedExtractor1;
 import org.cleartk.ml.feature.extractor.FeatureExtractor1;
 import org.cleartk.ml.feature.extractor.TypePathExtractor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import approxlib.distance.EditDist;
 import approxlib.tree.LblTree;
@@ -64,6 +66,9 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 )
 
 public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
+	// XXX: logger is hidden by CleartkSequenceAnnotator, great!
+	final Logger yodaLogger = LoggerFactory.getLogger(BIOTaggerCRF.class);
+
 	protected FeatureExtractor1<Token> tokenFeatureExtractor;
 	protected List<CleartkExtractor<Token, Token>> ngramFeatureExtractors;
 	protected BioChunking<Token, AnswerBioMention> chunking;
@@ -182,7 +187,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		if (aTree != null && qTree != null) {
 			EditDist editDist = new EditDist(/* normalized */ true);
 			editDist.treeDist(aTree, qTree);
-			editDist.printHumaneEditScript();
+			yodaLogger.debug("edit {}", editDist.printHumaneEditScript());
 			editExtractor = new EditFeatureGenerator(editDist);
 		}
 
