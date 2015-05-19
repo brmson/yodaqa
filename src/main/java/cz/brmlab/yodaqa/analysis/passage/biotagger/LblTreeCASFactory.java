@@ -103,6 +103,15 @@ public class LblTreeCASFactory {
 		sb.append("/");
 		sb.append(dep);
 		for (Dependency d : tokenChildDeps.get(t)) {
+			if (d.getDependent() == t) {
+				/* <<This view is reflected in numerous publications and also artistic works on the theme of the Chernobyl accident that appeared immediately after the accident , and for a long time remained dominant in the public consciousness and in popular publications .>>
+				 * has some weird parse tree where
+				 * conj-and[works] has this loop. */
+				logger.debug("{} --- skipping self-reference loop on {} ({}-{})",
+						sentence, d.getDependent().getCoveredText(),
+						dep, d.getDependencyType());
+				continue;
+			}
 			sb.append("{");
 			sb.append(d.getDependencyType());
 			appendTokenToSB(sb, d.getDependent(), d.getDependencyType());
