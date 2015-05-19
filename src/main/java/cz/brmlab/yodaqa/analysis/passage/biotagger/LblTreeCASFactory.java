@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -37,6 +38,7 @@ public class LblTreeCASFactory {
 	protected Map<Token, Integer> tokenToWordIdx = new HashMap<>();
 	protected Multimap<Token, Dependency> tokenChildDeps = HashMultimap.create();
 	protected Set<Token> roots = new HashSet<>();
+	protected String sentence;
 
 	/** Instantiate the LblTree factory for a single run. */
 	public LblTreeCASFactory(JCas jcas) {
@@ -46,10 +48,14 @@ public class LblTreeCASFactory {
 	/** Build internal tree representation from a sequence of tokens. */
 	public void buildTree(Collection<Token> tokens, Collection<Dependency> deps) {
 		int i = 0;
+		StringBuilder sb = new StringBuilder();
 		for (Token t : tokens) {
 			tokenToWordIdx.put(t, i);
+			sb.append(t.getCoveredText());
+			sb.append(" ");
 			i++;
 		}
+		this.sentence = sb.toString();
 
 		for (Dependency d : deps) {
 			tokenChildDeps.put(d.getGovernor(), d);
@@ -62,8 +68,10 @@ public class LblTreeCASFactory {
 	}
 
 	public LblTree toLblTree() {
-		if (roots.isEmpty())
+		if (roots.isEmpty()) {
+			logger.debug("{} --- no dependency tree roots", this.sentence);
 			return null;
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("-1:{"); // treeID
 		sb.append("-1:{"); // "virtual" root (we can have multiple true roots)
@@ -73,12 +81,13 @@ public class LblTreeCASFactory {
 				appendTokenToSB(sb, root, "root");
 			} catch (StackOverflowError e) {
 				// sometimes we get lost in recursion of appendTokenToSB(); FIXME look into why
+				logger.debug("{} --- stack overflow, sb {}", this.sentence, sb.toString());
 				e.printStackTrace();
 				return null;
 			}
 		}
 		sb.append("}}");
-		logger.debug(sb.toString());
+		logger.debug("{} --- {}", this.sentence, sb.toString());
 		return LblTree.fromString(sb.toString());
 	}
 
