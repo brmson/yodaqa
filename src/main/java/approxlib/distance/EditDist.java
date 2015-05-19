@@ -34,6 +34,7 @@ public class EditDist extends EditBasedDist {
 	int[] pId1; // stores the parent ID for each node, thus pId[1] is the parent ID of node 1
 	int[] pId2;
 	
+	int nc1, nc2; // sizes of trees
 	int size; // total node counts in both trees
 	HashMap<Integer, LblTree> id2node1;
 	HashMap<Integer, LblTree> id2node2;
@@ -188,14 +189,14 @@ public class EditDist extends EditBasedDist {
 			}
 		}
 	}
-	
-	@Override
-	public double nonNormalizedTreeDist(LblTree t1, LblTree t2) {
 
-		// System.out.print(t1.getTreeID() + "|" + t2.getTreeID() + "|");
+	/** Extract various data from the pair of trees.
+	 * A preprocessing routine. */
+	protected void initTreesData(LblTree t1, LblTree t2) {
 		this.t1 = t1;
 		this.t2 = t2;
-		int nc1 = t1.getNodeCount() + 1;
+
+		nc1 = t1.getNodeCount() + 1;
 		kr1 = new int[t1.getLeafCount() + 1];
 		l1 = new int[nc1];
 		lbl1 = new String[nc1];
@@ -205,7 +206,7 @@ public class EditDist extends EditBasedDist {
 		rel1 = new String[nc1];
 		pId1 = new int[nc1];
 		
-		int nc2 = t2.getNodeCount() + 1;
+		nc2 = t2.getNodeCount() + 1;
 		kr2 = new int[t2.getLeafCount() + 1];
 		l2 = new int[nc2];
 		lbl2 = new String[nc2];
@@ -227,6 +228,12 @@ public class EditDist extends EditBasedDist {
 		
 		init(kr1, l1, lbl1, word1, lemma1, pos1, rel1, pId1, id2node1, this.idxInWordOrder2node1, t1);
 		init(kr2, l2, lbl2, word2, lemma2, pos2, rel2, pId2, id2node2, this.idxInWordOrder2node2, t2);
+	}
+
+	@Override
+	public double nonNormalizedTreeDist(LblTree t1, LblTree t2) {
+		// System.out.print(t1.getTreeID() + "|" + t2.getTreeID() + "|");
+		initTreesData(t1, t2);
 
 		backpointer = new int[nc1][nc2][2];
 		for (int i=0; i<nc1; i++)
