@@ -137,7 +137,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		/* We may want to generate question-specific features
 		 * based on a question LAT.  Decide on the set of LATs
 		 * (or rather just their synset ids) to use for this. */
-		Collection<Long> lats = getSpecializingLATs(questionView);
+		Collection<String> lats = getSpecializingLATs(questionView);
 		/* A tree representation of the question dependency tree. */
 		LblTree qTree = LblTreeCASFactory.casToTree(questionView);
 
@@ -147,25 +147,25 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		}
 	}
 
-	protected Collection<Long> getSpecializingLATs(JCas questionView) {
+	protected Collection<String> getSpecializingLATs(JCas questionView) {
 		Collection<LAT> qLats = JCasUtil.select(questionView, LAT.class);
-		Collection<Long> lats = new HashSet<Long>();
+		Collection<String> lats = new HashSet<String>();
 		for (LAT lat : qLats) {
 			if (lat.getSynset() == 0)
 				continue; // no synset
-			if (lats.contains(lat.getSynset()))
+			if (lats.contains(Long.toString(lat.getSynset())))
 				continue; // dupe
 
 			if (lat instanceof QuestionWordLAT) {
-				lats.add(lat.getSynset());
+				lats.add(Long.toString(lat.getSynset()));
 			} else if (LATByQuantity.latIsQuantity(lat)) {
-				lats.add(2L /* special indicator for quantity LATs */);
+				lats.add("2" /* special indicator for quantity LATs */);
 			}
 		}
 		return lats;
 	}
 
-	protected void processPassage(JCas passagesView, Passage p, Collection<Long> lats, LblTree qTree)
+	protected void processPassage(JCas passagesView, Passage p, Collection<String> lats, LblTree qTree)
 			throws AnalysisEngineProcessException {
 		List<List<Feature>> featureLists = new ArrayList<List<Feature>>();
 
@@ -236,11 +236,11 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		}
 	}
 
-	protected List<Feature> expandFeaturesByLats(List<Feature> features, Collection<Long> lats) {
+	protected List<Feature> expandFeaturesByLats(List<Feature> features, Collection<String> lats) {
 		List<Feature> xFeatures = new ArrayList<>();
 		for (Feature f : features) {
-			for (Long l : lats) {
-				xFeatures.add(new Feature(Long.toString(l) + "|" + f.getName(), f.getValue()));
+			for (String l : lats) {
+				xFeatures.add(new Feature(l + "|" + f.getName(), f.getValue()));
 			}
 		}
 		return xFeatures;
