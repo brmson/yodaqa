@@ -86,8 +86,8 @@ public class CRFBioChunking<SUB_CHUNK_TYPE extends Annotation, CHUNK_TYPE extend
 				i = end;
 
 				// convert the outcome indexes into CAS offsets
-				begin = subChunks.get(begin).getBegin();
-				end = subChunks.get(end).getEnd();
+				int beginOfs = subChunks.get(begin).getBegin();
+				int endOfs = subChunks.get(end).getEnd();
 
 				// construct the chunk annotation
 				Constructor<? extends CHUNK_TYPE> constructor;
@@ -98,7 +98,7 @@ public class CRFBioChunking<SUB_CHUNK_TYPE extends Annotation, CHUNK_TYPE extend
 				}
 				CHUNK_TYPE chunk;
 				try {
-					chunk = constructor.newInstance(jCas, begin, end);
+					chunk = constructor.newInstance(jCas, beginOfs, endOfs);
 				} catch (InstantiationException e) {
 					throw new AnalysisEngineProcessException(e);
 				} catch (IllegalAccessException e) {
@@ -112,8 +112,9 @@ public class CRFBioChunking<SUB_CHUNK_TYPE extends Annotation, CHUNK_TYPE extend
 					chunk.setFeatureValueFromString(feature, outcome.first.substring(1));
 				}
 
-				// set the score feature
+				// set the score, forced features
 				chunk.setScore(score);
+				chunk.setForced(outcomes.isForced(begin));
 
 				// add the chunk to the CAS and to the result list
 				chunk.addToIndexes();

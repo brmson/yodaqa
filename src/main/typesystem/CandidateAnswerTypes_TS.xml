@@ -132,6 +132,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgBIOForced</name>
+	<description>Answer Feature: 1 if the origin of this answer is a mention forced from a B-I-O tagger labelling (low-probability O label)</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgSurprise</name>
 	<description>Answer Feature: 1 if the origin of this answer is a passage that does not end with a question clue</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

@@ -13,6 +13,7 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.passage.CandidateGenerator;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_BIOScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgBIO;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgBIOForced;
 import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -61,6 +62,8 @@ public class CanByAnsBioMention extends CandidateGenerator {
 		AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 		fv.merge(new AnswerFV(p.getAnsfeatures()));
 		fv.setFeature(AF_OriginPsgBIO.class, 1.0);
+		if (abm.getForced())
+			fv.setFeature(AF_OriginPsgBIOForced.class, 1.0);
 		fv.setFeature(AF_BIOScore.class, abm.getScore());
 		logger.debug("can <<{}>> score <<{}>>", abm.getCoveredText(), abm.getScore());
 
