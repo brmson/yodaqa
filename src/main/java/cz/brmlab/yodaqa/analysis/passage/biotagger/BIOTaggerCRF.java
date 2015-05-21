@@ -33,6 +33,8 @@ import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.QuestionWordLAT;
+import cz.brmlab.yodaqa.provider.crf.CRFSuite;
+import cz.brmlab.yodaqa.provider.crf.CRFTagging;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
@@ -52,11 +54,25 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * we do not re-train the model used here on each evaluation run; that's
  * a TODO item.  XXX: add re-training instructions
  *
- * We use ClearTK for the CRF model and its training, also unlike our
+ * We use ClearTK for the training of the CRF model, also unlike our
  * other machine learners.  We use it because of the CRFsuite interface
  * (I also looked at DKPro-TC, but it seems to be built just to run
  * experiments, not to actually *use* the models within a pipeline too)
- * but also to check if it's nice enough to convert AnswerFV to it too. */
+ * but also to check if it's nice enough to convert AnswerFV to it too.
+ *
+ * XXX: ...and for *tagging* based on trained model, we use jcrfsuite
+ * instead.  Yes, this is messy, but ClearTK interface for crfsuite
+ * has three caveats:
+ *
+ *   * It is GPL2, unlike most of ClearTK
+ *   * It does not support outputting tag probability as of now
+ *     (but see https://groups.google.com/forum/#!topic/cleartk-users/n6xoaINnJu8)
+ *   * It is rather slow as it executes new crfsuite process for
+ *     each classify() call
+ *
+ * TODO: Either switch to ClearTK with some more of our machine
+ * learning stuff and eventually contribute back a better crfsuite
+ * wrapper, or use jcrfsuite for training too. */
 
 @SofaCapability(
 	inputSofas = { "Question", "Result", "PickedPassages" },
@@ -230,9 +246,9 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			// during classification, convert classifier outcomes into mentions in the CAS
 
 			// get the predicted BIO outcome labels from the classifier
-			List<String> outcomes = this.classifier.classify(featureLists);
+			CRFTagging tagging = CRFSuite.getInstance().tag(featureLists);
 			// create the AnswerBioMention annotations in the CAS
-			this.chunking.createChunks(passagesView, tokens, outcomes);
+			this.chunking.createChunks(passagesView, tokens, tagging.getOutcomes());
 		}
 	}
 

@@ -28,7 +28,7 @@ public class CanByBIOTaggerAE /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		String trainAnsBioCRF_s = System.getProperty("cz.brmlab.yodaqa.train_ansbiocrf");
 		boolean trainAnsBioCRF = trainAnsBioCRF_s != null && !trainAnsBioCRF_s.isEmpty();
-		String modelDir = "data/ml/biocrf"; // XXX
+		String modelDir = "data/ml/biocrf"; // XXX; also hardcoded in provider/crf/CRFSuite.java
 
 		AggregateBuilder builder = new AggregateBuilder();
 

@@ -79,6 +79,7 @@ repositories {
   mavenCentral()
   maven {
     url 'http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/repo/'
+    url 'http://ailao.eu/maven/'
   }
 }
 
@@ -113,4 +114,5 @@ dependencies {
   compile 'org.cleartk:cleartk-ml:2.0.0'
   compile 'org.cleartk:cleartk-ml-crfsuite:2.0.0'
   compile 'com.google.guava:guava:18.0'
+  compile 'com.github.jcrfsuite:jcrfsuite:0.5'
 }
