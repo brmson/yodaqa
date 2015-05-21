@@ -39,3 +39,8 @@ These components are GPLv2+:
   * Stanford CoreNLP - used through DKpro generic API mainly for
     producing dependency parse trees of sentences, other alternatives
     with worse performance exist
+
+  * ClearTK CRFSuiteWrapper - used through ClearTK generic API, used
+    only for training a CRF model (only when YodaQA is invoked as shown
+    in data/ml/biocrf/README.md in particular; *not* used for CRF-based
+    biotagging during regular YodaQA usage)
