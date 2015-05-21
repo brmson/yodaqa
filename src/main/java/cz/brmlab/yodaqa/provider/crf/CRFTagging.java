@@ -37,7 +37,7 @@ public class CRFTagging {
 		StringBuilder sb = new StringBuilder();
 		for (Pair<String, Double> pair : pairs) {
 			sb.append(String.format(Locale.ENGLISH, "%s%s%.3f:%s ", pair.first,
-						(forced[i] ? "F" : ""),
+						(forced != null && forced[i] ? "F" : ""),
 						pair.second,
 						tokens.get(i).getCoveredText()));
 			i++;
@@ -115,6 +115,6 @@ public class CRFTagging {
 	}
 
 	public boolean isForced(int index) {
-		return forced[index];
+		return forced != null && forced[index];
 	}
 }
