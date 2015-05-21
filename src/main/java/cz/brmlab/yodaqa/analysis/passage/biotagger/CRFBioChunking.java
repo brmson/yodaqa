@@ -69,8 +69,10 @@ public class CRFBioChunking<SUB_CHUNK_TYPE extends Annotation, CHUNK_TYPE extend
 				int end = i;
 				while (true) {
 					Pair<String, Double> curr = outcomes.get(end);
-					Pair<String, Double> next = outcomes.get(end + 1);
 					score += curr.second;
+					if (end + 1 >= outcomes.size())
+						break;
+					Pair<String, Double> next = outcomes.get(end + 1);
 					if (this.isEndOfChunk(curr.first.charAt(0), curr.first.substring(1),
 								next.first.charAt(0), next.first.substring(1))) {
 						break;
