@@ -15,7 +15,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.ml.CleartkSequenceAnnotator;
 import org.cleartk.ml.Feature;
 import org.cleartk.ml.Instances;
-import org.cleartk.ml.chunking.BioChunking;
 import org.cleartk.ml.feature.extractor.CleartkExtractor;
 import org.cleartk.ml.feature.extractor.CleartkExtractor.Focus;
 import org.cleartk.ml.feature.extractor.CleartkExtractor.Following;
@@ -82,7 +81,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 	protected FeatureExtractor1<Token> tokenFeatureExtractor;
 	protected List<CleartkExtractor<Token, Token>> ngramFeatureExtractors;
-	protected BioChunking<Token, AnswerBioMention> chunking;
+	protected CRFBioChunking<Token, AnswerBioMention> chunking;
 
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
@@ -107,7 +106,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		 * with labels from the "mentionType" attribute; this
 		 * label is actually always "ans", so we get B-ans, I-ans,
 		 * O-ans. */
-		this.chunking = new BioChunking<Token, AnswerBioMention>(
+		this.chunking = new CRFBioChunking<Token, AnswerBioMention>(
 				Token.class, AnswerBioMention.class);
 	}
 
@@ -247,8 +246,10 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 
 			// get the predicted BIO outcome labels from the classifier
 			CRFTagging tagging = CRFSuite.getInstance().tag(featureLists);
+			//tagging.logProb(tokens);
+
 			// create the AnswerBioMention annotations in the CAS
-			this.chunking.createChunks(passagesView, tokens, tagging.getOutcomes());
+			this.chunking.createChunks(passagesView, tokens, tagging);
 		}
 	}
 

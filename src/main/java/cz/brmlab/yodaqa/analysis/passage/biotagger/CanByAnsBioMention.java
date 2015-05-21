@@ -62,6 +62,7 @@ public class CanByAnsBioMention extends CandidateGenerator {
 		fv.merge(new AnswerFV(p.getAnsfeatures()));
 		fv.setFeature(AF_OriginPsgBIO.class, 1.0);
 		fv.setFeature(AF_BIOScore.class, abm.getScore());
+		logger.debug("can <<{}>> score <<{}>>", abm.getCoveredText(), abm.getScore());
 
 		addCandidateAnswer(passagesView, p, abm, fv);
 	}
