@@ -246,7 +246,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 
 			// get the predicted BIO outcome labels from the classifier
 			CRFTagging tagging = CRFSuite.getInstance().tag(featureLists);
-			//tagging.logProb(tokens);
+			tagging.logProb(tokens);
 
 			// create the AnswerBioMention annotations in the CAS
 			this.chunking.createChunks(passagesView, tokens, tagging);
