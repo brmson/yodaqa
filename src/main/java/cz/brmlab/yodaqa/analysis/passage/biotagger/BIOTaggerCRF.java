@@ -100,7 +100,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		addNgramFeatureExtractor(NETypeExtractor, 3);
 		/* TODO: The n-grams here should not be on token
 		 * sequence but parse tree. Maybe. */
-		addNgramFeatureExtractor(depExtractor, 3);
+		addNgramFeatureExtractor(depExtractor, 2);
 
 		/* Tokens will be combined to form AnswerBioMentions,
 		 * with labels from the "mentionType" attribute; this
