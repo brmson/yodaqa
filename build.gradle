@@ -71,8 +71,8 @@ repositories {
 }
 
 dependencies {
-  compile 'org.apache.uima:uimaj-core:2.5.0'
-  compile 'org.apache.uima:uimafit-core:2.0.0'
+  compile 'org.apache.uima:uimaj-core:2.6.0'
+  compile 'org.apache.uima:uimafit-core:2.1.0'
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.io-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.clearnlp-asl:$dkproVersion"
