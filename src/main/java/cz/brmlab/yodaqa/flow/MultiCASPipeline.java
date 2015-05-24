@@ -14,9 +14,12 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
+import org.apache.uima.resource.ResourceCreationSpecifier;
 import org.apache.uima.resource.metadata.ResourceMetaData;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.util.CasCreationUtils;
+
+import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
 
 /**
  * By "Philipp W".
@@ -57,6 +60,17 @@ public final class MultiCASPipeline {
 		}
 
 		TypeSystemDescription mergedTypeSystemDescription = CasCreationUtils.mergeTypeSystems(typeSystemDescriptions);
+
+
+		// XXX: Do this elsewhere
+		/* Register a new kind of AnalysisEngineFactory that
+		 * overrides the default one and will chuck out
+		 * ParallelAnalysisEngine instead of
+		 * AggregateAnalysisEngine (which is very similar, but uses
+		 * a modified Analysis Structure Broker MultiThreadASB
+		 * that uses a thread pool to spread logically
+		 * parallelizable work). */
+		UIMAFramework.getResourceFactory().registerFactory(ResourceCreationSpecifier.class, new ParallelEngineFactory());
 
 
 		/*
