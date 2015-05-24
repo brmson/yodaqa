@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -231,7 +230,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     
     if (mFlowControllerContainer != null &&
         // the container might be non-null, but the initialization could have failed
-	// XXX: we disable this check for now as isInitialized() is not public
+  // XXX: we disable this check for now as isInitialized() is not public
         true /*mFlowControllerContainer.isInitialized()*/) {
       mFlowControllerContainer.destroy();
     }
@@ -550,12 +549,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
      *           if a failure occurs during processing
      */
     private CAS processUntilNextOutputCas() throws AnalysisEngineProcessException {
-      FlowContainer flow = null;
-      try {
-        while (true) {
-          CAS cas = null;
-          Step nextStep = null;
-          flow = null;
+      while (true) {
+        CAS cas = null;
+        Step nextStep = null;
+        FlowContainer flow = null;
+        try {
           // get an initial CAS from the CasIteratorStack
           while (cas == null) {
             if (casIteratorStack.isEmpty()) {
@@ -782,17 +780,17 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           } else {
             cas.release();
           }
-        }
-      } catch (Exception e) {
-        //notify Flow that processing has aborted on this CAS
-        if (flow != null) {
-          flow.aborted();
-        }
-        release(); // release held CASes before throwing exception
-        if (e instanceof AnalysisEngineProcessException) {
-          throw (AnalysisEngineProcessException) e;
-        } else {
-          throw new AnalysisEngineProcessException(e);
+        } catch (Exception e) {
+          //notify Flow that processing has aborted on this CAS
+          if (flow != null) {
+            flow.aborted();
+          }
+          release(); // release held CASes before throwing exception
+          if (e instanceof AnalysisEngineProcessException) {
+            throw (AnalysisEngineProcessException) e;
+          } else {
+            throw new AnalysisEngineProcessException(e);
+          }
         }
       }
     }
