@@ -1,18 +1,25 @@
 package cz.brmlab.yodaqa.flow.asb;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.asb.ASB;
+import org.apache.uima.analysis_engine.asb.impl.FlowControllerContainer;
 import org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl;
+import org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase;
 import org.apache.uima.analysis_engine.metadata.FlowControllerDeclaration;
 import org.apache.uima.resource.Resource;
+import org.apache.uima.resource.ResourceConfigurationException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.impl.ResourceCreationSpecifier_impl;
 import org.apache.uima.resource.metadata.ProcessingResourceMetaData;
 import org.apache.uima.resource.metadata.impl.ResourceMetaData_impl;
 import org.apache.uima.util.InvalidXMLException;
+import org.apache.uima.util.ProcessTrace;
+import org.apache.uima.util.impl.ProcessTraceEvent_impl;
 
 /** A variant of AggregateAnalysisEngine that uses MultiThreadASB
  * instead of the basic ASB.  It is almost the same, but uses
@@ -98,4 +105,39 @@ public class ParallelAnalysisEngine extends AggregateAnalysisEngine_impl {
 		/* *** THIS *** is changed to use _getASB() and a protected field. */
 		mMTComponentMetaData = _getASB().getAllComponentMetaData();
 	}
+
+        @Override
+  protected void buildProcessTraceFromMBeanStats(ProcessTrace trace) {
+    // This is roughly identical to super, but with a correct typecast
+    if (isProcessTraceEnabled()) {
+      ProcessTraceEvent_impl procEvt = new ProcessTraceEvent_impl(getMetaData().getName(),
+              "Analysis", "");
+      procEvt.setDuration((int) getMBean().getAnalysisTimeSinceMark());
+      trace.addEvent(procEvt);
+
+      // now add subevents for each component
+      Iterator<AnalysisEngine> aeIter = _getASB().getComponentAnalysisEngines().values().iterator();
+      while (aeIter.hasNext()) {
+        AnalysisEngine ae = aeIter.next();
+        /*if (ae instanceof AnalysisEngineImplBase) {
+          ProcessTrace subPT = ((AnalysisEngineImplBase) ae).buildProcessTraceFromMBeanStats();
+          if (subPT.getEvents().size() > 0) {
+            procEvt.addSubEvent(subPT.getEvents().get(0));
+          }
+        }*/
+      }
+      // and also FlowController
+      FlowControllerContainer fcc = ((MultiThreadASB) _getASB()).getFlowControllerContainer();
+      int flowControllerTime = (int) fcc.getMBean().getAnalysisTimeSinceMark();
+      ProcessTraceEvent_impl flowControllerEvent = new ProcessTraceEvent_impl(fcc.getMetaData()
+              .getName(), "Analysis", "");
+      flowControllerEvent.setDuration(flowControllerTime);
+      procEvt.addSubEvent(flowControllerEvent);
+
+      // set a mark at the current time, so that subsequent calls to
+      // this method will pick up only times recorded after the mark.
+      getMBean().mark();
+    }
+  }
+
 }

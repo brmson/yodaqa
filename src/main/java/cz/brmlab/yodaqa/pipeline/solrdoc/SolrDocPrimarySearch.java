@@ -198,4 +198,10 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setIsLast(true);
 		ai.addToIndexes();
 	}
+
+	@Override
+	public int getCasInstancesRequired() {
+		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
+		return 32;
+	}
 }

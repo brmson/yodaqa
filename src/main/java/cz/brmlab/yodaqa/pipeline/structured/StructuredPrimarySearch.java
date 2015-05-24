@@ -258,4 +258,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	/** Generate primary search kind specific features indicating
 	 * the originating clue type. */
 	protected abstract void clueAnswerFeatures(AnswerFV afv, Clue clue);
+
+
+	@Override
+	public int getCasInstancesRequired() {
+		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
+		return 64;
+	}
 }

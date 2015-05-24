@@ -160,7 +160,7 @@ public class FixedParallelFlowController extends CasFlowController_ImplBase {
      * 
      * @see org.apache.uima.flow.CasFlow_ImplBase#newCasProduced(CAS, String)
      */
-    public synchronized Flow newCasProduced(CAS newCas, String producedBy) throws AnalysisEngineProcessException {
+    protected synchronized Flow newCasProduced(CAS newCas, String producedBy) throws AnalysisEngineProcessException {
       // record that the input CAS has been segmented (affects its subsequent flow)
       casMultiplierProducedNewCas = true;
       // it's a single-step flow, so new segments don't continue in the flow

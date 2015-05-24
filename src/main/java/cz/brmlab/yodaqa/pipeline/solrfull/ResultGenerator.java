@@ -140,4 +140,10 @@ public class ResultGenerator extends JCasMultiplier_ImplBase {
 		ri2.setIsLast(isLast);
 		ri2.addToIndexes();
 	}
+
+	@Override
+	public int getCasInstancesRequired() {
+		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
+		return 32;
+	}
 }

@@ -148,4 +148,10 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			a2.addToIndexes();
 		}
 	}
+
+	@Override
+	public int getCasInstancesRequired() {
+		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
+		return 256;
+	}
 }

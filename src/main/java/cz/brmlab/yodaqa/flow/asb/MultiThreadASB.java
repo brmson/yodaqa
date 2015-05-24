@@ -102,8 +102,18 @@ import org.apache.uima.util.UimaTimer;
  * boundaries; if multiple of your AEs run in parallel at one point
  * and each returns a bunch of CASes, neither of them will continue
  * through the pipeline until all of the AEs are finished.
+ *
  * (TODO: Corollary - Move AnswerAnalysis to a tail section of each
  * AnswerProducer so that we don't block on this barrier.)
+ *
+ * Corollary #2 - We create many CASes in memory before getting to
+ * merge them back post-barrier.  This is a problem with the default
+ * UIMA CasManager as it creates a single-CAS pool and hangs forever
+ * when we want to get another CAS before returning the first one.
+ * Our current workaround is for parallel-running CAS multipliers
+ * to have a custom method getCasInstancesRequired() that returns
+ * something much larger than one (512).  TODO make own CasManager
+ * with dynamically-sized pools.
  *
  * N.B. the multi-threading pool is common for the whole Java program,
  * being a static member of this ASB. TODO #threads
@@ -111,7 +121,7 @@ import org.apache.uima.util.UimaTimer;
  * XXX: This is a copy of UIMA's ASB_impl that adds some extra methods
  * and classes, but otherwise just changes the processAndOutputNewCASes()
  * method.  Due to extensive use of private fields, it is impractical
- * to sub-class it. */
+ * to sub-class it instead. */
 public class MultiThreadASB extends Resource_ImplBase implements ASB {
   /**
    * resource bundle for log messages
@@ -225,6 +235,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         true /*mFlowControllerContainer.isInitialized()*/) {
       mFlowControllerContainer.destroy();
     }
+
+    parallelExecutor.shutdownNow();
   }
 
   /**
@@ -575,11 +587,16 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
               // we've finished routing all the Output CASes from a StackFrame. Now
               // get the originalCas (the one that was input to the CasMultiplier) from
               // that stack frame and continue with its flow
+              casIteratorStack.pop(); // remove this state from the stack now
               cas = frame.originalCas;
+              if (cas == null) {
+                // null means "continue with the next stack frame instead",
+                // when we have the followup steps prepared in advance
+                continue;
+              }
               flow = frame.originalCasFlow;
               nextStep = frame.incompleteParallelStep; //in case we need to resume a parallel step
               cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
-              casIteratorStack.pop(); // remove this state from the stack now
             }
           }
 
@@ -680,12 +697,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
               for (Future<CasIterator> f : futures) {
                 String nextAeKey = destinations.get(i);
                   CasIterator casIter = null;
-                  CAS outputCas = null; //used if the AE we call outputs a new CAS
                   try {
                     casIter = f.get();
-                    if (casIter.hasNext()) {
-                      outputCas = casIter.next();
-                    }
                   }
                   catch(Exception e) {
                     //ask the FlowController if we should continue
@@ -698,19 +711,44 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
                               LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
                     }
                   }
-                  if (outputCas != null) // new CASes are output
+                  if (casIter != null && casIter.hasNext()) // new CASes are output
                   {
-                    casIteratorStack.push(new StackFrame(casIter, cas, flow, nextAeKey));                      
+                    if (newCasesProduced) {
+                      // set up a stack frame that will cause unwind instead
+                      // of resume of original cas processing
+                      casIteratorStack.push(new StackFrame(casIter, null, flow, nextAeKey));
+                    } else {
+                      casIteratorStack.push(new StackFrame(casIter, cas, flow, nextAeKey));
+                    }
                       
-                    // compute Flow for the output CAS and begin routing it through the flow
-                    flow = flow.newCasProduced(outputCas, nextAeKey);
-                    cas = outputCas;
-                    activeCASes.add(cas);
                     newCasesProduced = true;
                   }
                 i++;
               }            
-              if (!newCasesProduced) {
+              if (newCasesProduced) {
+                  // now pick one of the output CAS and continue to route that one; we'll come back to the original cas sometime later
+                  StackFrame frame = casIteratorStack.peek();
+                  try {
+                      cas = frame.casIterator.next();
+                      // this is a new output CAS so we need to compute a flow for it
+                      flow = frame.originalCasFlow.newCasProduced(cas, frame.casMultiplierAeKey);
+                  } 
+                  catch(Exception e) {
+                    //A CAS Multiplier (or possibly an aggregate) threw an exception trying to output the next CAS.
+                    //We abandon trying to get further output CASes from that CAS Multiplier,
+                    //and ask the Flow Controller if we should continue routing the CAS that was input to the CasMultiplier.
+                    if (!frame.originalCasFlow.continueOnFailure(frame.casMultiplierAeKey, e)) {
+                      throw e;              
+                    } else {
+                      UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
+                              LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
+                     
+                    }
+                    //if the Flow says to continue, we fall through to the if (cas == null) block below, get
+                    //the originalCas from the stack and continue with its flow.
+                  }
+                  activeCASes.add(cas);
+              } else {
                     // no new CASes are output; this cas is done being processed
                     // by that AnalysisEngine so clear the componentInfo
                     cas.setCurrentComponentInfo(null);
