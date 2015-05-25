@@ -587,6 +587,84 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       return cif;
     }
 
+    /** Enqueue CAS-in-flow for processing by the nextAeKey engine. */
+    protected Future<CasIterator> enqueueCasInFlow(CasInFlow cif, String nextAeKey) throws AnalysisEngineProcessException {
+      final CAS inputCas = cif.cas;
+      final AnalysisEngine nextAe = mComponentAnalysisEngineMap.get(nextAeKey);
+      if (nextAe == null) {
+        throw new AnalysisEngineProcessException(
+                AnalysisEngineProcessException.UNKNOWN_ID_IN_SEQUENCE,
+                new Object[] { nextAeKey });
+      }
+
+      Future<CasIterator> f = parallelExecutor.submit(new Callable<CasIterator>() {
+        public CasIterator call() throws Exception {
+          // invoke next AE in flow
+          /* N.B. exceptions thrown here are re-thrown in main thread
+           * at .get() time */
+          return nextAe.processAndOutputNewCASes(inputCas);
+        }
+      });
+      return f;
+    }
+
+    /** Collect CAS-in-flow from processing done by the nextAeKey engine.
+     * @return a StackFrame with a casIter producing new CASes if the engine
+     * produced any. */
+    protected StackFrame collectCasInFlow(CasInFlow cif, Future<CasIterator> f, String nextAeKey) throws Exception {
+      CasIterator casIter = null;
+      try {
+        casIter = f.get();
+      }
+      catch(Exception e) {
+        //ask the FlowController if we should continue
+        //TODO: should this be configurable?
+        if (!cif.flow.continueOnFailure(nextAeKey, e)) {
+          throw e;
+        }
+        else {
+          UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
+                  LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
+        }
+      }
+      if (casIter != null && casIter.hasNext()) // new CASes are output
+      {
+        return new StackFrame(casIter, cif.cas, cif.flow, nextAeKey);
+      } else {
+        return null;
+      }
+    }
+
+    /** Switch the CAS-in-flow currently being processed to the given
+     * stack frame.  This happens when we have produced a new CAS;
+     * we have stored the current CAS in the stack frame and will
+     * return to it as soon as the flow of the new CAS finishes. */
+    protected CasInFlow switchToNewCasInFlow(StackFrame frame) throws Exception {
+      CasInFlow cif = null;
+      try {
+          CAS cas = frame.casIterator.next();
+          // this is a new output CAS so we need to compute a flow for it
+          FlowContainer flow = frame.originalCasFlow.newCasProduced(cas, frame.casMultiplierAeKey);
+          cif = new CasInFlow(cas, flow);
+      } 
+      catch(Exception e) {
+        //A CAS Multiplier (or possibly an aggregate) threw an exception trying to output the next CAS.
+        //We abandon trying to get further output CASes from that CAS Multiplier,
+        //and ask the Flow Controller if we should continue routing the CAS that was input to the CasMultiplier.
+        if (!frame.originalCasFlow.continueOnFailure(frame.casMultiplierAeKey, e)) {
+          throw e;              
+        } else {
+          UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
+                  LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
+        }
+        //if the Flow says to continue, we fall through to the if (cas == null) block below, get
+        //the originalCas from the stack and continue with its flow.
+        //XXX: this is currently unsupported
+      }
+      activeCASes.add(cif.cas);
+      return cif;
+    }
+
     /** Perform a simple flow step with the Cas. */
     protected CasInFlow processSimpleStep(CasInFlow cif, SimpleStep nextStep) throws Exception {
       String nextAeKey = ((SimpleStep) nextStep).getAnalysisEngineKey();
@@ -650,53 +728,25 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       //execute them
       List<Future<CasIterator>> futures = new ArrayList<>(destinations.size());
       for (String nextAeKey : destinations) {
-        //execute this step as we would a single step
-        final CAS inputCas = cif.cas;
-        final AnalysisEngine nextAe = mComponentAnalysisEngineMap.get(nextAeKey);
-        if (nextAe == null) {
-          throw new AnalysisEngineProcessException(
-                  AnalysisEngineProcessException.UNKNOWN_ID_IN_SEQUENCE,
-                  new Object[] { nextAeKey });
-        }
-        //just perform the process() asynchronously
-        futures.add(parallelExecutor.submit(new Callable<CasIterator>() {
-          public CasIterator call() throws Exception {
-          // invoke next AE in flow
-          /* N.B. exceptions thrown here are re-thrown in main thread
-           * at .get() time */
-          return nextAe.processAndOutputNewCASes(inputCas);
-          }
-        }));
+        futures.add(enqueueCasInFlow(cif, nextAeKey));
       }
       //collect the output cases and finish the step
       int i = 0;
       boolean newCasesProduced = false;
       for (Future<CasIterator> f : futures) {
         String nextAeKey = destinations.get(i);
-        CasIterator casIter = null;
-        try {
-          casIter = f.get();
-        }
-        catch(Exception e) {
-          //ask the FlowController if we should continue
-          //TODO: should this be configurable?
-          if (!cif.flow.continueOnFailure(nextAeKey, e)) {
-            throw e;
-          }
-          else {
-            UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
-                    LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
-          }
-        }
-        if (casIter != null && casIter.hasNext()) // new CASes are output
-        {
+        StackFrame stackFrame = collectCasInFlow(cif, f, nextAeKey);
+        if (stackFrame != null) {
           if (newCasesProduced) {
-            // set up a stack frame that will cause unwind instead
-            // of resume of original cas processing
-            casIteratorStack.push(new StackFrame(casIter, null, cif.flow, nextAeKey));
-          } else {
-            casIteratorStack.push(new StackFrame(casIter, cif.cas, cif.flow, nextAeKey));
+            /* Another engine in our step already produced a casIterator
+             * as well.  By unsetting originalCas, we make sure to unwind
+             * to that casIterator instead of ignoring it and falling
+             * back to the input Cas.  No worries, we will eventually
+             * get to the input Cas when the stack frame of the first
+             * engine producing a casIterator gets its turn. */
+            stackFrame.originalCas = null;
           }
+          casIteratorStack.push(stackFrame);
           newCasesProduced = true;
         }
         i++;
@@ -704,26 +754,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       if (newCasesProduced) {
         // now pick one of the output CAS and continue to route that one; we'll come back to the original cas sometime later
         StackFrame frame = casIteratorStack.peek();
-        try {
-            CAS cas = frame.casIterator.next();
-            // this is a new output CAS so we need to compute a flow for it
-            FlowContainer flow = frame.originalCasFlow.newCasProduced(cas, frame.casMultiplierAeKey);
-            cif = new CasInFlow(cas, flow);
-        } 
-        catch(Exception e) {
-          //A CAS Multiplier (or possibly an aggregate) threw an exception trying to output the next CAS.
-          //We abandon trying to get further output CASes from that CAS Multiplier,
-          //and ask the Flow Controller if we should continue routing the CAS that was input to the CasMultiplier.
-          if (!frame.originalCasFlow.continueOnFailure(frame.casMultiplierAeKey, e)) {
-            throw e;              
-          } else {
-            UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
-                    LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
-          }
-          //if the Flow says to continue, we fall through to the if (cas == null) block below, get
-          //the originalCas from the stack and continue with its flow.
-        }
-        activeCASes.add(cif.cas);
+        cif = switchToNewCasInFlow(frame);
       } else {
         // no new CASes are output; this cas is done being processed
         // by that AnalysisEngine so clear the componentInfo
