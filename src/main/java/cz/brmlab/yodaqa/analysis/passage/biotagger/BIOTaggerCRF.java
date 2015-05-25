@@ -50,8 +50,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * by (Yao and van Durme, 2013a) here (aka JacanaQA).
  *
  * Unlike our other machine learners (well, the one for answer selection)
- * we do not re-train the model used here on each evaluation run; that's
- * a TODO item.  XXX: add re-training instructions
+ * w, do not re-train the model used here on each evaluation run; that's
+ * a TODO item.  See data/ml/biocrf/README.md for instructions.
  *
  * We use ClearTK for the training of the CRF model, also unlike our
  * other machine learners.  We use it because of the CRFsuite interface
@@ -158,7 +158,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 
 		// for each sentence in the document, generate training/classification instances
 		for (Passage p : JCasUtil.select(passagesView, Passage.class)) {
-			processPassage(passagesView, p, lats, qTree);
+			processPassage(passagesView, p, lats, questionView, qTree);
 		}
 	}
 
@@ -180,7 +180,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		return lats;
 	}
 
-	protected void processPassage(JCas passagesView, Passage p, Collection<Long> lats, LblTree qTree)
+	protected void processPassage(JCas passagesView, Passage p, Collection<Long> lats, JCas questionView, LblTree qTree)
 			throws AnalysisEngineProcessException {
 		List<List<Feature>> featureLists = new ArrayList<List<Feature>>();
 
@@ -214,7 +214,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 
 			// apply the edit feature generator
 			if (editExtractor != null)
-				tokenFeatures.addAll(editExtractor.extract(tokenFeatures, i, token, aTree, qTree));
+				tokenFeatures.addAll(editExtractor.extract(tokenFeatures, i, token, questionView, aTree, qTree));
 
 			/* Combine with question LAT info, so each feature
 			 * will have specific weight for the given class

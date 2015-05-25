@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.jcas.JCas;
 import org.cleartk.ml.Feature;
 
 import approxlib.distance.Edit;
@@ -13,6 +15,7 @@ import approxlib.distance.Edit.TYPE;
 import approxlib.distance.EditDist;
 import approxlib.tree.LblTree;
 
+import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /** Cleartk token feature generator based on an edit tree script.
@@ -92,7 +95,7 @@ public class EditFeatureGenerator {
 		return bestAligned;
 	}
 
-	public Collection<Feature> extract(List<Feature> featuresSoFar, int wordOrderIdx, Token t, LblTree aTree, LblTree qTree) {
+	public Collection<Feature> extract(List<Feature> featuresSoFar, int wordOrderIdx, Token t, JCas questionView, LblTree aTree, LblTree qTree) {
 		List<Feature> features = new ArrayList<Feature>();
 
 		if (editTypeMapping.containsKey(wordOrderIdx)) {
@@ -118,20 +121,34 @@ public class EditFeatureGenerator {
 			int questionPO = questionPOMapping.get(wordOrderIdx);
 			features.add(new Feature("edit", "align"));
 			features.add(new Feature("edit(align)_0Pos", t.getPos().getPosValue()));
-			String passageDep = "";
+
+			String passageDep = "", passageNE = "";
 			for (Feature f : featuresSoFar) {
 				if (f.getName().equals("Dep")) {
 					features.add(new Feature("edit(align)_0Dep", f.getValue()));
 					passageDep = (String) f.getValue();
 				} else if (f.getName().equals("NE")) {
 					features.add(new Feature("edit(align)_0NE", f.getValue()));
+					// XXX: What if we have multiple NE? that *can* happen!
+					passageNE = (String) f.getValue();
 				}
 			}
+
+			String questionNE = "";
+			int questionWO = editDist.id2idxInWordOrder2(questionPO);
+			// XXX XXX XXX
+			Token questionToken = (new ArrayList<Token>(JCasUtil.select(questionView, Token.class))).get(questionWO);
+			for (NamedEntity ne : JCasUtil.selectCovering(NamedEntity.class, questionToken)) {
+				// XXX: Handle multiple NEs
+				questionNE = ne.getValue();
+			}
+
 			features.add(new Feature("edit(align)_1Pos", editDist.getPos2()[questionPO]));
 			features.add(new Feature("edit(align)_1Dep", editDist.getRel2()[questionPO]));
+			features.add(new Feature("edit(align)_1NE", questionNE));
 			features.add(new Feature("edit(align)_Pos", t.getPos().getPosValue() + "_" + editDist.getPos2()[questionPO]));
 			features.add(new Feature("edit(align)_Dep", passageDep + "_" + editDist.getRel2()[questionPO]));
-			// TODO: NE renames
+			features.add(new Feature("edit(align)_NE", passageNE + "_" + questionNE));
 		}
 
 		/* (N.B. it is also possible we don't generate any edit feature;
@@ -149,7 +166,7 @@ public class EditFeatureGenerator {
 				features.add(new Feature("nearest_aligned", Integer.toString(Math.abs(nearestAlignedWOIdx - wordOrderIdx))));
 				features.add(new Feature("nearest_aligned_Pos", editDist.getPos1()[alignedPOIdx]));
 				features.add(new Feature("nearest_aligned_Dep", editDist.getRel1()[alignedPOIdx]));
-				// TODO NE
+				// TODO NE (this is surprisingly tricky; we should just record NEs in the LblTree)
 			}
 		}
 
