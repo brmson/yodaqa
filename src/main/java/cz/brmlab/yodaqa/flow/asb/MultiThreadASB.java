@@ -588,7 +588,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     }
 
     /** Enqueue CAS-in-flow for processing by the nextAeKey engine. */
-    protected Future<CasIterator> enqueueCasInFlow(CasInFlow cif, String nextAeKey) throws AnalysisEngineProcessException {
+    protected Future<CasIterator> enqueueCasInFlow(CasInFlow cif, String nextAeKey, ResultSpecification rs)
+        throws AnalysisEngineProcessException {
       final CAS inputCas = cif.cas;
       final AnalysisEngine nextAe = mComponentAnalysisEngineMap.get(nextAeKey);
       if (nextAe == null) {
@@ -596,6 +597,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
                 AnalysisEngineProcessException.UNKNOWN_ID_IN_SEQUENCE,
                 new Object[] { nextAeKey });
       }
+
+      if (rs != null)
+        nextAe.setResultSpecification(rs);
 
       Future<CasIterator> f = parallelExecutor.submit(new Callable<CasIterator>() {
         public CasIterator call() throws Exception {
@@ -667,56 +671,23 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
     /** Perform a simple flow step with the Cas. */
     protected CasInFlow processSimpleStep(CasInFlow cif, SimpleStep nextStep) throws Exception {
+      ResultSpecification rs = null;
+      //check if we have to set result spec, to support capability language flow
+      if (nextStep instanceof SimpleStepWithResultSpec) {
+        rs = ((SimpleStepWithResultSpec)nextStep).getResultSpecification();
+      }
+
       String nextAeKey = ((SimpleStep) nextStep).getAnalysisEngineKey();
-      AnalysisEngine nextAe = mComponentAnalysisEngineMap.get(nextAeKey);
-      if (nextAe != null) {
-        //check if we have to set result spec, to support capability language flow
-        if (nextStep instanceof SimpleStepWithResultSpec) {
-          ResultSpecification rs = ((SimpleStepWithResultSpec)nextStep).getResultSpecification();
-          if (rs != null) {
-            nextAe.setResultSpecification(rs);
-          }
-        }
-        // invoke next AE in flow
-        CasIterator casIter = null;
-        CAS outputCas = null; //used if the AE we call outputs a new CAS
-        try {
-          casIter = nextAe.processAndOutputNewCASes(cif.cas);
-          if (casIter.hasNext()) {
-            outputCas = casIter.next();
-          }
-        }
-        catch(Exception e) {
-          //ask the FlowController if we should continue
-          //TODO: should this be configurable?
-          if (!cif.flow.continueOnFailure(nextAeKey, e)) {
-            throw e;
-          }
-          else {
-            UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
-                    LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
-          }
-        }
-        if (outputCas != null) // new CASes are output
-        {
-          // push the CasIterator, original CAS, and Flow onto a stack so we
-          // can get the other output CASes and the original CAS later
-          casIteratorStack.push(new StackFrame(casIter, cif.cas, cif.flow, nextAeKey));
-          // compute Flow for the output CAS
-          FlowContainer flow = cif.flow.newCasProduced(outputCas, nextAeKey);
-          // now route the output CAS through the flow
-          CAS cas = outputCas;
-          cif = new CasInFlow(cas, flow);
-          activeCASes.add(cas);
-        } else {
-          // no new CASes are output; this cas is done being processed
-          // by that AnalysisEngine so clear the componentInfo
-          cif.cas.setCurrentComponentInfo(null);
-        }
+      Future<CasIterator> future = enqueueCasInFlow(cif, nextAeKey, rs);
+
+      StackFrame stackFrame = collectCasInFlow(cif, future, nextAeKey);
+      if (stackFrame != null) {
+        casIteratorStack.push(stackFrame);
+        cif = switchToNewCasInFlow(stackFrame);
       } else {
-        throw new AnalysisEngineProcessException(
-                AnalysisEngineProcessException.UNKNOWN_ID_IN_SEQUENCE,
-                new Object[] { nextAeKey });
+        // no new CASes are output; this cas is done being processed
+        // by that AnalysisEngine so clear the componentInfo
+        cif.cas.setCurrentComponentInfo(null);
       }
       return cif;
     }
@@ -728,7 +699,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       //execute them
       List<Future<CasIterator>> futures = new ArrayList<>(destinations.size());
       for (String nextAeKey : destinations) {
-        futures.add(enqueueCasInFlow(cif, nextAeKey));
+        futures.add(enqueueCasInFlow(cif, nextAeKey, null));
       }
       //collect the output cases and finish the step
       int i = 0;
