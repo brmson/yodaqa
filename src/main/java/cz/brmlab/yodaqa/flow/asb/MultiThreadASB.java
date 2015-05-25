@@ -693,7 +693,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     }
 
     /** Perform a simple flow step with the Cas. */
-    protected CasInFlow processSimpleStep(CasInFlow cif, SimpleStep nextStep) throws Exception {
+    protected StackFrame processSimpleStep(CasInFlow cif, SimpleStep nextStep) throws Exception {
       ResultSpecification rs = null;
       //check if we have to set result spec, to support capability language flow
       if (nextStep instanceof SimpleStepWithResultSpec) {
@@ -703,20 +703,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       String nextAeKey = ((SimpleStep) nextStep).getAnalysisEngineKey();
       Future<CasIterator> future = enqueueCasInFlow(cif, nextAeKey, rs);
 
-      StackFrame stackFrame = collectCasInFlow(future);
-      if (stackFrame.casIterator != null) {
-        casIteratorStack.push(stackFrame);
-        cif = switchToNewCasInFlow(stackFrame);
-      } else {
-        // no new CASes are output; this cas is done being processed
-        // by that AnalysisEngine so clear the componentInfo
-        cif.cas.setCurrentComponentInfo(null);
-      }
-      return cif;
+      return collectCasInFlow(future);
     }
 
     /** Perform a parallel flow step with the Cas. */
-    protected CasInFlow processParallelStep(CasInFlow cif, ParallelStep nextStep) throws Exception {
+    protected StackFrame processParallelStep(CasInFlow cif, ParallelStep nextStep) throws Exception {
       //create modifiable list of destinations 
       List<String> destinations = new ArrayList<String>((nextStep).getAnalysisEngineKeys());
       //execute them
@@ -744,14 +735,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       }
       if (newCasesProduced) {
         // now pick one of the output CAS and continue to route that one; we'll come back to the original cas sometime later
-        StackFrame frame = casIteratorStack.peek();
-        cif = switchToNewCasInFlow(frame);
+        return casIteratorStack.peek();
       } else {
-        // no new CASes are output; this cas is done being processed
-        // by that AnalysisEngine so clear the componentInfo
-        cif.cas.setCurrentComponentInfo(null);
+        return null;
       }
-      return cif;
     }
 
     /**
@@ -790,18 +777,31 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
           // repeat until we reach a FinalStep
           while (!(nextStep instanceof FinalStep)) {
-            //Simple Step
+            StackFrame frame;
+
             if (nextStep instanceof SimpleStep) {
-              cif = processSimpleStep(cif, (SimpleStep) nextStep);
-            } 
-            //ParallelStep (TODO: refactor out common parts with SimpleStep?)
-            else if (nextStep instanceof ParallelStep) {
-              cif = processParallelStep(cif, (ParallelStep) nextStep);
+              frame = processSimpleStep(cif, (SimpleStep) nextStep);
+              if (frame.casIterator != null)
+                casIteratorStack.push(frame);
+
+            } else if (nextStep instanceof ParallelStep) {
+              frame = processParallelStep(cif, (ParallelStep) nextStep);
+
             } else {
               throw new AnalysisEngineProcessException(
                       AnalysisEngineProcessException.UNSUPPORTED_STEP_TYPE, new Object[] { nextStep
                               .getClass() });
             }
+
+            if (frame != null && frame.casIterator != null) {
+              // priority to the newly spawned cas
+              cif = switchToNewCasInFlow(frame);
+            } else {
+              // no new CASes are output; this cas is done being processed
+              // by that AnalysisEngine so clear the componentInfo
+              cif.cas.setCurrentComponentInfo(null);
+            }
+
             nextStep = cif.flow.next();
           }
           // FinalStep was returned from FlowController.
