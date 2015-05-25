@@ -34,6 +34,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.UIMA_IllegalStateException;
@@ -45,6 +46,7 @@ import org.apache.uima.analysis_engine.ResultSpecification;
 import org.apache.uima.analysis_engine.asb.ASB;
 import org.apache.uima.analysis_engine.asb.impl.FlowContainer;
 import org.apache.uima.analysis_engine.asb.impl.FlowControllerContainer;
+import org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl;
 import org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase;
 import org.apache.uima.analysis_engine.impl.AnalysisEngineManagementImpl;
 import org.apache.uima.analysis_engine.impl.EmptyCasIterator;
@@ -601,14 +603,26 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       if (rs != null)
         nextAe.setResultSpecification(rs);
 
-      Future<CasIterator> f = parallelExecutor.submit(new Callable<CasIterator>() {
+      Callable<CasIterator> job = new Callable<CasIterator>() {
         public CasIterator call() throws Exception {
           // invoke next AE in flow
           /* N.B. exceptions thrown here are re-thrown in main thread
            * at .get() time */
-          return nextAe.processAndOutputNewCASes(inputCas);
+          CasIterator casIter = nextAe.processAndOutputNewCASes(inputCas);
+          return casIter;
         }
-      });
+      };
+      Future<CasIterator> f;
+      if (nextAe instanceof AggregateAnalysisEngine_impl) {
+        /* Do not waste threads on aggregate AEs; instead, just run it
+         * "inline" in the main thread, using threads for their contents
+         * instead. */
+        f = new FutureTask<CasIterator>(job);
+        ((FutureTask<CasIterator>) f).run();
+      } else {
+        /* Dispatch this job to the thread pool. */
+        f = parallelExecutorCS.submit(job);
+      }
       return f;
     }
 
