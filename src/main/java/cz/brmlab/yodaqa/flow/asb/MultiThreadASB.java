@@ -178,6 +178,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   protected static ExecutorService parallelExecutor = Executors.newFixedThreadPool(3);
 
   /**
+   * Stack frames associated with currently enqueued future jobs.
+   * Used when retrieving the job result to continue the CAS flow.
+   */
+  protected Map<Future<CasIterator>, StackFrame> futureFrames = new HashMap<>();
+
+  /**
    * Initializes this ASB.
    * 
    * @param aSpecifier
@@ -623,21 +629,27 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         /* Dispatch this job to the thread pool. */
         f = parallelExecutorCS.submit(job);
       }
+
+      StackFrame frame = new StackFrame(null, cif.cas, cif.flow, nextAeKey);
+      futureFrames.put(f, frame);
+
       return f;
     }
 
     /** Collect CAS-in-flow from processing done by the nextAeKey engine.
      * @return a StackFrame with a casIter producing new CASes if the engine
      * produced any. */
-    protected StackFrame collectCasInFlow(CasInFlow cif, Future<CasIterator> f, String nextAeKey) throws Exception {
-      CasIterator casIter = null;
+    protected StackFrame collectCasInFlow(Future<CasIterator> f) throws Exception {
+      StackFrame frame = futureFrames.remove(f);
+      String nextAeKey = frame.casMultiplierAeKey; // TODO: rename (not necessarily casMultiplier)
+
       try {
-        casIter = f.get();
+        frame.casIterator = f.get();
       }
       catch(Exception e) {
         //ask the FlowController if we should continue
         //TODO: should this be configurable?
-        if (!cif.flow.continueOnFailure(nextAeKey, e)) {
+        if (!frame.originalCasFlow.continueOnFailure(nextAeKey, e)) {
           throw e;
         }
         else {
@@ -645,12 +657,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
                   LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
         }
       }
-      if (casIter != null && casIter.hasNext()) // new CASes are output
-      {
-        return new StackFrame(casIter, cif.cas, cif.flow, nextAeKey);
-      } else {
-        return null;
-      }
+      if (!frame.casIterator.hasNext())
+        frame.casIterator = null;
+      return frame;
     }
 
     /** Switch the CAS-in-flow currently being processed to the given
@@ -694,8 +703,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       String nextAeKey = ((SimpleStep) nextStep).getAnalysisEngineKey();
       Future<CasIterator> future = enqueueCasInFlow(cif, nextAeKey, rs);
 
-      StackFrame stackFrame = collectCasInFlow(cif, future, nextAeKey);
-      if (stackFrame != null) {
+      StackFrame stackFrame = collectCasInFlow(future);
+      if (stackFrame.casIterator != null) {
         casIteratorStack.push(stackFrame);
         cif = switchToNewCasInFlow(stackFrame);
       } else {
@@ -716,12 +725,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         futures.add(enqueueCasInFlow(cif, nextAeKey, null));
       }
       //collect the output cases and finish the step
-      int i = 0;
       boolean newCasesProduced = false;
       for (Future<CasIterator> f : futures) {
-        String nextAeKey = destinations.get(i);
-        StackFrame stackFrame = collectCasInFlow(cif, f, nextAeKey);
-        if (stackFrame != null) {
+        StackFrame stackFrame = collectCasInFlow(f);
+        if (stackFrame.casIterator != null) {
           if (newCasesProduced) {
             /* Another engine in our step already produced a casIterator
              * as well.  By unsetting originalCas, we make sure to unwind
@@ -734,7 +741,6 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           casIteratorStack.push(stackFrame);
           newCasesProduced = true;
         }
-        i++;
       }
       if (newCasesProduced) {
         // now pick one of the output CAS and continue to route that one; we'll come back to the original cas sometime later
@@ -837,9 +843,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   }
 
   /**
-   * A frame on the processing stack for this Aggregate AE. Each time processing encounters a
-   * CasMultiplier, a new StackFrame is created to store the state associated with the processing of
-   * output CASes produced by that CasMultiplier.
+   * A frame on the processing stack for this Aggregate AE. Each time processing
+   * queues a job in the thread pool, a new StackFrame is created to store the
+   * state associated with the processing of that CAS, to resume when the job
+   * is finished.
    */
   static class StackFrame {
     StackFrame(CasIterator casIterator, CAS originalCas, FlowContainer originalCasFlow,
@@ -855,7 +862,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       this.casMultiplierAeKey = lastAeKey;
       this.incompleteParallelStep = incompleteParallelStep;
     }
-    /** CasIterator that returns output CASes produced by the CasMultiplier. */
+    /** CasIterator that returns output CASes produced by a CasMultiplier.
+     * null if no new CASes are produced. */
     CasIterator casIterator;
 
     /** The CAS that was passed as input to the CasMultiplier. */
@@ -867,12 +875,14 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
      */
     FlowContainer originalCasFlow;
 
-    /** The key that identifies the CasMultiplier whose output we are processing */
+    /** The key that identifies the CasMultiplier whose output we are processing.
+     * TODO rename, not necessarily casMultiplier. */
     String casMultiplierAeKey;
     
     /** If the CAS Multiplier was called while processing a ParallelStep, this specifies
      * the remaining parts of the parallel step, so we can pick up processing from there
      * once we've processed all the output CASes.
+     * TODO remove, useless now
      */
     ParallelStep incompleteParallelStep;
   }
