@@ -20,6 +20,7 @@ import org.cleartk.ml.feature.extractor.CleartkExtractor.Focus;
 import org.cleartk.ml.feature.extractor.CleartkExtractor.Following;
 import org.cleartk.ml.feature.extractor.CleartkExtractor.Ngram;
 import org.cleartk.ml.feature.extractor.CleartkExtractor.Preceding;
+import org.cleartk.ml.feature.extractor.CleartkExtractorException;
 import org.cleartk.ml.feature.extractor.CombinedExtractor1;
 import org.cleartk.ml.feature.extractor.FeatureExtractor1;
 import org.cleartk.ml.feature.extractor.TypePathExtractor;
@@ -82,13 +83,14 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 	protected FeatureExtractor1<Token> tokenFeatureExtractor;
 	protected List<CleartkExtractor<Token, Token>> ngramFeatureExtractors;
 	protected CRFBioChunking<Token, AnswerBioMention> chunking;
+	protected DependencyTypeExtractor<Token> depExtractor;
 
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
 
 		FeatureExtractor1<Token> posExtractor = new TypePathExtractor<Token>(Token.class, "pos/PosValue");
 		FeatureExtractor1<Token> NETypeExtractor = new CoveringNETypeExtractor<Token>();
-		FeatureExtractor1<Token> depExtractor = new DependencyTypeExtractor<Token>();
+		depExtractor = new DependencyTypeExtractor<Token>();
 		this.tokenFeatureExtractor = new CombinedExtractor1<Token>(
 				// TODO: NumericTypeFeatureFunction?
 				posExtractor,
@@ -98,8 +100,8 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		this.ngramFeatureExtractors = new ArrayList<>();
 		addNgramFeatureExtractor(posExtractor);
 		addNgramFeatureExtractor(NETypeExtractor);
-		/* TODO: The n-grams here should not be on token
-		 * sequence but parse tree. Maybe. */
+		/* N.B. the n-grams for depExtractor are done with
+		 * DependencyTreeNgramExtractor. */
 		addNgramFeatureExtractor(depExtractor);
 
 		/* Tokens will be combined to form AnswerBioMentions,
@@ -138,6 +140,33 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 				new Ngram(new Focus(), new Following(2))));
 		this.ngramFeatureExtractors.add(new CleartkExtractor<Token, Token>(Token.class, extractor,
 				new Ngram(new Preceding(2), new Focus())));
+	}
+
+	protected List<Feature> extractDepNgrams(JCas jcas, Token t) throws CleartkExtractorException {
+		List<Feature> features = new ArrayList<>();
+
+		/* Context width: 3 */
+		/* XXX: Downwards offsets may produce a large number
+		 * of features.  Jacana seems to limit the downwards
+		 * offset to 1, TODO try that too. */
+
+		/* Unigrams (shifted): */
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {1}));
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {2}));
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-1}));
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2}));
+
+		/* Bigrams: */
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {0, 1}));
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {1, 2}));
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-1, 0}));
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2, -1}));
+
+		/* Trigrams: */
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {0, 1, 2}));
+		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2, -1, 0}));
+
+		return features;
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -210,6 +239,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			tokenFeatures.addAll(this.tokenFeatureExtractor.extract(passagesView, token));
 			for (CleartkExtractor<Token, Token> ngramExtractor : ngramFeatureExtractors)
 				tokenFeatures.addAll(ngramExtractor.extractWithin(passagesView, token, p));
+			tokenFeatures.addAll(extractDepNgrams(passagesView, token));
 			// tokenFeatures.add(new Feature("lemma", token.getLemma().getValue())); // for debugging
 
 			// apply the edit feature generator

@@ -7,6 +7,7 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.ml.Feature;
+import org.cleartk.ml.feature.extractor.CleartkExtractorException;
 import org.cleartk.ml.feature.extractor.NamedFeatureExtractor1;
 
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
@@ -28,5 +29,14 @@ public class DependencyTypeExtractor<T extends Annotation> implements NamedFeatu
 			features.add(new Feature(getFeatureName(), dep.getDependencyType()));
 		}
 		return features;
+	}
+
+	/** Extract a *tree-based* dependency type Ngram feature based
+	 * at focusAnnotation. We cannot use the basic n-gram infrastructure
+	 * of cleartk as in case of children, we want to return multiple
+	 * n-gram features for each possible path in the tree. */
+	public List<Feature> extractNgram(JCas jCas, Annotation focusAnnotation, int[] offsets)
+			throws CleartkExtractorException {
+		return DependencyTreeNgramExtractor.extractNgram(jCas, focusAnnotation, offsets, this);
 	}
 }
