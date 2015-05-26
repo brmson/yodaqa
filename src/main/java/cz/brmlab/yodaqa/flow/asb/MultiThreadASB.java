@@ -547,9 +547,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       activeCASes.clear();       
     }
 
-    /** Pick the Cas to process (send through the flow) next.
-     * Possibly sets its nextStep (XXX pass-by-reference hack) too. */
-    protected CasInFlow nextCasToProcess(Step[] nextStepRef) throws Exception {
+    /** Pick the Cas to process (send through the flow) next. */
+    protected CasInFlow nextCasToProcess() throws Exception {
       CasInFlow cif = null;
       // get an initial CAS from the CasIteratorStack
       while (cif == null) {
@@ -573,7 +572,6 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
             continue;
           }
           cif = frame.originalCIF;
-          nextStepRef[0] = frame.incompleteParallelStep; //in case we need to resume a parallel step
           cif.cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
         }
       }
@@ -723,18 +721,13 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         CasInFlow cif = null;
         try {
           // get the cas+flow to run
-          Step[] nextStepRef = { null };
-          cif = nextCasToProcess(nextStepRef);
-          Step nextStep = nextStepRef[0];
+          cif = nextCasToProcess();
 
           if (cif == null)
             return null;  // stack empty!
 
-          // if we're not in the middle of parallel step already, ask the FlowController 
-          // for the next step
-          if (nextStep == null) {
-            nextStep = cif.flow.next();
-          }
+          // ask the FlowController for the next step
+          Step nextStep = cif.flow.next();
 
           // repeat until we reach a FinalStep
           while (!(nextStep instanceof FinalStep)) {
@@ -846,15 +839,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   static class StackFrame {
     StackFrame(CasIterator casIterator, CasInFlow originalCIF,
             String lastAeKey) {
-      this(casIterator, originalCIF, lastAeKey, null);
-    }
-
-    StackFrame(CasIterator casIterator, CasInFlow originalCIF,
-            String lastAeKey, ParallelStep incompleteParallelStep) {
       this.casIterator = casIterator;
       this.originalCIF = originalCIF;
       this.casMultiplierAeKey = lastAeKey;
-      this.incompleteParallelStep = incompleteParallelStep;
     }
     /** CasIterator that returns output CASes produced by a CasMultiplier.
      * null if no new CASes are produced. */
@@ -866,13 +853,6 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     /** The key that identifies the CasMultiplier whose output we are processing.
      * TODO rename, not necessarily casMultiplier. */
     String casMultiplierAeKey;
-    
-    /** If the CAS Multiplier was called while processing a ParallelStep, this specifies
-     * the remaining parts of the parallel step, so we can pick up processing from there
-     * once we've processed all the output CASes.
-     * TODO remove, useless now
-     */
-    ParallelStep incompleteParallelStep;
   }
 
   /**
