@@ -666,7 +666,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         //We abandon trying to get further output CASes from that CAS Multiplier,
         //and ask the Flow Controller if we should continue routing the CAS that was input to the CasMultiplier.
         if (!frame.originalCIF.flow.continueOnFailure(frame.casMultiplierAeKey, e)) {
-          throw e;              
+          //notify Flow that processing has aborted on this CAS
+          if (frame.originalCIF.flow != null)
+            frame.originalCIF.flow.aborted();
+          throw e;
         } else {
           UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
                   LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
@@ -795,16 +798,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     protected CAS processUntilNextOutputCas() throws AnalysisEngineProcessException {
       try {
         while (true) {
-          CasInFlow cif = null;
           // get the cas+flow to run
-          try {
-            cif = nextCasToProcess();
-          } catch (Exception e) {
-            //notify Flow that processing has aborted on this CAS
-            if (cif.flow != null)
-              cif.flow.aborted();
-            throw e;
-          }
+          CasInFlow cif = nextCasToProcess();
 
           if (cif == null)
             return null;  // stack empty!
