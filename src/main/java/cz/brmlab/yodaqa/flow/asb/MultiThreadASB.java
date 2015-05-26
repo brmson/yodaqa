@@ -547,35 +547,39 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       activeCASes.clear();       
     }
 
-    /** Pick the Cas to process (send through the flow) next. */
-    protected CasInFlow nextCasToProcess() throws Exception {
-      CasInFlow cif = null;
-      // get an initial CAS from the CasIteratorStack
-      while (cif == null) {
-        if (casIteratorStack.isEmpty()) {
-          return null; // there are no more CAS Iterators to obtain CASes from
-        }
+    /** Retrieve a new CAS-in-flow to process from the CasMultiplier stack. */
+    protected CasInFlow casInFlowFromStack() throws Exception {
+      if (casIteratorStack.isEmpty())
+        return null;
 
-        /* Get a new child CAS from the last suspended CAS multiplier. */
-        StackFrame frame = casIteratorStack.peek();
-        cif = casInFlowFromFrame(frame);
+      /* Get a new child CAS from the last suspended CAS multiplier. */
+      StackFrame frame = casIteratorStack.peek();
+      CasInFlow cif = casInFlowFromFrame(frame);
+      if (cif != null)
+        return cif;
 
-        if (cif == null) {
-          // we've finished routing all the Output CASes from a StackFrame. Now
-          // get the original CAS-in-flow (the one that was input to the CasMultiplier) from
-          // that stack frame and continue with its flow
-          casIteratorStack.pop(); // remove this state from the stack now
-          frame.originalCIF.depCounter -= 1;
-          if (frame.originalCIF.depCounter > 0) {
-            // continue with the next stack frame instead,
-            // we did not process all the children frames yet
-            continue;
-          }
-          cif = frame.originalCIF;
-          cif.cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
-        }
+      /* We've finished routing all the Output CASes from the StackFrame. */
+      casIteratorStack.pop();
+
+      /* Now get the original CAS-in-flow (the one that was input to the
+       * CasMultiplier) from that stack frame and continue with its flow
+       * if admissible. */
+      frame.originalCIF.depCounter -= 1;
+      if (frame.originalCIF.depCounter > 0) {
+        /* Do not restore the original CAS-in-flow, there is another
+         * child frame referring it still hanging around. */
+        return casInFlowFromStack();
       }
+
+      cif = frame.originalCIF;
+      cif.cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
       return cif;
+    }
+
+    /** Pick the Cas to process (send through the flow) next.
+     * This is either a finished async job, or a stacked CAS-in-flow. */
+    protected CasInFlow nextCasToProcess() throws Exception {
+      return casInFlowFromStack();
     }
 
     /** Enqueue CAS-in-flow for processing by the nextAeKey engine. */
