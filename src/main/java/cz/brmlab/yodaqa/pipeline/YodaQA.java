@@ -25,6 +25,7 @@ import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 /**
  * The main YodaQA pipeline.
@@ -59,7 +60,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		System.setProperty("dkpro.core.resourceprovider.sharable." + LanguageToolSegmenter.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + LanguageToolLemmatizer.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordParser.class.getName(), "true");
-		System.err.println("dkpro.core.resourceprovider.sharable." + StanfordParser.class.getName());
+		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordPosTagger.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + OpenNlpNameFinder.class.getName(), "true");
 	}
 
