@@ -20,6 +20,8 @@
 package cz.brmlab.yodaqa.flow.asb;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -680,7 +682,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     }
 
     /** Perform a simple flow step with the Cas. */
-    protected StackFrame processSimpleStep(CasInFlow cif, SimpleStep nextStep) throws Exception {
+    protected List<Future<CasIterator>> processSimpleStep(CasInFlow cif, SimpleStep nextStep) throws Exception {
       ResultSpecification rs = null;
       //check if we have to set result spec, to support capability language flow
       if (nextStep instanceof SimpleStepWithResultSpec) {
@@ -688,13 +690,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       }
 
       String nextAeKey = ((SimpleStep) nextStep).getAnalysisEngineKey();
-      Future<CasIterator> future = enqueueCasInFlow(cif, nextAeKey, rs);
-
-      return collectCasInFlow(future);
+      return Arrays.asList(enqueueCasInFlow(cif, nextAeKey, rs));
     }
 
     /** Perform a parallel flow step with the Cas. */
-    protected StackFrame processParallelStep(CasInFlow cif, ParallelStep nextStep) throws Exception {
+    protected List<Future<CasIterator>> processParallelStep(CasInFlow cif, ParallelStep nextStep) throws Exception {
       //create modifiable list of destinations 
       List<String> destinations = new ArrayList<String>((nextStep).getAnalysisEngineKeys());
       //execute them
@@ -702,22 +702,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       for (String nextAeKey : destinations) {
         futures.add(enqueueCasInFlow(cif, nextAeKey, null));
       }
-      //collect the output cases and finish the step
-      boolean newCasesProduced = false;
-      for (Future<CasIterator> f : futures) {
-        StackFrame stackFrame = collectCasInFlow(f);
-        if (stackFrame.casIterator != null) {
-          casIteratorStack.push(stackFrame);
-          cif.depCounter += 1;
-          newCasesProduced = true;
-        }
-      }
-      if (newCasesProduced) {
-        // now pick one of the output CAS and continue to route that one; we'll come back to the original cas sometime later
-        return casIteratorStack.peek();
-      } else {
-        return null;
-      }
+      return futures;
     }
 
     /**
@@ -753,17 +738,13 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
           // repeat until we reach a FinalStep
           while (!(nextStep instanceof FinalStep)) {
-            StackFrame frame;
+            Collection<Future<CasIterator>> futures;
 
             if (nextStep instanceof SimpleStep) {
-              frame = processSimpleStep(cif, (SimpleStep) nextStep);
-              if (frame.casIterator != null) {
-                cif.depCounter += 1;
-                casIteratorStack.push(frame);
-              }
+              futures = processSimpleStep(cif, (SimpleStep) nextStep);
 
             } else if (nextStep instanceof ParallelStep) {
-              frame = processParallelStep(cif, (ParallelStep) nextStep);
+              futures = processParallelStep(cif, (ParallelStep) nextStep);
 
             } else {
               throw new AnalysisEngineProcessException(
@@ -771,9 +752,21 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
                               .getClass() });
             }
 
-            if (frame != null && frame.casIterator != null) {
+            //collect the output cases and finish the step
+            boolean newCasesProduced = false;
+            for (Future<CasIterator> f : futures) {
+              StackFrame stackFrame = collectCasInFlow(f);
+              if (stackFrame.casIterator != null) {
+                casIteratorStack.push(stackFrame);
+                cif.depCounter += 1;
+                newCasesProduced = true;
+              }
+            }
+
+            if (newCasesProduced) {
               // priority to the newly spawned cas
-              cif = casInFlowFromFrame(frame);
+              // we'll come back to the original cas sometime later
+              cif = casInFlowFromFrame(casIteratorStack.peek());
             } else {
               // no new CASes are output; this cas is done being processed
               // by that AnalysisEngine so clear the componentInfo
