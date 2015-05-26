@@ -554,29 +554,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         if (casIteratorStack.isEmpty()) {
           return null; // there are no more CAS Iterators to obtain CASes from
         }
+
+        /* Get a new child CAS from the last suspended CAS multiplier. */
         StackFrame frame = casIteratorStack.peek();
-        try {
-          if (frame.casIterator.hasNext()) {
-            CAS cas = frame.casIterator.next();
-            // this is a new output CAS so we need to compute a flow for it
-            FlowContainer flow = frame.originalCIF.flow.newCasProduced(cas, frame.casMultiplierAeKey);
-            cif = new CasInFlow(cas, flow);
-          }
-        } 
-        catch(Exception e) {
-          //A CAS Multiplier (or possibly an aggregate) threw an exception trying to output the next CAS.
-          //We abandon trying to get further output CASes from that CAS Multiplier,
-          //and ask the Flow Controller if we should continue routing the CAS that was input to the CasMultiplier.
-          if (!frame.originalCIF.flow.continueOnFailure(frame.casMultiplierAeKey, e)) {
-            throw e;              
-          } else {
-            UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
-                    LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
-           
-          }
-          //if the Flow says to continue, we fall through to the if (cif == null) block below, get
-          //the original CAS-in-flow from the stack and continue with its flow.
-        }
+        cif = casInFlowFromFrame(frame);
+
         if (cif == null) {
           // we've finished routing all the Output CASes from a StackFrame. Now
           // get the original CAS-in-flow (the one that was input to the CasMultiplier) from
@@ -666,19 +648,20 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       return frame;
     }
 
-    /** Switch the CAS-in-flow currently being processed to the given
-     * stack frame.  This happens when we have produced a new CAS;
+    /** Extract a new child CAS-in-flow from the given stack frame.
+     * This happens when we have produced a new CAS;
      * we have stored the current CAS in the stack frame and will
      * return to it as soon as the flow of the new CAS finishes. */
-    protected CasInFlow switchToNewCasInFlow(StackFrame frame) throws Exception {
+    protected CasInFlow casInFlowFromFrame(StackFrame frame) throws Exception {
       CasInFlow cif = null;
       try {
-          CAS cas = frame.casIterator.next();
-          // this is a new output CAS so we need to compute a flow for it
-          FlowContainer flow = frame.originalCIF.flow.newCasProduced(cas, frame.casMultiplierAeKey);
-          cif = new CasInFlow(cas, flow);
-      } 
-      catch(Exception e) {
+        if (!frame.casIterator.hasNext())
+          return null;
+        CAS cas = frame.casIterator.next();
+        // this is a new output CAS so we need to compute a flow for it
+        FlowContainer flow = frame.originalCIF.flow.newCasProduced(cas, frame.casMultiplierAeKey);
+        cif = new CasInFlow(cas, flow);
+      } catch(Exception e) {
         //A CAS Multiplier (or possibly an aggregate) threw an exception trying to output the next CAS.
         //We abandon trying to get further output CASes from that CAS Multiplier,
         //and ask the Flow Controller if we should continue routing the CAS that was input to the CasMultiplier.
@@ -762,9 +745,6 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           if (cif == null)
             return null;  // stack empty!
 
-          // record active CASes in case we encounter an exception and need to release them
-          activeCASes.add(cif.cas);
-
           // if we're not in the middle of parallel step already, ask the FlowController 
           // for the next step
           if (nextStep == null) {
@@ -793,7 +773,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
             if (frame != null && frame.casIterator != null) {
               // priority to the newly spawned cas
-              cif = switchToNewCasInFlow(frame);
+              cif = casInFlowFromFrame(frame);
             } else {
               // no new CASes are output; this cas is done being processed
               // by that AnalysisEngine so clear the componentInfo
