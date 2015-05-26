@@ -703,6 +703,82 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       return futures;
     }
 
+    /** Process a given CAS-in-flow, proceeding with steps in the flow
+     * until we finish it.  N.B. if a CAS multiplier is part of the flow,
+     * we will branch out into the child flow and stack away the parent
+     * flow.
+     * @return CAS finishing the flow; original CAS except when we
+     *         switched to a child flow; null if this CAS was dropped */
+    protected CAS processCasInFlow(CasInFlow cif) throws Exception {
+      try {
+        // ask the FlowController for the next step
+        Step nextStep = cif.flow.next();
+
+        // repeat until we reach a FinalStep
+        while (!(nextStep instanceof FinalStep)) {
+          Collection<Future<CasIterator>> futures;
+
+          if (nextStep instanceof SimpleStep) {
+            futures = processSimpleStep(cif, (SimpleStep) nextStep);
+
+          } else if (nextStep instanceof ParallelStep) {
+            futures = processParallelStep(cif, (ParallelStep) nextStep);
+
+          } else {
+            throw new AnalysisEngineProcessException(
+                    AnalysisEngineProcessException.UNSUPPORTED_STEP_TYPE, new Object[] { nextStep
+                            .getClass() });
+          }
+
+          //collect the output cases and finish the step
+          boolean newCasesProduced = false;
+          for (Future<CasIterator> f : futures) {
+            StackFrame stackFrame = collectCasInFlow(f);
+            if (stackFrame.casIterator != null) {
+              casIteratorStack.push(stackFrame);
+              cif.depCounter += 1;
+              newCasesProduced = true;
+            }
+          }
+
+          if (newCasesProduced) {
+            // priority to the newly spawned cas
+            // we'll come back to the original cas sometime later
+            cif = casInFlowFromFrame(casIteratorStack.peek());
+          } else {
+            // no new CASes are output; this cas is done being processed
+            // by that AnalysisEngine so clear the componentInfo
+            cif.cas.setCurrentComponentInfo(null);
+          }
+
+          nextStep = cif.flow.next();
+        }
+        // FinalStep was returned from FlowController.
+        // We're done with the CAS.
+        assert (nextStep instanceof FinalStep);
+        FinalStep finalStep = (FinalStep) nextStep;
+        activeCASes.remove(cif.cas);
+
+        if (finalStep.getForceCasToBeDropped()) {
+          // If this is the input CAS, it is an error if the FlowController
+          // tried to drop this CAS.
+          if (cif.cas == mInputCas) {
+            throw new AnalysisEngineProcessException(
+                    AnalysisEngineProcessException.ILLEGAL_DROP_CAS, new Object[0]);
+          }
+          cif.cas.release();
+          return null;
+        }
+
+        return cif.cas;
+      } catch (Exception e) {
+        //notify Flow that processing has aborted on this CAS
+        if (cif.flow != null)
+          cif.flow.aborted();
+        throw e;
+      }
+    }
+
     /**
      * This is the main execution control method for the aggregate AE. It is called by the
      * AggregateCasProcessorCasIterator.next() method. This runs the Aggregate, starting from its
@@ -721,80 +797,38 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         CasInFlow cif = null;
         try {
           // get the cas+flow to run
-          cif = nextCasToProcess();
+          try {
+            cif = nextCasToProcess();
+          } catch (Exception e) {
+            //notify Flow that processing has aborted on this CAS
+            if (cif.flow != null)
+              cif.flow.aborted();
+            throw e;
+          }
 
           if (cif == null)
             return null;  // stack empty!
 
-          // ask the FlowController for the next step
-          Step nextStep = cif.flow.next();
+          CAS outputCas = processCasInFlow(cif);
 
-          // repeat until we reach a FinalStep
-          while (!(nextStep instanceof FinalStep)) {
-            Collection<Future<CasIterator>> futures;
+          // If this CAS has been dropped (FinalStep.forceCasToBeDropped),
+          // just pick another one to route.
+          if (outputCas == null)
+            continue;
 
-            if (nextStep instanceof SimpleStep) {
-              futures = processSimpleStep(cif, (SimpleStep) nextStep);
-
-            } else if (nextStep instanceof ParallelStep) {
-              futures = processParallelStep(cif, (ParallelStep) nextStep);
-
-            } else {
-              throw new AnalysisEngineProcessException(
-                      AnalysisEngineProcessException.UNSUPPORTED_STEP_TYPE, new Object[] { nextStep
-                              .getClass() });
-            }
-
-            //collect the output cases and finish the step
-            boolean newCasesProduced = false;
-            for (Future<CasIterator> f : futures) {
-              StackFrame stackFrame = collectCasInFlow(f);
-              if (stackFrame.casIterator != null) {
-                casIteratorStack.push(stackFrame);
-                cif.depCounter += 1;
-                newCasesProduced = true;
-              }
-            }
-
-            if (newCasesProduced) {
-              // priority to the newly spawned cas
-              // we'll come back to the original cas sometime later
-              cif = casInFlowFromFrame(casIteratorStack.peek());
-            } else {
-              // no new CASes are output; this cas is done being processed
-              // by that AnalysisEngine so clear the componentInfo
-              cif.cas.setCurrentComponentInfo(null);
-            }
-
-            nextStep = cif.flow.next();
-          }
-          // FinalStep was returned from FlowController.
-          // We're done with the CAS.
-          assert (nextStep instanceof FinalStep);
-          FinalStep finalStep = (FinalStep) nextStep;
-          activeCASes.remove(cif.cas);
           // If this is the input CAS, just return null to indicate we're done
-          // processing it. It is an error if the FlowController tried to drop this CAS.
-          if (cif.cas == mInputCas) {
-            if (finalStep.getForceCasToBeDropped()) {
-              throw new AnalysisEngineProcessException(
-                      AnalysisEngineProcessException.ILLEGAL_DROP_CAS, new Object[0]);
-            }
+          // processing it.
+          if (outputCas == mInputCas)
             return null;
-          }
           // Otherwise, this is a new CAS produced within this Aggregate. We may or
           // may not return it, depending on the setting of the outputsNewCASes operational
-          // property in this AE's metadata, and on the value of FinalStep.forceCasToBeDropped
-          if (mOutputNewCASes && !finalStep.getForceCasToBeDropped()) {
-            return cif.cas;
+          // property in this AE's metadata
+          if (mOutputNewCASes) {
+            return outputCas;
           } else {
-            cif.cas.release();
+            outputCas.release();
           }
         } catch (Exception e) {
-          //notify Flow that processing has aborted on this CAS
-          if (cif.flow != null) {
-            cif.flow.aborted();
-          }
           release(); // release held CASes before throwing exception
           if (e instanceof AnalysisEngineProcessException) {
             throw (AnalysisEngineProcessException) e;
