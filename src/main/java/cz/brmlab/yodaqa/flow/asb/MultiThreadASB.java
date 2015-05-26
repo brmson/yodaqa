@@ -793,9 +793,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
      *           if a failure occurs during processing
      */
     protected CAS processUntilNextOutputCas() throws AnalysisEngineProcessException {
-      while (true) {
-        CasInFlow cif = null;
-        try {
+      try {
+        while (true) {
+          CasInFlow cif = null;
           // get the cas+flow to run
           try {
             cif = nextCasToProcess();
@@ -828,13 +828,13 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           } else {
             outputCas.release();
           }
-        } catch (Exception e) {
-          release(); // release held CASes before throwing exception
-          if (e instanceof AnalysisEngineProcessException) {
-            throw (AnalysisEngineProcessException) e;
-          } else {
-            throw new AnalysisEngineProcessException(e);
-          }
+        }
+      } catch (Exception e) {
+        release(); // release held CASes before throwing exception
+        if (e instanceof AnalysisEngineProcessException) {
+          throw (AnalysisEngineProcessException) e;
+        } else {
+          throw new AnalysisEngineProcessException(e);
         }
       }
     }
