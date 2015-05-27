@@ -181,6 +181,20 @@ for starters, we choose a naive strategy of simply picking the NP clauses
 that are not covered by clues.)  CandidateAnswer annotations (in the
 PickedPassages view!) represent these.
 
+As a more advanced strategy than the baselines above, we draw inspiration from
+one of the state-of-art papers in the area, "Answer Extraction as Sequence
+Tagging with Tree Edit Distance" (Yao and van Durme, 2013), except that we
+dissect it a bit, doing two in principle independent things:
+
+  * Aligning the parse tree of the passage with the parse tree of the
+    question.  (Though this is not terribly novel in principle.)  Focus
+    aligned sentence portions may be candidate answers.
+
+  * Tagging passage tokens as B-I-O of the answer (beginning, inside,
+    outside) based on a (CRF) sequence model that uses a variety of features,
+    including alignment features above, and generates candidate answers
+    based on the tags.
+
 ### Answer Generator
 
 This phase is a simple CAS multiplier that grabs a **SearchResultCAS**,

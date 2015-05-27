@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+
 /**
  * Generate Passages from Sentences that contain some Clue in Question
  * and copy them over to the Passages view.
@@ -74,8 +76,6 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 			Passage p2 = (Passage) copier.copyFs(passage);
 			p2.addToIndexes();
 
-			logger.debug(passage.getScore() + " | " + passage.getCoveredText());
-
 			/* Also recursively copy annotations - we need
 			 * to have Sentences in the PickedPassages view
 			 * to run a parser. */
@@ -85,6 +85,12 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 					a2.addToIndexes();
 				}
 			}
+
+			/* Count tokens, just for a debug print.
+			 * This is relevant because of StanfordParser
+			 * MAX_TOKENS limit. */
+			int n_tokens = JCasUtil.selectCovered(Token.class, passage).size();
+			logger.debug(passage.getScore() + " | " + passage.getCoveredText() + " | " + n_tokens);
 		}
 	}
 }

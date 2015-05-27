@@ -15,8 +15,9 @@ inspired by the DeepQA (IBM Watson) papers.  It is built on top of the Apache
 UIMA and developed as part of the Brmson platform.  For all the NLP logic
 (including the NLP type system), we lean heavily on the DKPro UIMA bindings;
 transitively, work like the StanfordParser and Princeton's Wordnet is crucial
-for us.  We also draw some inspiration from the OpenQA project and the Taming
-Text book.
+for us.  For machine learning, we use a mix of scikit-learn and crfsuite
+(wrapped by ClearTK, jcrfsuite).  We also draw some inspiration from the
+OpenQA project and the Taming Text book.
 
 The current version is a work-in-progress snapshot that already can answer
 some questions, even though it's embarrassingly often wrong; on the testing
