@@ -98,11 +98,11 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 				depExtractor);
 
 		this.ngramFeatureExtractors = new ArrayList<>();
-		addNgramFeatureExtractor(posExtractor);
-		addNgramFeatureExtractor(NETypeExtractor);
+		addNgramFeatureExtractor(posExtractor, 3);
+		addNgramFeatureExtractor(NETypeExtractor, 3);
 		/* N.B. the n-grams for depExtractor are done with
 		 * DependencyTreeNgramExtractor. */
-		//addNgramFeatureExtractor(depExtractor);
+		//addNgramFeatureExtractor(depExtractor, 2);
 
 		/* Tokens will be combined to form AnswerBioMentions,
 		 * with labels from the "mentionType" attribute; this
@@ -112,7 +112,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 				Token.class, AnswerBioMention.class);
 	}
 
-	protected void addNgramFeatureExtractor(FeatureExtractor1<Token> extractor) {
+	protected void addNgramFeatureExtractor(FeatureExtractor1<Token> extractor, int n_context) {
 		/* Context width: 3 */
 
 		/* Unigrams (shifted): */
@@ -124,6 +124,8 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 				new Ngram(new Preceding(0, 1))));
 		this.ngramFeatureExtractors.add(new CleartkExtractor<Token, Token>(Token.class, extractor,
 				new Ngram(new Preceding(1, 2))));
+		if (n_context == 1)
+			return;
 
 		/* Bigrams: */
 		this.ngramFeatureExtractors.add(new CleartkExtractor<Token, Token>(Token.class, extractor,
@@ -134,12 +136,16 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 				new Ngram(new Preceding(1), new Focus())));
 		this.ngramFeatureExtractors.add(new CleartkExtractor<Token, Token>(Token.class, extractor,
 				new Ngram(new Preceding(2))));
+		if (n_context == 2)
+			return;
 
 		/* Trigrams: */
 		this.ngramFeatureExtractors.add(new CleartkExtractor<Token, Token>(Token.class, extractor,
 				new Ngram(new Focus(), new Following(2))));
 		this.ngramFeatureExtractors.add(new CleartkExtractor<Token, Token>(Token.class, extractor,
 				new Ngram(new Preceding(2), new Focus())));
+		if (n_context == 3)
+			return;
 	}
 
 	protected List<Feature> extractDepNgrams(JCas jcas, Token t) throws CleartkExtractorException {

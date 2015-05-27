@@ -146,7 +146,9 @@ public class EditFeatureGenerator {
 			if (nearestAlignedWOIdx != null) {  // (we cannot just questionPOMapping.isEmpty() as it always contains -1 key
 				//System.err.println(wordOrderIdx + " " + nearestAlignedWOIdx + " " + maxWOIdx + " " + questionPOMapping);
 				int alignedPOIdx = postOrderMapping.get(nearestAlignedWOIdx);
-				features.add(new Feature("nearest_aligned", Integer.toString(Math.abs(nearestAlignedWOIdx - wordOrderIdx))));
+				// TODO: Make this a numeric, continuous feature
+				int dist = nearestAlignedWOIdx - wordOrderIdx;
+				features.add(new Feature("nearest_aligned", Integer.toString(dist)));
 				features.add(new Feature("nearest_aligned_Pos", editDist.getPos1()[alignedPOIdx]));
 				features.add(new Feature("nearest_aligned_Dep", editDist.getRel1()[alignedPOIdx]));
 				// TODO NE

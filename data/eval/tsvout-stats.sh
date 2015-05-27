@@ -11,8 +11,8 @@ showstats() {
 		return
 	fi
 
-	perfect="$(cat "$tsvout" | cut -f4 | grep '^1\.0' | wc -l)"
-	any="$(cat "$tsvout" | cut -f4 | grep -v '^0\.0$' | wc -l)"
+	perfect="$(cat "$tsvout" | cut -f5 | grep '^0$' | wc -l)"
+	any="$(cat "$tsvout" | cut -f5 | grep -v '^-1$' | wc -l)"
 
 	perfectp="$(echo "100*$perfect/$total" | bc -l)"
 	anyp="$(echo "100*$any/$total" | bc -l)"
