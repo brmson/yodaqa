@@ -13,6 +13,7 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
+import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.DBpediaOntologyAnswerProducer;
@@ -132,7 +133,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 6,
-					AnswerCASMerger.PARAM_PHASE, 0);
+					AnswerCASMerger.PARAM_PHASE, 0,
+					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #0.) */
@@ -178,7 +180,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
 					AnswerCASMerger.PARAM_HITLIST_REUSE, false,
-					AnswerCASMerger.PARAM_PHASE, 1);
+					AnswerCASMerger.PARAM_PHASE, 1,
+					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
 
 			/* XXX: Move the following to a separate scoring phase
@@ -238,7 +241,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
 					AnswerCASMerger.PARAM_HITLIST_REUSE, true,
-					AnswerCASMerger.PARAM_PHASE, 2);
+					AnswerCASMerger.PARAM_PHASE, 2,
+					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #2.) */

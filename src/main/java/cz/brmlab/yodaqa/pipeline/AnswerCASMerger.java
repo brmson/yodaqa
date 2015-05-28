@@ -118,7 +118,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		reset();
 	}
 
-	public void process(JCas canCas) throws AnalysisEngineProcessException {
+	public synchronized void process(JCas canCas) throws AnalysisEngineProcessException {
 		if (doReuseHitlist && isFirst) {
 			/* AnswerHitlist initialized, reset list of answers
 			 * and bail out for now. */
@@ -261,7 +261,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 	}
 
-	public boolean hasNext() throws AnalysisEngineProcessException {
+	public synchronized boolean hasNext() throws AnalysisEngineProcessException {
 		return isLast >= isLastBarrier;
 	}
 
