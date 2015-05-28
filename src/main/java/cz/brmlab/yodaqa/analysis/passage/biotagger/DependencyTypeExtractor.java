@@ -30,13 +30,4 @@ public class DependencyTypeExtractor<T extends Annotation> implements NamedFeatu
 		}
 		return features;
 	}
-
-	/** Extract a *tree-based* dependency type Ngram feature based
-	 * at focusAnnotation. We cannot use the basic n-gram infrastructure
-	 * of cleartk as in case of children, we want to return multiple
-	 * n-gram features for each possible path in the tree. */
-	public List<Feature> extractNgram(JCas jCas, Annotation focusAnnotation, int[] offsets)
-			throws CleartkExtractorException {
-		return DependencyTreeNgramExtractor.extractNgram(jCas, focusAnnotation, offsets, this);
-	}
 }

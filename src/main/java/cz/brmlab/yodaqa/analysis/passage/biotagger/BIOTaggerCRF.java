@@ -23,6 +23,7 @@ import org.cleartk.ml.feature.extractor.CleartkExtractor.Preceding;
 import org.cleartk.ml.feature.extractor.CleartkExtractorException;
 import org.cleartk.ml.feature.extractor.CombinedExtractor1;
 import org.cleartk.ml.feature.extractor.FeatureExtractor1;
+import org.cleartk.ml.feature.extractor.NamedFeatureExtractor1;
 import org.cleartk.ml.feature.extractor.TypePathExtractor;
 
 import approxlib.distance.EditDist;
@@ -148,7 +149,11 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			return;
 	}
 
-	protected List<Feature> extractDepNgrams(JCas jcas, Token t) throws CleartkExtractorException {
+	/** Extract a *tree-based* dependency type Ngram feature based
+	 * at t. We cannot use the basic n-gram infrastructure
+	 * of cleartk as in case of children, we want to return multiple
+	 * n-gram features for each possible path in the tree. */
+	protected List<Feature> extractDepNgrams(JCas jcas, Token t, NamedFeatureExtractor1<Token> extractor) throws CleartkExtractorException {
 		List<Feature> features = new ArrayList<>();
 
 		/* Context width: 3 */
@@ -158,21 +163,21 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		 * right now, though. */
 
 		/* Unigrams (shifted): */
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {1}));
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {2}));
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-1}));
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2}));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {1}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {2}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-1}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-2}, extractor));
 
 		/* Bigrams: */
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {0, 1}));
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {1, 2}));
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-1, 0}));
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2, -1}));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {0, 1}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {1, 2}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-1, 0}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-2, -1}, extractor));
 
 		/* Trigrams: */
 		// trigrams overfit
-		//features.addAll(depExtractor.extractNgram(jcas, t, new int[] {0, 1, 2}));
-		//features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2, -1, 0}));
+		//features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {0, 1, 2}, extractor));
+		//features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-2, -1, 0}, extractor));
 
 		return features;
 	}
@@ -247,7 +252,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			tokenFeatures.addAll(this.tokenFeatureExtractor.extract(passagesView, token));
 			for (CleartkExtractor<Token, Token> ngramExtractor : ngramFeatureExtractors)
 				tokenFeatures.addAll(ngramExtractor.extractWithin(passagesView, token, p));
-			tokenFeatures.addAll(extractDepNgrams(passagesView, token));
+			tokenFeatures.addAll(extractDepNgrams(passagesView, token, depExtractor));
 			// tokenFeatures.add(new Feature("lemma", token.getLemma().getValue())); // for debugging
 
 			// apply the edit feature generator
