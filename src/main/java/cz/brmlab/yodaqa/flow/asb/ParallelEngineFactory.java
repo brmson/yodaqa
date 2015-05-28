@@ -39,6 +39,10 @@ public class ParallelEngineFactory extends AnalysisEngineFactory_impl {
 
 	public Resource produceResource(Class<? extends Resource> aResourceClass, ResourceSpecifier aSpecifier,
 			Map<String, Object> aAdditionalParams) throws ResourceInitializationException {
+		if (!(aSpecifier instanceof AnalysisEngineDescription))
+			return super.produceResource(aResourceClass, aSpecifier, aAdditionalParams);
+		AnalysisEngineDescription aEngineSpecifier = (AnalysisEngineDescription) aSpecifier;
+
 		/* We just check whether this would produce an
 		 * AggregateAnalysisEngine and do our own thing
 		 * in that case; we repeat the super's checks
@@ -46,14 +50,12 @@ public class ParallelEngineFactory extends AnalysisEngineFactory_impl {
 		boolean multiprocessing = (aAdditionalParams != null)
 			&& aAdditionalParams.containsKey(AnalysisEngine.PARAM_NUM_SIMULTANEOUS_REQUESTS);
 		if (!multiprocessing
-		    && aSpecifier instanceof ResourceCreationSpecifier
 		    && aResourceClass.isAssignableFrom(TextAnalysisEngine.class)) {
 			ResourceCreationSpecifier spec = (ResourceCreationSpecifier) aSpecifier;
 			String frameworkImpl = spec.getFrameworkImplementation();
 			if (frameworkImpl != null
 			    && frameworkImpl.startsWith(Constants.JAVA_FRAMEWORK_NAME)
-			    && spec instanceof AnalysisEngineDescription
-			    && !((AnalysisEngineDescription) spec).isPrimitive()) {
+			    && !aEngineSpecifier.isPrimitive()) {
 				Resource resource = new ParallelAnalysisEngine();
 				if (resource.initialize(aSpecifier, aAdditionalParams))
 					return resource;
