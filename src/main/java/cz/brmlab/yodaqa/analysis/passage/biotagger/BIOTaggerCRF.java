@@ -154,7 +154,8 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		/* Context width: 3 */
 		/* XXX: Downwards offsets may produce a large number
 		 * of features.  Jacana seems to limit the downwards
-		 * offset to 1, TODO try that too. */
+		 * offset to 1.  We cannot reproduce a problem with this
+		 * right now, though. */
 
 		/* Unigrams (shifted): */
 		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {1}));
@@ -169,8 +170,9 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2, -1}));
 
 		/* Trigrams: */
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {0, 1, 2}));
-		features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2, -1, 0}));
+		// trigrams overfit
+		//features.addAll(depExtractor.extractNgram(jcas, t, new int[] {0, 1, 2}));
+		//features.addAll(depExtractor.extractNgram(jcas, t, new int[] {-2, -1, 0}));
 
 		return features;
 	}
