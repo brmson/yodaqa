@@ -153,7 +153,8 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 	 * at t. We cannot use the basic n-gram infrastructure
 	 * of cleartk as in case of children, we want to return multiple
 	 * n-gram features for each possible path in the tree. */
-	protected List<Feature> extractDepNgrams(JCas jcas, Token t, NamedFeatureExtractor1<Token> extractor) throws CleartkExtractorException {
+	protected List<Feature> extractDepNgrams(JCas jcas, Token t, NamedFeatureExtractor1<Token> extractor, int n_context)
+			throws CleartkExtractorException {
 		List<Feature> features = new ArrayList<>();
 
 		/* Context width: 3 */
@@ -167,17 +168,22 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {2}, extractor));
 		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-1}, extractor));
 		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-2}, extractor));
+		if (n_context == 1)
+			return features;
 
 		/* Bigrams: */
 		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {0, 1}, extractor));
 		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {1, 2}, extractor));
 		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-1, 0}, extractor));
 		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-2, -1}, extractor));
+		if (n_context == 2)
+			return features;
 
 		/* Trigrams: */
-		// trigrams overfit
-		//features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {0, 1, 2}, extractor));
-		//features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-2, -1, 0}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {0, 1, 2}, extractor));
+		features.addAll(DependencyTreeNgramExtractor.extractNgram(jcas, t, new int[] {-2, -1, 0}, extractor));
+		if (n_context == 3)
+			return features;
 
 		return features;
 	}
@@ -252,7 +258,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 			tokenFeatures.addAll(this.tokenFeatureExtractor.extract(passagesView, token));
 			for (CleartkExtractor<Token, Token> ngramExtractor : ngramFeatureExtractors)
 				tokenFeatures.addAll(ngramExtractor.extractWithin(passagesView, token, p));
-			tokenFeatures.addAll(extractDepNgrams(passagesView, token, depExtractor));
+			tokenFeatures.addAll(extractDepNgrams(passagesView, token, depExtractor, 2));
 			// tokenFeatures.add(new Feature("lemma", token.getLemma().getValue())); // for debugging
 
 			// apply the edit feature generator
