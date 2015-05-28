@@ -83,14 +83,17 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 	protected FeatureExtractor1<Token> tokenFeatureExtractor;
 	protected List<CleartkExtractor<Token, Token>> ngramFeatureExtractors;
+	NamedFeatureExtractor1<Token> posExtractor;
+	NamedFeatureExtractor1<Token> NETypeExtractor;
+	NamedFeatureExtractor1<Token> depExtractor;
+
 	protected CRFBioChunking<Token, AnswerBioMention> chunking;
-	protected DependencyTypeExtractor<Token> depExtractor;
 
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
 
-		FeatureExtractor1<Token> posExtractor = new TypePathExtractor<Token>(Token.class, "pos/PosValue");
-		FeatureExtractor1<Token> NETypeExtractor = new CoveringNETypeExtractor<Token>();
+		posExtractor = new TypePathExtractor<Token>(Token.class, "pos/PosValue");
+		NETypeExtractor = new CoveringNETypeExtractor<Token>();
 		depExtractor = new DependencyTypeExtractor<Token>();
 		this.tokenFeatureExtractor = new CombinedExtractor1<Token>(
 				// TODO: NumericTypeFeatureFunction?
