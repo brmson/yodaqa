@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.analysis.passage.biotagger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.uima.fit.util.JCasUtil;
@@ -50,12 +51,12 @@ public class DependencyTreeNgramExtractor {
 		return name + "[" + Integer.toString(offset) + "]";
 	}
 
-	static List<Feature> extractNgram(JCas jcas, Annotation focusAnnotation, int[] offsets, NamedFeatureExtractor1 extractor)
+	static List<Feature> extractNgramSet(JCas jcas, Annotation focusAnnotation, int[] offsets, NamedFeatureExtractor1 extractor)
 			throws CleartkExtractorException {
 		List<Feature> inFeatures = null;
 		if (offsets.length > 1) {
 			// XXX: we do some needless double-walking here
-			inFeatures = extractNgram(jcas, focusAnnotation, Arrays.copyOfRange(offsets, 1, offsets.length), extractor);
+			inFeatures = extractNgramSet(jcas, focusAnnotation, Arrays.copyOfRange(offsets, 1, offsets.length), extractor);
 		}
 
 		int offset = offsets[0];
@@ -86,6 +87,28 @@ public class DependencyTreeNgramExtractor {
 				}
 			}
 		}
+		return outFeatures;
+	}
+
+	static List<Feature> extractNgram(JCas jcas, Annotation focusAnnotation, int[] offsets, NamedFeatureExtractor1 extractor)
+			throws CleartkExtractorException {
+		List<Feature> featureSet = extractNgramSet(jcas, focusAnnotation, offsets, extractor);
+
+		/* Convert full set of features to counts. */
+		HashMap<Feature, Integer> featureCounts = new HashMap<Feature, Integer>();
+		for (Feature f : featureSet) {
+			if (featureCounts.containsKey(f))
+				featureCounts.put(f, featureCounts.get(f) + 1);
+			else
+				featureCounts.put(f, 1);
+		}
+
+		/* Generate new features based on the counts. */
+		/* XXX: These should be continuous feature values
+		 * instead of binary features.Set */
+		List<Feature> outFeatures = new ArrayList<>();
+		for (Feature f : featureCounts.keySet())
+			outFeatures.add(new Feature(f.getName() + "_" + f.getValue(), featureCounts.get(f).toString()));
 		return outFeatures;
 	}
 }
