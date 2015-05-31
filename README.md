@@ -36,7 +36,7 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install java7-jdk``
   * ``./gradlew check``
-  * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
+  * ``echo | ./gradlew run`` as a "dummy run" which will trigger download
     of all sorts of NLP resources and models.  This will amount to several
     hundreds of megabytes of download!
   * ``./gradlew run -q`` (command line) or ``./gradlew web -q`` (web interface)
