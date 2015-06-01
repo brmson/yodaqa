@@ -95,9 +95,9 @@ public class LblTreeCASFactory {
 		sb.append("{");
 		sb.append(tokenToWordIdx.get(t));
 		sb.append(":");
-		sb.append(t.getCoveredText().replaceAll("/", "_"));
+		sb.append(t.getCoveredText().replaceAll("/", "_").replaceAll("\\{", "_").replaceAll("\\}", "_").replaceAll(":", "_"));
 		sb.append("/");
-		sb.append(t.getLemma().getValue().replaceAll("/", "_"));
+		sb.append(t.getLemma().getValue().replaceAll("/", "_").replaceAll("\\{", "_").replaceAll("\\}", "_").replaceAll(":", "_"));
 		sb.append("/");
 		sb.append(t.getPos().getPosValue());
 		sb.append("/");
