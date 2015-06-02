@@ -74,6 +74,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR</name>
+	<description>Answer Feature: Reciprocal rank (1/r) of the result where this answer originates</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore</name>
         <description>Answer Feature: Log-score (by solr) of the result that produced the supporting passage</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

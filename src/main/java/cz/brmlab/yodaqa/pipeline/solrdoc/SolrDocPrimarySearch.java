@@ -23,6 +23,7 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -166,6 +167,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 
 		AnswerFV fv = new AnswerFV();
 		fv.setFeature(AF_Occurences.class, 1.0);
+		fv.setFeature(AF_ResultRR.class, 1 / ((float) i + 1));
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(AF_OriginDocTitle.class, 1.0);
 

@@ -27,6 +27,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -135,6 +136,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 
 		Collection<ClueConcept> concepts;
 		SolrDocumentList documents;
+		int i;
 		try {
 			concepts = JCasUtil.select(questionView, ClueConcept.class);
 			Collection<Integer> IDs = conceptsToIDs(concepts);
@@ -143,6 +145,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		i = 0;
 		for (SolrDocument doc : documents) {
 			Integer id = (Integer) doc.getFieldValue("id");
 			visitedIDs.add(id);
@@ -156,7 +159,8 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			}
 			assert(concept != null);
 			/* Generate the result. */
-			generateSolrResult(searchView, questionView, doc, concept);
+			generateSolrResult(searchView, questionView, doc, concept, i);
+			i++;
 		}
 
 		/* Run a search for text clues. */
@@ -169,6 +173,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		i = 0;
 		for (SolrDocument doc : documents) {
 			Integer docID = (Integer) doc.getFieldValue("id");
 			if (visitedIDs.contains(docID)) {
@@ -176,7 +181,8 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 				continue;
 			}
 			visitedIDs.add(docID);
-			generateSolrResult(searchView, questionView, doc, null);
+			generateSolrResult(searchView, questionView, doc, null, i);
+			i++;
 		}
 	}
 
@@ -188,7 +194,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	}
 
 	protected void generateSolrResult(JCas searchView, JCas questionView,
-					  SolrDocument document, ClueConcept concept)
+					  SolrDocument document, ClueConcept concept, int i)
 			throws AnalysisEngineProcessException {
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");
@@ -196,6 +202,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
 
 		AnswerFV afv = new AnswerFV();
+		afv.setFeature(AF_ResultRR.class, 1 / ((float) i + 1));
 		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
 		if (concept != null) {
 			afv.setFeature(AF_OriginConcept.class, 1.0);
