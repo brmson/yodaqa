@@ -177,13 +177,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   /**
    * The pool of worker threads running parallelizable annotators.
    */
-  protected static ExecutorService parallelExecutor = Executors.newFixedThreadPool(3);
-
-  /**
-   * Stack frames associated with currently enqueued future jobs.
-   * Used when retrieving the job result to continue the CAS flow.
-   */
-  protected Map<Future<CasIterator>, StackFrame> futureFrames = new HashMap<>();
+  public static final int maxJobs = 3;
+  protected static final ExecutorService parallelExecutor = Executors.newFixedThreadPool(maxJobs);
 
   /**
    * Initializes this ASB.
@@ -430,6 +425,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   class AggregateCasIterator implements CasIterator {
     /** The CAS that was input to the Aggregate AE's process method. */
     CAS mInputCas;
+
+    /**
+     * Stack frames associated with currently enqueued future jobs.
+     * Used when retrieving the job result to continue the CAS flow.
+     */
+    protected Map<Future<CasIterator>, StackFrame> futureFrames = new HashMap<>();
 
     /**
      * Stack, which holds StackFrame objects. A stack is necessary to handle CasMultipliers, because
