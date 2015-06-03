@@ -556,8 +556,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       /* Get a new child CAS from the last suspended CAS multiplier. */
       StackFrame frame = casIteratorStack.peek();
       CasInFlow cif = casInFlowFromFrame(frame);
-      if (cif != null)
+      if (cif != null) {
+        //System.err.println("--- flow from stack " + cif.cas);
         return cif;
+      }
 
       /* We've finished routing all the Output CASes from the StackFrame. */
       casIteratorStack.pop();
@@ -566,14 +568,16 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
        * CasMultiplier) from that stack frame and continue with its flow
        * if admissible. */
       frame.originalCIF.depCounter -= 1;
-      if (frame.originalCIF.depCounter > 0) {
+      cif = frame.originalCIF;
+      if (cif.depCounter > 0) {
         /* Do not restore the original CAS-in-flow, there is another
          * child frame referring it still hanging around. */
+        //System.err.println("--- flow skip " + cif.depCounter + ", original dep block " + cif.cas + " " + cif);
         return casInFlowFromStack();
       }
 
-      cif = frame.originalCIF;
       cif.cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
+      //System.err.println("--- flow back " + cif.depCounter + " to original " + cif.cas + " " + cif);
       return cif;
     }
 
@@ -602,7 +606,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           // invoke next AE in flow
           /* N.B. exceptions thrown here are re-thrown in main thread
            * at .get() time */
+          //System.err.println("job start " + nextAe + " " + inputCas);
           CasIterator casIter = nextAe.processAndOutputNewCASes(inputCas);
+          //System.err.println("job finish " + nextAe + " " + inputCas);
           return casIter;
         }
       };
@@ -612,10 +618,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
          * "inline" in the main thread, using threads for their contents
          * instead. */
         f = new FutureTask<CasIterator>(job);
+        //System.err.println("job inline " + nextAe + " " + inputCas + " " + f);
         ((FutureTask<CasIterator>) f).run();
       } else {
         /* Dispatch this job to the thread pool. */
         f = parallelExecutorCS.submit(job);
+        //System.err.println("job submit " + nextAe + " " + inputCas + " " + f);
       }
 
       StackFrame frame = new StackFrame(null, cif, nextAeKey);
@@ -630,6 +638,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
      * produced any. */
     protected StackFrame collectCasInFlow(Future<CasIterator> f) throws Exception {
       StackFrame frame = futureFrames.remove(f);
+      //System.err.println("job collect " + frame.originalCIF.cas + " " + f);
       String nextAeKey = frame.casMultiplierAeKey; // TODO: rename (not necessarily casMultiplier)
 
       try {
@@ -806,9 +815,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           // get the cas+flow to run
           CasInFlow cif = nextCasToProcess();
 
-          if (cif == null)
+          if (cif == null) {
+            //System.err.println("::: finished flow ["+this+"]");
             return null;  // stack empty!
+          }
 
+          //System.err.println("::: next step with " + cif.cas + " ["+this+"]");
           CAS outputCas = processCasInFlow(cif);
 
           // If this CAS has been dropped (FinalStep.forceCasToBeDropped),
@@ -818,8 +830,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
           // If this is the input CAS, just return null to indicate we're done
           // processing it.
-          if (outputCas == mInputCas)
+          if (outputCas == mInputCas) {
+            //System.err.println("::: finished flow by reaching the input ["+this+"]");
             return null;
+          }
           // Otherwise, this is a new CAS produced within this Aggregate. We may or
           // may not return it, depending on the setting of the outputsNewCASes operational
           // property in this AE's metadata
