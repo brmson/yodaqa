@@ -39,7 +39,7 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 		super.initialize(aContext);
 	}
 
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
+	public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
 		JCas questionView, passagesView, pickedPassagesView;
 		try {
 			questionView = jcas.getView("Question");

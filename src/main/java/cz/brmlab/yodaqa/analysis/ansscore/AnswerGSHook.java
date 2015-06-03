@@ -78,7 +78,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		super.initialize(aContext);
 	}
 
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
+	public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
 		JCas questionView, answerHitlist;
 		try {
 			questionView = jcas.getView("Question");
