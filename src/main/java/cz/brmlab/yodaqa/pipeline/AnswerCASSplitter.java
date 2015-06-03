@@ -172,4 +172,10 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, resources));
 		ai.addToIndexes();
 	}
+
+	@Override
+	public int getCasInstancesRequired() {
+		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
+		return 26;
+	}
 }
