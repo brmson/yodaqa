@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.provider.Wordnet;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -68,7 +69,7 @@ import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 public class LATNormalize extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATNormalize.class);
 
-	Dictionary dictionary = null;
+	static Dictionary dictionary = null;
 
 	/** An instantiated UIMA pipeline that processes an LAT.
 	 * FIXME: This should be better encapsulated rather than being
@@ -85,15 +86,10 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 		latCache = new HashMap<>();
 	}
 
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
-		try {
-			if (dictionary == null)
-				dictionary = Dictionary.getDefaultResourceInstance();
-		} catch (JWNLException e) {
-			throw new ResourceInitializationException(e);
-		}
+		dictionary = Wordnet.getDictionary();
 
 		AnalysisEngineDescription pipelineDesc = AnalysisEngineFactory.createEngineDescription(
 				AnalysisEngineFactory.createEngineDescription(StanfordPosTagger.class),
