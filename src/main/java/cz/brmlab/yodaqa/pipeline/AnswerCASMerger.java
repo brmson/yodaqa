@@ -1,7 +1,6 @@
 package cz.brmlab.yodaqa.pipeline;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +38,6 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -83,13 +81,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	 * of all the featurestructures related to an answer, living in
 	 * the finalHitlist view but not indexed yet (because of anticipated
 	 * merging). */
-	protected class AnswerFeatures {
+	protected class CompoundAnswer {
 		Answer answer;
 		AnswerFV fv;
 		List<LAT> lats;
 		List<AnswerResource> resources;
 
-		public AnswerFeatures(Answer answer_, AnswerFV fv_, List<LAT> lats_, List<AnswerResource> resources_) {
+		public CompoundAnswer(Answer answer_, AnswerFV fv_, List<LAT> lats_, List<AnswerResource> resources_) {
 			answer = answer_;
 			fv = fv_;
 			lats = lats_;
@@ -105,13 +103,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		public List<AnswerResource> getResources() { return resources; }
 	}
 
-	Map<String, List<AnswerFeatures>> answersByText;
+	Map<String, List<CompoundAnswer>> answersByText;
 	JCas finalCas, finalQuestionView, finalAnswerHitlistView;
 	boolean isFirst;
 	int isLast;
 
 	protected void reset() {
-		answersByText = new HashMap<String, List<AnswerFeatures>>();
+		answersByText = new HashMap<String, List<CompoundAnswer>>();
 		finalCas = null;
 		isFirst = true;
 		isLast = 0;
@@ -122,16 +120,16 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		reset();
 	}
 
-	/** Record an answer (in the compound AnswerFeatures representation)
+	/** Record an answer (in the compound CompoundAnswer representation)
 	 * in the internal memory of the CASMerger. */
-	protected void addAnswer(AnswerFeatures afs) {
-		String text = afs.getAnswer().getText();
-		List<AnswerFeatures> answers = answersByText.get(text);
+	protected void addAnswer(CompoundAnswer ca) {
+		String text = ca.getAnswer().getText();
+		List<CompoundAnswer> answers = answersByText.get(text);
 		if (answers == null) {
-			answers = new LinkedList<AnswerFeatures>();
+			answers = new LinkedList<CompoundAnswer>();
 			answersByText.put(text, answers);
 		}
-		answers.add(afs);
+		answers.add(ca);
 	}
 
 	/** Load an AnswerHitlistCAS to our internal memory. */
@@ -152,7 +150,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				for (FeatureStructure resfs : inAnswer.getResources().toArray())
 					resources.add((AnswerResource) copier.copyFs(resfs));
 
-			addAnswer(new AnswerFeatures(outAnswer, new AnswerFV(outAnswer), lats, resources));
+			addAnswer(new CompoundAnswer(outAnswer, new AnswerFV(outAnswer), lats, resources));
 		}
 	}
 
@@ -182,9 +180,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		return answer;
 	}
 
-	/** Load and generate a compound representation (AnswerFeatures)
+	/** Load and generate a compound representation (CompoundAnswer)
 	 * for answer stored in the given AnswerCAS. */
-	protected AnswerFeatures loadAnswer(JCas canAnswer, AnswerInfo ai, JCas hitlistCas) throws AnalysisEngineProcessException {
+	protected CompoundAnswer loadAnswer(JCas canAnswer, AnswerInfo ai, JCas hitlistCas) throws AnalysisEngineProcessException {
 		Answer answer = makeAnswer(canAnswer, ai, hitlistCas);
 		AnswerFV fv = new AnswerFV(ai);
 
@@ -218,7 +216,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			}
 		}
 
-		return new AnswerFeatures(answer, fv, latlist, resources);
+		return new CompoundAnswer(answer, fv, latlist, resources);
 	}
 
 	public synchronized void process(JCas canCas) throws AnalysisEngineProcessException {
@@ -262,11 +260,11 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			if (canAnswer.getDocumentText() == null)
 				return; // we received a dummy CAS
 
-			AnswerFeatures afs = loadAnswer(canAnswer, ai, finalAnswerHitlistView);
-			addAnswer(afs);
-			// System.err.println("AR process: " + afs.getAnswer().getText());
+			CompoundAnswer ca = loadAnswer(canAnswer, ai, finalAnswerHitlistView);
+			addAnswer(ca);
+			// System.err.println("AR process: " + ca.getAnswer().getText());
 
-			QuestionAnswer qa = new QuestionAnswer(afs.getAnswer().getText(), 0);
+			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}
@@ -280,27 +278,27 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			throw new AnalysisEngineProcessException();
 
 		/* Deduplicate Answer objects and index them. */
-		for (Entry<String, List<AnswerFeatures>> entry : answersByText.entrySet()) {
+		for (Entry<String, List<CompoundAnswer>> entry : answersByText.entrySet()) {
 			Answer mainAns = null;
 			AnswerFV mainFV = null;
 			List<LAT> mainLats = null;
 			List<AnswerResource> mainResources = null;
-			for (AnswerFeatures af : entry.getValue()) {
-				Answer answer = af.getAnswer();
+			for (CompoundAnswer ca : entry.getValue()) {
+				Answer answer = ca.getAnswer();
 				/* In case of hitlist-reuse, keep overriding
 				 * early Answer records instead of merging. */
 				if (mainAns == null || doReuseHitlist) {
 					mainAns = answer;
-					mainFV = af.getFV();
-					mainLats = af.getLats();
-					mainResources = af.getResources();
+					mainFV = ca.getFV();
+					mainLats = ca.getLats();
+					mainResources = ca.getResources();
 					continue;
 				}
 				logger.debug("hitlist merge " + mainAns.getText() + "|" + answer.getText());
-				mainFV.merge(af.getFV());
+				mainFV.merge(ca.getFV());
 
 				/* Merge LATs: */
-				for (LAT lat : af.getLats()) {
+				for (LAT lat : ca.getLats()) {
 					boolean alreadyHave = false;
 					for (LAT mLat : mainLats) {
 						if (mLat.getClass() == lat.getClass() && mLat.getText().equals(lat.getText())) {
@@ -313,7 +311,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				}
 
 				/* Merge resources: */
-				for (AnswerResource res : af.getResources()) {
+				for (AnswerResource res : ca.getResources()) {
 					boolean alreadyHave = false;
 					for (AnswerResource mRes : mainResources) {
 						if (mRes.getIri().equals(res.getIri())) {
