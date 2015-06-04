@@ -215,6 +215,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		SolrResult result = results.get(i);
+		i++;
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -225,8 +226,8 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.createView("Result");
 			JCas resultView = jcas.getView("Result");
 			if (!results.isEmpty()) {
-				boolean isLast = (i == results.size()-1);
-				ResultInfo ri = generateSolrResult(questionView, resultView, result.doc, result.concept, isLast);
+				boolean isLast = (i == results.size());
+				ResultInfo ri = generateSolrResult(questionView, resultView, result.doc, result.concept, isLast ? i : 0);
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
 				/* XXX: Ugh. We clearly need global result ids. */
@@ -244,14 +245,13 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 				ResultInfo ri = new ResultInfo(resultView);
 				ri.setDocumentTitle("");
 				ri.setOrigin(resultInfoOrigin);
-				ri.setIsLast(true);
+				ri.setIsLast(i);
 				ri.addToIndexes();
 			}
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
-		i++;
 		return jcas;
 	}
 
@@ -261,7 +261,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 	protected ResultInfo generateSolrResult(JCas questionView, JCas resultView,
 					  SolrDocument document, ClueConcept concept,
-					  boolean isLast)
+					  int isLast)
 			throws AnalysisEngineProcessException {
 		Integer id = (Integer) document.getFieldValue("id");
 		String title = (String) document.getFieldValue("titleText");

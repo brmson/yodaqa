@@ -94,6 +94,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		PropertyValue property = relIter.hasNext() ? relIter.next() : null;
+		i++;
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -104,15 +105,14 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
 			if (property != null) {
-				propertyToAnswer(canAnswerView, property, !relIter.hasNext(), questionView);
+				propertyToAnswer(canAnswerView, property, !relIter.hasNext() ? i : 0, questionView);
 			} else {
-				dummyAnswer(canAnswerView);
+				dummyAnswer(canAnswerView, i);
 			}
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
-		i++;
 		return jcas;
 	}
 
@@ -126,7 +126,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	 * So we set the jcas text and generate a bunch of featuresets,
 	 * especially AFs. */
 	protected void propertyToAnswer(JCas jcas, PropertyValue property,
-			boolean isLast, JCas questionView) throws Exception {
+			int isLast, JCas questionView) throws Exception {
 		logger.info(" FOUND: {} -- {}", property.getProperty(), property.getValue());
 
 		jcas.setDocumentText(property.getValue());
@@ -176,7 +176,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.addToIndexes();
 	}
 
-	protected void dummyAnswer(JCas jcas) throws Exception {
+	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
 		/* We will just generate a single dummy CAS
 		 * to avoid flow breakage. */
 		jcas.setDocumentText("");
@@ -185,11 +185,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle("");
 		ri.setOrigin(this.getClass().getCanonicalName());
-		ri.setIsLast(true);
+		ri.setIsLast(i);
 		ri.addToIndexes();
 
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setIsLast(true);
+		ai.setIsLast(i);
 		ai.addToIndexes();
 	}
 

@@ -106,13 +106,23 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	Map<String, List<CompoundAnswer>> answersByText;
 	JCas finalCas, finalQuestionView, finalAnswerHitlistView;
 	boolean isFirst;
+
+	/* Tracking stats to find out at what point did we acquire all CASes
+	 * to merge. */
+	/* #of "last CAS" seen; this counts towards the isLastBarrier */
 	int isLast;
+	/* #of total CASes seen, and CASes we need to see.  This is because
+	 * with asynchronous CAS flow, the last generated CAS (marked with
+	 * isLast) is not the last received CAS. */
+	int seenCases, needCases;
 
 	protected void reset() {
 		answersByText = new HashMap<String, List<CompoundAnswer>>();
 		finalCas = null;
 		isFirst = true;
 		isLast = 0;
+		seenCases = 0;
+		needCases = 0;
 	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -163,7 +173,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		} catch (IllegalArgumentException e) {
 			ri = null;
 		}
-		return ai.getIsLast() && (ri == null || ri.getIsLast());
+		return ai.getIsLast() > 0 && (ri == null || ri.getIsLast() > 0);
 	}
 
 	/** Convert given AnswerCAS to an Answer FS in an AnswerHitlistCAS. */
@@ -223,6 +233,8 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		JCas canQuestion;
 		try { canQuestion = canCas.getView("Question"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
 
+		seenCases++;
+
 		if (finalCas == null) {
 			finalCas = getEmptyJCas();
 			try {
@@ -241,10 +253,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 
 		if (doReuseHitlist && isFirst) {
 			/* AnswerHitlistCAS */
+			// XXX: the assumption that isFirst => AnswerHitlistCAS
+			// is invalid with async CAS flow!
 			isFirst = false;
 			JCas canAnswerHitlist;
 			try { canAnswerHitlist = canCas.getView("AnswerHitlist"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
 
+			// logger.debug("in: hitlist, isLast {}, cases {} < {}", isLast, seenCases, needCases);
 			loadHitlist(canAnswerHitlist, finalAnswerHitlistView);
 
 		} else {
@@ -254,8 +269,10 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			try { canAnswer = canCas.getView("Answer"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
 			AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
 
-			isLast += isAnswerLast(canAnswer, ai) ? 1 : 0;
-			// logger.debug("in: canAnswer {}, isLast {}", canAnswer.getDocumentText(), isLast);
+			if (isAnswerLast(canAnswer, ai))
+				isLast++;
+			needCases += ai.getIsLast();
+			// logger.debug("in: canAnswer {}, isLast {}, cases {} < {}", canAnswer.getDocumentText(), isLast, seenCases, needCases);
 
 			if (canAnswer.getDocumentText() == null)
 				return; // we received a dummy CAS
@@ -270,11 +287,11 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	}
 
 	public synchronized boolean hasNext() throws AnalysisEngineProcessException {
-		return isLast >= isLastBarrier;
+		return isLast >= isLastBarrier && seenCases >= needCases;
 	}
 
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		if (isLast < isLastBarrier)
+		if (!hasNext())
 			throw new AnalysisEngineProcessException();
 
 		/* Deduplicate Answer objects and index them. */

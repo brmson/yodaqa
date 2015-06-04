@@ -29,8 +29,8 @@
           </featureDescription>
           <featureDescription>
             <name>isLast</name>
-            <description>Whether this is the last candidate answer CAS</description>
-            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+            <description>If non-zero, this is the last candidate answer CAS and the value is #total generated CASes.</description>
+            <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
         </features>
       </typeDescription>
