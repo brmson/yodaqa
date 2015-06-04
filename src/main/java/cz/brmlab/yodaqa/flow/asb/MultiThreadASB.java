@@ -183,10 +183,17 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   private UimaContextAdmin mAggregateUimaContext;
 
   /**
-   * The pool of worker threads running parallelizable annotators.
+   * The pool of worker threads running parallelizable primitive (leaf)
+   * annotators.
    */
   public static final int maxJobs = 3;
-  protected static final ExecutorService parallelExecutor = Executors.newFixedThreadPool(maxJobs);
+  protected static final ExecutorService primitiveExecutor = Executors.newFixedThreadPool(maxJobs);
+
+  /**
+   * The pool of threads running aggregate analysis engines.
+   * This means many threads, but all of them sleep almost all the time
+   * (except when routing a CAS to the next primitive AE). */
+  protected static final ExecutorService aggregateExecutor = Executors.newCachedThreadPool();
 
   /**
    * Initializes this ASB.
@@ -248,7 +255,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       mFlowControllerContainer.destroy();
     }
 
-    parallelExecutor.shutdownNow();
+    primitiveExecutor.shutdownNow();
+    aggregateExecutor.shutdownNow();
   }
 
   /**
@@ -704,16 +712,17 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       };
       Future<CasIterator> f;
       if (nextAe instanceof AggregateAnalysisEngine_impl) {
-        /* Do not waste threads on aggregate AEs; instead, just run it
-         * "inline" in the main thread, using threads for their contents
-         * instead. */
-        f = new FutureTask<CasIterator>(job);
-        //System.err.println("job inline " + nextAe + " " + inputCas + " " + f);
-        ((FutureTask<CasIterator>) f).run();
+        /* Spawn aggregate AEs into a dedicated thread, so that we do not
+         * compute each single one in turn and at the sime time we do not
+         * occupy worker threads which actually burn CPU time.  The aggregate
+         * AE thread should be just sleeping all the time, so it's ok to
+         * have many of them. */
+        f = aggregateExecutor.submit(job);
+        //System.err.println("job aggregate submit " + nextAe + " " + inputCas + " " + f);
       } else {
         /* Dispatch this job to the thread pool. */
-        f = parallelExecutor.submit(job);
-        //System.err.println("job submit " + nextAe + " " + inputCas + " " + f);
+        f = primitiveExecutor.submit(job);
+        //System.err.println("job primitive submit " + nextAe + " " + inputCas + " " + f);
       }
 
       StackFrame frame = new StackFrame(null, cif, nextAeKey);
