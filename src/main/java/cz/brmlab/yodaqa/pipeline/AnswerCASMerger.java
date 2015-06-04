@@ -249,22 +249,20 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			/* Copy QuestionInfo */
 			CasCopier copier = new CasCopier(canQuestion.getCas(), finalQuestionView.getCas());
 			copier.copyCasView(canQuestion.getCas(), finalQuestionView.getCas(), true);
+			isFirst = false;
 		}
 
-		if (doReuseHitlist && isFirst) {
+		JCas canAnswerHitlist = null;
+		try { canAnswerHitlist = canCas.getView("AnswerHitlist"); } catch (Exception e) { /* stays null */ }
+
+		if (doReuseHitlist && canAnswerHitlist != null) {
 			/* AnswerHitlistCAS */
-			// XXX: the assumption that isFirst => AnswerHitlistCAS
-			// is invalid with async CAS flow!
-			isFirst = false;
-			JCas canAnswerHitlist;
-			try { canAnswerHitlist = canCas.getView("AnswerHitlist"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
 
 			// logger.debug("in: hitlist, isLast {}, cases {} < {}", isLast, seenCases, needCases);
 			loadHitlist(canAnswerHitlist, finalAnswerHitlistView);
 
 		} else {
 			/* AnswerCAS */
-			isFirst = false;
 			JCas canAnswer;
 			try { canAnswer = canCas.getView("Answer"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
 			AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
