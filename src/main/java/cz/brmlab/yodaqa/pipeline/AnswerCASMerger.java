@@ -79,6 +79,10 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	@ConfigurationParameter(name = PARAM_PHASE, mandatory = false, defaultValue = "0")
 	protected int phaseNum;
 
+	/** A compound representation of an answer.  This is a container
+	 * of all the featurestructures related to an answer, living in
+	 * the finalHitlist view but not indexed yet (because of anticipated
+	 * merging). */
 	protected class AnswerFeatures {
 		Answer answer;
 		AnswerFV fv;
@@ -118,99 +122,56 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		reset();
 	}
 
-	public synchronized void process(JCas canCas) throws AnalysisEngineProcessException {
-		if (doReuseHitlist && isFirst) {
-			/* AnswerHitlist initialized, reset list of answers
-			 * and bail out for now. */
-			isFirst = false;
-
-			finalCas = getEmptyJCas();
-			CasCopier.copyCas(canCas.getCas(), finalCas.getCas(), true);
-			try {
-				finalQuestionView = finalCas.getView("Question");
-				finalAnswerHitlistView = finalCas.getView("AnswerHitlist");
-			} catch (Exception e) {
-				throw new AnalysisEngineProcessException(e);
-			}
-
-			for (Answer answer : JCasUtil.select(finalAnswerHitlistView, Answer.class)) {
-				String text = answer.getText();
-				List<LAT> lats = new ArrayList<>();
-				// XXX wahh, didn't find any better way than
-				// a for loop, java is sick!
-				for (FeatureStructure latfs : answer.getLats().toArray()) {
-					lats.add(((LAT) latfs.clone()));
-				}
-				List<AnswerResource> resources = new ArrayList<>();
-				if (answer.getResources() != null)
-					for (FeatureStructure resfs : answer.getResources().toArray())
-						resources.add(((AnswerResource) resfs.clone()));
-
-				List<AnswerFeatures> answers = answersByText.get(text);
-				if (answers == null) {
-					answers = new LinkedList<AnswerFeatures>();
-					answersByText.put(text, answers);
-				}
-				answers.add(new AnswerFeatures(answer, new AnswerFV(answer), lats, resources));
-			}
-
-			for (Entry<String, List<AnswerFeatures>> entry : answersByText.entrySet()) {
-				for (AnswerFeatures afs : entry.getValue()) {
-					for (FeatureStructure af : afs.getAnswer().getFeatures().toArray())
-						((AnswerFeature) af).removeFromIndexes();
-					for (FeatureStructure lat : afs.getAnswer().getLats().toArray())
-						((LAT) lat).removeFromIndexes();
-					if (afs.getAnswer().getResources() != null)
-						for (FeatureStructure res : afs.getAnswer().getResources().toArray())
-							((AnswerResource) res).removeFromIndexes();
-					afs.getAnswer().removeFromIndexes();
-				}
-			}
-			return;
+	/** Record an answer (in the compound AnswerFeatures representation)
+	 * in the internal memory of the CASMerger. */
+	protected void addAnswer(AnswerFeatures afs) {
+		String text = afs.getAnswer().getText();
+		List<AnswerFeatures> answers = answersByText.get(text);
+		if (answers == null) {
+			answers = new LinkedList<AnswerFeatures>();
+			answersByText.put(text, answers);
 		}
+		answers.add(afs);
+	}
 
-		JCas canQuestion, canAnswer;
-		try {
-			canQuestion = canCas.getView("Question");
-			canAnswer = canCas.getView("Answer");
-		} catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
-		}
+	/** Load an AnswerHitlistCAS to our internal memory. */
+	protected void loadHitlist(JCas inputHitlist, JCas outputHitlist) {
+		CasCopier copier = new CasCopier(inputHitlist.getCas(), outputHitlist.getCas());
+		for (Answer inAnswer : JCasUtil.select(inputHitlist, Answer.class)) {
+			Answer outAnswer = (Answer) copier.copyFs(inAnswer);
+			// logger.debug("in: hitlist answer {}", outAnswer.getText());
 
-		if (finalCas == null) {
-			finalCas = getEmptyJCas();
-			try {
-				finalQuestionView = finalCas.createView("Question");
-				finalAnswerHitlistView = finalCas.createView("AnswerHitlist");
-			} catch (Exception e) {
-				throw new AnalysisEngineProcessException(e);
+			List<LAT> lats = new ArrayList<>();
+			// XXX wahh, didn't find any better way than
+			// a for loop, java is sick!
+			for (FeatureStructure latfs : inAnswer.getLats().toArray()) {
+				lats.add((LAT) copier.copyFs(latfs));
 			}
-		}
+			List<AnswerResource> resources = new ArrayList<>();
+			if (inAnswer.getResources() != null)
+				for (FeatureStructure resfs : inAnswer.getResources().toArray())
+					resources.add((AnswerResource) copier.copyFs(resfs));
 
-		if (isFirst) {
-			/* Copy QuestionInfo */
-			CasCopier copier = new CasCopier(canQuestion.getCas(), finalQuestionView.getCas());
-			copier.copyCasView(canQuestion.getCas(), finalQuestionView.getCas(), true);
-			isFirst = false;
+			addAnswer(new AnswerFeatures(outAnswer, new AnswerFV(outAnswer), lats, resources));
 		}
+	}
 
-		AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
+	/** Check whether the answer (in given AnswerCAS) has the
+	 * isLast flag set. */
+	protected boolean isAnswerLast(JCas canAnswer, AnswerInfo ai) {
 		ResultInfo ri;
 		try {
 			ri = JCasUtil.selectSingle(canAnswer, ResultInfo.class);
 		} catch (IllegalArgumentException e) {
 			ri = null;
 		}
-		isLast += (ai.getIsLast() && (ri == null || ri.getIsLast()) ? 1 : 0);
-		// logger.debug("in: canAnswer {}, isLast {}", canAnswer.getDocumentText(), isLast);
+		return ai.getIsLast() && (ri == null || ri.getIsLast());
+	}
 
-		if (canAnswer.getDocumentText() == null)
-			return; // we received a dummy CAS
-
-		AnswerFV fv = new AnswerFV(ai);
-		Answer answer = new Answer(finalAnswerHitlistView);
-		String text = canAnswer.getDocumentText();
-		answer.setText(text);
+	/** Convert given AnswerCAS to an Answer FS in an AnswerHitlistCAS. */
+	protected Answer makeAnswer(JCas canAnswer, AnswerInfo ai, JCas hitlistCas) {
+		Answer answer = new Answer(hitlistCas);
+		answer.setText(canAnswer.getDocumentText());
 		answer.setCanonText(ai.getCanonText());
 
 		/* Store the Focus. */
@@ -218,6 +179,15 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			answer.setFocus(focus.getCoveredText());
 			break;
 		}
+		return answer;
+	}
+
+	/** Load and generate a compound representation (AnswerFeatures)
+	 * for answer stored in the given AnswerCAS. */
+	protected AnswerFeatures loadAnswer(JCas canAnswer, AnswerInfo ai, JCas hitlistCas) throws AnalysisEngineProcessException {
+		Answer answer = makeAnswer(canAnswer, ai, hitlistCas);
+		AnswerFV fv = new AnswerFV(ai);
+
 		/* Store the LATs. */
 		List<LAT> latlist = new ArrayList<>();
 		for (LAT lat : JCasUtil.select(canAnswer, LAT.class)) {
@@ -226,7 +196,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			 * getting pretty huge. */
 			LAT finalLAT;
 			try {
-				finalLAT = lat.getClass().getConstructor(JCas.class).newInstance(finalAnswerHitlistView);
+				finalLAT = lat.getClass().getConstructor(JCas.class).newInstance(hitlistCas);
 			} catch (Exception e) {
 				throw new AnalysisEngineProcessException(e);
 			}
@@ -242,23 +212,63 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		if (ai.getResources() != null) {
 			for (FeatureStructure resfs : ai.getResources().toArray()) {
 				// XXX: Use CasCopier?
-				AnswerResource res = new AnswerResource(finalAnswerHitlistView);
+				AnswerResource res = new AnswerResource(hitlistCas);
 				res.setIri(((AnswerResource) resfs).getIri());
 				resources.add(res);
 			}
 		}
 
-		// System.err.println("AR process: " + answer.getText());
+		return new AnswerFeatures(answer, fv, latlist, resources);
+	}
 
-		List<AnswerFeatures> answers = answersByText.get(text);
-		if (answers == null) {
-			answers = new LinkedList<AnswerFeatures>();
-			answersByText.put(text, answers);
+	public synchronized void process(JCas canCas) throws AnalysisEngineProcessException {
+		JCas canQuestion;
+		try { canQuestion = canCas.getView("Question"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
+
+		if (finalCas == null) {
+			finalCas = getEmptyJCas();
+			try {
+				finalQuestionView = finalCas.createView("Question");
+				finalAnswerHitlistView = finalCas.createView("AnswerHitlist");
+			} catch (Exception e) {
+				throw new AnalysisEngineProcessException(e);
+			}
 		}
-		answers.add(new AnswerFeatures(answer, fv, latlist, resources));
 
-		QuestionAnswer qa = new QuestionAnswer(text, 0);
-		QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
+		if (isFirst) {
+			/* Copy QuestionInfo */
+			CasCopier copier = new CasCopier(canQuestion.getCas(), finalQuestionView.getCas());
+			copier.copyCasView(canQuestion.getCas(), finalQuestionView.getCas(), true);
+		}
+
+		if (doReuseHitlist && isFirst) {
+			/* AnswerHitlistCAS */
+			isFirst = false;
+			JCas canAnswerHitlist;
+			try { canAnswerHitlist = canCas.getView("AnswerHitlist"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
+
+			loadHitlist(canAnswerHitlist, finalAnswerHitlistView);
+
+		} else {
+			/* AnswerCAS */
+			isFirst = false;
+			JCas canAnswer;
+			try { canAnswer = canCas.getView("Answer"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
+			AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
+
+			isLast += isAnswerLast(canAnswer, ai) ? 1 : 0;
+			// logger.debug("in: canAnswer {}, isLast {}", canAnswer.getDocumentText(), isLast);
+
+			if (canAnswer.getDocumentText() == null)
+				return; // we received a dummy CAS
+
+			AnswerFeatures afs = loadAnswer(canAnswer, ai, finalAnswerHitlistView);
+			addAnswer(afs);
+			// System.err.println("AR process: " + afs.getAnswer().getText());
+
+			QuestionAnswer qa = new QuestionAnswer(afs.getAnswer().getText(), 0);
+			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
+		}
 	}
 
 	public synchronized boolean hasNext() throws AnalysisEngineProcessException {
