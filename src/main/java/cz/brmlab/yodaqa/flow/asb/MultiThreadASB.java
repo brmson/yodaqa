@@ -887,10 +887,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
             // right now
             return null;
           } else if (newCasesProduced) {
-            // priority to the newly spawned cas
+            // give priority to the newly spawned cas;
             // we'll come back to the original cas sometime later,
-            // the cif is saved in frame.originalCIF
-            cif = newCasInFlowFromFrame(casIteratorStack.peek());
+            // the cif is saved in frame.originalCIF!
+            // let nextCasToProcess() queue up the newly spawned
+            // CASes to workers
+            return null;
           } else {
             // no new CASes are output; this cas is done being processed
             // by that AnalysisEngine so clear the componentInfo
