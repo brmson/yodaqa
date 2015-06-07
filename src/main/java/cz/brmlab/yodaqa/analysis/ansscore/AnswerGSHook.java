@@ -74,7 +74,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		DBpOntologyLAT.class, DBpPropertyLAT.class, FBOntologyLAT.class,
 	};
 
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
 

@@ -33,7 +33,8 @@ public class YodaQA_GS {
 
 		AnalysisEngineDescription printer = createEngineDescription(
 				GoldStandardAnswerPrinter.class,
-				GoldStandardAnswerPrinter.PARAM_TSVFILE, args[1]);
+				GoldStandardAnswerPrinter.PARAM_TSVFILE, args[1],
+				ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 
 		ParallelEngineFactory.registerFactory(); // comment out for a linear single-thread flow
 		/* XXX: Later, we will want to create an actual flow

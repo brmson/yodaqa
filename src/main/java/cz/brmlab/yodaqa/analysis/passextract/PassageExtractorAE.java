@@ -9,6 +9,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
+
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 /**
@@ -58,7 +60,8 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(PassFilter.class));
 
 		if (passSelection == PARAM_PASS_SEL_BYCLUE)
-			builder.add(createPrimitiveDescription(PassGSHook.class));
+			builder.add(createPrimitiveDescription(PassGSHook.class,
+						ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1));
 
 		return builder.createAggregateDescription();
 	}
