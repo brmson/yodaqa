@@ -580,6 +580,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       }
 
       /* We've finished routing all the Output CASes from the StackFrame. */
+      /* But do not retrieve the originalCIF of the deepest stack frame,
+       * which represents the input CAS, while we still have pending futures.
+       * Returning that CAS would indicate we are done processing. */
+      if (casIteratorStack.size() == 1 && !futureFrames.keySet().isEmpty())
+        return null;
+
       casIteratorStack.pop();
       frame.originalCIF.depCounter -= 1;
       cif = originalCasInFlowFromFrame(frame);
@@ -640,10 +646,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         }
 
         /* Check if we can produce some new flows. */
-        /* But do not retrieve the deepest stack frame, which represents
-         * the input CAS, while we still have pending futures.  Returning
-         * that CAS would indicate we are done processing. */
-        if (!(casIteratorStack.size() == 1 && !futureFrames.keySet().isEmpty())) {
+        /* But don't needlessly drain CAS multipliers right away,
+         * take only as many as we could possibly run at once (N.B.
+         * in practice we will run less at once anyway, typically,
+         * as multiple ASBs compete for the same thread pool).  */
+        if (futureFrames.size() < maxJobs) {
           cif = casInFlowFromStack();
           if (cif != null) {
             //System.err.println("-- flow from stack " + cif.cas);
