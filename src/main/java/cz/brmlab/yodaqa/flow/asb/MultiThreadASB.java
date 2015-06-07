@@ -768,9 +768,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           UIMAFramework.getLogger(CLASS_NAME).logrb(Level.FINE, CLASS_NAME.getName(), "processUntilNextOutputCas",
                   LOG_RESOURCE_BUNDLE, "UIMA_continuing_after_exception__FINE", e);
         }
+      } finally {
+        frame.originalCIF.depCounter -= 1;
       }
 
-      frame.originalCIF.depCounter -= 1;
       if (!frame.casIterator.hasNext())
         frame.casIterator = null;
       return frame;
