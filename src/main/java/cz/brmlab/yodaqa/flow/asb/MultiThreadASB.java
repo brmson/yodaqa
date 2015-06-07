@@ -125,14 +125,17 @@ import org.apache.uima.util.UimaTimer;
  * with dynamically-sized pools.
  *
  * N.B. the multi-threading pool is common for the whole Java program,
- * being a static member of this ASB. TODO #threads
+ * being a static member of this ASB.  By default, as many threads
+ * as logical CPUs are spawned; set the YODAQA_N_THREADS environment
+ * variable to use a different number.
  *
  * XXX: This is a copy of UIMA's ASB_impl that adds some substantial
  * modifications to the AggregateCasIterator.  Due to extensive use
  * of private fields, it is impractical to sub-class it instead.
  *
  * FIXME: Exception handling, as well as continueOnFailure(), is likely
- * quite messed up. */
+ * quite messed up, sorry.  And who knows what would happen if you
+ * use any timeout functionality. */
 public class MultiThreadASB extends Resource_ImplBase implements ASB {
   /**
    * resource bundle for log messages
@@ -186,8 +189,13 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
    * The pool of worker threads running parallelizable primitive (leaf)
    * annotators.
    */
-  public static final int maxJobs = 3;
-  protected static final ExecutorService primitiveExecutor = Executors.newFixedThreadPool(maxJobs);
+  public static final int maxJobs;
+  protected static final ExecutorService primitiveExecutor;
+  static {
+    String maxJobsEnv = System.getenv("YODAQA_N_THREADS");
+    maxJobs = maxJobsEnv != null ? Integer.parseInt(maxJobsEnv) : Runtime.getRuntime().availableProcessors();
+    primitiveExecutor = Executors.newFixedThreadPool(maxJobs);
+  }
 
   /**
    * The pool of threads running aggregate analysis engines.

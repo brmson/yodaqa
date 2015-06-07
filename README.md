@@ -71,7 +71,9 @@ or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
 on systems with less than 8GB RAM.  You may also need to tweak the
 minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
-on a 32-bit system.
+on a 32-bit system.  By default, YodaQA will try to use all logical CPU
+cores available; set the YODAQA_N_THREADS environment variable to change
+the number of threads used.
 
 ## Data Sources
 
