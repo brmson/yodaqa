@@ -178,7 +178,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
-		ai.setIsLast(isLast);
+		ai.setIsLast(1);
 		ai.addToIndexes();
 	}
 
@@ -195,7 +195,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.addToIndexes();
 
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setIsLast(isLast);
+		ai.setIsLast(1);
 		ai.addToIndexes();
 	}
 

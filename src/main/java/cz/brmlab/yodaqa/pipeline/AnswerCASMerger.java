@@ -115,6 +115,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	 * with asynchronous CAS flow, the last generated CAS (marked with
 	 * isLast) is not the last received CAS. */
 	int seenCases, needCases;
+	Map<String, Integer> seenALasts, needALasts;
 
 	protected void reset() {
 		answersByText = new HashMap<String, List<CompoundAnswer>>();
@@ -123,6 +124,8 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		isLast = 0;
 		seenCases = 0;
 		needCases = 0;
+		seenALasts = new HashMap<>();
+		needALasts = new HashMap<>();
 	}
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -167,13 +170,32 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	/** Check whether the answer (in given AnswerCAS) has the
 	 * isLast flag set. */
 	protected boolean isAnswerLast(JCas canAnswer, AnswerInfo ai) {
+		if (ai.getIsLast() == 0)
+			return false;
+
 		ResultInfo ri;
 		try {
 			ri = JCasUtil.selectSingle(canAnswer, ResultInfo.class);
 		} catch (IllegalArgumentException e) {
 			ri = null;
 		}
-		return ai.getIsLast() > 0 && (ri == null || ri.getIsLast() > 0);
+		if (ri == null) // e.g. in case of hitlist reuse
+			return true;
+
+		String o = ri.getOrigin();
+		Integer seen = seenALasts.get(o);
+		Integer need = needALasts.get(o);
+		if (seen == null) seen = 0;
+		if (need == null) need = 0;
+
+		seen += 1;
+		seenALasts.put(o, seen);
+		if (ri.getIsLast() > 0) {
+			need += ri.getIsLast();
+			needALasts.put(o, need);
+		}
+		// logger.debug("in: {} resultIsLast {}, alasts {} < {}", o, ri.getIsLast(), seen, need);
+		return (need > 0 && seen >= need);
 	}
 
 	/** Convert given AnswerCAS to an Answer FS in an AnswerHitlistCAS. */

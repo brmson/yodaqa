@@ -161,7 +161,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
-		ai.setIsLast(isLast);
+		ai.setIsLast(1);
 
 		/* Generate a resource descriptor if available. */
 		if (property.getValRes() != null) {
@@ -189,7 +189,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.addToIndexes();
 
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setIsLast(i);
+		ai.setIsLast(1);
 		ai.addToIndexes();
 	}
 
