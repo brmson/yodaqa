@@ -190,9 +190,10 @@ public class MultiprocessingAnalysisEngine_MultiplierOk extends AnalysisEngineIm
     }
     public boolean hasNext() throws AnalysisEngineProcessException {
       boolean has = this.iter.hasNext();
-      if (!has) {
+      if (!has && this.ae != null) {
         // System.err.println("- ppAONC " + this.ae);
         mPool.releaseAnalysisEngine(this.ae);
+        this.ae = null;
       }
       return has;
     }
@@ -202,7 +203,8 @@ public class MultiprocessingAnalysisEngine_MultiplierOk extends AnalysisEngineIm
     public void release() {
       // System.err.println("r ppAONC " + this.ae);
       this.iter.release();
-      mPool.releaseAnalysisEngine(this.ae);
+      if (this.ae != null)
+        mPool.releaseAnalysisEngine(this.ae);
     }
   };
   
@@ -304,9 +306,10 @@ public class MultiprocessingAnalysisEngine_MultiplierOk extends AnalysisEngineIm
     }
     public boolean hasNext() throws AnalysisEngineProcessException {
       boolean has = this.iter.hasNext();
-      if (!has) {
+      if (!has && this.ae != null) {
         // System.err.println("- pAONC " + this.ae);
         mPool.releaseAnalysisEngine(this.ae);
+        this.ae = null;
       }
       return has;
     }
@@ -316,7 +319,8 @@ public class MultiprocessingAnalysisEngine_MultiplierOk extends AnalysisEngineIm
     public void release() {
       // System.err.println("r pAONC " + this.ae);
       this.iter.release();
-      mPool.releaseAnalysisEngine(this.ae);
+      if (this.ae != null)
+        mPool.releaseAnalysisEngine(this.ae);
     }
   };
 
