@@ -193,7 +193,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   protected static final ExecutorService primitiveExecutor;
   static {
     String maxJobsEnv = System.getenv("YODAQA_N_THREADS");
-    maxJobs = maxJobsEnv != null ? Integer.parseInt(maxJobsEnv) : Runtime.getRuntime().availableProcessors();
+    maxJobs = maxJobsEnv != null ? Integer.parseInt(maxJobsEnv) : Runtime.getRuntime().availableProcessors() / 2;
     primitiveExecutor = Executors.newFixedThreadPool(maxJobs);
   }
 
