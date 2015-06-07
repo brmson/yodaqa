@@ -29,6 +29,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -154,6 +155,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 		Collection<ClueConcept> concepts;
 		SolrDocumentList documents;
+		int i;
 		try {
 			concepts = JCasUtil.select(questionView, ClueConcept.class);
 			Collection<Integer> IDs = conceptsToIDs(concepts);
@@ -162,6 +164,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		i = 0;
 		for (SolrDocument doc : documents) {
 			Integer id = (Integer) doc.getFieldValue("id");
 			visitedIDs.add(id);
@@ -188,6 +191,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		i = 0;
 		for (SolrDocument doc : documents) {
 			Integer docID = (Integer) doc.getFieldValue("id");
 			if (visitedIDs.contains(docID)) {
@@ -278,6 +282,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		resultView.setDocumentLanguage("en"); // XXX
 
 		AnswerFV afv = new AnswerFV();
+		afv.setFeature(AF_ResultRR.class, 1 / ((float) i));
 		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
 		if (concept != null) {
 			afv.setFeature(AF_OriginConcept.class, 1.0);

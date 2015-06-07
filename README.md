@@ -15,8 +15,9 @@ inspired by the DeepQA (IBM Watson) papers.  It is built on top of the Apache
 UIMA and developed as part of the Brmson platform.  For all the NLP logic
 (including the NLP type system), we lean heavily on the DKPro UIMA bindings;
 transitively, work like the StanfordParser and Princeton's Wordnet is crucial
-for us.  We also draw some inspiration from the OpenQA project and the Taming
-Text book.
+for us.  For machine learning, we use a mix of scikit-learn and crfsuite
+(wrapped by ClearTK, jcrfsuite).  We also draw some inspiration from the
+OpenQA project and the Taming Text book.
 
 The current version is a work-in-progress snapshot that already can answer
 some questions, even though it's embarrassingly often wrong; on the testing
@@ -35,7 +36,7 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install java7-jdk``
   * ``./gradlew check``
-  * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
+  * ``echo | ./gradlew run`` as a "dummy run" which will trigger download
     of all sorts of NLP resources and models.  This will amount to several
     hundreds of megabytes of download!
   * ``./gradlew run -q`` (command line) or ``./gradlew web -q`` (web interface)
