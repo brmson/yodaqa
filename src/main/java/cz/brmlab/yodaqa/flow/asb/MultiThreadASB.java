@@ -636,8 +636,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
               if (!f.isDone())
                 continue;
               //System.err.println("--- flow from future");
-              cif = casInFlowFromFuture(f);
-              finishedJobs.decrementAndGet();
+	      try {
+                cif = casInFlowFromFuture(f);
+              } finally {
+                finishedJobs.decrementAndGet();
+              }
               if (cif != null)
                 return cif;
             }
@@ -685,8 +688,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
             if (!f.isDone())
               continue;
             //System.err.println("--- flow from future " + finishedJobs + " " + futureFrames.keySet().size());
-            cif = casInFlowFromFuture(f);
-            finishedJobs.decrementAndGet();
+            try {
+              cif = casInFlowFromFuture(f);
+            } finally {
+              finishedJobs.decrementAndGet();
+            }
             if (cif != null)
               return cif;
           }
@@ -889,8 +895,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
             if (!f.isDone())
               continue;
             anyJobsFinished = true;
-            StackFrame stackFrame = collectCasInFlow(f);
-            synchronized (finishedJobs) { finishedJobs.decrementAndGet(); }
+            StackFrame stackFrame;
+            try {
+              stackFrame = collectCasInFlow(f);
+            } finally {
+              synchronized (finishedJobs) { finishedJobs.decrementAndGet(); }
+            }
             if (stackFrame.casIterator != null) {
               casIteratorStack.push(stackFrame);
               cif.depCounter += 1;
