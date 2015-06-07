@@ -22,6 +22,7 @@ import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.impl.AnalysisEngineFactory_impl;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -95,7 +96,23 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 				AnalysisEngineFactory.createEngineDescription(StanfordPosTagger.class),
 				AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class)
 			);
-		pipeline = AnalysisEngineFactory.createEngine(pipelineDesc);
+		/* XXX: We cannot create sub-pipelines using generic mechanisms
+		 * in the vein of
+		 * 	pipeline = AnalysisEngineFactory.createEngine(pipelineDesc);
+		 * since the AnalysisEngineFactory uses the globally registered
+		 * AE factory implementation, which in our case is customized
+		 * to create an instance of ParallelAnalysisEngine which would
+		 * attempt to use the same main thread pool as the global
+		 * pipeline does.  So in the end, if all threads of the main
+		 * thread pool enter LATNormalize, we end up hanging forever
+		 * waiting for them to free up to run our sub-pipeline.
+		 *
+		 * Therefore, we do this manually, explicitly using the stock
+		 * UIMA factory that produces non-parallelized aggregates.
+		 * Note that we cannot build pipelines with nested aggregates
+		 * this way, though! */
+		AnalysisEngineFactory_impl aeFactory = new AnalysisEngineFactory_impl();
+		pipeline = (AnalysisEngine) aeFactory.produceResource(AnalysisEngine.class, pipelineDesc, null);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {

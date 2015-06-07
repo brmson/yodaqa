@@ -69,7 +69,11 @@ public final class MultiCASPipeline {
 		 * AggregateAnalysisEngine (which is very similar, but uses
 		 * a modified Analysis Structure Broker MultiThreadASB
 		 * that uses a thread pool to spread logically
-		 * parallelizable work). */
+		 * parallelizable work).
+                 *
+                 * N.B. This statements makes it more complicated to use
+                 * nested UIMA pipelines!!!  See the LATNormalize class
+                 * for some discussion and examples of dealin with this. */
 		UIMAFramework.getResourceFactory().registerFactory(ResourceCreationSpecifier.class, new ParallelEngineFactory());
 
 
