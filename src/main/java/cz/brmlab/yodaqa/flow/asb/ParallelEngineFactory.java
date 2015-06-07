@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.uima.Constants;
+import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.TextAnalysisEngine;
@@ -44,6 +45,20 @@ public class ParallelEngineFactory extends AnalysisEngineFactory_impl {
 	 * ParallelEngineFactory as an engine additional parameter (internal
 	 * for AE factory). */
 	public static final String PARAM_NO_MULTIPROCESSING = "-no-multiprocessing";
+
+	/** Register this class a new kind of AnalysisEngineFactory
+	 * that overrides the default one and will chuck out
+	 * ParallelAnalysisEngine instead of AggregateAnalysisEngine.
+	 * It is very similar, but uses a modified Analysis Structure Broker
+	 * MultiThreadASB that uses a thread pool to perform logically
+	 * parallelizable work in parallel.
+	 *
+	 * N.B. This operation makes it more complicated to use
+	 * nested UIMA pipelines!!!  See the LATNormalize class
+	 * for some discussion and examples of dealing with this. */
+	public static void registerFactory() {
+		UIMAFramework.getResourceFactory().registerFactory(ResourceCreationSpecifier.class, new ParallelEngineFactory());
+	}
 
 	public Resource produceResource(Class<? extends Resource> aResourceClass, ResourceSpecifier aSpecifier,
 			Map<String, Object> aAdditionalParams) throws ResourceInitializationException {
@@ -103,5 +118,4 @@ public class ParallelEngineFactory extends AnalysisEngineFactory_impl {
 			return super.produceResource(aResourceClass, aSpecifier, aAdditionalParams);
 		}
 	}
-
 }
