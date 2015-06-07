@@ -310,9 +310,19 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		return isLast >= isLastBarrier && seenCases >= needCases;
 	}
 
-	public AbstractCas next() throws AnalysisEngineProcessException {
-		if (!hasNext())
-			throw new AnalysisEngineProcessException();
+	public synchronized AbstractCas next() throws AnalysisEngineProcessException {
+		if (!hasNext()) {
+			/* XXX: Ideally, this shouldn't happen.  However,
+			 * the CAS merger interface is racy in the multi-
+			 * threaded scenario: two threads simultanously
+			 * call process() to feed their last CASes, only
+			 * after both process() are processed they both
+			 * call hasNext(), and it returns true both times,
+			 * making both threads call next().  So don't make
+			 * a big fuss about this. */
+			logger.debug("Warning, racy CAS merger: next() on exhausted merger");
+			return null;
+		}
 
 		/* Deduplicate Answer objects and index them. */
 		for (Entry<String, List<CompoundAnswer>> entry : answersByText.entrySet()) {
