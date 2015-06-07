@@ -214,7 +214,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
-		SolrResult result = results.get(i);
+		SolrResult result = i < results.size() ? results.get(i) : null;
 		i++;
 
 		JCas jcas = getEmptyJCas();
@@ -225,7 +225,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 			jcas.createView("Result");
 			JCas resultView = jcas.getView("Result");
-			if (!results.isEmpty()) {
+			if (result != null) {
 				boolean isLast = (i == results.size());
 				ResultInfo ri = generateSolrResult(questionView, resultView, result.doc, result.concept, isLast ? i : 0);
 				String title = ri.getDocumentTitle();
