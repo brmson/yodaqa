@@ -23,7 +23,11 @@ import org.apache.uima.resource.ResourceSpecifier;
  * instance.
  *
  * To disable multiprocessing engine pool for a particular engine (like CAS
- * mergers!), pass PARAM_NO_MULTIPROCESSING to it. */
+ * mergers!), pass PARAM_NO_MULTIPROCESSING to it.
+ *
+ * Also, on seeing PARAM_NUM_SIMULTANEOUS_REQUESTS, instead of
+ * MultiprocessingAnalysisEngine_impl a tweaked class that works properly
+ * even with CAS multipliers is instantiated. */
 
 public class ParallelEngineFactory extends AnalysisEngineFactory_impl {
 	/** Disable automatic creation of pool of independent engines for
@@ -77,20 +81,27 @@ public class ParallelEngineFactory extends AnalysisEngineFactory_impl {
 		 * we repeat the super's checks as they are written there. */
 		boolean multiprocessing = (aAdditionalParams != null)
 			&& aAdditionalParams.containsKey(AnalysisEngine.PARAM_NUM_SIMULTANEOUS_REQUESTS);
-		if (!multiprocessing
-		    && aResourceClass.isAssignableFrom(TextAnalysisEngine.class)) {
+		Resource resource = null;
+		if (multiprocessing) {
+			resource = new MultiprocessingAnalysisEngine_MultiplierOk();
+		} else if (aResourceClass.isAssignableFrom(TextAnalysisEngine.class)) {
 			ResourceCreationSpecifier spec = (ResourceCreationSpecifier) aSpecifier;
 			String frameworkImpl = spec.getFrameworkImplementation();
 			if (frameworkImpl != null
 			    && frameworkImpl.startsWith(Constants.JAVA_FRAMEWORK_NAME)
 			    && !aEngineSpecifier.isPrimitive()) {
-				Resource resource = new ParallelAnalysisEngine();
-				if (resource.initialize(aSpecifier, aAdditionalParams))
-					return resource;
+				resource = new ParallelAnalysisEngine();
 			}
 		}
 
-		return super.produceResource(aResourceClass, aSpecifier, aAdditionalParams);
+		if (resource != null) {
+			if (resource.initialize(aSpecifier, aAdditionalParams))
+				return resource;
+			else
+				return null;
+		} else {
+			return super.produceResource(aResourceClass, aSpecifier, aAdditionalParams);
+		}
 	}
 
 }
