@@ -93,10 +93,12 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 	protected class SolrResult {
 		public SolrDocument doc;
 		public ClueConcept concept;
+		public int rank;
 
-		public SolrResult(SolrDocument doc, ClueConcept concept) {
+		public SolrResult(SolrDocument doc, ClueConcept concept, int rank) {
 			this.doc = doc;
 			this.concept = concept;
+			this.rank = rank;
 
 			// XXX: Perhaps this shouldn't be in a constructor
 
@@ -178,7 +180,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			}
 			assert(concept != null);
 			/* Record the result. */
-			results.add(new SolrResult(doc, concept));
+			results.add(new SolrResult(doc, concept, 1));
 		}
 
 		/* Run a search for text clues. */
@@ -200,7 +202,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			}
 			visitedIDs.add(docID);
 			/* Record the result. */
-			results.add(new SolrResult(doc, null));
+			results.add(new SolrResult(doc, null, i+1));
 		}
 	}
 
@@ -231,7 +233,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			JCas resultView = jcas.getView("Result");
 			if (result != null) {
 				boolean isLast = (i == results.size());
-				ResultInfo ri = generateSolrResult(questionView, resultView, result.doc, result.concept, isLast ? i : 0);
+				ResultInfo ri = generateSolrResult(questionView, resultView, result, isLast ? i : 0);
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
 				/* XXX: Ugh. We clearly need global result ids. */
@@ -264,12 +266,12 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected ResultInfo generateSolrResult(JCas questionView, JCas resultView,
-					  SolrDocument document, ClueConcept concept,
+					  SolrResult result,
 					  int isLast)
 			throws AnalysisEngineProcessException {
-		Integer id = (Integer) document.getFieldValue("id");
-		String title = (String) document.getFieldValue("titleText");
-		double score = ((Float) document.getFieldValue("score")).floatValue();
+		Integer id = (Integer) result.doc.getFieldValue("id");
+		String title = (String) result.doc.getFieldValue("titleText");
+		double score = ((Float) result.doc.getFieldValue("score")).floatValue();
 
 		String text;
 		try {
@@ -282,15 +284,15 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		resultView.setDocumentLanguage("en"); // XXX
 
 		AnswerFV afv = new AnswerFV();
-		afv.setFeature(AF_ResultRR.class, 1 / ((float) i));
+		afv.setFeature(AF_ResultRR.class, 1 / ((float) result.rank));
 		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
-		if (concept != null) {
+		if (result.concept != null) {
 			afv.setFeature(AF_OriginConcept.class, 1.0);
-			if (concept.getBySubject())
+			if (result.concept.getBySubject())
 				afv.setFeature(AF_OriginConceptBySubject.class, 1.0);
-			if (concept.getByLAT())
+			if (result.concept.getByLAT())
 				afv.setFeature(AF_OriginConceptByLAT.class, 1.0);
-			if (concept.getByNE())
+			if (result.concept.getByNE())
 				afv.setFeature(AF_OriginConceptByNE.class, 1.0);
 		}
 
