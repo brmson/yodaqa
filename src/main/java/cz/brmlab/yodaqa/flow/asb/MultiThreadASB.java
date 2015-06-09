@@ -722,7 +722,19 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           /* N.B. exceptions thrown here are re-thrown in main thread
            * at .get() time */
           //System.err.println("job start " + nextAe + " " + inputCas);
-          CasIterator casIter = nextAe.processAndOutputNewCASes(inputCas);
+          CasIterator casIter;
+          /* In case we are dealing with a NO_MULTIPROCESSING engine,
+           * we need to synchronize calls to it.  It is not enough for
+           * the AE implementation to have synchronized process():
+           * Caused by: java.lang.NullPointerException
+           *    at org.apache.uima.analysis_engine.impl.ResultSpecification_impl.intersect(ResultSpecification_impl.java:700)
+           *    at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:375)
+           */
+          if (nextAe instanceof PrimitiveAnalysisEngine_impl) {
+            synchronized (nextAe) { casIter = nextAe.processAndOutputNewCASes(inputCas); }
+          } else {
+            casIter = nextAe.processAndOutputNewCASes(inputCas);
+          }
           //System.err.println("job finish " + nextAe + " " + inputCas);
           synchronized (finishedJobs) {
             finishedJobs.incrementAndGet();
