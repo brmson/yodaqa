@@ -193,7 +193,20 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
   protected static final ExecutorService primitiveExecutor;
   static {
     String maxJobsEnv = System.getenv("YODAQA_N_THREADS");
-    maxJobs = maxJobsEnv != null ? Integer.parseInt(maxJobsEnv) : Runtime.getRuntime().availableProcessors() / 2;
+    if (maxJobsEnv != null) {
+      maxJobs = Integer.parseInt(maxJobsEnv);
+    } else {
+      int numProc = Runtime.getRuntime().availableProcessors();
+      if (numProc >= 2) {
+        /* This is (A) so that the user's machine is not swamped
+         * (it also increases memory usage etc.), and (B) because
+         * in train-and-eval we perform parallel train+test run
+         * (but maybe we could abolish this now). */
+        maxJobs = numProc / 2;
+      } else {
+        maxJobs = 1;
+      }
+    }
     primitiveExecutor = Executors.newFixedThreadPool(maxJobs);
   }
 
