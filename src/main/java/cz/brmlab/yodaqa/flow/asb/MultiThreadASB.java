@@ -76,53 +76,16 @@ import org.apache.uima.util.Level;
 import org.apache.uima.util.UimaTimer;
 
 /**
- * An ASB that works like the original UIMA one, but uses multi-threading
- * whenever possible. Analysis Structure Broker (ASB) is the thing actually
- * executing the pipeline, based on AnalysisEngine descriptors and flow
- * steps.
+ * An ASB that uses multi-threading whenever possible. Analysis Structure Broker
+ * (ASB) is the thing actually executing the pipeline, based on AnalysisEngine
+ * descriptors and flow steps.  This one uses an application-wide shared thread
+ * pool of workers to execute Analysis Engines in parallel (either on the same
+ * CAS in case of ParallelStep, or SimpleStepping different waiting CASes),
+ * and one thread per CAS and aggregateAE that governs the flow of the CAS
+ * through that AE asynchronously.
  *
- *
- * FIXME: the below is obsolete, rewrite; we currently auto-parallelize
- * all CAS flows we can, except when explicit NO_PARALLEL_PROCESSING is
- * set.
- *
- * There are two basic cases of multi-threading opportunities
- * within UIMA:
- *
- * - SimpleStep flow (a "straight" pipeline) with an analysis
- *   engine that has PARAM_NUM_SIMULTANEOUS_REQUESTS set; then,
- *   multiple threads would be able to process() through this
- *   engine (which is in fact instantiated multiple times, but
- *   this is hidden through a MultiprocessingAnalysisEngine
- *   abstraction); so, we can e.g. have this parameter set
- *   for PassageAnalysisAE or AnswerAnalysisAE to analyze
- *   multiple passages/answers at once.
- *
- * - ParallelStep flow (a "multi-tier" pipeline) with multiple
- *   analysis engines that each run logically in parallel and
- *   we want to run them in parallel in practice as well;
- *   so, we would be doing all our search types at once.
- *
- * In the end, we want to support both parallelizations
- * (using a common thread pool), but at first we do the
- * ParallelStep one.
- *
- * Also, note that there are inherent barriers at AnalysisEngine
- * boundaries; if multiple of your AEs run in parallel at one point
- * and each returns a bunch of CASes, neither of them will continue
- * through the pipeline until all of the AEs are finished.
- *
- * (TODO: Corollary - Move AnswerAnalysis to a tail section of each
- * AnswerProducer so that we don't block on this barrier.)
- *
- * Corollary #2 - We create many CASes in memory before getting to
- * merge them back post-barrier.  This is a problem with the default
- * UIMA CasManager as it creates a single-CAS pool and hangs forever
- * when we want to get another CAS before returning the first one.
- * Our current workaround is for parallel-running CAS multipliers
- * to have a custom method getCasInstancesRequired() that returns
- * something much larger than one (512).  TODO make own CasManager
- * with dynamically-sized pools.
+ * See the README.md in the package directory for usage details, various
+ * caveats, etc.
  *
  * N.B. the multi-threading pool is common for the whole Java program,
  * being a static member of this ASB.  By default, as many threads
