@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
@@ -311,7 +312,6 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 	@Override
 	public int getCasInstancesRequired() {
-		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
-		return 32;
+		return MultiThreadASB.maxJobs * 2;
 	}
 }

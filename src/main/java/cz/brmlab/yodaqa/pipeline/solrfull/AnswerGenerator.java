@@ -12,6 +12,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
@@ -151,7 +152,6 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 
 	@Override
 	public int getCasInstancesRequired() {
-		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
-		return 256;
+		return MultiThreadASB.maxJobs * 2;
 	}
 }

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
+import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
@@ -262,7 +263,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 	@Override
 	public int getCasInstancesRequired() {
-		// Do not hang on ParallelStep barrier; see MultiThreadASB for explanation
-		return 64;
+		return MultiThreadASB.maxJobs * 2;
 	}
 }
