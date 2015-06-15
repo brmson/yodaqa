@@ -20,10 +20,11 @@ disadvantage when scaling out on a single machine is that we get
 N independent processes executing the pipeline, which means that
 if your pipeline loads multi-gigabyte linguistic models, it gets
 very memory-expensive.  With StanfordNLP rnn parser + OpenNLP NER,
-I cannot fit 8 pipeline threads on my machine with 24GB RAM.  Also,
-combining UIMA-AS with UIMAfit seems rather non-trivial without
-rewriting your whole pipeline building code; on the other hand,
-this package is meant to be used with UIMAfit.
+I cannot fit 8 pipeline processes on my machine with 24GB RAM.
+Also, UIMA-AS is non-trivial to deploy due to its client-server
+architecture and combining UIMA-AS with UIMAfit seems rather
+non-trivial too without rewriting your whole pipeline building code;
+on the other hand, this package is meant to be used with UIMAfit.
 
 
 Usage
