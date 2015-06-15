@@ -1,7 +1,5 @@
 package cz.brmlab.yodaqa.provider;
 
-import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
-
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
@@ -19,8 +17,8 @@ public class OpenNlpNamedEntities {
 		};
 		for (String variant : ner_variants) {
 			builder.add(AnalysisEngineFactory.createEngineDescription(
-					OpenNlpNameFinder.class,
-					OpenNlpNameFinder.PARAM_VARIANT, variant));
+					SyncOpenNlpNameFinder.class,
+					SyncOpenNlpNameFinder.PARAM_VARIANT, variant));
 		}
 
 		return builder.createAggregateDescription();

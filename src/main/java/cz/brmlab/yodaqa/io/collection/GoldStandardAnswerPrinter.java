@@ -52,7 +52,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 	PrintWriter TSVOutput;
 
 
-	public void initialize(UimaContext context)
+	public synchronized void initialize(UimaContext context)
 			throws ResourceInitializationException {
 		super.initialize(context);
 
@@ -89,7 +89,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		TSVOutput.flush();
 	}
 
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
+	public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
 		JCas questionView, answerHitlist;
 		try {
 			questionView = jcas.getView("Question");

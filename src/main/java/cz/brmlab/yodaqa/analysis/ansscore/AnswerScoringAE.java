@@ -8,6 +8,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
+
 /**
  * Score the Answer featuresets within the AnswerHitlistCAS based on
  * their features.
@@ -33,7 +35,8 @@ public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerGSHook.class,
-					AnswerGSHook.PARAM_SCORING_PHASE, scoringPhase));
+					AnswerGSHook.PARAM_SCORING_PHASE, scoringPhase,
+					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1));
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreToFV.class,
 					AnswerScoreToFV.PARAM_SCORING_PHASE, scoringPhase),

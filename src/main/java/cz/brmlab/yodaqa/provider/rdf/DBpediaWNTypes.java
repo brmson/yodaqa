@@ -6,10 +6,11 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.provider.Wordnet;
+
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.Synset;
-import net.sf.extjwnl.JWNLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,12 +33,7 @@ public class DBpediaWNTypes extends DBpediaLookup {
 	
 	public void initialize() throws ResourceInitializationException
 	{
-		try {
-			if (dictionary == null)
-				dictionary = Dictionary.getDefaultResourceInstance();
-		} catch (JWNLException e) {
-			throw new ResourceInitializationException(e);
-		}
+		dictionary = Wordnet.getDictionary();
 	}
 	
 	/** Query for a given title, returning a set of types. The type is in

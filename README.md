@@ -36,7 +36,7 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install java7-jdk``
   * ``./gradlew check``
-  * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
+  * ``echo | ./gradlew run`` as a "dummy run" which will trigger download
     of all sorts of NLP resources and models.  This will amount to several
     hundreds of megabytes of download!
   * ``./gradlew run -q`` (command line) or ``./gradlew web -q`` (web interface)
@@ -72,7 +72,9 @@ or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
 on systems with less than 8GB RAM.  You may also need to tweak the
 minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
-on a 32-bit system.
+on a 32-bit system.  By default, YodaQA will try to use *half* of the logical
+CPU cores available; set the YODAQA_N_THREADS environment variable to change
+the number of threads used.
 
 ## Data Sources
 

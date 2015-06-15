@@ -29,7 +29,7 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 public class AnswerFV {
 	public static ArrayList<Class<? extends AnswerFeature>> features;
 	public static String labels[] = {
-		"occurences", "resultLogScore", "passageLogScore",
+		"occurences", "resultRR", "resultLogScore", "passageLogScore",
 		"originPsg", "originPsgFirst",
 		"originPsgByClueToken", "originPsgByCluePhrase", "originPsgByClueSV",
 			"originPsgByClueNE", "originPsgByClueLAT",
@@ -98,6 +98,7 @@ public class AnswerFV {
 		if (features == null) {
 			features = new ArrayList<Class<? extends AnswerFeature>>();
 			features.add(AF_Occurences.class);
+			features.add(AF_ResultRR.class);
 			features.add(AF_ResultLogScore.class);
 			features.add(AF_PassageLogScore.class);
 			features.add(AF_OriginPsg.class);

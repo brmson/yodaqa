@@ -20,9 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -112,6 +114,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		SolrDocument doc = docIter.hasNext() ? docIter.next() : null;
+		i++;
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -122,15 +125,14 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
 			if (doc != null) {
-				documentToAnswer(canAnswerView, doc, !docIter.hasNext(), questionView);
+				documentToAnswer(canAnswerView, doc, !docIter.hasNext() ? i : 0, questionView);
 			} else {
-				dummyAnswer(canAnswerView);
+				dummyAnswer(canAnswerView, i);
 			}
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
-		i++;
 		return jcas;
 	}
 
@@ -140,7 +142,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected void documentToAnswer(JCas jcas, SolrDocument doc,
-			boolean isLast, JCas questionView) throws Exception {
+			int isLast, JCas questionView) throws Exception {
 		Integer id = (Integer) doc.getFieldValue("id");
 		String title = (String) doc.getFieldValue("titleText");
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
@@ -166,6 +168,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 
 		AnswerFV fv = new AnswerFV();
 		fv.setFeature(AF_Occurences.class, 1.0);
+		fv.setFeature(AF_ResultRR.class, 1 / ((float) i));
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(AF_OriginDocTitle.class, 1.0);
 
@@ -178,11 +181,11 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
-		ai.setIsLast(isLast);
+		ai.setIsLast(1);
 		ai.addToIndexes();
 	}
 
-	protected void dummyAnswer(JCas jcas) throws Exception {
+	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
 		/* We will just generate a single dummy CAS
 		 * to avoid flow breakage. */
 		jcas.setDocumentText("");
@@ -191,11 +194,16 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle("");
 		ri.setOrigin("cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocPrimarySearch");
-		ri.setIsLast(true);
+		ri.setIsLast(isLast);
 		ri.addToIndexes();
 
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setIsLast(true);
+		ai.setIsLast(1);
 		ai.addToIndexes();
+	}
+
+	@Override
+	public int getCasInstancesRequired() {
+		return MultiThreadASB.maxJobs * 2;
 	}
 }

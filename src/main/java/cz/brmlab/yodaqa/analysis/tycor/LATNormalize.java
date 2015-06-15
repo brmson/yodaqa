@@ -22,12 +22,14 @@ import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.impl.AnalysisEngineFactory_impl;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.provider.Wordnet;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -68,7 +70,7 @@ import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 public class LATNormalize extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATNormalize.class);
 
-	Dictionary dictionary = null;
+	static Dictionary dictionary = null;
 
 	/** An instantiated UIMA pipeline that processes an LAT.
 	 * FIXME: This should be better encapsulated rather than being
@@ -85,21 +87,32 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 		latCache = new HashMap<>();
 	}
 
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
-		try {
-			if (dictionary == null)
-				dictionary = Dictionary.getDefaultResourceInstance();
-		} catch (JWNLException e) {
-			throw new ResourceInitializationException(e);
-		}
+		dictionary = Wordnet.getDictionary();
 
 		AnalysisEngineDescription pipelineDesc = AnalysisEngineFactory.createEngineDescription(
 				AnalysisEngineFactory.createEngineDescription(StanfordPosTagger.class),
 				AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class)
 			);
-		pipeline = AnalysisEngineFactory.createEngine(pipelineDesc);
+		/* XXX: We cannot create sub-pipelines using generic mechanisms
+		 * in the vein of
+		 * 	pipeline = AnalysisEngineFactory.createEngine(pipelineDesc);
+		 * since the AnalysisEngineFactory uses the globally registered
+		 * AE factory implementation, which in our case is customized
+		 * to create an instance of ParallelAnalysisEngine which would
+		 * attempt to use the same main thread pool as the global
+		 * pipeline does.  So in the end, if all threads of the main
+		 * thread pool enter LATNormalize, we end up hanging forever
+		 * waiting for them to free up to run our sub-pipeline.
+		 *
+		 * Therefore, we do this manually, explicitly using the stock
+		 * UIMA factory that produces non-parallelized aggregates.
+		 * Note that we cannot build pipelines with nested aggregates
+		 * this way, though! */
+		AnalysisEngineFactory_impl aeFactory = new AnalysisEngineFactory_impl();
+		pipeline = (AnalysisEngine) aeFactory.produceResource(AnalysisEngine.class, pipelineDesc, null);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
