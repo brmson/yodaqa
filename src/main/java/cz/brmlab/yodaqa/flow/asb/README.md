@@ -69,6 +69,14 @@ of your AE class thread-safe, at least marking its ``initialize``,
 ``process`` and ``hasNext`` classes as *synchronized*.  (This breaks
 the default UIMAj AE API contract!)
 
+Also, typically you would use some *isLast* marker in the last CAS
+issued by a multiplier to notify the merger about the end of input.
+However, with asynchronous CAS flow there is no guarantee that the
+isLast CAS will actually arrive last to the merger - in fact, there
+are no CAS ordering guarantees at all!  Modify your multiplier to store
+the total number of generated CASes in the *isLast* marker, and make
+the merger count the arrived CASes.
+
 ### Parallel Steps
 
 N.B. a single CAS may be processed by multiple AEs in parallel
