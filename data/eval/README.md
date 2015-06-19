@@ -72,6 +72,14 @@ by default using all the logical CPUs of your machine.  To limit the
 run to a smaller number of threads, use the YODAQA_N_THREADS environment
 variable.
 
+Over several train-and-eval runs, data dumps and logs pile up very
+quickly and may end up taking tens and hundreds of gigabytes.  To get
+rid of old data, use:
+
+	data/eval/cleanup-stale.sh
+
+(WARNING: AUTOMATIC FILE REMOVAL, NO WARRANTY.)
+
 Legacy Benchmarking
 -------------------
 
