@@ -34,6 +34,7 @@ public abstract class CachedJenaLookup {
 
 	protected String service;
 	protected String prefixes;
+	private static RDFCache cache = new RDFCache();
 
 	/** Initialize a CachedJenaLookup object. */
 	public CachedJenaLookup(String service_, String prefixes_) {
@@ -68,6 +69,9 @@ public abstract class CachedJenaLookup {
 			+ StringUtils.join(varNames, " ?")
 			+ " WHERE { " + selectWhere + " }"
 			+ (limit > 0 ? "LIMIT " + Integer.toString(limit) : "");
+		if(cache.contains(queryExpr)){
+			return cache.retrieve(queryExpr);
+		}	
 		QueryExecution qe = QueryExecutionFactory.sparqlService(service, queryExpr);
 		// logger.debug(queryExpr);
 
@@ -115,8 +119,8 @@ public abstract class CachedJenaLookup {
 			}
 			results.add(result);
 		}
-
 		qe.close();
+		cache.add(queryExpr,results);
 		return results;
 	}
 
