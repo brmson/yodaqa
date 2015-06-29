@@ -69,9 +69,9 @@ public abstract class CachedJenaLookup {
 			+ StringUtils.join(varNames, " ?")
 			+ " WHERE { " + selectWhere + " }"
 			+ (limit > 0 ? "LIMIT " + Integer.toString(limit) : "");
-		if(cache.contains(queryExpr)){
+		if (cache.contains(queryExpr)) {
 			return cache.retrieve(queryExpr);
-		}	
+		}
 		QueryExecution qe = QueryExecutionFactory.sparqlService(service, queryExpr);
 		// logger.debug(queryExpr);
 

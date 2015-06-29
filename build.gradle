@@ -14,6 +14,7 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'com.dictanova.jcasgen'
 apply plugin: 'com.github.tkruse.groovysh'
+apply plugin: 'groovy'
 
 mainClassName 		= 'cz.brmlab.yodaqa.YodaQA_Interactive'
 
@@ -117,4 +118,13 @@ dependencies {
   compile 'org.cleartk:cleartk-ml-crfsuite:2.0.0'
   compile 'com.google.guava:guava:18.0'
   compile 'com.github.jcrfsuite:jcrfsuite:0.5'
+  compile 'org.codehaus.groovy:groovy-all:2.3.10'
+  testCompile 'junit:junit:[4,)'
+}
+
+test {
+testLogging {
+
+events 'started', 'passed'
+}
 }
