@@ -169,3 +169,19 @@ Some stages of the QA pipeline use machine learning for scoring snippets
 Models should be re-trained every time a non-trivial change in the
 pipeline is made.  For details on managing this, please refer to
 data/ml/README.md.
+
+### Interactive Groovy Shell
+
+The easiest way to get a feel of how various YodaQA classes (esp. helper
+classes like the provider.* packages) behave is using a Groovy shell.
+Example (hint - use tab completion):
+
+	$ ./gradlew -q shell
+	This is a gradle Application Shell.
+	You can import your application classes and act on them.
+	groovy:000> import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
+	===> cz.brmlab.yodaqa.provider.rdf.DBpediaTypes
+	groovy:000> dbt = DBpediaTypes.newInstance();
+	===> cz.brmlab.yodaqa.provider.rdf.DBpediaTypes@499e542d
+	groovy:000> dbt.query("Albert Einstein", null);
+	===> [Natural Person, Writer, Philosopher, Academician, th-century American People, th-century German People, th-century Swiss People, th-century Swiss People, Alumnus, Laureate, Academics Of Charles University In Prague, Citizen, Emigrant, Inventor, Agnostic, Colleague, Pacifist, American Humanitarians, Humanitarian, American Inventors, American Pacifists, American People Of German-Jewish Descent, American People Of Swiss-Jewish Descent, American Physicists, Cosmologist, Cosmologists, Deist, Deists, Displaced Person, ETHZurich Alumni, Examiner, Fellows Of The Leopoldina, German Emigrants To Switzerland, German Humanitarians, German Inventors, German Nobel Laureates, German Pacifists, German Philosophers, German Physicists, Jewish Agnostics, Jewish American Scientists, Jewish American Writers, Jewish Inventors, Jewish Pacifists, Jewish Philosophers, Jewish Physicists, Naturalized Citizens Of The United States, Nobel Laureates In Physics, Patent Examiners, People Associated With The University Of Zurich, rttemberg, People From Ulm, People In AFirst-cousin Relationship, Stateless Persons, Swiss Emigrants To The United States, Swiss Humanitarians, Swiss Inventors, Swiss Nobel Laureates, Swiss Pacifists, Swiss Philosophers, Swiss Physicists, Theoretical Physicists]

@@ -5,6 +5,7 @@ buildscript {
   dependencies {
     classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
     classpath 'com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:+'
+    classpath 'com.tkruse.gradle:gradle-groovysh-plugin:1.0.5'
   }
 }
 
@@ -12,6 +13,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'com.dictanova.jcasgen'
+apply plugin: 'com.github.tkruse.groovysh'
 
 mainClassName 		= 'cz.brmlab.yodaqa.YodaQA_Interactive'
 
