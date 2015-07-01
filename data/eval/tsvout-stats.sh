@@ -38,9 +38,9 @@ else
 		while read commit date subject; do
 			for file in "$evaldir"/*"$commit".tsv; do
 				case $file in *"$1"*) ;; *) continue;; esac
-				name="${file##*/}"; name="$(echo "$name" | cut -d- -f2)"
+				name="${file##*/}";
 				commit="${file##*/}"; commit="$(echo "$commit" | cut -d- -f4)"; commit="${commit%.*}"
-				printf '% 5s % 8s %s %.20s... ' "${name:0:5}" "$commit" "$date" "$subject"
+				printf '% 12s % 8s %s %.20s... ' "${name:0:12}" "$commit" "$date" "$subject"
 				showstats "$file"
 			done
 		done
