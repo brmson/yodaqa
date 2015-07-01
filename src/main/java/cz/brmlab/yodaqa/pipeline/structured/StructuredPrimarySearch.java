@@ -8,6 +8,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
+import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
@@ -25,6 +27,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -92,6 +95,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	@Override
 	public AbstractCas next() throws AnalysisEngineProcessException {
 		PropertyValue property = relIter.hasNext() ? relIter.next() : null;
+		i++;
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -102,15 +106,14 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
 			if (property != null) {
-				propertyToAnswer(canAnswerView, property, !relIter.hasNext(), questionView);
+				propertyToAnswer(canAnswerView, property, !relIter.hasNext() ? i : 0, questionView);
 			} else {
-				dummyAnswer(canAnswerView);
+				dummyAnswer(canAnswerView, i);
 			}
 		} catch (Exception e) {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
-		i++;
 		return jcas;
 	}
 
@@ -124,7 +127,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	 * So we set the jcas text and generate a bunch of featuresets,
 	 * especially AFs. */
 	protected void propertyToAnswer(JCas jcas, PropertyValue property,
-			boolean isLast, JCas questionView) throws Exception {
+			int isLast, JCas questionView) throws Exception {
 		logger.info(" FOUND: {} -- {}", property.getProperty(), property.getValue());
 
 		jcas.setDocumentText(property.getValue());
@@ -159,11 +162,22 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
-		ai.setIsLast(isLast);
+		ai.setIsLast(1);
+
+		/* Generate a resource descriptor if available. */
+		if (property.getValRes() != null) {
+			AnswerResource ar = new AnswerResource(jcas);
+			ar.setIri(property.getValRes());
+			ar.addToIndexes();
+			ArrayList<AnswerResource> ars = new ArrayList<>();
+			ars.add(ar);
+			ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
+		}
+
 		ai.addToIndexes();
 	}
 
-	protected void dummyAnswer(JCas jcas) throws Exception {
+	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
 		/* We will just generate a single dummy CAS
 		 * to avoid flow breakage. */
 		jcas.setDocumentText("");
@@ -172,11 +186,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle("");
 		ri.setOrigin(this.getClass().getCanonicalName());
-		ri.setIsLast(true);
+		ri.setIsLast(i);
 		ri.addToIndexes();
 
 		AnswerInfo ai = new AnswerInfo(jcas);
-		ai.setIsLast(true);
+		ai.setIsLast(1);
 		ai.addToIndexes();
 	}
 
@@ -245,4 +259,10 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	/** Generate primary search kind specific features indicating
 	 * the originating clue type. */
 	protected abstract void clueAnswerFeatures(AnswerFV afv, Clue clue);
+
+
+	@Override
+	public int getCasInstancesRequired() {
+		return MultiThreadASB.maxJobs * 2;
+	}
 }

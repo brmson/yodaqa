@@ -27,7 +27,7 @@ public final class QuestionDashboard {
 	}
 
 	/* All asked questions, by their id. */
-	private Map<Integer, Question> questions = new HashMap<>();
+	private Map<String, Question> questions = new HashMap<>();
 	/* Questions that were not passed to the pipeline yet.
 	 * .wait() and .notify() are used for signalization
 	 * of any changes here. */
@@ -58,12 +58,12 @@ public final class QuestionDashboard {
 		return q;
 	}
 
-	public synchronized Question get(int id) {
+	public synchronized Question get(String id) {
 		return questions.get(id);
 	}
 	public Question get(JCas questionCas) {
 		QuestionInfo qi = JCasUtil.selectSingle(questionCas, QuestionInfo.class);
-		return get(Integer.parseInt(qi.getQuestionId()));
+		return get(qi.getQuestionId());
 	}
 
 	public synchronized void finishQuestion(Question q) {

@@ -5,6 +5,7 @@ buildscript {
   dependencies {
     classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
     classpath 'com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:+'
+    classpath 'com.tkruse.gradle:gradle-groovysh-plugin:1.0.5'
   }
 }
 
@@ -12,6 +13,8 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'com.dictanova.jcasgen'
+apply plugin: 'com.github.tkruse.groovysh'
+apply plugin: 'groovy'
 
 mainClassName 		= 'cz.brmlab.yodaqa.YodaQA_Interactive'
 
@@ -63,16 +66,29 @@ task(web, dependsOn: 'classes', type: JavaExec) {
   systemProperties = System.getProperties()
 }
 
+task(biocrftrain, dependsOn: 'classes', type: JavaExec) {
+  main = 'cz.brmlab.yodaqa.BIOTagger_CRFTrain'
+  if (project.hasProperty('execArgs'))
+    args(execArgs.split(' '))
+  else
+    args = ['data/ml/biocrf']
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
+}
+
 repositories {
   mavenCentral()
   maven {
     url 'http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/repo/'
+    url 'http://ailao.eu/maven/'
   }
 }
 
 dependencies {
-  compile 'org.apache.uima:uimaj-core:2.5.0'
-  compile 'org.apache.uima:uimafit-core:2.0.0'
+  compile 'org.apache.uima:uimaj-core:2.6.0'
+  compile 'org.apache.uima:uimafit-core:2.1.0'
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.io-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.clearnlp-asl:$dkproVersion"
@@ -98,4 +114,17 @@ dependencies {
   compile 'org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016'
   compile 'com.sparkjava:spark-core:1.1.1'
   compile 'com.google.code.gson:gson:2.3.1'
+  compile 'org.cleartk:cleartk-ml:2.0.0'
+  compile 'org.cleartk:cleartk-ml-crfsuite:2.0.0'
+  compile 'com.google.guava:guava:18.0'
+  compile 'com.github.jcrfsuite:jcrfsuite:0.5'
+  compile 'org.codehaus.groovy:groovy-all:2.3.10'
+  testCompile 'junit:junit:[4,)'
+}
+
+test {
+testLogging {
+
+events 'started', 'passed'
+}
 }

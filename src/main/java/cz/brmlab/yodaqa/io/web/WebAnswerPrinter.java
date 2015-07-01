@@ -47,7 +47,7 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 			QuestionAnswer qa = new QuestionAnswer(a.getText(), a.getConfidence());
 			answers.add(qa);
 		}
-		Question q = QuestionDashboard.getInstance().get(Integer.parseInt(qi.getQuestionId()));
+		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
 		q.setAnswers(answers);
 		QuestionDashboard.getInstance().finishQuestion(q);
 	}

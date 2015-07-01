@@ -15,11 +15,12 @@ inspired by the DeepQA (IBM Watson) papers.  It is built on top of the Apache
 UIMA and developed as part of the Brmson platform.  For all the NLP logic
 (including the NLP type system), we lean heavily on the DKPro UIMA bindings;
 transitively, work like the StanfordParser and Princeton's Wordnet is crucial
-for us.  We also draw some inspiration from the OpenQA project and the Taming
-Text book.
+for us.  For machine learning, we use a mix of scikit-learn and crfsuite
+(wrapped by ClearTK, jcrfsuite).  We also draw some inspiration from the
+OpenQA project and the Taming Text book.
 
 The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarassingly often wrong; on the testing
+some questions, even though it's embarrassingly often wrong; on the testing
 corpus, while about 79.3% of questions have the correct answer *suggested*
 in the process, it can currently choose the correct answer for about 32.6%
 of questions (but 47.6% of questions have the correct answer in top three
@@ -35,7 +36,7 @@ Quick instructions for setting up, building and running (focused on Debian Wheez
   * We assume that you cloned YodaQA and are now in the directory that contains this README.
   * ``sudo apt-get install java7-jdk``
   * ``./gradlew check``
-  * ``echo | ./gradlew run -q`` as a "dummy run" which will trigger download
+  * ``echo | ./gradlew run`` as a "dummy run" which will trigger download
     of all sorts of NLP resources and models.  This will amount to several
     hundreds of megabytes of download!
   * ``./gradlew run -q`` (command line) or ``./gradlew web -q`` (web interface)
@@ -71,7 +72,9 @@ or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
 on systems with less than 8GB RAM.  You may also need to tweak the
 minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
-on a 32-bit system.
+on a 32-bit system.  By default, YodaQA will try to use *half* of the logical
+CPU cores available; set the YODAQA_N_THREADS environment variable to change
+the number of threads used.
 
 ## Data Sources
 
@@ -122,9 +125,10 @@ We can also leverage another structured data source, the Freebase.
 We use its RDF export with SPARQL endpoint, running on infrastructure
 provided by the author's academic group (Jan Šedivý's 3C Group at the
 Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
-for some reason, you can also simply disable Freebase usage by commenting
-out the FreebaseOntologyAnswerProducer initialization in the code of
-``src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java``.
+for some reason, you can also disable Freebase usage by commenting
+out the fbo.query() line in the code of:
+
+	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
 
 You can start your own instance by following the instructions in
 ``data/freebase/README.md`` but it is quite arduous and resource intensive.
@@ -165,3 +169,19 @@ Some stages of the QA pipeline use machine learning for scoring snippets
 Models should be re-trained every time a non-trivial change in the
 pipeline is made.  For details on managing this, please refer to
 data/ml/README.md.
+
+### Interactive Groovy Shell
+
+The easiest way to get a feel of how various YodaQA classes (esp. helper
+classes like the provider.* packages) behave is using a Groovy shell.
+Example (hint - use tab completion):
+
+	$ ./gradlew -q shell
+	This is a gradle Application Shell.
+	You can import your application classes and act on them.
+	groovy:000> import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
+	===> cz.brmlab.yodaqa.provider.rdf.DBpediaTypes
+	groovy:000> dbt = DBpediaTypes.newInstance();
+	===> cz.brmlab.yodaqa.provider.rdf.DBpediaTypes@499e542d
+	groovy:000> dbt.query("Albert Einstein", null);
+	===> [Natural Person, Writer, Philosopher, Academician, th-century American People, th-century German People, th-century Swiss People, th-century Swiss People, Alumnus, Laureate, Academics Of Charles University In Prague, Citizen, Emigrant, Inventor, Agnostic, Colleague, Pacifist, American Humanitarians, Humanitarian, American Inventors, American Pacifists, American People Of German-Jewish Descent, American People Of Swiss-Jewish Descent, American Physicists, Cosmologist, Cosmologists, Deist, Deists, Displaced Person, ETHZurich Alumni, Examiner, Fellows Of The Leopoldina, German Emigrants To Switzerland, German Humanitarians, German Inventors, German Nobel Laureates, German Pacifists, German Philosophers, German Physicists, Jewish Agnostics, Jewish American Scientists, Jewish American Writers, Jewish Inventors, Jewish Pacifists, Jewish Philosophers, Jewish Physicists, Naturalized Citizens Of The United States, Nobel Laureates In Physics, Patent Examiners, People Associated With The University Of Zurich, rttemberg, People From Ulm, People In AFirst-cousin Relationship, Stateless Persons, Swiss Emigrants To The United States, Swiss Humanitarians, Swiss Inventors, Swiss Nobel Laureates, Swiss Pacifists, Swiss Philosophers, Swiss Physicists, Theoretical Physicists]

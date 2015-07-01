@@ -4,6 +4,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
 
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
+import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
 import cz.brmlab.yodaqa.io.machine.MachineAnswerPrinter;
 import cz.brmlab.yodaqa.io.machine.MachineQuestionReader;
 import cz.brmlab.yodaqa.pipeline.YodaQA;
@@ -34,6 +35,7 @@ public class YodaQA_Machine {
 		AnalysisEngineDescription printer = createEngineDescription(
 				MachineAnswerPrinter.class);
 
+		ParallelEngineFactory.registerFactory(); // comment out for a linear single-thread flow
 		/* XXX: Later, we will want to create an actual flow
 		 * to support scaleout. */
 		MultiCASPipeline.runPipeline(reader,

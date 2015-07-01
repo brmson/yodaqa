@@ -13,6 +13,7 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerScoringAE;
 import cz.brmlab.yodaqa.analysis.answer.AnswerAnalysisAE;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
+import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
 import cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.DBpediaOntologyAnswerProducer;
@@ -25,6 +26,7 @@ import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpNameFinder;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 /**
  * The main YodaQA pipeline.
@@ -59,7 +61,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		System.setProperty("dkpro.core.resourceprovider.sharable." + LanguageToolSegmenter.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + LanguageToolLemmatizer.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordParser.class.getName(), "true");
-		System.err.println("dkpro.core.resourceprovider.sharable." + StanfordParser.class.getName());
+		System.setProperty("dkpro.core.resourceprovider.sharable." + StanfordPosTagger.class.getName(), "true");
 		System.setProperty("dkpro.core.resourceprovider.sharable." + OpenNlpNameFinder.class.getName(), "true");
 	}
 
@@ -131,7 +133,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 6,
-					AnswerCASMerger.PARAM_PHASE, 0);
+					AnswerCASMerger.PARAM_PHASE, 0,
+					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #0.) */
@@ -177,7 +180,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
 					AnswerCASMerger.PARAM_HITLIST_REUSE, false,
-					AnswerCASMerger.PARAM_PHASE, 1);
+					AnswerCASMerger.PARAM_PHASE, 1,
+					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
 
 			/* XXX: Move the following to a separate scoring phase
@@ -237,7 +241,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					AnswerCASMerger.class,
 					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
 					AnswerCASMerger.PARAM_HITLIST_REUSE, true,
-					AnswerCASMerger.PARAM_PHASE, 2);
+					AnswerCASMerger.PARAM_PHASE, 2,
+					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
 
 		/* (Serialization / scoring point #2.) */

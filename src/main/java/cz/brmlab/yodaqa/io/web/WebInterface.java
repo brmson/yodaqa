@@ -46,7 +46,7 @@ public class WebInterface implements Runnable {
 			Random idgen = new Random();
 			@Override
 			public Object handle(Request request, Response response) {
-				int id = idgen.nextInt(Integer.MAX_VALUE);
+				String id = Integer.toString(idgen.nextInt(Integer.MAX_VALUE));
 				String text = request.queryParams("text");
 				if (text == null) {
 					response.status(422);
@@ -65,9 +65,9 @@ public class WebInterface implements Runnable {
 			@Override
 			public Object handle(Request request, Response response) {
 				response.type("application/json");
-				int id;
+				String id;
 				try {
-					id = Integer.parseInt(request.params("id"));
+					id = request.params("id");
 				} catch (NumberFormatException e) {
 					response.status(404);
 					return "{}";

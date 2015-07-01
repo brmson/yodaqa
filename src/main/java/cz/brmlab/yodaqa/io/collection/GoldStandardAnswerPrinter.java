@@ -17,6 +17,8 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
@@ -50,7 +52,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 	PrintWriter TSVOutput;
 
 
-	public void initialize(UimaContext context)
+	public synchronized void initialize(UimaContext context)
 			throws ResourceInitializationException {
 		super.initialize(context);
 
@@ -87,7 +89,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		TSVOutput.flush();
 	}
 
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
+	public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
 		JCas questionView, answerHitlist;
 		try {
 			questionView = jcas.getView("Question");
@@ -131,5 +133,9 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			/* Special case, no answer found. */
 			output(qi, procTime, 0.0, 0, 0, ".");
 		}
+
+		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
+		// q.setAnswers(answers); XXX
+		QuestionDashboard.getInstance().finishQuestion(q);
 	}
 }

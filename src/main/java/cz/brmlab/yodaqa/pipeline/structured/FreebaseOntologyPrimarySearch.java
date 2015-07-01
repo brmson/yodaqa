@@ -34,8 +34,9 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 
 	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
-			/* Query the Freebase ontology dataset. */
-			properties.addAll(fbo.query(concept.getLabel(), logger));
+		/* Query the Freebase ontology dataset. */
+		/* --- Comment out the next line to disable Freebase lookups. --- */
+		properties.addAll(fbo.query(concept.getLabel(), logger));
 		return properties;
 	}
 

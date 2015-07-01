@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 
@@ -80,11 +83,14 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 
 			Answer bestAnswer = answers.remove(0);
 			AnswerFV fv = new AnswerFV(bestAnswer);
+			ArrayList<AnswerResource> resources = new ArrayList<>();
+			addResources(resources, bestAnswer);
 			removeAnswer(bestAnswer);
 
 			for (Answer oa : answers) {
 				logger.debug("subsumed <<{}>>:{} < <<{}>>", oa.getText(), oa.getConfidence(), bestAnswer.getText());
 				fv.merge(new AnswerFV(oa));
+				addResources(resources, oa);
 				// XXX: Merge LATs?  First let's just warn
 				// if we are losing any.  Ugly hacky code.
 				if (oa.getLats() != null) {
@@ -124,6 +130,8 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 				fv.setFeature(AF_OriginMultiple.class, 1.0);
 
 			bestAnswer.setFeatures(fv.toFSArray(jcas));
+			if (!resources.isEmpty())
+				bestAnswer.setResources(FSCollectionFactory.createFSArray(jcas, resources));
 			bestAnswer.addToIndexes();
 		}
 	}
@@ -133,5 +141,23 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 			for (FeatureStructure af : a.getFeatures().toArray())
 				((AnswerFeature) af).removeFromIndexes();
 		a.removeFromIndexes();
+	}
+
+	protected void addResources(List<AnswerResource> resources, Answer answer) {
+		if (answer.getResources() == null)
+			return;
+		for (FeatureStructure fs : answer.getResources().toArray()) {
+			AnswerResource ar = (AnswerResource) fs;
+			for (AnswerResource arx : resources) {
+				if (arx.getIri().equals(ar.getIri())) {
+					// A dupe, get rid of it
+					ar.removeFromIndexes();
+					ar = null;
+					break;
+				}
+			}
+			if (ar != null)
+				resources.add(ar);
+		}
 	}
 }

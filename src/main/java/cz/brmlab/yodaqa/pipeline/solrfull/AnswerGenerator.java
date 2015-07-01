@@ -12,6 +12,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
@@ -63,6 +64,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		CandidateAnswer answer = null;
 		if (answers.hasNext())
 			answer = (CandidateAnswer) answers.next();
+		i++;
 
 		JCas jcas = getEmptyJCas();
 		try {
@@ -74,7 +76,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			JCas canAnswerView = jcas.getView("Answer");
 			if (answer != null) {
 				boolean isLast = !answers.hasNext();
-				generateAnswer(answer, canAnswerView, isLast);
+				generateAnswer(answer, canAnswerView, isLast ? i : 0);
 
 				if (isLast) {
 					/* XXX: Ugh. We clearly need global result ids. */
@@ -91,7 +93,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 				canAnswerView.setDocumentText("");
 				canAnswerView.setDocumentLanguage(resultView.getDocumentLanguage());
 				AnswerInfo ai = new AnswerInfo(canAnswerView);
-				ai.setIsLast(true);
+				ai.setIsLast(i);
 				ai.addToIndexes();
 			}
 			copyResultInfo(resultView, canAnswerView);
@@ -100,7 +102,6 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			jcas.release();
 			throw new AnalysisEngineProcessException(e);
 		}
-		i++;
 		return jcas;
 	}
 
@@ -117,7 +118,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	}
 
 	protected void generateAnswer(CandidateAnswer answer, JCas jcas,
-			boolean isLast) throws Exception {
+			int isLast) throws Exception {
 		jcas.setDocumentText(answer.getCoveredText());
 		jcas.setDocumentLanguage(answer.getCAS().getDocumentLanguage());
 
@@ -147,5 +148,10 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			a2.setEnd(a2.getEnd() - ofs);
 			a2.addToIndexes();
 		}
+	}
+
+	@Override
+	public int getCasInstancesRequired() {
+		return MultiThreadASB.maxJobs * 2;
 	}
 }

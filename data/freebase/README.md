@@ -10,9 +10,10 @@ areas - e.g. astronomical objects or chemical elements.
 
 Unfortunately, we know of no well-defined public Freebase SPARQL endpoint,
 so we have to run our own.  At the moment, you need IPv6 connectivity to
-reach it and it is highly experimental; its IP address is
+reach it and it is highly experimental; its address is
 
-	2001:718:2:1638:801f:a7ff:fe97:83ed
+	http://147.32.85.33:3030/freebase/query
+	(or 2001:718:2:1638:801f:a7ff:fe97:83ed)
 
 (we will make a DNS record for it when it is, well, less experimental).
 

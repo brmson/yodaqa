@@ -14,8 +14,6 @@ import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.PointerTarget;
 import net.sf.extjwnl.data.PointerType;
 import net.sf.extjwnl.data.Synset;
-import net.sf.extjwnl.data.BaseDictionaryElement;
-import net.sf.extjwnl.JWNLException;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -29,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
+import cz.brmlab.yodaqa.provider.Wordnet;
 
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
@@ -85,12 +84,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 		
 		super.initialize(aContext);
 
-		try {
-			if (dictionary == null)
-				dictionary = Dictionary.getDefaultResourceInstance();
-		} catch (JWNLException e) {
-			throw new ResourceInitializationException(e);
-		}
+		dictionary = Wordnet.getDictionary();
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {

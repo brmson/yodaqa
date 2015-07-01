@@ -199,9 +199,9 @@ def measure(scorer, answersets, could_picked):
 
 # AnswerScoreSimple-alike scoring for performance comparison
 def simple_score(labels, fvset):
-    specificity = fvset[:, labels.index('@spWordNet')]
+    specificity = np.array(fvset[:, labels.index('@spWordNet')])
     specificity[specificity == 0.0] = math.exp(-4)
-    passage_score = fvset[:, labels.index('@passageLogScore')]
+    passage_score = np.array(fvset[:, labels.index('@passageLogScore')])
     passage_score[fvset[:, labels.index('@originDocTitle')] > 0.0] = 2
     ne_bonus = np.exp(fvset[:, labels.index('@originPsgNE')])
     score = specificity * ne_bonus * fvset[:, labels.index('@occurences')] * fvset[:, labels.index('@resultLogScore')] * passage_score
@@ -247,9 +247,9 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
     except ZeroDivisionError:
         recall = 0
     try:
-        f2 = 5 * (prec * recall) / (4 * prec + recall)
+        f1 = 2 * (prec * recall) / (prec + recall)
     except ZeroDivisionError:
-        f2 = 0
+        f1 = 0
 
     classpred70_test = (proba[:,1] >= 0.7).astype('float')
     tp70_count = float(np.sum(np.logical_and(class_test > 0.5, classpred70_test > 0.5)))
@@ -266,9 +266,9 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
     except ZeroDivisionError:
         recall70 = 0
     try:
-        f2_70 = 5 * (prec70 * recall70) / (4 * prec70 + recall70)
+        f1_70 = 2 * (prec70 * recall70) / (prec70 + recall70)
     except ZeroDivisionError:
-        f2_70 = 0
+        f1_70 = 0
 
     # Test the model on whole questions
 
@@ -297,12 +297,12 @@ def test_model(cfier, fv_test, class_test, test_answersets, labels):
             return score
     (simple_any_picked, simple_all_picked, simple_mrr) = measure(SimpleScorer(labels), test_answersets, could_picked)
 
-    return (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, cfier_mrr)
+    return (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, cfier_mrr)
 
 
-def test_msg(accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, cfier_mrr):
-    return "PERANS acc/prec/rcl/F2 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F2 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f] MRR %.3f" % \
-           (accuracy, prec, recall, f2, prec70, recall70, f2_70, avail_to_pick, cfier_any_picked, cfier_mrr)
+def test_msg(accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, cfier_mrr):
+    return "PERANS acc/prec/rcl/F1 = %.3f/%.3f/%.3f/%.3f, @70 prec/rcl/F1 = %.3f/%.3f/%.3f, PERQ avail %.3f, any good = [%.3f] MRR %.3f" % \
+           (accuracy, prec, recall, f1, prec70, recall70, f1_70, avail_to_pick, cfier_any_picked, cfier_mrr)
 
 
 def dump_answers(cfier, fv_test, class_test):

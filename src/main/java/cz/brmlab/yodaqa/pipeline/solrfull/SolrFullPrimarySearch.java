@@ -5,21 +5,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
-import org.apache.uima.fit.descriptor.SofaCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
@@ -27,6 +30,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -37,16 +41,11 @@ import cz.brmlab.yodaqa.provider.solr.SolrTerm;
 
 /**
  * Take a question CAS and search for keywords (or already resolved pageIDs)
- * in the Solr data source.
+ * in the Solr data source.  Each search results gets a new CAS.
  *
  * We just feed most of the clues to a Solr search. */
 
-@SofaCapability(
-	inputSofas = { "_InitialView" },
-	outputSofas = { "Search" }
-)
-
-public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
+public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(SolrFullPrimarySearch.class);
 
 	/** Number of results to grab and analyze. */
@@ -90,6 +89,35 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	protected String srcName;
 	protected Solr solr;
 
+	protected JCas questionView;
+
+	protected class SolrResult {
+		public SolrDocument doc;
+		public ClueConcept concept;
+		public int rank;
+
+		public SolrResult(SolrDocument doc, ClueConcept concept, int rank) {
+			this.doc = doc;
+			this.concept = concept;
+			this.rank = rank;
+
+			// XXX: Perhaps this shouldn't be in a constructor
+
+			Integer id = (Integer) doc.getFieldValue("id");
+			String title = (String) doc.getFieldValue("titleText");
+			double score = ((Float) doc.getFieldValue("score")).floatValue();
+			logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
+
+			AnswerSourceEnwiki as = new AnswerSourceEnwiki(
+					searchFullText ? AnswerSourceEnwiki.ORIGIN_FULL : AnswerSourceEnwiki.ORIGIN_TITLE,
+					title, id);
+			QuestionDashboard.getInstance().get(questionView).addSource(as);
+		}
+	};
+
+	protected List<SolrResult> results;
+	protected int i;
+
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -113,15 +141,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		/* First, set up the views. */
 		try {
-			jcas.createView("Search");
-		} catch (Exception e) {
-			/* That's ok, the Search view might have been
-			 * already created by a different PrimarySearch. */
-		}
-		JCas questionView, searchView;
-		try {
 			questionView = jcas.getView(CAS.NAME_DEFAULT_SOFA);
-			searchView = jcas.getView("Search");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
@@ -130,11 +150,15 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		 * sequence of searches below. */
 		Collection<Integer> visitedIDs = new TreeSet<Integer>();
 
+		results = new ArrayList<>();
+		i = 0;
+
 		/* Run a search for concept clues (pageID)
 		 * if they weren't included above. */
 
 		Collection<ClueConcept> concepts;
 		SolrDocumentList documents;
+		int i;
 		try {
 			concepts = JCasUtil.select(questionView, ClueConcept.class);
 			Collection<Integer> IDs = conceptsToIDs(concepts);
@@ -143,6 +167,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		i = 0;
 		for (SolrDocument doc : documents) {
 			Integer id = (Integer) doc.getFieldValue("id");
 			visitedIDs.add(id);
@@ -155,8 +180,8 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 				}
 			}
 			assert(concept != null);
-			/* Generate the result. */
-			generateSolrResult(searchView, questionView, doc, concept);
+			/* Record the result. */
+			results.add(new SolrResult(doc, concept, 1));
 		}
 
 		/* Run a search for text clues. */
@@ -169,6 +194,7 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
+		i = 0;
 		for (SolrDocument doc : documents) {
 			Integer docID = (Integer) doc.getFieldValue("id");
 			if (visitedIDs.contains(docID)) {
@@ -176,7 +202,8 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 				continue;
 			}
 			visitedIDs.add(docID);
-			generateSolrResult(searchView, questionView, doc, null);
+			/* Record the result. */
+			results.add(new SolrResult(doc, null, i+1));
 		}
 	}
 
@@ -187,38 +214,104 @@ public class SolrFullPrimarySearch extends JCasAnnotator_ImplBase {
 		return terms;
 	}
 
-	protected void generateSolrResult(JCas searchView, JCas questionView,
-					  SolrDocument document, ClueConcept concept)
+	@Override
+	public boolean hasNext() throws AnalysisEngineProcessException {
+		return i < results.size() || i == 0;
+	}
+
+	@Override
+	public AbstractCas next() throws AnalysisEngineProcessException {
+		SolrResult result = i < results.size() ? results.get(i) : null;
+		i++;
+
+		JCas jcas = getEmptyJCas();
+		try {
+			jcas.createView("Question");
+			CasCopier qcopier = new CasCopier(questionView.getCas(), jcas.getView("Question").getCas());
+			copyQuestion(qcopier, questionView, jcas.getView("Question"));
+
+			jcas.createView("Result");
+			JCas resultView = jcas.getView("Result");
+			if (result != null) {
+				boolean isLast = (i == results.size());
+				ResultInfo ri = generateSolrResult(questionView, resultView, result, isLast ? i : 0);
+				String title = ri.getDocumentTitle();
+				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
+				/* XXX: Ugh. We clearly need global result ids. */
+				QuestionDashboard.getInstance().get(questionView).setSourceState(
+						ri.getOrigin() == "cz.brmlab.yodaqa.pipeline.solrfull.fulltext"
+							? AnswerSourceEnwiki.ORIGIN_FULL
+							: AnswerSourceEnwiki.ORIGIN_TITLE,
+						Integer.parseInt(ri.getDocumentId()),
+						1);
+			} else {
+				/* We will just generate a single dummy CAS
+				 * to avoid flow breakage. */
+				resultView.setDocumentText("");
+				resultView.setDocumentLanguage(questionView.getDocumentLanguage());
+				ResultInfo ri = new ResultInfo(resultView);
+				ri.setDocumentTitle("");
+				ri.setOrigin(resultInfoOrigin);
+				ri.setIsLast(i);
+				ri.addToIndexes();
+			}
+		} catch (Exception e) {
+			jcas.release();
+			throw new AnalysisEngineProcessException(e);
+		}
+		return jcas;
+	}
+
+	protected void copyQuestion(CasCopier copier, JCas src, JCas jcas) throws Exception {
+		copier.copyCasView(src.getCas(), jcas.getCas(), true);
+	}
+
+	protected ResultInfo generateSolrResult(JCas questionView, JCas resultView,
+					  SolrResult result,
+					  int isLast)
 			throws AnalysisEngineProcessException {
-		Integer id = (Integer) document.getFieldValue("id");
-		String title = (String) document.getFieldValue("titleText");
-		double score = ((Float) document.getFieldValue("score")).floatValue();
-		logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
+		Integer id = (Integer) result.doc.getFieldValue("id");
+		String title = (String) result.doc.getFieldValue("titleText");
+		double score = ((Float) result.doc.getFieldValue("score")).floatValue();
+
+		String text;
+		try {
+			text = SolrNamedSource.get(srcName).getDocText(id.toString());
+		} catch (SolrServerException e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+		// System.err.println("--8<-- " + text + " --8<--");
+		resultView.setDocumentText(text);
+		resultView.setDocumentLanguage("en"); // XXX
 
 		AnswerFV afv = new AnswerFV();
+		afv.setFeature(AF_ResultRR.class, 1 / ((float) result.rank));
 		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
-		if (concept != null) {
+		if (result.concept != null) {
 			afv.setFeature(AF_OriginConcept.class, 1.0);
-			if (concept.getBySubject())
+			if (result.concept.getBySubject())
 				afv.setFeature(AF_OriginConceptBySubject.class, 1.0);
-			if (concept.getByLAT())
+			if (result.concept.getByLAT())
 				afv.setFeature(AF_OriginConceptByLAT.class, 1.0);
-			if (concept.getByNE())
+			if (result.concept.getByNE())
 				afv.setFeature(AF_OriginConceptByNE.class, 1.0);
 		}
 
-		ResultInfo ri = new ResultInfo(searchView);
+		ResultInfo ri = new ResultInfo(resultView);
 		ri.setDocumentId(id.toString());
 		ri.setDocumentTitle(title);
 		ri.setSource(srcName);
 		ri.setRelevance(score);
 		ri.setOrigin(resultInfoOrigin);
-		ri.setAnsfeatures(afv.toFSArray(searchView));
+		ri.setAnsfeatures(afv.toFSArray(resultView));
+		ri.setIsLast(isLast);
 		ri.addToIndexes();
 
-		AnswerSourceEnwiki as = new AnswerSourceEnwiki(
-				searchFullText ? AnswerSourceEnwiki.ORIGIN_FULL : AnswerSourceEnwiki.ORIGIN_TITLE,
-				title, id);
-		QuestionDashboard.getInstance().get(questionView).addSource(as);
+		return ri;
+	}
+
+	@Override
+	public int getCasInstancesRequired() {
+		return MultiThreadASB.maxJobs * 2;
 	}
 }

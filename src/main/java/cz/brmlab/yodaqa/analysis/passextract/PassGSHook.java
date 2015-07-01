@@ -35,11 +35,11 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 
 	final Logger logger = LoggerFactory.getLogger(PassGSHook.class);
 
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
+	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
 
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
+	public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
 		JCas questionView, passagesView, pickedPassagesView;
 		try {
 			questionView = jcas.getView("Question");

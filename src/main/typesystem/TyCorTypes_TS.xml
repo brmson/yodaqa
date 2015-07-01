@@ -58,8 +58,13 @@
 
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT</name>
-	<description>LAT generated from a question word (e.g. when -> LAT time).</description>
+	<description>Question LAT generated implicitly (from a question word or another form of focus, e.g. lemmatized).</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.LAT</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.QuestionWordLAT</name>
+	<description>LAT generated from a question word (e.g. when -> LAT time).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT</supertypeName>
       </typeDescription>
 
       <typeDescription>

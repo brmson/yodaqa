@@ -7,8 +7,6 @@ import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.PointerTarget;
 import net.sf.extjwnl.data.PointerType;
 import net.sf.extjwnl.data.Synset;
-import net.sf.extjwnl.data.BaseDictionaryElement;
-import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.Word;
 
 import org.apache.uima.UimaContext;
@@ -29,8 +27,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
-
-import cz.brmlab.yodaqa.provider.rdf.DBpediaTypes;
+import cz.brmlab.yodaqa.provider.Wordnet;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -43,17 +40,12 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 
 public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByWnInstance.class);
-	 	
+
 	Dictionary dictionary = null;
-	
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
-		try {
-			if (dictionary == null)
-				dictionary = Dictionary.getDefaultResourceInstance();
-		} catch (JWNLException e) {
-			throw new ResourceInitializationException(e);
-		}
+		dictionary = Wordnet.getDictionary();
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {

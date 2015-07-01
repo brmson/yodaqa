@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: data/eval/train-and-eval.sh [COMMIT [BASECOMMIT]]
+# Usage: data/eval/train-and-eval.sh [-d DATASET] [COMMIT [BASECOMMIT]]
 #
 # Perform full model training and performance evaluation of the given
 # commit (may be also a branch name, or nothing to eval the HEAD).
@@ -26,8 +26,18 @@
 # the current repo and run things there.  N.B. uncommitted changes
 # are *not* tested!  The actual execution happens in the script
 # `data/eval/_multistage_traineval.sh`.
+#
+# -d DATASET allows "train and eval" on a different dataset than
+# "curated".  E.g. -d large2180 will test on the 2180-question
+# noisier dataset.
 
 set -e
+
+if [ "$1" = "-d" ]; then
+	shift; dataset=$1; shift
+else
+	dataset=curated
+fi
 
 cid=$(git rev-parse --short "${1:-HEAD}")
 baserepo=$(pwd)
@@ -55,11 +65,11 @@ time ./gradlew check
 echo "Starting evaluation in $clonedir"
 sleep 2
 
-screen -m sh -c '
-	screen "'"$baserepo"'/data/eval/_multistage_traineval.sh" "'"$baserepo"'" "train" '"$basecid"';
+screen -m sh -c "
+	screen \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 $basecid;
 	sleep 10;
-	screen "'"$baserepo"'/data/eval/_multistage_traineval.sh" "'"$baserepo"'" "test" '"$basecid"'
-'
+	screen \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 1 $basecid
+"
 
 popd
 
