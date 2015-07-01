@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -163,7 +164,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
-
+		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
 		/* Generate a resource descriptor if available. */
 		if (property.getValRes() != null) {
 			AnswerResource ar = new AnswerResource(jcas);

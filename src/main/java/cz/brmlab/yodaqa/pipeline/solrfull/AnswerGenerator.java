@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline.solrfull;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -129,8 +130,8 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
+		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
 		ai.addToIndexes();
-
 		CasCopier copier = new CasCopier(answer.getCAS(), jcas.getCas());
 
 		/* Copy in-answer annotations */

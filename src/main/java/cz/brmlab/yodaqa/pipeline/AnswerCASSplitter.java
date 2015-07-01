@@ -121,7 +121,7 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 				AnswerInfo ai = new AnswerInfo(canAnswerView);
 				ai.setIsLast(i);
 				ai.addToIndexes();
-			}
+ 			}
 
 		} catch (Exception e) {
 			jcas.release();
@@ -148,6 +148,7 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		ai.setCanonText(answer.getCanonText());
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
+		ai.setAnswerID(answer.getAnswerID());
 
 		/* Generate the Focus */
 		if (answer.getFocus() != null) {

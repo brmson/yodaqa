@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.uima.UimaContext;
@@ -29,7 +30,6 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
-import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
@@ -182,6 +182,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
 		ai.setIsLast(1);
+		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
 		ai.addToIndexes();
 	}
 
@@ -200,6 +201,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setIsLast(1);
 		ai.addToIndexes();
+
 	}
 
 	@Override

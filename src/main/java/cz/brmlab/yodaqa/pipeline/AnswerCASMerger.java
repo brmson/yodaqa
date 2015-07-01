@@ -203,7 +203,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		Answer answer = new Answer(hitlistCas);
 		answer.setText(canAnswer.getDocumentText());
 		answer.setCanonText(ai.getCanonText());
-
+		answer.setAnswerID(ai.getAnswerID());
 		/* Store the Focus. */
 		for (Focus focus : JCasUtil.select(canAnswer, Focus.class)) {
 			answer.setFocus(focus.getCoveredText());
