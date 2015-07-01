@@ -17,12 +17,11 @@ showstats() {
 	perfectp="$(echo "100*$perfect/$total" | bc -l)"
 	anyp="$(echo "100*$any/$total" | bc -l)"
 
-	avgscore="$(echo "($(cat "$tsvout" | cut -f4 | tr '\n' '+')0)/$total" | bc -l)"
 	mrr="$(echo "($(cat "$tsvout" | cut -f5 | sed 's/-1/10000/; s/.*/1\/(1+&)/' | tr '\n' '+')0)/$total" | bc -l)"
 	avgtime="$(echo "($(cat "$tsvout" | cut -f2 | tr '\n' '+')0)/$total" | bc -l)"
 
-	printf '%d/%d/%d %.1f%%/%.1f%% avgscore %.3f mrr %.3f avgtime %.3f\n' \
-		"$perfect" "$any" "$total" "$perfectp" "$anyp" "$avgscore" "$mrr" "$avgtime"
+	printf '%d/%d/%d %.1f%%/%.1f%% mrr %.3f avgtime %.3f\n' \
+		"$perfect" "$any" "$total" "$perfectp" "$anyp" "$mrr" "$avgtime"
 }
 
 if [ "$#" -gt 1 ]; then
