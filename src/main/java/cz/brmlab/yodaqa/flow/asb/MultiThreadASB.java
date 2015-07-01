@@ -778,9 +778,13 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     protected CasInFlow newCasInFlowFromFrame(StackFrame frame) throws Exception {
       CasInFlow cif = null;
       try {
-        if (!frame.casIterator.hasNext())
-          return null;
-        CAS cas = frame.casIterator.next();
+        CAS cas;
+        /* Do not let two threads call hasNext(), then next() simultaneously. */
+        synchronized (frame.casIterator) {
+          if (!frame.casIterator.hasNext())
+            return null;
+          cas = frame.casIterator.next();
+        }
         // this is a new output CAS so we need to compute a flow for it
         FlowContainer flow = frame.originalCIF.flow.newCasProduced(cas, frame.casMultiplierAeKey);
         cif = new CasInFlow(cas, flow);
