@@ -92,6 +92,15 @@ The Java implementation of logistic classifier is stored in:
 
 	src/main/java/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic.java
 
+For machine learning model development, we use the v1.0 (0ae3b79) system
+on the curated dataset:
+
+  * The CSV and TSV dumps of answer feature vectors:
+    http://pasky.or.cz/dev/brmson/answer-mldata-0ae3b79.tar.xz
+
+  * The XMI dumps of answer CASes (for re-running YodaQA with new ML model):
+    http://pasky.or.cz/dev/brmson/answer-xmidump-0ae3b79.tar.xz
+
 The tool `data/ml/answer-comparefv.py` can be used for comparing effect
 of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
 used for feature occurence statistics.  These analysis tools are further
