@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.analysis.passage;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import cz.brmlab.yodaqa.analysis.StopWordFilter;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
@@ -22,11 +23,7 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 
 public class CanBlacklist extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(CanBlacklist.class);
-
-	/* Case-insensitive blacklist of silly answers. */
-	static final String blacklist[] = {
-		"the", "an", "it", "in", "at", "of",
-	};
+	protected final StopWordFilter blacklist = new StopWordFilter();
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -41,11 +38,8 @@ answers:	for (CandidateAnswer ca : JCasUtil.select(jcas, CandidateAnswer.class))
 				continue;
 			}
 			/* Remove blacklisted answers. */
-			for (String bl : blacklist) {
-				if (ca.getCoveredText().toLowerCase().equals(bl.toLowerCase())) {
-					toRemove.add(ca);
-					continue answers;
-				}
+			if (blacklist.contains(ca.getCoveredText())) {
+				toRemove.add(ca);
 			}
 		}
 
