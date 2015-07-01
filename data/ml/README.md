@@ -12,7 +12,7 @@ Right now, we consider machine learned models in three cases:
   * Candidate answer extraction based on B-I-O tagging and chunking;
     this token sequence model does not share the rest of this infrastructure
     (using Cleartk instead) and the rest of this document does not cover it;
-    its model data lives in ``data/ml/bioasq``, refer to the README there.
+    its model data lives in ``data/ml/biocrf``, refer to the README there.
 
 In general, to train models, we first need to gather training data.
 We run YodaQA with the tsvgs frontend like during gold standard measurements,
@@ -88,17 +88,18 @@ estimated probability of class 1.  You can invoke this classifier as:
 
 	data/ml/answer-train-logistic.py <data/ml/tsv/training-answer-COMMIT.tsv | tee logistic.txt
 
-The Java implementation of logistic classifier is stored in
+The Java implementation of logistic classifier is stored in:
 
 	src/main/java/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic.java
 
-and to update it based on the regression training run, edit that file
-and paste the contents of logistic.txt at the marked location near the
-top (replacing previous content).
+For machine learning model development, we use the v1.0 (0ae3b79) system
+on the curated dataset:
 
-(There is also a AnswerScoreSimple scorer which uses just a small set of
-features and is super-simplistic, what we used before; its performance is
-contrasted by the 'simple' performance rate output by answer-train.)
+  * The CSV and TSV dumps of answer feature vectors:
+    http://pasky.or.cz/dev/brmson/answer-mldata-0ae3b79.tar.xz
+
+  * The XMI dumps of answer CASes (for re-running YodaQA with new ML model):
+    http://pasky.or.cz/dev/brmson/answer-xmidump-0ae3b79.tar.xz
 
 The tool `data/ml/answer-comparefv.py` can be used for comparing effect
 of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
