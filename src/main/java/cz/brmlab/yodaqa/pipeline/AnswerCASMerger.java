@@ -217,7 +217,6 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	protected CompoundAnswer loadAnswer(JCas canAnswer, AnswerInfo ai, JCas hitlistCas) throws AnalysisEngineProcessException {
 		Answer answer = makeAnswer(canAnswer, ai, hitlistCas);
 		AnswerFV fv = new AnswerFV(ai);
-
 		/* Store the LATs. */
 		List<LAT> latlist = new ArrayList<>();
 		for (LAT lat : JCasUtil.select(canAnswer, LAT.class)) {
@@ -296,12 +295,16 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 
 			if (canAnswer.getDocumentText() == null)
 				return; // we received a dummy CAS
-
 			CompoundAnswer ca = loadAnswer(canAnswer, ai, finalAnswerHitlistView);
 			addAnswer(ca);
 			// System.err.println("AR process: " + ca.getAnswer().getText());
-
 			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
+			if (ai.getPassageIDs()!=null) { //found using either SorlDocPrimarySearch or StructuredSearch
+				for (int ID : ai.getPassageIDs().toArray()) {
+					qa.addToPassageList(ID);
+				}
+			}
+			qa.setID(ai.getAnswerID());
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}

@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.pipeline.solrfull;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.PassageIDGenerator;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -8,6 +9,7 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
@@ -122,7 +124,6 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			int isLast) throws Exception {
 		jcas.setDocumentText(answer.getCoveredText());
 		jcas.setDocumentLanguage(answer.getCAS().getDocumentLanguage());
-
 		/* Grab answer features */
 		AnswerFV srcFV = new AnswerFV(answer);
 
@@ -131,6 +132,8 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
+		ai.setPassageIDs(new IntegerArray(jcas, answer.getPassageIDs().size()));
+		ai.getPassageIDs().copyFromArray(answer.getPassageIDs().toArray(), 0, 0, answer.getPassageIDs().size());
 		ai.addToIndexes();
 		CasCopier copier = new CasCopier(answer.getCAS(), jcas.getCas());
 
@@ -149,6 +152,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			a2.setEnd(a2.getEnd() - ofs);
 			a2.addToIndexes();
 		}
+
 	}
 
 	@Override

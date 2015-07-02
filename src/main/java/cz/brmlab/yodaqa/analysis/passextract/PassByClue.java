@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import cz.brmlab.yodaqa.flow.dashboard.PassageIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;
@@ -141,6 +143,8 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				passage.setEnd(sentence.getEnd());
 				passage.setAnsfeatures(afv.toFSArray(passagesView));
 				passage.setFeatures(FSCollectionFactory.createFSArray(jcas, features));
+				passage.setPassageID(PassageIDGenerator.getInstance().generateID());
+				QuestionDashboard.getInstance().addPassage(passage.getPassageID(), passage.getCoveredText());
 				passage.addToIndexes();
 
 				logger.debug(featureStr + " | " + passage.getCoveredText());

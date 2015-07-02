@@ -14,6 +14,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
@@ -142,14 +143,13 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 
 		/* Grab answer features */
 		AnswerFV srcFV = new AnswerFV(answer);
-
 		/* Generate the AnswerInfo singleton */
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setCanonText(answer.getCanonText());
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.setAnswerID(answer.getAnswerID());
-
+		ai.setPassageIDs(new IntegerArray(jcas,1));
 		/* Generate the Focus */
 		if (answer.getFocus() != null) {
 			Focus f = new Focus(jcas);

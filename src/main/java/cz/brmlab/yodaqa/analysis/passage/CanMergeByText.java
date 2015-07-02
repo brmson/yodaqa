@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 import org.apache.uima.UimaContext;
@@ -13,6 +16,7 @@ import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +68,22 @@ public class CanMergeByText extends JCasAnnotator_ImplBase {
 					mainCan.removeFromIndexes();
 					continue;
 				}
-				logger.debug("merging " + mainCan.getCoveredText() + "|" + can.getCoveredText());
+				//we use Set to ignore duplicates
+				Set<Integer> passageIds= new LinkedHashSet<>();
+				for (int ID : can.getPassageIDs().toArray()) {
+					passageIds.add(ID);
+				}
+				for (int ID : mainCan.getPassageIDs().toArray()) {
+					passageIds.add(ID);
+				}
+				//resize the passageID array in mainCan and fill it in a for cycle
+				mainCan.setPassageIDs(new IntegerArray(resultView, passageIds.size()));
+				int index = 0;
+				for (Integer i: passageIds) {
+					mainCan.setPassageIDs(index, i);
+					index++;
+ 				}
+ 				logger.debug("merging " + mainCan.getCoveredText() + "|" + can.getCoveredText());
 				mainCanFV.merge(new AnswerFV(can));
 				for (FeatureStructure af : can.getFeatures().toArray())
 					((AnswerFeature) af).removeFromIndexes();

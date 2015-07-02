@@ -21,6 +21,11 @@
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>passageIDs</name>
+            <description>List of PassageID's used.</description>
+            <rangeTypeName>uima.cas.IntegerArray</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>resources</name>
 	    <description>Set of resources corresponding to this answer. (There may be multiple, of course.) Duplicates should not appear, order should not matter.</description>
             <rangeTypeName>uima.cas.FSArray</rangeTypeName>
