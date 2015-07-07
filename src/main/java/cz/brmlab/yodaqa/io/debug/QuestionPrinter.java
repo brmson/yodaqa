@@ -34,74 +34,74 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 public class QuestionPrinter extends JCasConsumer_ImplBase {
 
-    public static final String PARAM_JSONFILE = "JSONFILE";
-    @ConfigurationParameter(name = PARAM_JSONFILE, mandatory = true)
-    private String JSONFile;
-    PrintWriter JSONOutput;
+	public static final String PARAM_JSONFILE = "JSONFILE";
+	@ConfigurationParameter(name = PARAM_JSONFILE, mandatory = true)
+		private String JSONFile;
+	PrintWriter JSONOutput;
 
 
-    public synchronized void initialize(UimaContext context)
-            throws ResourceInitializationException {
-        super.initialize(context);
+	public synchronized void initialize(UimaContext context)
+		throws ResourceInitializationException {
+		super.initialize(context);
 
-        try {
-            JSONOutput = new PrintWriter(JSONFile);
-        } catch (IOException io) {
-            throw new ResourceInitializationException(io);
-        }
-    }
+		try {
+			JSONOutput = new PrintWriter(JSONFile);
+		} catch (IOException io) {
+			throw new ResourceInitializationException(io);
+		}
+	}
 
-    protected void output(String res)
-    {
- 	    //System.out.println(res);
-        JSONOutput.println(res);
-        JSONOutput.flush();
-    }
+	protected void output(String res)
+	{
+		//System.out.println(res);
+		JSONOutput.println(res);
+		JSONOutput.flush();
+	}
 
-    public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
-        JCas questionView;
-        try {
-        questionView = jcas;
-        } catch (Exception e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+	public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
+		JCas questionView;
+		try {
+			questionView = jcas;
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
 
-        QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
-         /*{"qId": "...", "sv": "...", "LAT" : [ {...}, {...}, {...}]} */
-        String line = "{\"qId\": " + "\"" + qi.getQuestionId() + "\"" + ", " + "\"SV\": ";
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
+		/*{"qId": "...", "sv": "...", "LAT" : [ {...}, {...}, {...}]} */
+		String line = "{\"qId\": " + "\"" + qi.getQuestionId() + "\"" + ", " + "\"SV\": ";
 
-        String SVtmp ="[";
-        for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
-            SV sv = (SV) SVIterator.next();
-            SVtmp += "\"" + sv.getCoveredText() + "\"";
-            if(SVIterator.hasNext()){
-                SVtmp += ", ";
-            }
-        }
-        SVtmp += "], ";
-        line += SVtmp;
-        line += "\"LAT\": [";
-        String LATtmp = "";
-        for (Iterator iterator = JCasUtil.select(jcas, LAT.class).iterator(); iterator.hasNext(); ) {
-            LAT l = (LAT) iterator.next();
-             /*{"synset" : "...", "text" : "...", "specificity" : "..." "baseLAT" : "..."}*/
-            LATtmp += "{";
-            if (l.getSynset() != 0) { //only add synset when it is not zero
-                LATtmp += "\"synset\": " + "\"" + l.getSynset() + "\", ";
-            }
-            //add the rest
-            LATtmp += "\"text\": \"" + l.getText() + "\"," + " \"specificity\": \"" + l.getSpecificity() + "\", " + "\"baseLAT\": " +
-                        "\"" + l.getClass().getSimpleName() + "\"}";
-            //not last, add comma
-            if (iterator.hasNext()) {
-                LATtmp += ", ";
-            }
+		String SVtmp ="[";
+		for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
+			SV sv = (SV) SVIterator.next();
+			SVtmp += "\"" + sv.getCoveredText() + "\"";
+			if(SVIterator.hasNext()){
+				SVtmp += ", ";
+			}
+		}
+		SVtmp += "], ";
+		line += SVtmp;
+		line += "\"LAT\": [";
+		String LATtmp = "";
+		for (Iterator iterator = JCasUtil.select(jcas, LAT.class).iterator(); iterator.hasNext(); ) {
+			LAT l = (LAT) iterator.next();
+			/*{"synset" : "...", "text" : "...", "specificity" : "..." "baseLAT" : "..."}*/
+			LATtmp += "{";
+			if (l.getSynset() != 0) { //only add synset when it is not zero
+				LATtmp += "\"synset\": " + "\"" + l.getSynset() + "\", ";
+			}
+			//add the rest
+			LATtmp += "\"text\": \"" + l.getText() + "\"," + " \"specificity\": \"" + l.getSpecificity() + "\", " + "\"baseLAT\": " +
+				"\"" + l.getClass().getSimpleName() + "\"}";
+			//not last, add comma
+			if (iterator.hasNext()) {
+				LATtmp += ", ";
+			}
 
-        }
-        LATtmp += "]}";
-        line += LATtmp;
-        output(line);
-        //Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
-        //QuestionDashboard.getInstance().finishQuestion(q);
-    }
+		}
+		LATtmp += "]}";
+		line += LATtmp;
+		output(line);
+		//Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
+		//QuestionDashboard.getInstance().finishQuestion(q);
+	}
 }
