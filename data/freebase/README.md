@@ -9,13 +9,9 @@ point the data still seems to be vastly superior in Freebase in many
 areas - e.g. astronomical objects or chemical elements.
 
 Unfortunately, we know of no well-defined public Freebase SPARQL endpoint,
-so we have to run our own.  At the moment, you need IPv6 connectivity to
-reach it and it is highly experimental; its address is
+so we have to run our own:
 
-	http://147.32.85.33:3030/freebase/query
-	(or 2001:718:2:1638:801f:a7ff:fe97:83ed)
-
-(we will make a DNS record for it when it is, well, less experimental).
+	http://freebase.ailao.eu:3030/freebase/query
 
 To set up your own, you need to first download the Freebase NT data file
 and set up a RDF database on top of it.  Freebase is a bit on the bigger
