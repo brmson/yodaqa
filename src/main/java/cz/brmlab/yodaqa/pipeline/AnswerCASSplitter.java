@@ -149,7 +149,11 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.setAnswerID(answer.getAnswerID());
-		ai.setPassageIDs(new IntegerArray(jcas,1));
+		//in this case, Answer should always have a a non-null IntegerArray, so I did not check it
+		//any null reference exception is an error in hitlist creation which should be fixed
+		ai.setPassageIDs(new IntegerArray(jcas,answer.getPassageIDs().size()));
+		ai.getPassageIDs().copyFromArray(answer.getPassageIDs().toArray(), 0, 0, answer.getPassageIDs().size());
+
 		/* Generate the Focus */
 		if (answer.getFocus() != null) {
 			Focus f = new Focus(jcas);

@@ -78,4 +78,5 @@ public final class QuestionDashboard {
 	public synchronized List<Question> getQuestionsToAnswer() { return new ArrayList<>(questionsToAnswer); }
 	public synchronized List<Question> getQuestionsInProgress() { return new ArrayList<>(questionsInProgress); }
 	public synchronized List<Question> getQuestionsAnswered() { return new ArrayList<>(questionsAnswered); }
+	public synchronized String getPassage(int passageID) {return passages.get(passageID);}
 };

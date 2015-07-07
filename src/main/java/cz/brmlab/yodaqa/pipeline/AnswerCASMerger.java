@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -16,6 +18,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
@@ -204,11 +207,20 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		answer.setText(canAnswer.getDocumentText());
 		answer.setCanonText(ai.getCanonText());
 		answer.setAnswerID(ai.getAnswerID());
+		if (ai.getPassageIDs() != null) { //Answer Info passageID is null when we created it using SORLDOC or structured search
+			answer.setPassageIDs(new IntegerArray(hitlistCas, ai.getPassageIDs().size()));
+			answer.getPassageIDs().copyFromArray(ai.getPassageIDs().toArray(), 0, 0, ai.getPassageIDs().size());
+		}
+		else { //create new IntegerArray of size 0
+ 			answer.setPassageIDs(new IntegerArray(hitlistCas, 0));
+		}
+		int i = 0;
 		/* Store the Focus. */
 		for (Focus focus : JCasUtil.select(canAnswer, Focus.class)) {
 			answer.setFocus(focus.getCoveredText());
 			break;
 		}
+
 		return answer;
 	}
 
@@ -246,7 +258,6 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				resources.add(res);
 			}
 		}
-
 		return new CompoundAnswer(answer, fv, latlist, resources);
 	}
 
@@ -358,6 +369,24 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 					}
 					if (!alreadyHave)
 						mainLats.add(lat);
+				}
+
+				/* Merge PassageIDs*/
+				//we use Set to ignore duplicates
+				Set<Integer> passageIds= new LinkedHashSet<>();
+				for (int ID : answer.getPassageIDs().toArray()) {
+					passageIds.add(ID);
+				}
+				for (int ID : mainAns.getPassageIDs().toArray()) {
+					passageIds.add(ID);
+				}
+				//resize the passageID array in mainAns and fill it in a for cycle
+				mainAns.setPassageIDs(new IntegerArray(finalCas, passageIds.size()));
+
+				int index = 0;
+				for (Integer i: passageIds) {
+					mainAns.setPassageIDs(index, i);
+					index++;
 				}
 
 				/* Merge resources: */
