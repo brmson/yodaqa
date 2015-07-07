@@ -28,7 +28,7 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 /**
  * A consumer that displays the questions with a LAT dump to json file
  * The format is:
- * {"qId": "...", "SV": ["...", "..."], "LAT" : [ {"synset" : "...", "text" : "...", "specificity" : "..." "baseLAT" : "..."}, {...}, {...}]} \n
+ * {"qId": "...", "SV": ["...", "..."], "LAT" : [ {"synset" : "...", "text" : "...", "specificity" : "..." "type" : "..."}, {...}, {...}]} \n
  * Pair this with CollectionQuestionReader e.g. on data/eval/.
  */
 
@@ -84,13 +84,13 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		String LATtmp = "";
 		for (Iterator iterator = JCasUtil.select(jcas, LAT.class).iterator(); iterator.hasNext(); ) {
 			LAT l = (LAT) iterator.next();
-			/*{"synset" : "...", "text" : "...", "specificity" : "..." "baseLAT" : "..."}*/
+			/*{"synset" : "...", "text" : "...", "specificity" : "..." "type" : "..."}*/
 			LATtmp += "{";
 			if (l.getSynset() != 0) { //only add synset when it is not zero
 				LATtmp += "\"synset\": " + "\"" + l.getSynset() + "\", ";
 			}
 			//add the rest
-			LATtmp += "\"text\": \"" + l.getText() + "\"," + " \"specificity\": \"" + l.getSpecificity() + "\", " + "\"baseLAT\": " +
+			LATtmp += "\"text\": \"" + l.getText() + "\"," + " \"specificity\": \"" + l.getSpecificity() + "\", " + "\"type\": " +
 				"\"" + l.getClass().getSimpleName() + "\"}";
 			//not last, add comma
 			if (iterator.hasNext()) {
