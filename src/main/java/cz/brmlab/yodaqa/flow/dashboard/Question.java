@@ -1,7 +1,9 @@
 package cz.brmlab.yodaqa.flow.dashboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 
@@ -16,6 +18,7 @@ public class Question {
 	protected QuestionSummary summary = null;
 	protected List<AnswerSource> sources = new ArrayList<>();
 	protected List<QuestionAnswer> answers = new ArrayList<>();
+	protected Map<Integer, String> passages = new HashMap<>(); //key = ID of passage, value = Passage String
 	protected boolean finished = false;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
@@ -95,6 +98,11 @@ public class Question {
 	}
 
 	public synchronized String toJson() {
+		for (QuestionAnswer qa : answers ) {
+			for(Integer passageID : qa.getPassageList()){
+				passages.put(passageID, QuestionDashboard.getInstance().getPassage(passageID));
+			}
+		}
 		return gson.toJson(this);
 	}
 };

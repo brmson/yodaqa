@@ -20,7 +20,7 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 /**
  * A consumer that records answers back in WebInterface.
- *
+ * <p/>
  * Pair this with WebQuestionReader.
  */
 
@@ -45,6 +45,11 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 		while (answerit.hasNext()) {
 			Answer a = ((Answer) answerit.next());
 			QuestionAnswer qa = new QuestionAnswer(a.getText(), a.getConfidence());
+			if (a.getPassageIDs() != null) {
+				for (Integer PassageID : a.getPassageIDs().toArray()) {
+					qa.addToPassageList(PassageID);
+				}
+			}
 			answers.add(qa);
 		}
 		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
