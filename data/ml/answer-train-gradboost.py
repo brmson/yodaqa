@@ -35,6 +35,7 @@ def dump_model(cfier, labels):
     data["prior"] = cfier.init_.prior
     data["learning_rate"] = cfier.learning_rate
     data["forest"] = forest
+    data["labels"] = labels
     json.dump(data, sys.stdout)
 
 
