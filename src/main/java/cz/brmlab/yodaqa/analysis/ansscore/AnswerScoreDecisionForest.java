@@ -81,6 +81,7 @@ public class AnswerScoreDecisionForest extends JCasAnnotator_ImplBase {
 
 	protected void loadModel(InputStream model_stream) throws Exception {
 		Gson gson = new Gson();
+		labelMap = new HashMap<String, Integer>();
 		JsonReader br = new JsonReader(new InputStreamReader(model_stream));
 		br.setLenient(true);
 		model = gson.fromJson(br, Model.class);
