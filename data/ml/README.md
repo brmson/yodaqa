@@ -105,3 +105,11 @@ The tool `data/ml/answer-comparefv.py` can be used for comparing effect
 of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
 used for feature occurence statistics.  These analysis tools are further
 explained in data/eval/README.md.
+
+Visualization of the trees
+--------------------------
+
+We can use script for generating pdf file with visualization of the desicion
+trees contained in provided pkl file:
+
+	usage: forest-to-pdf.py [-h] input_file output_file
