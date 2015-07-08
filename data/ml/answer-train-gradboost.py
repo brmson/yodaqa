@@ -16,8 +16,26 @@ from sklearn.utils.class_weight import compute_sample_weight
 import joblib
 import numpy as np
 import numpy.random as random
+import json
 
 from answertrain import *
+
+def dump_model(cfier, labels):
+    data = {}
+    forest = []
+    for tree in cfier.estimators_:
+        line = dict()
+        line["children_left"] = tree[0].tree_.children_left.tolist()
+        line["children_right"] = tree[0].tree_.children_right.tolist()
+        line["features"] = tree[0].tree_.feature.tolist()
+        line["thresholds"] = tree[0].tree_.threshold.tolist()
+        line["values"] = [x[0][0] for x in tree[0].tree_.value]
+        forest.append(line)
+
+        data["prior"] = cfier.init_.prior
+        data["learning_rate"] = cfier.learning_rate
+        data["forest"] = forest
+        json.dump(data, sys.stdout)
 
 
 class GBFactory:
@@ -79,3 +97,4 @@ if __name__ == "__main__":
 
     print("// Full model is " + str(cfier).replace("\n", " "))
     print('//')
+    dump_model(cfier, labels)

@@ -67,8 +67,7 @@ public class AnswerScoreDecisionForest extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
-//        modelName = "AnswerScoreDecisionForest" + scoringPhase + ".model";
-		modelName = "AnswerScoreDecisionForest.model";
+        modelName = "AnswerScoreDecisionForest" + scoringPhase + ".model";
 
 		/* Load and parse the model. */
 		try {
