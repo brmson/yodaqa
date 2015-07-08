@@ -32,10 +32,10 @@ def dump_model(cfier, labels):
         line["values"] = [x[0][0] for x in tree[0].tree_.value]
         forest.append(line)
 
-        data["prior"] = cfier.init_.prior
-        data["learning_rate"] = cfier.learning_rate
-        data["forest"] = forest
-        json.dump(data, sys.stdout)
+    data["prior"] = cfier.init_.prior
+    data["learning_rate"] = cfier.learning_rate
+    data["forest"] = forest
+    json.dump(data, sys.stdout)
 
 
 class GBFactory:
