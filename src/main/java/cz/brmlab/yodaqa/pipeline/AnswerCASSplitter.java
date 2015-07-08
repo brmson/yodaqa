@@ -153,7 +153,7 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		//any null reference exception is an error in hitlist creation which should be fixed
 		ai.setPassageIDs(new IntegerArray(jcas,answer.getPassageIDs().size()));
 		ai.getPassageIDs().copyFromArray(answer.getPassageIDs().toArray(), 0, 0, answer.getPassageIDs().size());
-
+		ai.setSource(answer.getSource());
 		/* Generate the Focus */
 		if (answer.getFocus() != null) {
 			Focus f = new Focus(jcas);

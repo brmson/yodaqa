@@ -80,7 +80,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
 		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			properties.addAll(getConceptProperties(concept));
+ 			properties.addAll(getConceptProperties(concept));
 		}
 
 		relIter = properties.iterator();
@@ -142,7 +142,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setRelevance(1.0);
 		ri.setIsLast(isLast);
 		ri.setOrigin(this.getClass().getCanonicalName());
-		/* XXX: We ignore ansfeatures as we generate just
+ 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */
 		ri.addToIndexes();
 
@@ -165,6 +165,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
+		ai.setSource("structured search in "+sourceName);
+
 		/* Generate a resource descriptor if available. */
 		if (property.getValRes() != null) {
 			AnswerResource ar = new AnswerResource(jcas);

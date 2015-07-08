@@ -48,42 +48,51 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 /**
  * Take a set of per-answer CandidateAnswerCAS and merge them to
  * an AnswerHitlistCAS.
- *
+ * <p/>
  * We also deduplicate answers with identical text.
- *
+ * <p/>
  * Otherwise, do not confuse with AnswerTextMerger, which merges answers
  * in the AnswerHitlist that are textually different but heuristically
- * equivalent. */
+ * equivalent.
+ */
 
 public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(AnswerCASMerger.class);
 
-	/** Number of CASes marked as isLast required to encounter before
+	/**
+	 * Number of CASes marked as isLast required to encounter before
 	 * the final merging is performed.  When multiple independent CAS
 	 * multipliers are generating CASes, they each eventually produce
-	 * one with an isLast marker. */
+	 * one with an isLast marker.
+	 */
 	public static final String PARAM_ISLAST_BARRIER = "islast-barrier";
 	@ConfigurationParameter(name = PARAM_ISLAST_BARRIER, mandatory = false, defaultValue = "1")
 	protected int isLastBarrier;
 
-	/** Reuse the first CAS received as the AnswerHitlistCAS instead
+	/**
+	 * Reuse the first CAS received as the AnswerHitlistCAS instead
 	 * of building one from scratch. This parameter is also overloaded
 	 * to mean that CandidateAnswerCAS will override same-text answers
-	 * in the hitlist, instead of merging with them. */
+	 * in the hitlist, instead of merging with them.
+	 */
 	public static final String PARAM_HITLIST_REUSE = "hitlist-reuse";
 	@ConfigurationParameter(name = PARAM_HITLIST_REUSE, mandatory = false, defaultValue = "false")
 	protected boolean doReuseHitlist;
 
-	/** The phase number. If non-zero, confidence of the answer is
-	 * pre-set to AF_Phase(n-1)Score. */
+	/**
+	 * The phase number. If non-zero, confidence of the answer is
+	 * pre-set to AF_Phase(n-1)Score.
+	 */
 	public static final String PARAM_PHASE = "phase";
 	@ConfigurationParameter(name = PARAM_PHASE, mandatory = false, defaultValue = "0")
 	protected int phaseNum;
 
-	/** A compound representation of an answer.  This is a container
+	/**
+	 * A compound representation of an answer.  This is a container
 	 * of all the featurestructures related to an answer, living in
 	 * the finalHitlist view but not indexed yet (because of anticipated
-	 * merging). */
+	 * merging).
+	 */
 	protected class CompoundAnswer {
 		Answer answer;
 		AnswerFV fv;
@@ -97,13 +106,30 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			resources = resources_;
 		}
 
-		/** * @return the answer */
-		public Answer getAnswer() { return answer; }
-		/** * @return the lats */
-		public List<LAT> getLats() { return lats; }
-		/** * @return the fv */
-		public AnswerFV getFV() { return fv; }
-		public List<AnswerResource> getResources() { return resources; }
+		/**
+		 * @return the answer
+		 */
+		public Answer getAnswer() {
+			return answer;
+		}
+
+		/**
+		 * @return the lats
+		 */
+		public List<LAT> getLats() {
+			return lats;
+		}
+
+		/**
+		 * @return the fv
+		 */
+		public AnswerFV getFV() {
+			return fv;
+		}
+
+		public List<AnswerResource> getResources() {
+			return resources;
+		}
 	}
 
 	Map<String, List<CompoundAnswer>> answersByText;
@@ -136,8 +162,10 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		reset();
 	}
 
-	/** Record an answer (in the compound CompoundAnswer representation)
-	 * in the internal memory of the CASMerger. */
+	/**
+	 * Record an answer (in the compound CompoundAnswer representation)
+	 * in the internal memory of the CASMerger.
+	 */
 	protected void addAnswer(CompoundAnswer ca) {
 		String text = ca.getAnswer().getText();
 		List<CompoundAnswer> answers = answersByText.get(text);
@@ -148,7 +176,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		answers.add(ca);
 	}
 
-	/** Load an AnswerHitlistCAS to our internal memory. */
+	/**
+	 * Load an AnswerHitlistCAS to our internal memory.
+	 */
 	protected void loadHitlist(JCas inputHitlist, JCas outputHitlist) {
 		CasCopier copier = new CasCopier(inputHitlist.getCas(), outputHitlist.getCas());
 		for (Answer inAnswer : JCasUtil.select(inputHitlist, Answer.class)) {
@@ -170,8 +200,10 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		}
 	}
 
-	/** Check whether the answer (in given AnswerCAS) has the
-	 * isLast flag set. */
+	/**
+	 * Check whether the answer (in given AnswerCAS) has the
+	 * isLast flag set.
+	 */
 	protected boolean isAnswerLast(JCas canAnswer, AnswerInfo ai) {
 		if (ai.getIsLast() == 0)
 			return false;
@@ -201,18 +233,20 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		return (need > 0 && seen >= need);
 	}
 
-	/** Convert given AnswerCAS to an Answer FS in an AnswerHitlistCAS. */
+	/**
+	 * Convert given AnswerCAS to an Answer FS in an AnswerHitlistCAS.
+	 */
 	protected Answer makeAnswer(JCas canAnswer, AnswerInfo ai, JCas hitlistCas) {
 		Answer answer = new Answer(hitlistCas);
 		answer.setText(canAnswer.getDocumentText());
 		answer.setCanonText(ai.getCanonText());
 		answer.setAnswerID(ai.getAnswerID());
+		answer.setSource(ai.getSource());
 		if (ai.getPassageIDs() != null) { //Answer Info passageID is null when we created it using SORLDOC or structured search
 			answer.setPassageIDs(new IntegerArray(hitlistCas, ai.getPassageIDs().size()));
 			answer.getPassageIDs().copyFromArray(ai.getPassageIDs().toArray(), 0, 0, ai.getPassageIDs().size());
-		}
-		else { //create new IntegerArray of size 0
- 			answer.setPassageIDs(new IntegerArray(hitlistCas, 0));
+		} else { //create new IntegerArray of size 0
+			answer.setPassageIDs(new IntegerArray(hitlistCas, 0));
 		}
 		int i = 0;
 		/* Store the Focus. */
@@ -224,8 +258,10 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		return answer;
 	}
 
-	/** Load and generate a compound representation (CompoundAnswer)
-	 * for answer stored in the given AnswerCAS. */
+	/**
+	 * Load and generate a compound representation (CompoundAnswer)
+	 * for answer stored in the given AnswerCAS.
+	 */
 	protected CompoundAnswer loadAnswer(JCas canAnswer, AnswerInfo ai, JCas hitlistCas) throws AnalysisEngineProcessException {
 		Answer answer = makeAnswer(canAnswer, ai, hitlistCas);
 		AnswerFV fv = new AnswerFV(ai);
@@ -263,7 +299,11 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 
 	public synchronized void process(JCas canCas) throws AnalysisEngineProcessException {
 		JCas canQuestion;
-		try { canQuestion = canCas.getView("Question"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
+		try {
+			canQuestion = canCas.getView("Question");
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
+		}
 
 		seenCases++;
 
@@ -285,7 +325,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		}
 
 		JCas canAnswerHitlist = null;
-		try { canAnswerHitlist = canCas.getView("AnswerHitlist"); } catch (Exception e) { /* stays null */ }
+		try {
+			canAnswerHitlist = canCas.getView("AnswerHitlist");
+		} catch (Exception e) { /* stays null */ }
 
 		if (doReuseHitlist && canAnswerHitlist != null) {
 			/* AnswerHitlistCAS */
@@ -296,7 +338,11 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		} else {
 			/* AnswerCAS */
 			JCas canAnswer;
-			try { canAnswer = canCas.getView("Answer"); } catch (Exception e) { throw new AnalysisEngineProcessException(e); }
+			try {
+				canAnswer = canCas.getView("Answer");
+			} catch (Exception e) {
+				throw new AnalysisEngineProcessException(e);
+			}
 			AnswerInfo ai = JCasUtil.selectSingle(canAnswer, AnswerInfo.class);
 
 			if (isAnswerLast(canAnswer, ai))
@@ -310,12 +356,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			addAnswer(ca);
 			// System.err.println("AR process: " + ca.getAnswer().getText());
 			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
-			if (ai.getPassageIDs()!=null) { //found using either SorlDocPrimarySearch or StructuredSearch
+			if (ai.getPassageIDs() != null) { //found using either SorlDocPrimarySearch or StructuredSearch
 				for (int ID : ai.getPassageIDs().toArray()) {
 					qa.addToPassageList(ID);
 				}
 			}
 			qa.setID(ai.getAnswerID());
+			qa.setSource(ai.getSource());
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}
@@ -373,7 +420,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 
 				/* Merge PassageIDs*/
 				//we use Set to ignore duplicates
-				Set<Integer> passageIds= new LinkedHashSet<>();
+				Set<Integer> passageIds = new LinkedHashSet<>();
 				for (int ID : answer.getPassageIDs().toArray()) {
 					passageIds.add(ID);
 				}
@@ -384,7 +431,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				mainAns.setPassageIDs(new IntegerArray(finalCas, passageIds.size()));
 
 				int index = 0;
-				for (Integer i: passageIds) {
+				for (Integer i : passageIds) {
 					mainAns.setPassageIDs(index, i);
 					index++;
 				}
@@ -408,13 +455,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			 * to be aggregated over all individual answer
 			 * instances. */
 			if (mainFV.getFeatureValue(AF_OriginPsgFirst.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNP.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNE.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
-			    + mainFV.getFeatureValue(AF_OriginDocTitle.class)
-			    + mainFV.getFeatureValue(AF_OriginDBpOntology.class)
-			    + mainFV.getFeatureValue(AF_OriginDBpProperty.class)
-			    + mainFV.getFeatureValue(AF_OriginFreebaseOntology.class) > 1.0)
+					+ mainFV.getFeatureValue(AF_OriginPsgNP.class)
+					+ mainFV.getFeatureValue(AF_OriginPsgNE.class)
+					+ mainFV.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
+					+ mainFV.getFeatureValue(AF_OriginDocTitle.class)
+					+ mainFV.getFeatureValue(AF_OriginDBpOntology.class)
+					+ mainFV.getFeatureValue(AF_OriginDBpProperty.class)
+					+ mainFV.getFeatureValue(AF_OriginFreebaseOntology.class) > 1.0)
 				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
 			/* Also restore confidence value if we already
 			 * determined it before. */
