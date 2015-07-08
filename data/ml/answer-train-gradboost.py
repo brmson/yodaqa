@@ -56,6 +56,8 @@ if __name__ == "__main__":
     random.seed(17151713)
 
     modelparams = sys.argv[1:]
+    if (len(modelparams) == 0):
+        modelparams = ['n_estimators=200', 'max_leaf_nodes=10', 'min_samples_split=10', 'min_samples_leaf=5', "max_features='sqrt'"]
     cfier_opts = dict()
     for p in modelparams:
         k, v = p.split('=')
@@ -66,7 +68,7 @@ if __name__ == "__main__":
     (answersets, labels) = load_answers(sys.stdin, exclude_labels)
 
     print('/// The weights of individual elements of the FV.  These weights')
-    print('// are output by data/ml/answer-train-logistic.py as this:')
+    print('// are output by data/ml/answer-train-gradboost.py as this:')
     print('//')
     print('// %d answersets, %d answers' % (len(answersets), sum([len(aset.class_set) for aset in answersets])))
 
