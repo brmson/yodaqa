@@ -134,9 +134,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
 		ai.setPassageIDs(new IntegerArray(jcas, answer.getPassageIDs().size()));
 		ai.getPassageIDs().copyFromArray(answer.getPassageIDs().toArray(), 0, 0, answer.getPassageIDs().size());
-		ai.setSource("fulltext search in wikipedia");
 		ai.addToIndexes();
-		//RI source :enwiki
 		CasCopier copier = new CasCopier(answer.getCAS(), jcas.getCas());
 
 		/* Copy in-answer annotations */

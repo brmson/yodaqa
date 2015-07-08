@@ -81,7 +81,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		/* Eew... well, for now, we just expect that only a single
 		 * Solr source has been registered and grab that one,
 		 * whatever its name (allows easy enwiki/guten switching). */
-			this.srcName = (String) SolrNamedSource.nameSet().toArray()[0];
+		this.srcName = (String) SolrNamedSource.nameSet().toArray()[0];
 		this.solr = SolrNamedSource.get(srcName);
 
 		this.settings = new SolrQuerySettings(proximityNum, proximityBaseDist, proximityBaseFactor,
@@ -162,8 +162,6 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setRelevance(((Float) doc.getFieldValue("score")).floatValue());
 		ri.setIsLast(isLast);
 		ri.setOrigin("cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocPrimarySearch");
-	//	ri.getSource = enwiki
-		System.out.println(ri.getOrigin());
 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */
 		ri.addToIndexes();
@@ -185,7 +183,6 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setSource("document search in wikipedia");
 		ai.addToIndexes();
 	}
 

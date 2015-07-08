@@ -50,7 +50,6 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 					qa.addToPassageList(PassageID);
 				}
 			}
-			qa.setSource(a.getSource());
 			answers.add(qa);
 		}
 		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());

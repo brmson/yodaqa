@@ -35,11 +35,6 @@
             <rangeTypeName>uima.cas.IntegerArray</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>Source</name>
-            <description>Source of the candidate answer, either structured/fulltext search of wiki or freebase</description>
-            <rangeTypeName>uima.cas.String</rangeTypeName>
-          </featureDescription>
-          <featureDescription>
             <name>resources</name>
 	    <description>Set of resources corresponding to this answer. (There may be multiple, of course.) Duplicates should not appear, order should not matter.</description>
             <rangeTypeName>uima.cas.FSArray</rangeTypeName>

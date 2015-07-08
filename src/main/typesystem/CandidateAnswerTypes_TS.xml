@@ -32,11 +32,6 @@
             <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource</elementType>
           </featureDescription>
           <featureDescription>
-            <name>Source</name>
-            <description>Source of the candidate answer, either structured/fulltext search of wiki or freebase</description>
-            <rangeTypeName>uima.cas.String</rangeTypeName>
-          </featureDescription>
-          <featureDescription>
             <name>features</name>
             <description>A set of features of this answer. Unmatched features should simply not be present, and order does not matter. Duplicates should NOT appear.</description>
             <rangeTypeName>uima.cas.FSArray</rangeTypeName>
