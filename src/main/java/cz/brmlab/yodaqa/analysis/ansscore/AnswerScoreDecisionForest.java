@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.analysis.ansscore;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -80,8 +81,8 @@ public class AnswerScoreDecisionForest extends JCasAnnotator_ImplBase {
 
 	protected void loadModel(InputStream model_stream) throws Exception {
 		Gson gson = new Gson();
-		labelMap = new HashMap<String, Integer>();
-		BufferedReader br = new BufferedReader(new InputStreamReader(model_stream));
+		JsonReader br = new JsonReader(new InputStreamReader(model_stream));
+		br.setLenient(true);
 		model = gson.fromJson(br, Model.class);
 		for (int i = 0; i < model.labels.size(); i++) {
 			labelMap.put(model.labels.get(i), i);
