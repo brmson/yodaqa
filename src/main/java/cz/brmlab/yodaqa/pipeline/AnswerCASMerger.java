@@ -316,6 +316,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 				}
 			}
 			qa.setID(ai.getAnswerID());
+			qa.setSource(ai.getSource());
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}

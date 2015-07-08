@@ -165,6 +165,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
+		ai.setSource("structured search in "+sourceName);
+
 		/* Generate a resource descriptor if available. */
 		if (property.getValRes() != null) {
 			AnswerResource ar = new AnswerResource(jcas);

@@ -41,7 +41,7 @@ function showAnswers(container, answers, passages) {
 	answers.forEach(function(a) {
 		// FIXME: also deal with < > &
 		text = a.text.replace(/"/g, "&#34;");
-        var str="";
+        var str="found using "+ a.source+" \n";
         for(var index = 0; index< a.passageIDs.length; index++) {
          str += " "+index+". "+passages[a.passageIDs[index]].replace(/"/g, "&#34;")+"\n";
         }

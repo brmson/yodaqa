@@ -11,7 +11,7 @@ public class QuestionAnswer {
 	protected String text;
 	protected double confidence;
 	protected int ID;
-	protected String URL;
+	protected String source;
 	protected List<Integer> passageIDs= new ArrayList<>();
 	public QuestionAnswer(String text, double confidence) {
 		this.text = text;
@@ -30,5 +30,5 @@ public class QuestionAnswer {
 	public double getConfidence() { return confidence; }
 	public void setID(int ID) {this.ID = ID;}
 	public int getID(){return ID;}
-
+	public void setSource(String source){this.source=source;}
 }
