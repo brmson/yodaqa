@@ -2,6 +2,8 @@ package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.lang.Math;
 
+import cz.brmlab.yodaqa.flow.dashboard.PassageIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;
@@ -77,7 +79,8 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 
 		passage.setScore(Math.sqrt(weight));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
-
+		passage.setPassageID(PassageIDGenerator.getInstance().generateID());
+		QuestionDashboard.getInstance().addPassage(passage.getPassageID(), passage.getCoveredText());
 		passage.addToIndexes();
 
 		logger.debug(passage.getScore() + " | " + passage.getCoveredText());

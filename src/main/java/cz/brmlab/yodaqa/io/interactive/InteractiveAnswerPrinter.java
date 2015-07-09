@@ -42,6 +42,7 @@ public class InteractiveAnswerPrinter extends JCasConsumer_ImplBase {
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
 		FSIterator answers = idx.iterator();
 		if (answers.hasNext()) {
+			//int counter = 0;
 			int i = 1;
 			while (answers.hasNext()) {
 				Answer answer = (Answer) answers.next();
@@ -52,6 +53,21 @@ public class InteractiveAnswerPrinter extends JCasConsumer_ImplBase {
 				sb.append(" (conf. ");
 				sb.append(answer.getConfidence());
 				sb.append(")");
+				/* PRINT the passages assigned to this answer
+				sb.append("\n");
+				for(int ID: answer.getPassageIDs().toArray()){
+					sb.append("		");
+					sb.append(counter++);
+					sb.append(". ");
+					sb.append(QuestionDashboard.getInstance().getPassage(ID));
+					sb.append(" (");
+					sb.append(ID);
+					sb.append(")");
+					sb.append("\n");
+
+				}
+				counter = 0;
+				*/
 				if (answer.getResources() != null) {
 					for (FeatureStructure resfs : answer.getResources().toArray()) {
 						sb.append(" ");

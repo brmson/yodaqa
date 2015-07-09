@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 
@@ -40,6 +41,8 @@ public final class QuestionDashboard {
 	/* Questions that have been answered, last coming first. */
 	private List<Question> questionsAnswered = new LinkedList<>();
 
+	private Map<Integer,String> passages = new HashMap<>();
+
 	public synchronized void askQuestion(Question q) {
 		questions.put(q.getId(), q);
 		questionsToAnswer.add(q);
@@ -71,8 +74,9 @@ public final class QuestionDashboard {
 		questionsInProgress.remove(q);
 		questionsAnswered.add(0, q);
 	}
-
+	public synchronized void addPassage (int passageID, String p) {passages.put(passageID,p);}
 	public synchronized List<Question> getQuestionsToAnswer() { return new ArrayList<>(questionsToAnswer); }
 	public synchronized List<Question> getQuestionsInProgress() { return new ArrayList<>(questionsInProgress); }
 	public synchronized List<Question> getQuestionsAnswered() { return new ArrayList<>(questionsAnswered); }
+	public synchronized String getPassage(int passageID) {return passages.get(passageID);}
 };
