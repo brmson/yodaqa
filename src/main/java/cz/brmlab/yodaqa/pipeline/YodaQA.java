@@ -38,6 +38,9 @@ import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	static {
+		/* Enable IPv6 usage  (if available). */
+		System.setProperty("java.net.preferIPv6Addresses", "true");
+
 		try {
 			/* We have two options here - either use a local embedded
 			 * instance based on a solr index in a given local directory,
