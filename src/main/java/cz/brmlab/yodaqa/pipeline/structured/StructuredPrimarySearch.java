@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -12,6 +15,7 @@ import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
@@ -142,6 +146,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setRelevance(1.0);
 		ri.setIsLast(isLast);
 		ri.setOrigin(this.getClass().getCanonicalName());
+
 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */
 		ri.addToIndexes();
@@ -161,11 +166,16 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		/* Generate also an LAT for the answer right away. */
 		addTypeLAT(jcas, fv, property.getProperty());
 
+
+		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), 1, property.getProperty());
+		QuestionDashboard.getInstance().addSnippet(ap.getSnippetID(),ap);
+
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setSource("structured search in "+sourceName);
+		ai.setSnippetIDs(new IntegerArray(jcas,1));
+		ai.setSnippetIDs(0,ap.getSnippetID());
 
 		/* Generate a resource descriptor if available. */
 		if (property.getValRes() != null) {

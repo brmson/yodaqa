@@ -1,7 +1,6 @@
 package cz.brmlab.yodaqa.pipeline.solrfull;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
-import cz.brmlab.yodaqa.flow.dashboard.PassageIDGenerator;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -82,13 +81,7 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 				generateAnswer(answer, canAnswerView, isLast ? i : 0);
 
 				if (isLast) {
-					/* XXX: Ugh. We clearly need global result ids. */
-					QuestionDashboard.getInstance().get(questionView).setSourceState(
-							ri.getOrigin() == "cz.brmlab.yodaqa.pipeline.solrfull.fulltext"
-								? AnswerSourceEnwiki.ORIGIN_FULL
-								: AnswerSourceEnwiki.ORIGIN_TITLE,
-							Integer.parseInt(ri.getDocumentId()),
-							2);
+ 					QuestionDashboard.getInstance().get(questionView).setSourceState(ri.getSourceID(), 2);
 				}
 			} else {
 				/* We will just generate a single dummy CAS
@@ -132,9 +125,8 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setPassageIDs(new IntegerArray(jcas, answer.getPassageIDs().size()));
-		ai.getPassageIDs().copyFromArray(answer.getPassageIDs().toArray(), 0, 0, answer.getPassageIDs().size());
-		ai.setSource("fulltext search in wikipedia");
+		ai.setSnippetIDs(new IntegerArray(jcas, answer.getSnippetIDs().size()));
+		ai.getSnippetIDs().copyFromArray(answer.getSnippetIDs().toArray(), 0, 0, answer.getSnippetIDs().size());
 		ai.addToIndexes();
 		CasCopier copier = new CasCopier(answer.getCAS(), jcas.getCas());
 

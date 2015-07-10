@@ -207,12 +207,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		answer.setText(canAnswer.getDocumentText());
 		answer.setCanonText(ai.getCanonText());
 		answer.setAnswerID(ai.getAnswerID());
-		if (ai.getPassageIDs() != null) { //Answer Info passageID is null when we created it using SORLDOC or structured search
-			answer.setPassageIDs(new IntegerArray(hitlistCas, ai.getPassageIDs().size()));
-			answer.getPassageIDs().copyFromArray(ai.getPassageIDs().toArray(), 0, 0, ai.getPassageIDs().size());
+		if (ai.getSnippetIDs() != null) { //Answer Info passageID is null when we created it using SORLDOC or structured search
+											//since we now use AnsweringSnippet, this should never be null!!
+			answer.setSnippetIDs(new IntegerArray(hitlistCas, ai.getSnippetIDs().size()));
+			answer.getSnippetIDs().copyFromArray(ai.getSnippetIDs().toArray(), 0, 0, ai.getSnippetIDs().size());
 		}
 		else { //create new IntegerArray of size 0
- 			answer.setPassageIDs(new IntegerArray(hitlistCas, 0));
+		answer.setSnippetIDs(new IntegerArray(hitlistCas, 0));
 		}
 		int i = 0;
 		/* Store the Focus. */
@@ -310,13 +311,13 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			addAnswer(ca);
 			// System.err.println("AR process: " + ca.getAnswer().getText());
 			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
-			if (ai.getPassageIDs()!=null) { //found using either SorlDocPrimarySearch or StructuredSearch
-				for (int ID : ai.getPassageIDs().toArray()) {
-					qa.addToPassageList(ID);
-				}
+			if (ai.getSnippetIDs()!=null) { //found using either SorlDocPrimarySearch or StructuredSearch
+				for (int ID : ai.getSnippetIDs().toArray()) {
+					qa.addToSnippetIDList(ID);
+ 				}
 			}
 			qa.setID(ai.getAnswerID());
-			qa.setSource(ai.getSource());
+	//		qa.setSource(ai.getSource());
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}
@@ -374,19 +375,19 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 
 				/* Merge PassageIDs*/
 				//we use Set to ignore duplicates
-				Set<Integer> passageIds= new LinkedHashSet<>();
-				for (int ID : answer.getPassageIDs().toArray()) {
-					passageIds.add(ID);
+				Set<Integer> getSnippetIds= new LinkedHashSet<>();
+				for (int ID : answer.getSnippetIDs().toArray()) {
+					getSnippetIds.add(ID);
 				}
-				for (int ID : mainAns.getPassageIDs().toArray()) {
-					passageIds.add(ID);
+				for (int ID : mainAns.getSnippetIDs().toArray()) {
+					getSnippetIds.add(ID);
 				}
 				//resize the passageID array in mainAns and fill it in a for cycle
-				mainAns.setPassageIDs(new IntegerArray(finalCas, passageIds.size()));
+				mainAns.setSnippetIDs(new IntegerArray(finalCas, getSnippetIds.size()));
 
 				int index = 0;
-				for (Integer i: passageIds) {
-					mainAns.setPassageIDs(index, i);
+				for (Integer i: getSnippetIds) {
+					mainAns.setSnippetIDs(index, i);
 					index++;
 				}
 

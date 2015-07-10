@@ -35,15 +35,18 @@ function showSources(container, sources) {
 }
 
 /* Create a table with answers. */
-function showAnswers(container, answers, passages) {
+function showAnswers(container, answers, snippets,sources) {
 	container.empty();
 	var i = 1;
 	answers.forEach(function(a) {
 		// FIXME: also deal with < > &
 		text = a.text.replace(/"/g, "&#34;");
-        var str="found using "+ a.source+" \n";
-        for(var index = 0; index< a.passageIDs.length; index++) {
-         str += " "+index+". "+passages[a.passageIDs[index]].replace(/"/g, "&#34;")+"\n";
+        var str="";
+        for(var index = 0; index< a.snippetIDs.length; index++) {
+            //str += "http://en.wikipedia.org/?curid=" + sources[snippets[a.snippetIDs[index]].sourceID].pageId + "\n";
+            str += a.snippetIDs[index]+" ";
+            str += snippets[a.snippetIDs[index]] + "\n";
+
         }
 		container.append('<tr><td class="i">'+i+'.</td>'
 				+ '<td class="text" title="'+str+'">'+text+'</td>'
@@ -86,7 +89,7 @@ function getQuestionJson() {
 				container = $('<table id="answers"></table>');
 				$("#answers_area").prepend(container);
 			}
-			showAnswers(container, r.answers, r.passages);
+			showAnswers(container, r.answers, r.snippets, r.sources);
 			gen_answers = r.gen_answers;
 		}
 

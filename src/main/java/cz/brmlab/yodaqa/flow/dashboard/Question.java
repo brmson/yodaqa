@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
 
 /** A stateful question.  This question has been asked, can be referred to
  * and may or may not have been answered already.
@@ -18,7 +19,7 @@ public class Question {
 	protected QuestionSummary summary = null;
 	protected List<AnswerSource> sources = new ArrayList<>();
 	protected List<QuestionAnswer> answers = new ArrayList<>();
-	protected Map<Integer, String> passages = new HashMap<>(); //key = ID of passage, value = Passage String
+	protected Map<Integer, AnsweringSnippet> snippets = new HashMap<>(); //key = ID of passage, value = Passage String
 	protected boolean finished = false;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
@@ -53,16 +54,15 @@ public class Question {
 	/** Update state of a given AnswerSource.
 	 * XXX: The enwiki-specificity is a horrid hack now before we introduce
 	 * unique ids for search results. */
-	public synchronized void setSourceState(String origin, int pageId, int state) {
+	public synchronized void setSourceState(int sourceID, int state) {
+	//	sources.get(sourceID).setState(state); linkedhashmap would be preferable but it breaks the web interface
 		for (AnswerSource as : sources) {
-			AnswerSourceEnwiki ase = (AnswerSourceEnwiki) as;
-			if (ase.origin == origin && ase.pageId == pageId) {
+			if (as.getSourceID() == sourceID) {
 				as.setState(state);
-				gen_sources ++;
+				gen_sources++;
 				return;
 			}
 		}
-		// XXX: throw something?
 	}
 
 	/** @return the answer */
@@ -99,8 +99,8 @@ public class Question {
 
 	public synchronized String toJson() {
 		for (QuestionAnswer qa : answers ) {
-			for(Integer passageID : qa.getPassageList()){
-				passages.put(passageID, QuestionDashboard.getInstance().getPassage(passageID));
+			for (Integer snippetID : qa.getSnippetIDs()) {
+				snippets.put(snippetID, QuestionDashboard.getInstance().getSnippet(snippetID));
 			}
 		}
 		return gson.toJson(this);

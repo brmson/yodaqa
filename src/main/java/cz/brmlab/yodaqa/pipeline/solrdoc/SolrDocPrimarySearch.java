@@ -183,8 +183,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setSource("document search in wikipedia");
-		ai.addToIndexes();
+ 		ai.addToIndexes();
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {

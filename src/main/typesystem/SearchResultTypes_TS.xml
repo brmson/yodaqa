@@ -30,6 +30,11 @@
             <description>ID of the document (specific to data source)</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
+            <featureDescription>
+                <name>sourceID</name>
+                <description>ID of source</description>
+                <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
           <featureDescription>
             <name>documentTitle</name>
             <description>Title of the document</description>
@@ -70,11 +75,11 @@
             <description>Score of the passage regarding relevance likelihood.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
-          <featureDescription>
-            <name>passageID</name>
-            <description>Unique ID of this passage used in Dashboards.</description>
-            <rangeTypeName>uima.cas.Integer</rangeTypeName>
-          </featureDescription>
+            <featureDescription>
+                <name>snippetID</name>
+                <description>ID of corresponding snippet.</description>
+                <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
           <featureDescription>
             <name>ansfeatures</name>
             <description>A set of answer features that should be inherited by all answers generated from this passage.</description>
@@ -130,8 +135,8 @@
             <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</elementType>
           </featureDescription>
           <featureDescription>
-            <name>passageIDs</name>
-            <description>List of PassageID's used in creating this answer, may be more than one.</description>
+            <name>snippetIDs</name>
+            <description>List of snippetID's used in creating this answer, may be more than one.</description>
             <rangeTypeName>uima.cas.IntegerArray</rangeTypeName>
           </featureDescription>
           <featureDescription>
