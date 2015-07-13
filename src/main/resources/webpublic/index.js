@@ -145,7 +145,7 @@ function loadQuestion(q) {
 	$("#metadata_area").empty();
 	$("#answers_area").empty();
 	$("#spinner").show();
-	qid = q;
+	qid = JSON.parse(q).id;
 	gen_sources = 0;
 	gen_answers = 0;
 	getQuestionJson();
