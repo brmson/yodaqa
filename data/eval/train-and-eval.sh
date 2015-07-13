@@ -1,11 +1,15 @@
 #!/bin/bash
 #
-# Usage: data/eval/train-and-eval.sh [-d DATASET] [COMMIT [BASECOMMIT]]
+# Usage: data/eval/train-and-eval.sh [-s N] [-d DATASET] [COMMIT [BASECOMMIT]]
 #
 # Perform full model training and performance evaluation of the given
 # commit (may be also a branch name, or nothing to eval the HEAD).
+#
 # The training and test set is processed in parallel, however the
 # final answer evaluation is delayed until the model is retrained.
+# Sequential execution on training and test set may be specified instead
+# by the -s parameter, which takes an extra number N to be set as the
+# value of YODAQA_N_THREADS (typically your total #of CPUs).
 #
 # This produces answer TSV files for training and test set
 # (final, and pre-training ones with 'u' prefix before commit),
@@ -33,6 +37,11 @@
 
 set -e
 
+if [ "$1" = "-s" ]; then
+	shift; run_split=""; export YODAQA_N_THREADS=$1; shift
+else
+	run_split="screen"  # this executes the split async
+fi
 if [ "$1" = "-d" ]; then
 	shift; dataset=$1; shift
 else
@@ -66,9 +75,9 @@ echo "Starting evaluation in $clonedir"
 sleep 2
 
 screen -m sh -c "
-	screen \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 $basecid;
-	sleep 10;
-	screen \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 1 $basecid
+	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 $basecid;
+	if [ x$run_split = x ]; then rm _multistage-barrier*; else sleep 10; fi
+	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 1 $basecid
 "
 
 popd
