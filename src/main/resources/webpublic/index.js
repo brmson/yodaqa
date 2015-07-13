@@ -23,15 +23,15 @@ function showSummary(container, summary) {
 /* Create a box with answer sources. */
 function showSources(container, sources) {
 	container.empty();
-	sources.forEach(function(s) {
+        $.each(sources, function(sid, source) {
 		var state_stags = ['<i>', '<b>', ''];
 		var state_etags = ['</i>', '</b>', ''];
-        if(!(typeof (s.pageId) ==="undefined")) { //this forces to only show en wiki
+        if(!(typeof (source.pageId) ==="undefined")) { //this forces to only show en wiki
             container.append('<p class="source">'
                 + '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
-                + ' <a href="http://en.wikipedia.org/?curid=' + s.pageId + '" target="_blank">'
-                + state_stags[s.state] + s.title + state_etags[s.state]
-                + '</a> (' + s.origin + ')</p>'); // TODO also include the first sentence?
+                + ' <a href="http://en.wikipedia.org/?curid=' + source.pageId + '" target="_blank">'
+                + state_stags[source.state] + source.title + state_etags[source.state]
+                + '</a> (' + source.origin + ')</p>'); // TODO also include the first sentence?
         }
 	});
 
@@ -45,6 +45,8 @@ function showAnswers(container, answers, snippets,sources) {
 		// FIXME: also deal with < > &
 		text = a.text.replace(/"/g, "&#34;");
         var str="";
+
+
         for(var index = 0; index< a.snippetIDs.length; index++) {
             //origin is (fulltext)/(title-in-clue)/(documented search)
             str +="("+sources[snippets[a.snippetIDs[index]].sourceID].origin+") \n";

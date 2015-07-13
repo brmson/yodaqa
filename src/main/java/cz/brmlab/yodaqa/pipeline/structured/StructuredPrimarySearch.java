@@ -142,8 +142,10 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
-		AnsweringProperty ap;
+		AnswerSourceStructured asf;// new AnswerSourceStructured("structured",property.getValRes(),property.getObject());
+		AnsweringProperty ap; //= new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), asf.getSourceID(), property.getProperty());
 		int sourceID = getSourceID(property.getValRes(),property.getObject(),questionView);
+
 		ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
 
 		QuestionDashboard.getInstance().addSnippet(ap.getSnippetID(),ap);
@@ -153,6 +155,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setSource(sourceName);
 		ri.setRelevance(1.0);
 		ri.setIsLast(isLast);
+		ri.setSourceID(sourceID);
 		ri.setOrigin(this.getClass().getCanonicalName());
 
 		/* XXX: We ignore ansfeatures as we generate just
@@ -196,11 +199,16 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 	protected int getSourceID(String url, String label, JCas questionView){
 		if (sourceIDs.containsKey(url)) {
+		//	if (!QuestionDashboard.getInstance().get(questionView).containsSource(sourceIDs.get(url))) {
+		//		AnswerSourceStructured asf = new AnswerSourceStructured("structured",url,label);
+		//		asf.setSourceID(sourceIDs.get(url));
+		//		QuestionDashboard.getInstance().get(questionView).addSource(asf);
+		//	}
 			return sourceIDs.get(url);
 		}
 		else {
 			int sourceID=SourceIDGenerator.getInstance().generateID();
-			AnswerSourceStructured asf = new AnswerSourceStructured("structured-search",url,label);
+			AnswerSourceStructured asf = new AnswerSourceStructured("structured",url,label);
 			asf.setSourceID(sourceID);
 			QuestionDashboard.getInstance().get(questionView).addSource(asf);
 			sourceIDs.put(url,sourceID);

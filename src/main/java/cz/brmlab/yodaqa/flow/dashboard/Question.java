@@ -17,7 +17,7 @@ public class Question {
 	protected String id;
 	protected String text;
 	protected QuestionSummary summary = null;
-	protected List<AnswerSource> sources = new ArrayList<>();
+	protected HashMap<Integer, AnswerSource> sources = new HashMap<>();
 	protected List<QuestionAnswer> answers = new ArrayList<>();
 	protected Map<Integer, AnsweringSnippet> snippets = new HashMap<>(); //key = ID of passage, value = Passage String
 	protected boolean finished = false;
@@ -46,23 +46,19 @@ public class Question {
 	}
 
 	/** @return the sources */
-	public synchronized List<AnswerSource> getSources() { return sources; }
+	public synchronized List<AnswerSource> getSources() { return new ArrayList<AnswerSource>(sources.values()); }
 	public synchronized void addSource(AnswerSource source) {
-		this.sources.add(source);
+		this.sources.put(source.getSourceID(),source);
 		gen_sources ++;
 	}
-	/** Update state of a given AnswerSource.
-	 * XXX: The enwiki-specificity is a horrid hack now before we introduce
-	 * unique ids for search results. */
+
 	public synchronized void setSourceState(int sourceID, int state) {
-	//	sources.get(sourceID).setState(state); linkedhashmap would be preferable but it breaks the web interface
-		for (AnswerSource as : sources) {
-			if (as.getSourceID() == sourceID) {
-				as.setState(state);
+		sources.get(sourceID).setState(state);
 				gen_sources++;
-				return;
-			}
-		}
+	}
+
+	public synchronized boolean containsSource(int sourceID) {
+		return sources.containsKey(sourceID);
 	}
 
 	/** @return the answer */

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.LinkedHashSet;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSource;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -311,7 +312,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			addAnswer(ca);
 			// System.err.println("AR process: " + ca.getAnswer().getText());
 			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
-			if (ai.getSnippetIDs()!=null) { //found using either SorlDocPrimarySearch or StructuredSearch
+			if (ai.getSnippetIDs()!=null) { //shouldnt be null
 				for (int ID : ai.getSnippetIDs().toArray()) {
 					qa.addToSnippetIDList(ID);
  				}
