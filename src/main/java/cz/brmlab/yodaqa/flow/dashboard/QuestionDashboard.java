@@ -26,6 +26,7 @@ public final class QuestionDashboard {
 	public static QuestionDashboard getInstance() {
 		return qd;
 	}
+
 	private Map<Integer, AnsweringSnippet> snippets = new HashMap<>();
 	/* All asked questions, by their id. */
 	private Map<String, Question> questions = new HashMap<>();

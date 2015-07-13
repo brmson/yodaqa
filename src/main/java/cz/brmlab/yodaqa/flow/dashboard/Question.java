@@ -45,20 +45,14 @@ public class Question {
 		this.summary = summary;
 	}
 
-	/** @return the sources */
-	public synchronized List<AnswerSource> getSources() { return new ArrayList<AnswerSource>(sources.values()); }
 	public synchronized void addSource(AnswerSource source) {
-		this.sources.put(source.getSourceID(),source);
+		this.sources.put(source.getSourceID(), source);
 		gen_sources ++;
 	}
 
 	public synchronized void setSourceState(int sourceID, int state) {
 		sources.get(sourceID).setState(state);
-				gen_sources++;
-	}
-
-	public synchronized boolean containsSource(int sourceID) {
-		return sources.containsKey(sourceID);
+		gen_sources++;
 	}
 
 	/** @return the answer */

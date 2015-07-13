@@ -9,7 +9,7 @@ public class AnsweringDocTitle extends AnsweringSnippet {
 	}
 
 	public String toString(){
-		return super.getSnippetID()+ " DocumentedTitle";
+		return super.getSnippetID() + " DocumentedTitle";
 	}
 }
 

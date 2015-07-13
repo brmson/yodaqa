@@ -154,6 +154,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		Integer id = (Integer) doc.getFieldValue("id");
 		String title = (String) doc.getFieldValue("titleText");
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
+
 		/* Chop any trailing (...) substring (e.g. Foo (disambiguation)
 		 * to just Foo).  N.B. it might be tempting to use this as
 		 * a LAT, but it might not be a type; e.g.
@@ -197,7 +198,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
 		ai.setIsLast(1);
 		ai.setSnippetIDs(new IntegerArray(jcas, 1));
-		ai.setSnippetIDs(0,adt.getSnippetID());
+		ai.setSnippetIDs(0, adt.getSnippetID());
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
  		ai.addToIndexes();
 	}

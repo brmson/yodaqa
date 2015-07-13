@@ -208,12 +208,10 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		answer.setText(canAnswer.getDocumentText());
 		answer.setCanonText(ai.getCanonText());
 		answer.setAnswerID(ai.getAnswerID());
-		if (ai.getSnippetIDs() != null) { //Answer Info passageID is null when we created it using SORLDOC or structured search
-											//since we now use AnsweringSnippet, this should never be null!!
+		if (ai.getSnippetIDs() != null) { // Since we now use AnsweringSnippet, this should never be null!!
 			answer.setSnippetIDs(new IntegerArray(hitlistCas, ai.getSnippetIDs().size()));
 			answer.getSnippetIDs().copyFromArray(ai.getSnippetIDs().toArray(), 0, 0, ai.getSnippetIDs().size());
-		}
-		else { //create new IntegerArray of size 0
+		} else { //create new IntegerArray of size 0
 		answer.setSnippetIDs(new IntegerArray(hitlistCas, 0));
 		}
 		int i = 0;
@@ -312,13 +310,12 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			addAnswer(ca);
 			// System.err.println("AR process: " + ca.getAnswer().getText());
 			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
-			if (ai.getSnippetIDs()!=null) { //shouldnt be null
+			if (ai.getSnippetIDs()!=null) { //should never be null
 				for (int ID : ai.getSnippetIDs().toArray()) {
 					qa.addToSnippetIDList(ID);
  				}
 			}
 			qa.setID(ai.getAnswerID());
-	//		qa.setSource(ai.getSource());
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}

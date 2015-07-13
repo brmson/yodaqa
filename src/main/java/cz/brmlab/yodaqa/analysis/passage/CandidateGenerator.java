@@ -79,6 +79,7 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 			// this should be a singleton
 			break;
 		}
+
 		CandidateAnswer ca = new CandidateAnswer(passagesView);
 		ca.setBegin(np.getBegin());
 		ca.setEnd(np.getEnd());

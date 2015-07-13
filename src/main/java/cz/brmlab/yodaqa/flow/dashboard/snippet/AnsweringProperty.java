@@ -13,7 +13,7 @@ public class AnsweringProperty extends AnsweringSnippet {
 
 	@Override
 	public String toString(){
-		return "Property "+ super.getSnippetID()+" "+ propertyLabel;
+		return "Property " + super.getSnippetID() + " " + propertyLabel;
 	}
 
 }

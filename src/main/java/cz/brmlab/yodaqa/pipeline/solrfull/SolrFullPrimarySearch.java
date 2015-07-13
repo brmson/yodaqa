@@ -98,6 +98,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		public ClueConcept concept;
 		public int rank;
 		public int sourceID;
+
 		public SolrResult(SolrDocument doc, ClueConcept concept, int rank) {
 			this.doc = doc;
 			this.concept = concept;
@@ -150,7 +151,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 
 		/* Make sure we aren't processing any document twice in our
-		 * sequence of searches beldocumentsow. */
+		 * sequence of searches below. */
 		Collection<Integer> visitedIDs = new TreeSet<Integer>();
 
 		results = new ArrayList<>();
@@ -240,8 +241,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 				ResultInfo ri = generateSolrResult(questionView, resultView, result, isLast ? i : 0);
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
-				/* XXX: Ugh. We clearly need global result ids. */
-				QuestionDashboard.getInstance().get(questionView).setSourceState( ri.getSourceID(), 1);
+				QuestionDashboard.getInstance().get(questionView).setSourceState(ri.getSourceID(), 1);
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */

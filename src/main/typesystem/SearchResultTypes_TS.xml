@@ -32,7 +32,7 @@
           </featureDescription>
             <featureDescription>
                 <name>sourceID</name>
-                <description>ID of source</description>
+                <description>ID of source saved upon creation, we use this to keep track of our sources in the Questions</description>
                 <rangeTypeName>uima.cas.Integer</rangeTypeName>
             </featureDescription>
           <featureDescription>

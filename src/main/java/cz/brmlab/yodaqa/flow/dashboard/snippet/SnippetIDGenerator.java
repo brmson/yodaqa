@@ -2,7 +2,7 @@ package cz.brmlab.yodaqa.flow.dashboard.snippet;
 
 
 /**
- * This class should generate unique ID's for Snippets
+ * This class should generate unique ID's for Snippets.
  * The ID's are unique for the session
  * It is thread-safe
  */

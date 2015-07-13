@@ -34,11 +34,10 @@ function showSources(container, sources) {
                 + '</a> (' + source.origin + ')</p>'); // TODO also include the first sentence?
         }
 	});
-
 }
 
 /* Create a table with answers. */
-function showAnswers(container, answers, snippets,sources) {
+function showAnswers(container, answers, snippets, sources) {
 	container.empty();
 	var i = 1;
 	answers.forEach(function(a) {
@@ -46,16 +45,14 @@ function showAnswers(container, answers, snippets,sources) {
 		text = a.text.replace(/"/g, "&#34;");
         var str="";
 
-
         for(var index = 0; index< a.snippetIDs.length; index++) {
             //origin is (fulltext)/(title-in-clue)/(documented search)
             str +="("+sources[snippets[a.snippetIDs[index]].sourceID].origin+") \n";
             str +=sources[snippets[a.snippetIDs[index]].sourceID].title + " \n";
 
-
             //add either wikipedia document ID or source URL
             if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].pageId )==="undefined")) {
-                str += "http://en.wikipedia.org/?curid=" + sources[snippets[a.snippetIDs[index]].sourceID].pageId + "\n";
+            str += "http://en.wikipedia.org/?curid=" + sources[snippets[a.snippetIDs[index]].sourceID].pageId + "\n";
             }
             else if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].URL )==="undefined")){
                 str+= sources[snippets[a.snippetIDs[index]].sourceID].URL+ "\n";

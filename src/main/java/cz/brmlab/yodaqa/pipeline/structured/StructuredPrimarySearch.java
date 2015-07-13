@@ -63,6 +63,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 	protected String sourceName;
 	protected Class<? extends AnswerFeature> originFeature, noClueFeature;
+
 	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
 	public StructuredPrimarySearch(String sourceName_,
 			Class<? extends AnswerFeature> originFeature_,
@@ -157,7 +158,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setIsLast(isLast);
 		ri.setSourceID(sourceID);
 		ri.setOrigin(this.getClass().getCanonicalName());
-
 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */
 		ri.addToIndexes();
@@ -176,7 +176,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		/* Generate also an LAT for the answer right away. */
 		addTypeLAT(jcas, fv, property.getProperty());
-
 
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
@@ -201,14 +200,14 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		if (sourceIDs.containsKey(url)) {
 			return sourceIDs.get(url);
 		}
-		else {
-			int sourceID=SourceIDGenerator.getInstance().generateID();
-			AnswerSourceStructured asf = new AnswerSourceStructured("structured",url,label);
-			asf.setSourceID(sourceID);
-			QuestionDashboard.getInstance().get(questionView).addSource(asf);
-			sourceIDs.put(url,sourceID);
-			return sourceID;
-		}
+
+		int sourceID = SourceIDGenerator.getInstance().generateID();
+		AnswerSourceStructured asf = new AnswerSourceStructured("structured", url, label);
+		asf.setSourceID(sourceID);
+		QuestionDashboard.getInstance().get(questionView).addSource(asf);
+		sourceIDs.put(url, sourceID);
+		return sourceID;
+
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {

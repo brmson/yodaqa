@@ -45,7 +45,7 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 		while (answerit.hasNext()) {
 			Answer a = ((Answer) answerit.next());
 			QuestionAnswer qa = new QuestionAnswer(a.getText(), a.getConfidence());
-			if (a.getSnippetIDs() != null) { //AnsweringSnippet ID should NOT be NULL!!!!!!!!!!!!!!!!!!
+			if (a.getSnippetIDs() != null) { //AnsweringSnippet ID should never be null
 				for (Integer PassageID : a.getSnippetIDs().toArray()) {
 					qa.addToSnippetIDList(PassageID);
 				}

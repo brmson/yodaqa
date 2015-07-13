@@ -24,6 +24,6 @@ public class QuestionAnswer {
 	public String getText() { return text;}
 	/** @return the confidence */
 	public double getConfidence() { return confidence; }
-	public void setID(int ID) {this.ID = ID;}
-	public int getID(){return ID;}
+	public void setID(int ID) { this.ID = ID; }
+	public int getID() { return ID; }
 }
