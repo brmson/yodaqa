@@ -4,31 +4,31 @@ YodaQA REST API
 Question asking
 ---------------
 
-To start answering process use POST request method to http://live.ailao.eu/q with text attribute set to asked question. Return value is ID of question.
+To start answering process use POST request method to /q with text attribute set to asked question. Return value is ID of question.
 
 
 Answer retrieving
 -----------------
 
-To retrieve answers use GET request method in format http://live.ailao.eu/q/<id>, where id is id returned during questioning. Answers is returned in JSON.
+To retrieve answers use GET request method in format /q/<id>, where id is id returned during questioning. Answers is returned in JSON.
 
 
 Answered questions
 ------------------
 
-To retrieve last six questions use GET request method in format http://live.ailao.eu/q/?answered. Questions are returned in JSON. Returned JSON contains array of questions.
+To retrieve last six questions use GET request method in format /q/?answered. Questions are returned in JSON. Returned JSON contains array of questions.
 
 
 Question in progress
 --------------------
 
-To retrieve question in progress use GET request method in format http://live.ailao.eu/q/?inProgress. Waiting questions are returned in JSON.
+To retrieve question in progress use GET request method in format /q/?inProgress. Waiting questions are returned in JSON.
 
 
 Questions in queue
 ------------------
 
-To retrieve questions waiting in queue use GET request method in format http://live.ailao.eu/q/?toAnswer. Waiting questions are returned in JSON.
+To retrieve questions waiting in queue use GET request method in format /q/?toAnswer. Waiting questions are returned in JSON.
 
 
 Structure of answer's JSON object
@@ -50,19 +50,19 @@ Structure of answers JSON object is:
 			"fulltext" - question was founded in full text search on page
 		pageId - id of Wikipedia page
 		isConcept - if page is concept or not
-		type - type of source (eg. ìenwikiî)
-		title - title of originís page
+		type - type of source (eg. ‚Äúenwiki‚Äù)
+		title - title of origin‚Äôs page
 		state - ???
 
-	answers ñ [Array] array of answers. Answer is represented by object with structure:
-		text - answerís text
-		confidence ñ answerís confidence expressed by number from interval of 0, 1
-		ID ñ answerís id
-		passageIDs ñ [Array] ???
+	answers ‚Äì [Array] array of answers. Answer is represented by object with structure:
+		text - answer‚Äôs text
+		confidence ‚Äì answer‚Äôs confidence expressed by number from interval of 0, 1
+		ID ‚Äì answer‚Äôs id
+		passageIDs ‚Äì [Array] ???
 
-	finished ñ if question has been finished already
-	gen_sources ñ number of generated sources (but only ??? are present in sources array)
-	gen_answers ñ number of generated answers (but only 25 best are present in answers array)
+	finished ‚Äì if question has been finished already
+	gen_sources ‚Äì number of generated sources (but only ??? are present in sources array)
+	gen_answers ‚Äì number of generated answers (but only 25 best are present in answers array)
 
 
 
