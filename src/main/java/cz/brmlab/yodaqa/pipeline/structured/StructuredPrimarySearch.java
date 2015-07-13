@@ -199,11 +199,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 	protected int getSourceID(String url, String label, JCas questionView){
 		if (sourceIDs.containsKey(url)) {
-		//	if (!QuestionDashboard.getInstance().get(questionView).containsSource(sourceIDs.get(url))) {
-		//		AnswerSourceStructured asf = new AnswerSourceStructured("structured",url,label);
-		//		asf.setSourceID(sourceIDs.get(url));
-		//		QuestionDashboard.getInstance().get(questionView).addSource(asf);
-		//	}
 			return sourceIDs.get(url);
 		}
 		else {
