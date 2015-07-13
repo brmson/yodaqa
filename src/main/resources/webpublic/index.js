@@ -92,7 +92,7 @@ function getQuestionJson() {
 			}
 		}
 
-		if (r.sources.length && gen_sources != r.gen_sources) {
+		if (!$.isEmptyObject(r.sources) && gen_sources != r.gen_sources) {
 			/* Show the answer sources. */
 			container = $("#sources");
 			if (!container.length) {
@@ -156,7 +156,7 @@ function loadQuestion(q) {
 $(function() {
 $("#ask").ajaxForm({
 	success: function(response) {
-		setTimeout(function() { loadQuestion(response) }, 500);
+		setTimeout(function() { loadQuestion(JSON.parse(response).id) }, 500);
 	}});
 
 getToAnswerJson(); setInterval(getToAnswerJson, 3100);
