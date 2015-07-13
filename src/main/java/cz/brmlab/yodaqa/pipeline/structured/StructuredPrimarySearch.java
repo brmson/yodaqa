@@ -1,11 +1,14 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
 import org.apache.uima.UimaContext;
@@ -60,7 +63,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 	protected String sourceName;
 	protected Class<? extends AnswerFeature> originFeature, noClueFeature;
-
+	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
 	public StructuredPrimarySearch(String sourceName_,
 			Class<? extends AnswerFeature> originFeature_,
 			Class<? extends AnswerFeature> noClueFeature_) {
@@ -139,6 +142,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
+		AnsweringProperty ap;
+		int sourceID = getSourceID(property.getValRes(),property.getObject(),questionView);
+		ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
+
+		QuestionDashboard.getInstance().addSnippet(ap.getSnippetID(),ap);
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle(title);
@@ -167,9 +175,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		addTypeLAT(jcas, fv, property.getProperty());
 
 
-		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), 1, property.getProperty());
-		QuestionDashboard.getInstance().addSnippet(ap.getSnippetID(),ap);
-
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
@@ -188,6 +193,19 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 
 		ai.addToIndexes();
+	}
+	protected int getSourceID(String url, String label, JCas questionView){
+		if (sourceIDs.containsKey(url)) {
+			return sourceIDs.get(url);
+		}
+		else {
+			int sourceID=SourceIDGenerator.getInstance().generateID();
+			AnswerSourceStructured asf = new AnswerSourceStructured("structured-search",url,label);
+			asf.setSourceID(sourceID);
+			QuestionDashboard.getInstance().get(questionView).addSource(asf);
+			sourceIDs.put(url,sourceID);
+			return sourceID;
+		}
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {

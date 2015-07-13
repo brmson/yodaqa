@@ -26,12 +26,15 @@ function showSources(container, sources) {
 	sources.forEach(function(s) {
 		var state_stags = ['<i>', '<b>', ''];
 		var state_etags = ['</i>', '</b>', ''];
-		container.append('<p class="source">'
-				+ '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
-				+ ' <a href="http://en.wikipedia.org/?curid='+s.pageId+'" target="_blank">'
-				+ state_stags[s.state] + s.title + state_etags[s.state]
-				+ '</a> (' + s.origin + ')</p>'); // TODO also include the first sentence?
+        if(!(typeof (s.pageId) ==="undefined")) { //this forces to only show en wiki
+            container.append('<p class="source">'
+                + '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
+                + ' <a href="http://en.wikipedia.org/?curid=' + s.pageId + '" target="_blank">'
+                + state_stags[s.state] + s.title + state_etags[s.state]
+                + '</a> (' + s.origin + ')</p>'); // TODO also include the first sentence?
+        }
 	});
+
 }
 
 /* Create a table with answers. */
@@ -43,10 +46,26 @@ function showAnswers(container, answers, snippets,sources) {
 		text = a.text.replace(/"/g, "&#34;");
         var str="";
         for(var index = 0; index< a.snippetIDs.length; index++) {
-            //str += "http://en.wikipedia.org/?curid=" + sources[snippets[a.snippetIDs[index]].sourceID].pageId + "\n";
-            str += a.snippetIDs[index]+" ";
-            str += snippets[a.snippetIDs[index]] + "\n";
+            //origin is (fulltext)/(title-in-clue)/(documented search)
+            str +="("+sources[snippets[a.snippetIDs[index]].sourceID].origin+") \n";
+            str +=sources[snippets[a.snippetIDs[index]].sourceID].title + " \n";
 
+
+            //add either wikipedia document ID or source URL
+            if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].pageId )==="undefined")) {
+                str += "http://en.wikipedia.org/?curid=" + sources[snippets[a.snippetIDs[index]].sourceID].pageId + "\n";
+            }
+            else if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].URL )==="undefined")){
+                str+= sources[snippets[a.snippetIDs[index]].sourceID].URL+ "\n";
+            }
+
+            //add either passage text or property label
+            if (!(typeof (snippets[a.snippetIDs[index]].passageText) ==="undefined")) {
+                str += snippets[a.snippetIDs[index]].passageText.replace(/"/g, "&#34;") + "\n";
+            }
+            else if (!(typeof (snippets[a.snippetIDs[index]].propertyLabel) ==="undefined")) {
+                str += snippets[a.snippetIDs[index]].propertyLabel + "\n";
+            }
         }
 		container.append('<tr><td class="i">'+i+'.</td>'
 				+ '<td class="text" title="'+str+'">'+text+'</td>'

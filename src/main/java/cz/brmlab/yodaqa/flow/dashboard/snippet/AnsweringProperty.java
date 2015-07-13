@@ -11,8 +11,9 @@ public class AnsweringProperty extends AnsweringSnippet {
 		this.propertyLabel = propertyLabel;
 	}
 
-	public String getPropertyLabel(){
-		return  propertyLabel;
+	@Override
+	public String toString(){
+		return "Property "+ super.getSnippetID()+" "+ propertyLabel;
 	}
 
 }

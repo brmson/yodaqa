@@ -10,8 +10,9 @@ public class AnsweringPassage extends AnsweringSnippet{
 		this.passageText = passageText;
 	}
 
-	public String getPassageText() {
-		return passageText;
+	@Override
+	public String toString() {
+		return "Passage "+ super.getSnippetID()+" "+ passageText;
 	}
 
 }

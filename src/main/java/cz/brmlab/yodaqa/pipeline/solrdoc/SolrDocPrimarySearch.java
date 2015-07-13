@@ -5,6 +5,13 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSource;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringDocTitle;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.uima.UimaContext;
@@ -15,6 +22,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
@@ -146,7 +154,6 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		Integer id = (Integer) doc.getFieldValue("id");
 		String title = (String) doc.getFieldValue("titleText");
 		logger.info(" FOUND: " + id + " " + (title != null ? title : ""));
-
 		/* Chop any trailing (...) substring (e.g. Foo (disambiguation)
 		 * to just Foo).  N.B. it might be tempting to use this as
 		 * a LAT, but it might not be a type; e.g.
@@ -154,6 +161,12 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		 * a weak LAT signal. */
 		jcas.setDocumentText(title.replaceAll("\\s+\\([^)]*\\)\\s*$", ""));
 		jcas.setDocumentLanguage("en"); // XXX
+
+		AnswerSourceEnwiki ac = new AnswerSourceEnwiki("document title", (title != null ? title : ""), id);
+		ac.setSourceID(SourceIDGenerator.getInstance().generateID());
+		AnsweringDocTitle adt = new AnsweringDocTitle(SnippetIDGenerator.getInstance().generateID(), ac.getSourceID());
+		QuestionDashboard.getInstance().get(questionView).addSource(ac);
+		QuestionDashboard.getInstance().addSnippet(adt.getSnippetID(), adt);
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());
@@ -182,6 +195,8 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
 		ai.setIsLast(1);
+		ai.setSnippetIDs(new IntegerArray(jcas, 1));
+		ai.setSnippetIDs(0,adt.getSnippetID());
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
  		ai.addToIndexes();
 	}
