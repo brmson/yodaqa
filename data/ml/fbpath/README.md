@@ -7,6 +7,9 @@ just the relevant properties as hypotheses, or add a special feature
 for them) and recall (we learn to walk the RDF graph through dummy
 nodes).
 
+This work is loosely inspired by Yao, 2015: Lean Question Answering over
+Freebase from Scratch (http://www.cs.jhu.edu/~xuchen/paper/scratch-qa.pdf).
+
 Data
 ----
 
@@ -48,20 +51,24 @@ We model probabilities of various paths based on two types of features:
   * specific text+type combinations of generated LATs
   * specific SV text
 
-Train a proof-of-concept BernoulliNB model with
+The IPython notebook ``FBPath Model Experiments.ipynb`` shows some exploration
+of the dataset and models we have done.
 
-	data/ml/fbpath/fbpath_train_bnb.py train.json bayesmodel.json
+As a baseline model, we use **multi-label logistic regression** classifier
+to estimate the probabilities of specific fbpaths:
 
-XXX trainmodel, val, devtest?
+	data/ml/fbpath/fbpath_train_logistic.py trainmodel.json val.json >src/main/resources/cz/brmlab/yodaqa/analysis/rdf/FBPathLogistic.model
 
 TODO
 ----
 
-  * Better model scoring function.
-
-  * Search for best model.
-
   * Use richer question analysis representation than just LATs + SV.
+    E.g. in "What countries are part of United Kingdom?", we do not carry
+    over the "part of" information.
+
+  * Explore more models, e.g. k-nn.  (See also the TODO in the ipynb.)
 
   * Learn a more universal mapping from words or embedded question
     representation to RDF property labels (or even just names).
+    What about aligning property labels with transformed vector embedding
+    of the question?
