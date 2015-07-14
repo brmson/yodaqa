@@ -12,9 +12,10 @@ public class QuestionAnswer {
 	protected double confidence;
 	protected int ID;
 	protected List<Integer> snippetIDs= new ArrayList<>();
-	public QuestionAnswer(String text, double confidence) {
+	public QuestionAnswer(String text, double confidence, int ID) {
 		this.text = text;
 		this.confidence = confidence;
+		this.ID = ID;
 	}
 	public List<Integer> getSnippetIDs() {return snippetIDs;}
 	public void addToSnippetIDList(int snippetID){
@@ -24,6 +25,5 @@ public class QuestionAnswer {
 	public String getText() { return text;}
 	/** @return the confidence */
 	public double getConfidence() { return confidence; }
-	public void setID(int ID) { this.ID = ID; }
 	public int getID() { return ID; }
 }

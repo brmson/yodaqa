@@ -309,13 +309,12 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			CompoundAnswer ca = loadAnswer(canAnswer, ai, finalAnswerHitlistView);
 			addAnswer(ca);
 			// System.err.println("AR process: " + ca.getAnswer().getText());
-			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
+			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0, ai.getAnswerID());
 			if (ai.getSnippetIDs()!=null) { //should never be null
 				for (int ID : ai.getSnippetIDs().toArray()) {
 					qa.addToSnippetIDList(ID);
  				}
 			}
-			qa.setID(ai.getAnswerID());
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}
