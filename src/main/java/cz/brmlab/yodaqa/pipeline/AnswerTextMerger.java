@@ -24,6 +24,7 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
@@ -126,7 +127,8 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 			    + fv.getFeatureValue(AF_OriginDocTitle.class)
 			    + fv.getFeatureValue(AF_OriginDBpOntology.class)
 			    + fv.getFeatureValue(AF_OriginDBpProperty.class)
-			    + fv.getFeatureValue(AF_OriginFreebaseOntology.class) > 1.0)
+			    + fv.getFeatureValue(AF_OriginFreebaseOntology.class)
+			    + fv.getFeatureValue(AF_OriginFreebaseSpecific.class) > 1.0)
 				fv.setFeature(AF_OriginMultiple.class, 1.0);
 
 			bestAnswer.setFeatures(fv.toFSArray(jcas));

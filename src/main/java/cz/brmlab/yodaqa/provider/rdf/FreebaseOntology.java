@@ -9,6 +9,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -357,7 +358,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			double score = rawResult[4].getDouble();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {}", titleForm, mid, propLabel, prop, value, valRes, score);
-			PropertyValue pv = new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class);
+			PropertyValue pv = new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseSpecific.class);
 			pv.setPropRes(prop);
 			pv.setScore(score);
 			results.add(pv);

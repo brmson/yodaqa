@@ -52,7 +52,7 @@ public class AnswerFV {
 			"originDBpPClueSubject", "originDBpPClueSubjectNE",
 			"originDBpPClueSubjectToken", "originDBpPClueSubjectPhrase",
 			"originDBpPClueConcept",
-		"originFreebaseOntology", "originFBONoClue",
+		"originFreebaseOntology", "originFreebaseSpecific", "originFBONoClue",
 		"originFBOClueToken", "originFBOCluePhrase", "originFBOClueSV",
 			"originFBOClueNE", "originFBOClueLAT",
 			"originFBOClueSubject", "originFBOClueSubjectNE",
@@ -144,6 +144,7 @@ public class AnswerFV {
 			features.add(AF_OriginDBpPClueSubjectPhrase.class);
 			features.add(AF_OriginDBpPClueConcept.class);
 			features.add(AF_OriginFreebaseOntology.class);
+			features.add(AF_OriginFreebaseSpecific.class);
 			features.add(AF_OriginFBONoClue.class);
 			features.add(AF_OriginFBOClueToken.class);
 			features.add(AF_OriginFBOCluePhrase.class);
