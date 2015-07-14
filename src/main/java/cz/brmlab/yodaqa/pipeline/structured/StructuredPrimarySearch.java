@@ -25,6 +25,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PropertyScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
@@ -148,6 +149,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(AF_Occurences.class, 1.0);
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(property.getOriginFeat(), 1.0);
+		if (property.getScore() != null)
+			fv.setFeature(AF_PropertyScore.class, property.getScore());
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
