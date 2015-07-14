@@ -60,13 +60,8 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 
 		/* Get a list of specific properties to query. */
 		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
-		List<PropertyPath> paths = new ArrayList<>();
-		for (PathScore ps : pathScs) {
-			paths.add(ps.path);
-		}
-
 		/* Fetch concept properties from the Freebase ontology dataset. */
-		properties.addAll(fbo.query(concept.getLabel(), paths, logger));
+		properties.addAll(fbo.query(concept.getLabel(), pathScs, logger));
 
 		return properties;
 	}
