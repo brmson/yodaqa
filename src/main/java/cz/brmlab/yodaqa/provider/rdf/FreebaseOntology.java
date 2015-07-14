@@ -297,6 +297,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				String pathQueryStr = "{" +
 					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "\" AS ?prop)\n" +
+					"  BIND(" + ps.proba + " AS ?score)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?proplabel .\n" +
 					"    FILTER(LANGMATCHES(LANG(?proplabel), \"en\"))\n" +
@@ -307,6 +308,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				String pathQueryStr = "{" +
 					"  ns:" + mid + " ns:" + path.get(0) + "/ns:" + path.get(1) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
+					"  BIND(" + ps.proba + " AS ?score)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
 					"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
@@ -334,7 +336,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop", "/val", "score" }, PROP_LIMIT);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -353,8 +355,12 @@ public class FreebaseOntology extends FreebaseLookup {
 			String value = rawResult[1].getString();
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
-			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
+			double score = rawResult[4].getDouble();
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {}", titleForm, mid, propLabel, prop, value, valRes, score);
+			PropertyValue pv = new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class);
+			pv.setPropRes(prop);
+			pv.setScore(score);
+			results.add(pv);
 		}
 
 		return results;
