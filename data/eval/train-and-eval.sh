@@ -75,9 +75,9 @@ echo "Starting evaluation in $clonedir"
 sleep 2
 
 if [ x$run_split = x ]; then
-	wait_on_barriers = 0
+	wait_on_barriers=0
 else
-	wait_on_barriers = 1
+	wait_on_barriers=1
 fi
 
 screen -m sh -c "
