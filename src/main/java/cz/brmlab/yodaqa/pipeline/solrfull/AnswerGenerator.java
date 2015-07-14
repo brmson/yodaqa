@@ -79,7 +79,6 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 			if (answer != null) {
 				boolean isLast = !answers.hasNext();
 				generateAnswer(answer, canAnswerView, isLast ? i : 0);
-
 				if (isLast) {
  					QuestionDashboard.getInstance().get(questionView).setSourceState(ri.getSourceID(), 2);
 				}

@@ -146,7 +146,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		int sourceID = getSourceID(property.getValRes(),property.getObject(),questionView);
 		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
 		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
-				//questionView or jcas
+
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle(title);
 		ri.setSource(sourceName);

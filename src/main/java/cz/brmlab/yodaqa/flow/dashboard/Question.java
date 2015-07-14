@@ -19,7 +19,7 @@ public class Question {
 	protected QuestionSummary summary = null;
 	protected HashMap<Integer, AnswerSource> sources = new HashMap<>();
 	protected List<QuestionAnswer> answers = new ArrayList<>();
-	protected Map<Integer, AnsweringSnippet> snippets = new HashMap<>(); //key = ID of passage, value = Passage String
+	protected Map<Integer, AnsweringSnippet> snippets = new HashMap<>(); //key = ID of snippet, value = the actual snippet
 	protected boolean finished = false;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
@@ -43,6 +43,10 @@ public class Question {
 	/** @param summary the summary to set */
 	public synchronized void setSummary(QuestionSummary summary) {
 		this.summary = summary;
+	}
+
+	public synchronized void addSnippet(AnsweringSnippet snippet) {
+		snippets.put(snippet.getSnippetID(),snippet);
 	}
 
 	public synchronized void addSource(AnswerSource source) {
