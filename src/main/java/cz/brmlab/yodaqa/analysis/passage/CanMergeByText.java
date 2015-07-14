@@ -69,18 +69,18 @@ public class CanMergeByText extends JCasAnnotator_ImplBase {
 					continue;
 				}
 				//we use Set to ignore duplicates
-				Set<Integer> passageIds= new LinkedHashSet<>();
-				for (int ID : can.getPassageIDs().toArray()) {
-					passageIds.add(ID);
+				Set<Integer> snippetIDs= new LinkedHashSet<>();
+				for (int ID : can.getSnippetIDs().toArray()) {
+					snippetIDs.add(ID);
 				}
-				for (int ID : mainCan.getPassageIDs().toArray()) {
-					passageIds.add(ID);
+				for (int ID : mainCan.getSnippetIDs().toArray()) {
+					snippetIDs.add(ID);
 				}
-				//resize the passageID array in mainCan and fill it in a for cycle
-				mainCan.setPassageIDs(new IntegerArray(resultView, passageIds.size()));
+				//resize the snippetIDs array in mainCan and fill it in a for cycle
+				mainCan.setSnippetIDs(new IntegerArray(resultView, snippetIDs.size()));
 				int index = 0;
-				for (Integer i: passageIds) {
-					mainCan.setPassageIDs(index, i);
+				for (Integer i: snippetIDs) {
+					mainCan.setSnippetIDs(index, i);
 					index++;
  				}
  				logger.debug("merging " + mainCan.getCoveredText() + "|" + can.getCoveredText());

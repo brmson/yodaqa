@@ -86,8 +86,9 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 		ca.setPassage(p);
 		ca.setBase(np);
 		ca.setFeatures(fv.toFSArray(passagesView));
-		ca.setPassageIDs(new IntegerArray(passagesView, 1));
-		ca.setPassageIDs(0, p.getPassageID());
+		//Snippet added this way should already have the sourceID saved
+		ca.setSnippetIDs(new IntegerArray(passagesView, 1));
+		ca.setSnippetIDs(0, p.getSnippetID());
 		ca.addToIndexes();
 	}
 

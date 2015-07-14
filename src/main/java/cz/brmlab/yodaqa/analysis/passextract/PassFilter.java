@@ -3,6 +3,10 @@ package cz.brmlab.yodaqa.analysis.passextract;
 import java.util.Collection;
 import java.util.Map;
 
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -51,16 +55,20 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas passagesView, pickedPassagesView;
+		JCas resultView, passagesView, pickedPassagesView,questionView;
 		try {
+			resultView = jcas.getView("Result");
 			passagesView = jcas.getView("Passages");
 			jcas.createView("PickedPassages");
+			questionView = jcas.getView("Question");
 			pickedPassagesView = jcas.getView("PickedPassages");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 		pickedPassagesView.setDocumentText(passagesView.getDocumentText());
 		pickedPassagesView.setDocumentLanguage(passagesView.getDocumentLanguage());
+
+		int sourceID = JCasUtil.selectSingle(resultView, ResultInfo.class).getSourceID();
 
 		/* Pre-index covering info. */
 		Map<Passage, Collection<Annotation>> covering =
@@ -73,7 +81,11 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 		CasCopier copier = new CasCopier(passagesView.getCas(), pickedPassagesView.getCas());
 		while (passages.hasNext() && i++ < numPicked) {
 			Passage passage = (Passage) passages.next();
+			AnsweringPassage ap = new AnsweringPassage(SnippetIDGenerator.getInstance().generateID(), sourceID, passage.getCoveredText());
+			QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
+
 			Passage p2 = (Passage) copier.copyFs(passage);
+			p2.setSnippetID(ap.getSnippetID());
 			p2.addToIndexes();
 
 			/* Also recursively copy annotations - we need

@@ -151,9 +151,9 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 		ai.setAnswerID(answer.getAnswerID());
 		//in this case, Answer should always have a a non-null IntegerArray, so I did not check it
 		//any null reference exception is an error in hitlist creation which should be fixed
-		ai.setPassageIDs(new IntegerArray(jcas,answer.getPassageIDs().size()));
-		ai.getPassageIDs().copyFromArray(answer.getPassageIDs().toArray(), 0, 0, answer.getPassageIDs().size());
-		ai.setSource(answer.getSource());
+		ai.setSnippetIDs(new IntegerArray(jcas, answer.getSnippetIDs().size()));
+		ai.getSnippetIDs().copyFromArray(answer.getSnippetIDs().toArray(), 0, 0, answer.getSnippetIDs().size());
+
 
 		/* Generate the Focus */
 		if (answer.getFocus() != null) {
