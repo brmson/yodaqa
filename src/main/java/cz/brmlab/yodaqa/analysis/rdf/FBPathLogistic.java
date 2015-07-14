@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 
 import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.provider.rdf.PropertyPath;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ public class FBPathLogistic {
 	};
 
 	protected String modelName;
-	protected Map<String, LogRegClassifier> pathCfiers = new HashMap<>();
+	protected Map<PropertyPath, LogRegClassifier> pathCfiers = new HashMap<>();
 
 	public void initialize() throws ResourceInitializationException {
 		modelName = "FBPathLogistic.model";
@@ -98,7 +99,8 @@ public class FBPathLogistic {
 			LogRegClassifier cfier = new LogRegClassifier();
 			cfier.intercept = weights.remove("_");
 			cfier.weights = weights;
-			pathCfiers.put(fbPath, cfier);
+			PropertyPath path = PropertyPath.fromFreebasePath(fbPath);
+			pathCfiers.put(path, cfier);
 		}
 	}
 
@@ -118,12 +120,9 @@ public class FBPathLogistic {
 
 	/** Given question features and a given path, output its [0,1] score.
 	 * In this case, it is the predicted probability of it holding
-	 * the answer.  Returns null if we do not know this path.
-	 *
-	 * N.B. properties are in the Freebase /slash/separated format.
-	 * Nodes are separated by |. */
-	public Double getPathScore(List<String> feats, String fbPath) {
-		LogRegClassifier cfier = pathCfiers.get(fbPath);
+	 * the answer.  Returns null if we do not know this path. */
+	public Double getPathScore(List<String> feats, PropertyPath path) {
+		LogRegClassifier cfier = pathCfiers.get(path);
 		if (cfier == null)
 			return null;
 
@@ -131,19 +130,12 @@ public class FBPathLogistic {
 	}
 
 
-	public class FBPathScore {
-		/** Property path, where the properties are in the Freebase
-		 * /slash/separated format and nodes are separated by |.
-		 * E.g.:
-		 *   * /tv/tv_program/tv_producer|/tv/tv_producer_term/producer
-		 *   * /type/object/name
-		 */
-		public String fbPath;
-
+	public class PathScore {
+		public PropertyPath path;
 		public double proba;
 
-		public FBPathScore(String fbPath, double proba) {
-			this.fbPath = fbPath;
+		public PathScore(PropertyPath path, double proba) {
+			this.path = path;
 			this.proba = proba;
 		}
 	};
@@ -152,17 +144,17 @@ public class FBPathLogistic {
 	 * a sorted list of paths, from most promising.  You will want
 	 * to look just at the top N, as it eventually contains all the
 	 * paths we know about. */
-	public List<FBPathScore> getPaths(List<String> feats) {
-		List<FBPathScore> scores = new ArrayList<>();
-		for (Entry<String, LogRegClassifier> e : pathCfiers.entrySet()) {
+	public List<PathScore> getPaths(List<String> feats) {
+		List<PathScore> scores = new ArrayList<>();
+		for (Entry<PropertyPath, LogRegClassifier> e : pathCfiers.entrySet()) {
 			double proba = e.getValue().predictProba(feats);
-			FBPathScore fbPathScore = new FBPathScore(e.getKey(), proba);
-			scores.add(fbPathScore);
+			PathScore pathScore = new PathScore(e.getKey(), proba);
+			scores.add(pathScore);
 		}
 		/* Sort by proba, from highest. */
-		Collections.sort(scores, new Comparator<FBPathScore>(){ @Override
-			public int compare(FBPathScore fbps1, FBPathScore fbps2){
-				return Double.valueOf(fbps2.proba).compareTo(Double.valueOf(fbps1.proba));
+		Collections.sort(scores, new Comparator<PathScore>(){ @Override
+			public int compare(PathScore ps1, PathScore ps2){
+				return Double.valueOf(ps2.proba).compareTo(Double.valueOf(ps1.proba));
 			} } );
 		return scores;
 	}

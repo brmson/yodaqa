@@ -11,11 +11,12 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
-import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.FBPathScore;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFBOntology;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT;
 import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
+import cz.brmlab.yodaqa.provider.rdf.PropertyPath;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 
 /* XXX: The clue-specific features, ugh. */
@@ -58,19 +59,14 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		// return properties;
 
 		/* Get a list of specific properties to query. */
-		List<FBPathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
-		List<List<String>> fbPaths = new ArrayList<>();
-		for (FBPathScore fbps : pathScs) {
-			List<String> path = new ArrayList<>();
-			for (String prop : fbps.fbPath.split("\\|")) {
-				String rdfProp = prop.substring(1).replaceAll("/", "."); /* /x/y -> x.y */
-				path.add(rdfProp);
-			}
-			fbPaths.add(path);
+		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		List<PropertyPath> paths = new ArrayList<>();
+		for (PathScore ps : pathScs) {
+			paths.add(ps.path);
 		}
 
 		/* Fetch concept properties from the Freebase ontology dataset. */
-		properties.addAll(fbo.query(concept.getLabel(), fbPaths, logger));
+		properties.addAll(fbo.query(concept.getLabel(), paths, logger));
 
 		return properties;
 	}

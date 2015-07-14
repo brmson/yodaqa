@@ -113,7 +113,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	/** Query for a given title, returning a set of PropertyValue instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> query(String title, List<List<String>> paths, Logger logger) {
+	public List<PropertyValue> query(String title, List<PropertyPath> paths, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			Set<String> topics = queryTitleForm(titleForm, logger);
 			List<PropertyValue> results = new ArrayList<PropertyValue>();
@@ -262,7 +262,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * that cover the specified property paths.  This generalizes poorly
 	 * to lightly covered topics, but has high precision+recall for some
 	 * common topics where it can reach through the meta-nodes. */
-	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<List<String>> paths, Logger logger) {
+	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PropertyPath> paths, Logger logger) {
 		/* Test query:
 		   PREFIX ns: <http://rdf.freebase.com/ns/>
 		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -288,7 +288,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		   }
 		 */
 		List<String> pathQueries = new ArrayList<>();
-		for (List<String> path : paths) {
+		for (PropertyPath path : paths) {
 			assert(path.size() <= 2);  // longer paths don't occur in our dataset
 			logger.debug("specific path {} {}", path, path.size());
 			if (path.size() == 1) {
