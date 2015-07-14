@@ -302,7 +302,9 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			if (isAnswerLast(canAnswer, ai))
 				isLast++;
 			needCases += ai.getIsLast();
-			// logger.debug("in: canAnswer {}, isLast {}, cases {} < {}", canAnswer.getDocumentText(), isLast, seenCases, needCases);
+			logger.debug("in: canAnswer {}, isLast {} < {}, cases {} < {}",
+				canAnswer.getDocumentText(), isLast, isLastBarrier,
+				seenCases, needCases);
 
 			if (canAnswer.getDocumentText() == null)
 				return; // we received a dummy CAS
