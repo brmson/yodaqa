@@ -60,6 +60,9 @@ to estimate the probabilities of specific fbpaths:
 	data/ml/fbpath/fbpath_train_logistic.py trainmodel.json val.json >src/main/resources/cz/brmlab/yodaqa/analysis/rdf/FBPathLogistic.model
 
 (XXX: you need to manually delete the trailing comma on the second to last line.)
+This model is used within the YodaQA runtime in the class
+
+	src/main/java/cz/brmlab/yodaqa/analysis/rdf/FBPathLogistic.java
 
 TODO
 ----
@@ -67,6 +70,11 @@ TODO
   * Use richer question analysis representation than just LATs + SV.
     E.g. in "What countries are part of United Kingdom?", we do not carry
     over the "part of" information.
+
+  * Use per-concept instead of per-question labels, concept-specific
+    features (like NE type, categories, ...), and check for in-node
+    co-occurrences.  E.g. we still fail at "who plays alan parrish in
+    jumanji?" because we don't match "alan parrish" at all.
 
   * Explore more models, e.g. k-nn.  (See also the TODO in the ipynb.)
 

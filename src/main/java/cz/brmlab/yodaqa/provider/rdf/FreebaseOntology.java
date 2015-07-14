@@ -8,8 +8,6 @@ import java.util.Set;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 
 /** A wrapper around Freebase dataset that maps concepts to curated
@@ -17,9 +15,6 @@ import org.slf4j.Logger;
  * This can then serve as an information source. */
 
 public class FreebaseOntology extends FreebaseLookup {
-	private static final Log logger =
-		LogFactory.getLog(FreebaseOntology.class);
-
 	/** Maximum number of topics to take queries from. */
 	public static final int TOPIC_LIMIT = 5;
 	/** Maximum number of properties per topic to return. */
@@ -113,13 +108,18 @@ public class FreebaseOntology extends FreebaseLookup {
                 /* 4x Book editions published */ "book.author.book_editions_published",
 	};
 
-	/** Query for a given title, returning a set of PropertyValue instances. */
-	public List<PropertyValue> query(String title, Logger logger) {
+	/** Query for a given title, returning a set of PropertyValue instances.
+	 * The paths set are extra properties to specifically query for:
+	 * they bypass the blacklist and can traverse multiple nodes. */
+	public List<PropertyValue> query(String title, List<List<String>> paths, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			Set<String> topics = queryTitleForm(titleForm, logger);
 			List<PropertyValue> results = new ArrayList<PropertyValue>();
-			for (String mid : topics)
-				results.addAll(queryTopic(titleForm, mid, logger));
+			for (String mid : topics) {
+				results.addAll(queryTopicGeneric(titleForm, mid, logger));
+				if (!paths.isEmpty())
+					results.addAll(queryTopicSpecific(titleForm, mid, paths, logger));
+			}
 			if (!results.isEmpty())
 				return results;
 		}
@@ -163,20 +163,21 @@ public class FreebaseOntology extends FreebaseLookup {
 	}
 
 	/** Query for a given MID, returning a set of PropertyValue instances
-	 * that cover relevant-seeming properties. */
-	/* FIXME: Some physical quantities have separate topics and
-	 * no labels, like ns:chemistry.chemical_element.atomic_mass. */
-	/* FIXME: Some relationships could be useful but seem difficult
-	 * to traverse uniformly, like ns:people.person.sibling_s,
+	 * that cover all non-spammy, direct RDF properties.
+	 *
+	 * This has relatively low recall, not just due to the limited set
+	 * of results and blacklist, but also because there are some
+	 * intermediate nodes ("virtual topics") for many properties.
+	 * E.g. some physical quantities have separate topics and
+	 * no labels, like ns:chemistry.chemical_element.atomic_mass.
+	 * Other important examples include ns:people.person.sibling_s,
 	 * ns:film.person_or_entity_appearing_in_film.films,
 	 * ns:people.person.education or awards:
 	 * ns:base.nobelprizes.nobel_subject_area.nobel_awards,
-	 * ns:award.award_winner.awards_won. */
-	public List<PropertyValue> queryTopic(String titleForm, String mid, Logger logger) {
-		/* If you want to paste this to SPARQL query interface,
-		 * just pass the block below through
-		 * 	echo 'PREFIX ns: <http://rdf.freebase.com/ns/>'; echo 'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>'; echo 'SELECT ?topic WHERE {'; perl -pe 'undef $_ unless /"/; s/\s*"//; s/\\n" \+$//;'; echo '}'
-		 */
+	 * ns:award.award_winner.awards_won.
+	 * For these, we apply a fbpath label prediction machine learning
+	 * model and handle them in queryTopicSpecific(). */
+	public List<PropertyValue> queryTopicGeneric(String titleForm, String mid, Logger logger) {
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
@@ -230,7 +231,105 @@ public class FreebaseOntology extends FreebaseLookup {
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
+		return genResults(titleForm, mid, rawResults, logger);
+	}
 
+	/** Query for a given MID, returning a set of PropertyValue instances
+	 * that cover the specified property paths.  This generalizes poorly
+	 * to lightly covered topics, but has high precision+recall for some
+	 * common topics where it can reach through the meta-nodes. */
+	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<List<String>> paths, Logger logger) {
+		/* Test query:
+		   PREFIX ns: <http://rdf.freebase.com/ns/>
+		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		   SELECT ?prop ?t0 ?value WHERE {
+		     {
+		       ns:m.09l3p ns:film.actor.film ?t0 .
+		       ?t0 ns:film.performance.character ?val .
+		       ns:film.actor.film rdfs:label ?p0 .
+		       ns:film.performance.character rdfs:label ?p1 .
+		       BIND(CONCAT(?p0, ": ", ?p1) AS ?prop)
+		     } UNION {
+		       ns:m.09l3p ns:film.actor.film ?t0 .
+		       ?t0 ns:film.performance.film ?val .
+		       ns:film.actor.film rdfs:label ?p0 .
+		       ns:film.performance.film rdfs:label ?p1 .
+		       BIND(CONCAT(?p0, ": ", ?p1) AS ?prop)
+		     } UNION {
+		       ns:m.09l3p ns:people.person.nationality ?val .
+		       ns:people.person.nationality rdfs:label ?prop .
+		     }
+		     OPTIONAL { ?val rdfs:label ?vallabel . FILTER( LANGMATCHES(LANG(?vallabel), "en") ) } 
+		     BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )
+		   }
+		 */
+		List<String> pathQueries = new ArrayList<>();
+		for (List<String> path : paths) {
+			assert(path.size() <= 2);  // longer paths don't occur in our dataset
+			logger.debug("specific path {} {}", path, path.size());
+			if (path.size() == 1) {
+				String pathQueryStr = "{" +
+					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
+					"  BIND(ns:" + path.get(0) + " AS ?prop)\n" +
+					"  OPTIONAL {\n" +
+					"    ns:" + path.get(0) + " rdfs:label ?proplabel .\n" +
+					"    FILTER(LANGMATCHES(LANG(?proplabel), \"en\"))\n" +
+					"  }\n" +
+					"}";
+				pathQueries.add(pathQueryStr);
+			} else if (path.size() == 2) {
+				String pathQueryStr = "{" +
+					"  ns:" + mid + " ns:" + path.get(0) + " ?t0 .\n" +
+					"  ?t0 ns:" + path.get(1) + " ?val .\n" +
+					"  BIND(ns:" + path.get(1) + " AS ?prop)\n" +
+					"  OPTIONAL {\n" +
+					"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
+					"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
+					"    FILTER(LANGMATCHES(LANG(?pl0), \"en\"))\n" +
+					"    FILTER(LANGMATCHES(LANG(?pl1), \"en\"))\n" +
+					"    BIND(CONCAT(?pl0, \": \", ?pl1) AS ?proplabel)\n" +
+					"  }\n" +
+					"}";
+				pathQueries.add(pathQueryStr);
+			}
+		}
+		String rawQueryStr =
+			StringUtils.join(pathQueries, " UNION ") +
+			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
+			/* Check if value is not a pointer to another topic
+			 * we could resolve to a label. */
+			"OPTIONAL {\n" +
+			"  ?val rdfs:label ?vallabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
+			"}\n" +
+			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
+			/* Ignore properties with values that are still URLs,
+			 * i.e. pointers to an unlabelled topic. */
+			"FILTER( !ISURI(?value) )\n" +
+			/* Keep only ns: properties */
+			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
+			/* ...but ignore some common junk which yields mostly
+			 * no relevant data... */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )\n" +
+			/* ...and stuff that's difficult to trust. */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
+			/* topic_server has geolocation (not useful right now)
+			 * and population_number (which would be useful, but
+			 * needs special handling has a topic may have many
+			 * of these, e.g. White House). Also it has crappy
+			 * type labels. */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
+			"";
+		// logger.debug("executing sparql query: {}", rawQueryStr);
+		List<Literal[]> rawResults = rawQuery(rawQueryStr,
+			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
+		return genResults(titleForm, mid, rawResults, logger);
+	}
+
+	protected List<PropertyValue> genResults(String titleForm, String mid, List<Literal[]> rawResults, Logger logger) {
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
 			/* ns:astronomy.star.temperature_k -> "temperature"

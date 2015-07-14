@@ -3,11 +3,15 @@ package cz.brmlab.yodaqa.pipeline.structured;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.FBPathScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFBOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
@@ -25,18 +29,50 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.*;
  * ontology relations. */
 
 public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
+	/* Number of top non-direct property paths to query.
+	 * It's ok to be liberal since most will likely be
+	 * non-matching. */
+	protected static final int N_TOP_PATHS = 15;
+
+	protected static FBPathLogistic fbpathLogistic = null;
+
+	final FreebaseOntology fbo = new FreebaseOntology();
+
 	public FreebaseOntologyPrimarySearch() {
 		super("Freebase", AF_OriginFreebaseOntology.class, AF_OriginFBONoClue.class);
 		logger = LoggerFactory.getLogger(FreebaseOntologyPrimarySearch.class);
 	}
 
-	final FreebaseOntology fbo = new FreebaseOntology();
+	@Override
+	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {
+		super.initialize(aContext);
 
-	protected List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
+		if (fbpathLogistic == null) {
+			fbpathLogistic = new FBPathLogistic();
+			fbpathLogistic.initialize();
+		}
+	}
+
+	protected synchronized List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
-		/* Query the Freebase ontology dataset. */
-		/* --- Comment out the next line to disable Freebase lookups. --- */
-		properties.addAll(fbo.query(concept.getLabel(), logger));
+		/* --- Uncomment the next line to disable Freebase lookups. --- */
+		// return properties;
+
+		/* Get a list of specific properties to query. */
+		List<FBPathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		List<List<String>> fbPaths = new ArrayList<>();
+		for (FBPathScore fbps : pathScs) {
+			List<String> path = new ArrayList<>();
+			for (String prop : fbps.fbPath.split("\\|")) {
+				String rdfProp = prop.substring(1).replaceAll("/", "."); /* /x/y -> x.y */
+				path.add(rdfProp);
+			}
+			fbPaths.add(path);
+		}
+
+		/* Fetch concept properties from the Freebase ontology dataset. */
+		properties.addAll(fbo.query(concept.getLabel(), fbPaths, logger));
+
 		return properties;
 	}
 
