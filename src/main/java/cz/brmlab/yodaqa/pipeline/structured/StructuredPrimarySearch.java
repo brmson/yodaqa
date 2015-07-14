@@ -71,7 +71,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	/** Retrieve properties associated with a given ClueConcept. */
-	protected abstract List<PropertyValue> getConceptProperties(ClueConcept concept);
+	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept);
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -80,7 +80,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
 		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			properties.addAll(getConceptProperties(concept));
+			properties.addAll(getConceptProperties(questionView, concept));
 		}
 
 		relIter = properties.iterator();

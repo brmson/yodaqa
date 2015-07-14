@@ -32,7 +32,7 @@ public class DBpediaOntologyPrimarySearch extends StructuredPrimarySearch {
 
 	final DBpediaOntology dbo = new DBpediaOntology();
 
-	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
+	protected List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 			/* Query the DBpedia ontology dataset - cleaned up
 			 * but quite sparse infobox based data. */

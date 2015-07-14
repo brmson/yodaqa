@@ -48,7 +48,7 @@ public class DBpediaPropertyPrimarySearch extends StructuredPrimarySearch {
 
 	final DBpediaProperties dbp = new DBpediaProperties();
 
-	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
+	protected List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* Query the DBpedia raw infobox dataset - uncleaned
 		 * but depnse infobox based data. */

@@ -32,7 +32,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 
 	final FreebaseOntology fbo = new FreebaseOntology();
 
-	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
+	protected List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* Query the Freebase ontology dataset. */
 		/* --- Comment out the next line to disable Freebase lookups. --- */
