@@ -219,6 +219,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific</name>
+        <description>Answer Feature: 1 if the origin of this answer is a specifically queries relation (based on the fbpath machine learned model) in the Freebase curated ontology.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFBONoClue</name>
         <description>Answer Feature: Negative evidence set to -1 if the origin of this answer is a DBpedia curated ontology property that does not match any question clue in its label.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>

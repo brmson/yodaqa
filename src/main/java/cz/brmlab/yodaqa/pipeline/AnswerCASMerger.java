@@ -33,6 +33,7 @@ import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
@@ -415,7 +416,8 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			    + mainFV.getFeatureValue(AF_OriginDocTitle.class)
 			    + mainFV.getFeatureValue(AF_OriginDBpOntology.class)
 			    + mainFV.getFeatureValue(AF_OriginDBpProperty.class)
-			    + mainFV.getFeatureValue(AF_OriginFreebaseOntology.class) > 1.0)
+			    + mainFV.getFeatureValue(AF_OriginFreebaseOntology.class)
+			    + mainFV.getFeatureValue(AF_OriginFreebaseSpecific.class) > 1.0)
 				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
 			/* Also restore confidence value if we already
 			 * determined it before. */
