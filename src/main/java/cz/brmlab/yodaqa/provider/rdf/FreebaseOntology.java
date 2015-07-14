@@ -7,7 +7,10 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 
 /** A wrapper around Freebase dataset that maps concepts to curated
@@ -111,7 +114,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	/** Query for a given title, returning a set of PropertyValue instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> query(String title, List<List<String>> paths, Logger logger) {
+	public List<PropertyValue> query(String title, List<PropertyPath> paths, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			Set<String> topics = queryTitleForm(titleForm, logger);
 			List<PropertyValue> results = new ArrayList<PropertyValue>();
@@ -131,9 +134,8 @@ public class FreebaseOntology extends FreebaseLookup {
 	public Set<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in the sought
-		 * after title. */
-		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
+		 * by force-capitalizing the first letter of each word. */
+		title = WordUtils.capitalize(title);
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to SPARQL query interface,
@@ -231,14 +233,36 @@ public class FreebaseOntology extends FreebaseLookup {
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
-		return genResults(titleForm, mid, rawResults, logger);
+
+		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
+		for (Literal[] rawResult : rawResults) {
+			/* ns:astronomy.star.temperature_k -> "temperature"
+			 * ns:astronomy.star.planet_s -> "planet"
+			 * ns:astronomy.star.spectral_type -> "spectral type"
+			 * ns:chemistry.chemical_element.periodic_table_block -> "periodic table block"
+			 *
+			 * But typically we fetch the property name from
+			 * the RDF store too, so this should be irrelevant
+			 * in that case.*/
+			String propLabel = rawResult[0].getString().
+				replaceAll("^.*\\.([^\\. ]*)$", "\\1").
+				replaceAll("_.$", "").
+				replaceAll("_", " ");
+			String value = rawResult[1].getString();
+			String prop = rawResult[2].getString();
+			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
+			results.add(new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
+		}
+
+		return results;
 	}
 
 	/** Query for a given MID, returning a set of PropertyValue instances
 	 * that cover the specified property paths.  This generalizes poorly
 	 * to lightly covered topics, but has high precision+recall for some
 	 * common topics where it can reach through the meta-nodes. */
-	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<List<String>> paths, Logger logger) {
+	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PropertyPath> paths, Logger logger) {
 		/* Test query:
 		   PREFIX ns: <http://rdf.freebase.com/ns/>
 		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -264,7 +288,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		   }
 		 */
 		List<String> pathQueries = new ArrayList<>();
-		for (List<String> path : paths) {
+		for (PropertyPath path : paths) {
 			assert(path.size() <= 2);  // longer paths don't occur in our dataset
 			logger.debug("specific path {} {}", path, path.size());
 			if (path.size() == 1) {
@@ -309,10 +333,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
-		return genResults(titleForm, mid, rawResults, logger);
-	}
 
-	protected List<PropertyValue> genResults(String titleForm, String mid, List<Literal[]> rawResults, Logger logger) {
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
 			/* ns:astronomy.star.temperature_k -> "temperature"
@@ -331,7 +352,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, propLabel, value, valRes));
+			results.add(new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
 		}
 
 		return results;

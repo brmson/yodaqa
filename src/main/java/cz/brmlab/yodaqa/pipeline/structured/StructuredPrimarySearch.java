@@ -55,13 +55,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected int i;
 
 	protected String sourceName;
-	protected Class<? extends AnswerFeature> originFeature, noClueFeature;
+	protected Class<? extends AnswerFeature> noClueFeature;
 
 	public StructuredPrimarySearch(String sourceName_,
-			Class<? extends AnswerFeature> originFeature_,
 			Class<? extends AnswerFeature> noClueFeature_) {
 		sourceName = sourceName_;
-		originFeature = originFeature_;
 		noClueFeature = noClueFeature_;
 	}
 
@@ -149,7 +147,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerFV fv = new AnswerFV();
 		fv.setFeature(AF_Occurences.class, 1.0);
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
-		fv.setFeature(originFeature, 1.0);
+		fv.setFeature(property.getOriginFeat(), 1.0);
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
