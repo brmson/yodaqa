@@ -13,7 +13,6 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.FBPathScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFBOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT;
 import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
@@ -39,7 +38,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 	final FreebaseOntology fbo = new FreebaseOntology();
 
 	public FreebaseOntologyPrimarySearch() {
-		super("Freebase", AF_OriginFreebaseOntology.class, AF_OriginFBONoClue.class);
+		super("Freebase", AF_OriginFBONoClue.class);
 		logger = LoggerFactory.getLogger(FreebaseOntologyPrimarySearch.class);
 	}
 

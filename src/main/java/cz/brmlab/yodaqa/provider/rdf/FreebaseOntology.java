@@ -7,6 +7,8 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
@@ -331,7 +333,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, propLabel, value, valRes));
+			results.add(new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
 		}
 
 		return results;

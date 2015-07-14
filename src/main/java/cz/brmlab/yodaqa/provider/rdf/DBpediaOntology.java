@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -83,7 +85,7 @@ public class DBpediaOntology extends DBpediaLookup {
 			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
 			logger.debug("DBpedia {} property: {} -> {} ({})", title, propLabel, value, valRes);
-			results.add(new PropertyValue(title, propLabel, value, valRes));
+			results.add(new PropertyValue(title, propLabel, value, valRes, AF_OriginDBpOntology.class));
 		}
 
 		return results;
