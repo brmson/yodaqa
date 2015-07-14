@@ -27,7 +27,6 @@ public final class QuestionDashboard {
 		return qd;
 	}
 
-	private Map<Integer, AnsweringSnippet> snippets = new HashMap<>();
 	/* All asked questions, by their id. */
 	private Map<String, Question> questions = new HashMap<>();
 	/* Questions that were not passed to the pipeline yet.
@@ -77,6 +76,4 @@ public final class QuestionDashboard {
 	public synchronized List<Question> getQuestionsToAnswer() { return new ArrayList<>(questionsToAnswer); }
 	public synchronized List<Question> getQuestionsInProgress() { return new ArrayList<>(questionsInProgress); }
 	public synchronized List<Question> getQuestionsAnswered() { return new ArrayList<>(questionsAnswered); }
-	public synchronized void addSnippet (int snippetID, AnsweringSnippet snippet) {	snippets.put(snippetID,snippet);}
-	public synchronized AnsweringSnippet getSnippet(int ID){ return snippets.get(ID); }
 };

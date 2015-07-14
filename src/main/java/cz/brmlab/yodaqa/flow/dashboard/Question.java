@@ -92,11 +92,6 @@ public class Question {
 	}
 
 	public synchronized String toJson() {
-		for (QuestionAnswer qa : answers ) {
-			for (Integer snippetID : qa.getSnippetIDs()) {
-				snippets.put(snippetID, QuestionDashboard.getInstance().getSnippet(snippetID));
-			}
-		}
 		return gson.toJson(this);
 	}
 };

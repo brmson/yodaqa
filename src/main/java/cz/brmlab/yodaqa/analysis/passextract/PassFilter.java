@@ -55,11 +55,12 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas resultView, passagesView, pickedPassagesView;
+		JCas resultView, passagesView, pickedPassagesView,questionView;
 		try {
 			resultView = jcas.getView("Result");
 			passagesView = jcas.getView("Passages");
 			jcas.createView("PickedPassages");
+			questionView = jcas.getView("Question");
 			pickedPassagesView = jcas.getView("PickedPassages");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
@@ -81,7 +82,7 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 		while (passages.hasNext() && i++ < numPicked) {
 			Passage passage = (Passage) passages.next();
 			AnsweringPassage ap = new AnsweringPassage(SnippetIDGenerator.getInstance().generateID(), sourceID, passage.getCoveredText());
-			QuestionDashboard.getInstance().addSnippet(ap.getSnippetID(), ap);
+			QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
 			Passage p2 = (Passage) copier.copyFs(passage);
 			p2.setSnippetID(ap.getSnippetID());
