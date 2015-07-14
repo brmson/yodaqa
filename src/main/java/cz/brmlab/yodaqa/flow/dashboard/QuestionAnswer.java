@@ -11,24 +11,19 @@ public class QuestionAnswer {
 	protected String text;
 	protected double confidence;
 	protected int ID;
-	protected String source;
-	protected List<Integer> passageIDs= new ArrayList<>();
-	public QuestionAnswer(String text, double confidence) {
+	protected List<Integer> snippetIDs= new ArrayList<>();
+	public QuestionAnswer(String text, double confidence, int ID) {
 		this.text = text;
 		this.confidence = confidence;
+		this.ID = ID;
 	}
-	public List<Integer> getPassageIDList() {return passageIDs;}
-	public void addToPassageList(int passageID){
-		passageIDs.add(passageID);
+	public List<Integer> getSnippetIDs() {return snippetIDs;}
+	public void addToSnippetIDList(int snippetID){
+		snippetIDs.add(snippetID);
 	}
-	public List<Integer> getPassageList(){
-		return passageIDs;
-	}
-	/** @return the text */
+ 	/** @return the text */
 	public String getText() { return text;}
 	/** @return the confidence */
 	public double getConfidence() { return confidence; }
-	public void setID(int ID) {this.ID = ID;}
-	public int getID(){return ID;}
-	public void setSource(String source){this.source=source;}
+	public int getID() { return ID; }
 }

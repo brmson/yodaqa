@@ -4,6 +4,8 @@ package cz.brmlab.yodaqa.flow.dashboard;
 public abstract class AnswerSource {
 	protected String type;
 	protected String title;
+	protected int sourceID;
+
 	/* state 0: not processed, 1: being processed, 2: done */
 	protected int state = 0;
 
@@ -19,4 +21,6 @@ public abstract class AnswerSource {
 	public void setState(int state) {
 		this.state = state;
 	}
+	public int getSourceID() { return sourceID; }
+	public void setSourceID(int sourceID) { this.sourceID = sourceID; }
 };

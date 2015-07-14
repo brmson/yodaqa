@@ -1,10 +1,16 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -12,6 +18,7 @@ import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
@@ -57,6 +64,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected String sourceName;
 	protected Class<? extends AnswerFeature> originFeature, noClueFeature;
 
+	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
 	public StructuredPrimarySearch(String sourceName_,
 			Class<? extends AnswerFeature> originFeature_,
 			Class<? extends AnswerFeature> noClueFeature_) {
@@ -135,12 +143,16 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
+		int sourceID = getSourceID(property.getValRes(),property.getObject(),questionView);
+		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
+		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle(title);
 		ri.setSource(sourceName);
 		ri.setRelevance(1.0);
 		ri.setIsLast(isLast);
+		ri.setSourceID(sourceID);
 		ri.setOrigin(this.getClass().getCanonicalName());
 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */
@@ -165,7 +177,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setSource("structured search in "+sourceName);
+		ai.setSnippetIDs(new IntegerArray(jcas, 1));
+		ai.setSnippetIDs(0,ap.getSnippetID());
 
 		/* Generate a resource descriptor if available. */
 		if (property.getValRes() != null) {
@@ -178,6 +191,18 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 
 		ai.addToIndexes();
+	}
+	protected int getSourceID(String url, String label, JCas questionView){
+		if (sourceIDs.containsKey(url)) {
+			return sourceIDs.get(url);
+		}
+		int sourceID = SourceIDGenerator.getInstance().generateID();
+		AnswerSourceStructured asf = new AnswerSourceStructured(AnswerSourceStructured.ORIGIN_STRUCTURED, url, label);
+		asf.setSourceID(sourceID);
+		QuestionDashboard.getInstance().get(questionView).addSource(asf);
+		sourceIDs.put(url, sourceID);
+		return sourceID;
+
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
