@@ -270,7 +270,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			if (path.size() == 1) {
 				String pathQueryStr = "{" +
 					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
-					"  BIND(ns:" + path.get(0) + " AS ?prop)\n" +
+					"  BIND(\"ns:" + path.get(0) + "\" AS ?prop)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?proplabel .\n" +
 					"    FILTER(LANGMATCHES(LANG(?proplabel), \"en\"))\n" +
@@ -279,9 +279,8 @@ public class FreebaseOntology extends FreebaseLookup {
 				pathQueries.add(pathQueryStr);
 			} else if (path.size() == 2) {
 				String pathQueryStr = "{" +
-					"  ns:" + mid + " ns:" + path.get(0) + " ?t0 .\n" +
-					"  ?t0 ns:" + path.get(1) + " ?val .\n" +
-					"  BIND(ns:" + path.get(1) + " AS ?prop)\n" +
+					"  ns:" + mid + " ns:" + path.get(0) + "/ns:" + path.get(1) + " ?val .\n" +
+					"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
 					"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
@@ -306,22 +305,6 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Ignore properties with values that are still URLs,
 			 * i.e. pointers to an unlabelled topic. */
 			"FILTER( !ISURI(?value) )\n" +
-			/* Keep only ns: properties */
-			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
-			/* ...but ignore some common junk which yields mostly
-			 * no relevant data... */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )\n" +
-			/* ...and stuff that's difficult to trust. */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
-			/* topic_server has geolocation (not useful right now)
-			 * and population_number (which would be useful, but
-			 * needs special handling has a topic may have many
-			 * of these, e.g. White House). Also it has crappy
-			 * type labels. */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
