@@ -6,8 +6,8 @@ package cz.brmlab.yodaqa.flow.dashboard;
  * It is thread-safe */
 
 public final class SourceIDGenerator {
-	/*Singleton*/
-	volatile int IDCounter = 0;
+	/* Singleton */
+	private int IDCounter = 0;
 	private static SourceIDGenerator instance = new SourceIDGenerator();
 	private SourceIDGenerator() {}
 	public static synchronized SourceIDGenerator getInstance() {return instance;}

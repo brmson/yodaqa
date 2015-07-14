@@ -7,8 +7,8 @@ package cz.brmlab.yodaqa.flow.dashboard.snippet;
  * It is thread-safe
  */
 public final class SnippetIDGenerator {
-    /*Singleton*/
-    volatile int IDCounter = 0;
+    /* Singleton */
+    private int IDCounter = 0;
     private static SnippetIDGenerator instance = new SnippetIDGenerator();
     private SnippetIDGenerator() {}
     public static synchronized SnippetIDGenerator getInstance() {return instance;}
