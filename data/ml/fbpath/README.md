@@ -59,6 +59,8 @@ to estimate the probabilities of specific fbpaths:
 
 	data/ml/fbpath/fbpath_train_logistic.py trainmodel.json val.json >src/main/resources/cz/brmlab/yodaqa/analysis/rdf/FBPathLogistic.model
 
+(XXX: you need to manually delete the trailing comma on the second to last line.)
+
 TODO
 ----
 
