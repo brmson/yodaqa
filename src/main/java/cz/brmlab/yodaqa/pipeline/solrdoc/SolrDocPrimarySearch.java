@@ -163,11 +163,11 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentText(title.replaceAll("\\s+\\([^)]*\\)\\s*$", ""));
 		jcas.setDocumentLanguage("en"); // XXX
 
-		AnswerSourceEnwiki ac = new AnswerSourceEnwiki("document title", (title != null ? title : ""), id);
+		AnswerSourceEnwiki ac = new AnswerSourceEnwiki(AnswerSourceEnwiki.ORIGIN_DOCUMENT, (title != null ? title : ""), id);
 		ac.setSourceID(SourceIDGenerator.getInstance().generateID());
 		AnsweringDocTitle adt = new AnsweringDocTitle(SnippetIDGenerator.getInstance().generateID(), ac.getSourceID());
 		QuestionDashboard.getInstance().get(questionView).addSource(ac);
-		QuestionDashboard.getInstance().addSnippet(adt.getSnippetID(), adt);
+		QuestionDashboard.getInstance().get(questionView).addSnippet(adt);
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());

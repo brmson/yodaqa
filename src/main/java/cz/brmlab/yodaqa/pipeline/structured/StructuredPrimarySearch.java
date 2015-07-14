@@ -143,14 +143,10 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
-		AnswerSourceStructured asf;// new AnswerSourceStructured("structured",property.getValRes(),property.getObject());
-		AnsweringProperty ap; //= new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), asf.getSourceID(), property.getProperty());
 		int sourceID = getSourceID(property.getValRes(),property.getObject(),questionView);
-
-		ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
-
-		QuestionDashboard.getInstance().addSnippet(ap.getSnippetID(),ap);
-
+		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
+		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
+				//questionView or jcas
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle(title);
 		ri.setSource(sourceName);
@@ -181,7 +177,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setSnippetIDs(new IntegerArray(jcas,1));
+		ai.setSnippetIDs(new IntegerArray(jcas, 1));
 		ai.setSnippetIDs(0,ap.getSnippetID());
 
 		/* Generate a resource descriptor if available. */
@@ -200,9 +196,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		if (sourceIDs.containsKey(url)) {
 			return sourceIDs.get(url);
 		}
-
 		int sourceID = SourceIDGenerator.getInstance().generateID();
-		AnswerSourceStructured asf = new AnswerSourceStructured("structured", url, label);
+		AnswerSourceStructured asf = new AnswerSourceStructured(AnswerSourceStructured.ORIGIN_STRUCTURED, url, label);
 		asf.setSourceID(sourceID);
 		QuestionDashboard.getInstance().get(questionView).addSource(asf);
 		sourceIDs.put(url, sourceID);
