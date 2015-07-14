@@ -55,11 +55,34 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		builder.add(fulltext);
 		AnalysisEngineDescription titleInClue = createTitleInCluePassageProducerDescription();
 		builder.add(titleInClue);
+		AnalysisEngineDescription bing = createBingSearchPassageProducerDescription();
+		builder.add(bing);
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
 					FixedParallelFlowController.class,
 					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
+
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		return aed;
+	}
+
+	private static AnalysisEngineDescription createBingSearchPassageProducerDescription() throws ResourceInitializationException {
+		AggregateBuilder builder = new AggregateBuilder();
+
+		AnalysisEngineDescription bingSearch = AnalysisEngineFactory.createEngineDescription(
+				BingFullPrimarySearch.class,
+				BingFullPrimarySearch.PARAM_RESULT_INFO_ORIGIN, "cz.brmlab.yodaqa.pipeline.solrfull.bing");
+		builder.add(bingSearch);
+		AnalysisEngineDescription passageExtractor = PassageExtractorAE.createEngineDescription(
+				PassageExtractorAE.PARAM_PASS_SEL_BYCLUE);
+		builder.add(passageExtractor);
+
+		builder.setFlowControllerDescription(
+				FlowControllerFactory.createFlowControllerDescription(
+						FixedFlowController.class,
+						FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
