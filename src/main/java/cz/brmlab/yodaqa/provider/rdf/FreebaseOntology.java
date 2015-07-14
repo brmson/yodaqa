@@ -233,7 +233,29 @@ public class FreebaseOntology extends FreebaseLookup {
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
-		return genResults(titleForm, mid, rawResults, logger);
+
+		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
+		for (Literal[] rawResult : rawResults) {
+			/* ns:astronomy.star.temperature_k -> "temperature"
+			 * ns:astronomy.star.planet_s -> "planet"
+			 * ns:astronomy.star.spectral_type -> "spectral type"
+			 * ns:chemistry.chemical_element.periodic_table_block -> "periodic table block"
+			 *
+			 * But typically we fetch the property name from
+			 * the RDF store too, so this should be irrelevant
+			 * in that case.*/
+			String propLabel = rawResult[0].getString().
+				replaceAll("^.*\\.([^\\. ]*)$", "\\1").
+				replaceAll("_.$", "").
+				replaceAll("_", " ");
+			String value = rawResult[1].getString();
+			String prop = rawResult[2].getString();
+			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
+			results.add(new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
+		}
+
+		return results;
 	}
 
 	/** Query for a given MID, returning a set of PropertyValue instances
@@ -311,10 +333,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
-		return genResults(titleForm, mid, rawResults, logger);
-	}
 
-	protected List<PropertyValue> genResults(String titleForm, String mid, List<Literal[]> rawResults, Logger logger) {
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
 			/* ns:astronomy.star.temperature_k -> "temperature"
