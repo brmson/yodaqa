@@ -10,6 +10,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 
 /** A wrapper around Freebase dataset that maps concepts to curated
@@ -133,9 +134,8 @@ public class FreebaseOntology extends FreebaseLookup {
 	public Set<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in the sought
-		 * after title. */
-		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
+		 * by force-capitalizing the first letter of each word. */
+		title = WordUtils.capitalize(title);
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to SPARQL query interface,
