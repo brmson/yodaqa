@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline.solrfull;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -9,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import com.google.gson.GsonBuilder;
+import cz.brmlab.yodaqa.io.sqlite.BingResultsCache;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -92,8 +94,9 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	private String apikey;
 
 	private boolean skip;
+	private BingResultsCache cache;
 
-	private class BingResult {
+	public static class BingResult {
 		public String title;
 		public String description;
 		public int rank;
@@ -111,13 +114,14 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 		skip = false;
 
+		cache = new BingResultsCache();
 		Properties prop = new Properties();
 		try {
 			prop.load(getClass().getResourceAsStream("bingapi.properties"));
 			apikey = (String)prop.get("apikey");
 			if (apikey == null) throw new NullPointerException("Api key is null");
 		} catch (IOException | NullPointerException e) {
-			logger.info("No api key go bing api!");
+			logger.info("No api key for bing api!");
 			skip = true;
 		}
 	}
@@ -150,13 +154,16 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	private List<BingResult> bingSearch(Collection<Clue> clues, int hitListSize) {
-		ArrayList<BingResult> res = new ArrayList<>();
+		ArrayList<BingResult> res;
 		StringBuilder sb = new StringBuilder();
 		for (Clue c: clues) {
 			sb.append(c.getLabel()).append(" ");
 		}
 		sb.deleteCharAt(sb.length() - 1);
-		logger.info(sb.toString());
+		logger.debug("Bing query " + sb.toString());
+
+		res = cache.load(sb.toString());
+		if (res != null && res.size() > 0) return res;
 
 		String query;
 		final String bingUrlPattern = "https://api.datamarket.azure.com/Bing/Search/Web?Query=%%27%s%%27&$top=%d&$format=JSON";
@@ -166,19 +173,20 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 			final String accountKeyEnc = Base64.encodeBase64String((apikey + ":" + apikey).getBytes());
 
-//			final URL url = new URL(bingUrl);
-//			final URLConnection connection = url.openConnection();
-//			connection.setRequestProperty("Authorization", "Basic " + accountKeyEnc);
+			final URL url = new URL(bingUrl);
+			final URLConnection connection = url.openConnection();
+			connection.setRequestProperty("Authorization", "Basic " + accountKeyEnc);
 
 			GsonBuilder builder = new GsonBuilder();
 			Map<String, Map> json = builder.create()
-					.fromJson(new InputStreamReader(getClass().getResourceAsStream("sample.json")), Map.class);
+					.fromJson(new InputStreamReader(connection.getInputStream()), Map.class);
 			Map<String, ArrayList> d = json.get("d");
 			ArrayList<Map> results = d.get("results");
 			int rank = 1;
 			for (Map<String, String> m : results) {
 				res.add(new BingResult(m.get("Title"), m.get("Description"), rank++));
 			}
+			cache.save(sb.toString(), res);
 		} catch (IOException e) {
 			return res;
 		}
@@ -209,10 +217,10 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
 				/* XXX: Ugh. We clearly need global result ids. */
-				QuestionDashboard.getInstance().get(questionView).setSourceState(
-						"bing-fulltext",
-						Integer.parseInt(ri.getDocumentId()),
-						1);
+//				QuestionDashboard.getInstance().get(questionView).setSourceState(
+//						"bing-fulltext",
+//						Integer.parseInt(ri.getDocumentId()),
+//						1);
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */
@@ -246,7 +254,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 
 		// System.err.println("--8<-- " + text + " --8<--");
-		resultView.setDocumentText(result.title); //Title or decription
+		resultView.setDocumentText(result.description); //Title or decription
 		resultView.setDocumentLanguage("en"); // XXX
 
 		AnswerFV afv = new AnswerFV();
