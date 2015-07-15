@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -38,9 +39,8 @@ public class DBpediaTypes extends DBpediaLookup {
 	public List<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in the sought
-		 * after title. */
-		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
+		 * by force-capitalizing the first letter in each word. */
+		title = WordUtils.capitalize(title);
 
 		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =

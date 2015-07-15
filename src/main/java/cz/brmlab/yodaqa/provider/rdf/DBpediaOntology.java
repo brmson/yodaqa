@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
+
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -34,9 +37,8 @@ public class DBpediaOntology extends DBpediaLookup {
 	public List<PropertyValue> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in the sought
-		 * after title. */
-		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
+		 * by force-capitalizing the first letter in each word. */
+		title = WordUtils.capitalize(title);
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to e.g.
@@ -83,7 +85,7 @@ public class DBpediaOntology extends DBpediaLookup {
 			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
 			logger.debug("DBpedia {} property: {} -> {} ({})", title, propLabel, value, valRes);
-			results.add(new PropertyValue(title, propLabel, value, valRes));
+			results.add(new PropertyValue(title, propLabel, value, valRes, AF_OriginDBpOntology.class));
 		}
 
 		return results;

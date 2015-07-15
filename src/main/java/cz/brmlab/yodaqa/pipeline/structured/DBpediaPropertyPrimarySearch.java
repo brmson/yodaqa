@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpProperty;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.DBpPropertyLAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaProperties;
@@ -42,13 +41,13 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 public class DBpediaPropertyPrimarySearch extends StructuredPrimarySearch {
 	public DBpediaPropertyPrimarySearch() {
-		super("DBpedia Property", AF_OriginDBpProperty.class, AF_OriginDBpPNoClue.class);
+		super("DBpedia Property", AF_OriginDBpPNoClue.class);
 		logger = LoggerFactory.getLogger(DBpediaPropertyPrimarySearch.class);
 	}
 
 	final DBpediaProperties dbp = new DBpediaProperties();
 
-	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
+	protected List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* Query the DBpedia raw infobox dataset - uncleaned
 		 * but depnse infobox based data. */

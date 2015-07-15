@@ -32,6 +32,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PropertyScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
@@ -62,14 +63,12 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected int i;
 
 	protected String sourceName;
-	protected Class<? extends AnswerFeature> originFeature, noClueFeature;
+	protected Class<? extends AnswerFeature> noClueFeature;
 
 	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
 	public StructuredPrimarySearch(String sourceName_,
-			Class<? extends AnswerFeature> originFeature_,
 			Class<? extends AnswerFeature> noClueFeature_) {
 		sourceName = sourceName_;
-		originFeature = originFeature_;
 		noClueFeature = noClueFeature_;
 	}
 
@@ -79,7 +78,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	/** Retrieve properties associated with a given ClueConcept. */
-	protected abstract List<PropertyValue> getConceptProperties(ClueConcept concept);
+	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept);
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -88,7 +87,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
 		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			properties.addAll(getConceptProperties(concept));
+			properties.addAll(getConceptProperties(questionView, concept));
 		}
 
 		relIter = properties.iterator();
@@ -161,7 +160,9 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerFV fv = new AnswerFV();
 		fv.setFeature(AF_Occurences.class, 1.0);
 		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
-		fv.setFeature(originFeature, 1.0);
+		fv.setFeature(property.getOriginFeat(), 1.0);
+		if (property.getScore() != null)
+			fv.setFeature(AF_PropertyScore.class, property.getScore());
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
