@@ -57,7 +57,7 @@ public class WebInterface implements Runnable {
 				QuestionDashboard.getInstance().askQuestion(q);
 				response.header("Access-Control-Allow-Origin", "*");
 				response.status(201);
-				return q.getId();
+				return "{\"id\":" + "\""+q.getId() + "\"" + "}";
 			}
 		});
 

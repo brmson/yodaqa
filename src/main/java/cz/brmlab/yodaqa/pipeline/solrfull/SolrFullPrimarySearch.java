@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -38,6 +39,7 @@ import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
 import cz.brmlab.yodaqa.provider.solr.SolrTerm;
+
 
 /**
  * Take a question CAS and search for keywords (or already resolved pageIDs)
@@ -95,6 +97,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		public SolrDocument doc;
 		public ClueConcept concept;
 		public int rank;
+		public int sourceID;
 
 		public SolrResult(SolrDocument doc, ClueConcept concept, int rank) {
 			this.doc = doc;
@@ -107,10 +110,11 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			String title = (String) doc.getFieldValue("titleText");
 			double score = ((Float) doc.getFieldValue("score")).floatValue();
 			logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
-
 			AnswerSourceEnwiki as = new AnswerSourceEnwiki(
 					searchFullText ? AnswerSourceEnwiki.ORIGIN_FULL : AnswerSourceEnwiki.ORIGIN_TITLE,
 					title, id);
+			sourceID = SourceIDGenerator.getInstance().generateID();
+			as.setSourceID(sourceID);
 			QuestionDashboard.getInstance().get(questionView).addSource(as);
 		}
 	};
@@ -237,13 +241,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 				ResultInfo ri = generateSolrResult(questionView, resultView, result, isLast ? i : 0);
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
-				/* XXX: Ugh. We clearly need global result ids. */
-				QuestionDashboard.getInstance().get(questionView).setSourceState(
-						ri.getOrigin() == "cz.brmlab.yodaqa.pipeline.solrfull.fulltext"
-							? AnswerSourceEnwiki.ORIGIN_FULL
-							: AnswerSourceEnwiki.ORIGIN_TITLE,
-						Integer.parseInt(ri.getDocumentId()),
-						1);
+				QuestionDashboard.getInstance().get(questionView).setSourceState(ri.getSourceID(), 1);
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */
@@ -305,6 +303,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setOrigin(resultInfoOrigin);
 		ri.setAnsfeatures(afv.toFSArray(resultView));
 		ri.setIsLast(isLast);
+		ri.setSourceID(result.sourceID);
 		ri.addToIndexes();
 
 		return ri;

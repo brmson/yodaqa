@@ -2,8 +2,7 @@ package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.lang.Math;
 
-import cz.brmlab.yodaqa.flow.dashboard.PassageIDGenerator;
-import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.io.collection.CollectionQuestionReader;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;
@@ -22,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
@@ -76,11 +74,8 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		Passage passage = new Passage(passagesView);
 		passage.setBegin(sentence.getBegin());
 		passage.setEnd(sentence.getEnd());
-
 		passage.setScore(Math.sqrt(weight));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
-		passage.setPassageID(PassageIDGenerator.getInstance().generateID());
-		QuestionDashboard.getInstance().addPassage(passage.getPassageID(), passage.getCoveredText());
 		passage.addToIndexes();
 
 		logger.debug(passage.getScore() + " | " + passage.getCoveredText());

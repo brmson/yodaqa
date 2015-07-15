@@ -21,8 +21,8 @@
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>passageIDs</name>
-            <description>List of PassageID's used.</description>
+            <name>snippetIDs</name>
+            <description>List of snippetID's used.</description>
             <rangeTypeName>uima.cas.IntegerArray</rangeTypeName>
           </featureDescription>
           <featureDescription>
@@ -30,11 +30,6 @@
 	    <description>Set of resources corresponding to this answer. (There may be multiple, of course.) Duplicates should not appear, order should not matter.</description>
             <rangeTypeName>uima.cas.FSArray</rangeTypeName>
             <elementType>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource</elementType>
-          </featureDescription>
-          <featureDescription>
-            <name>source</name>
-            <description>Source of the candidate answer, either structured/fulltext search of wiki or freebase</description>
-            <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
           <featureDescription>
             <name>features</name>
