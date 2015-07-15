@@ -44,21 +44,30 @@ Structure of answers JSON object is:
     * title - title of concept page
     * pageID - id of Wikipedia concept page
 
-* sources - [Array] array of sources. Source is object representing web page, which contains answer. Source object has structure:		
+* sources - [Map] map of sources. Source is object representing web page, which contains answer. Source object has structure:
+  * URL - (optional) URL of source
   * origin - contains information, where question was founded. Possible values are: 
     * "title-in-clue" - question was founded in page title 
     * "fulltext" - question was founded in full text search on page
-  * pageId - id of Wikipedia page
-  * isConcept - if page is concept or not
-  * type - type of source (eg. “enwiki”)
+    * "structured" - question was founded in structured database
+  * pageId - (optional) id of Wikipedia page
+  * isConcept - (optional) if page is concept or not
+  * type - type of source (eg. “enwiki”, "structured")
   * title - title of origin’s page
+  * sourceID - source's id
   * state - ???
 
 * answers – [Array] array of answers. Answer is represented by object with structure:
   * text - answer’s text
   * confidence – answer’s confidence expressed by number from interval of <0, 1>
   * ID – answer’s id
-  * passageIDs – [Array] ???
+  * snippetIDs – [Array] IDs of snippets assigned to answer
+
+* snippets - [Map] map of snippets. Snippets is object containing addition explanation of answer. It has structure:
+  * passageText - (optional) Text in which answer was founded
+  * propertyLabel - (optional) Label of snippet
+  * snippetID - snippet's id
+  * sourceID - snipet's source
 
 * finished – if question has been finished already
 * gen_sources – number of generated sources (but only ??? are present in sources array)
