@@ -185,6 +185,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
+			"BIND(ns:" + mid + " AS ?res)\n" +
 			/* Check if property is a labelled type, and use that
 			 * label as property name if so. */
 			"OPTIONAL {\n" +
