@@ -55,7 +55,10 @@ Structure of answers JSON object is:
   * type - type of source (eg. “enwiki”, "structured")
   * title - title of origin’s page
   * sourceID - source's id
-  * state - ???
+  * state - state of source. Possible values are
+    * 0 - source has not been extracted yet
+    * 1 - source extracting
+    * 2 - source already extracted
 
 * answers – [Array] array of answers. Answer is represented by object with structure:
   * text - answer’s text
@@ -70,5 +73,5 @@ Structure of answers JSON object is:
   * sourceID - snipet's source
 
 * finished – if question has been finished already
-* gen_sources – number of generated sources (but only ??? are present in sources array)
-* gen_answers – number of generated answers (but only 25 best are present in answers array)
+* gen_sources – number of generated sources
+* gen_answers – number of generated answers
