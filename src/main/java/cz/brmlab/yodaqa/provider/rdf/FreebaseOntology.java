@@ -300,6 +300,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?proplabel .\n" +
 					"    FILTER(LANGMATCHES(LANG(?proplabel), \"en\"))\n" +
@@ -311,6 +312,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  ns:" + mid + " ns:" + path.get(0) + "/ns:" + path.get(1) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
 					"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
