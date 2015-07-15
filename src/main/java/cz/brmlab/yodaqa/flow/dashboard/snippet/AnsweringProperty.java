@@ -5,7 +5,7 @@ package cz.brmlab.yodaqa.flow.dashboard.snippet;
  */
 public class AnsweringProperty extends AnsweringSnippet {
 	protected String propertyLabel;
-
+	public static final String type = "AnsweringProperty";
 	public AnsweringProperty(int ID, int sourceID, String propertyLabel) {
 		super(ID, sourceID);
 		this.propertyLabel = propertyLabel;
