@@ -5,6 +5,7 @@ package cz.brmlab.yodaqa.flow.dashboard.snippet;
  */
 public class AnsweringPassage extends AnsweringSnippet {
 	protected String passageText;
+	public static final String type = "AnsweringPassage";
 	public AnsweringPassage(int ID, int sourceID, String passageText) {
 		super(ID, sourceID);
 		this.passageText = passageText;
