@@ -4,7 +4,10 @@ YodaQA High Level Design Notes
 Here, we consider the basic design of a YodaQA pipeline within the UIMA
 framework, how the Common Analysis Structures (CAS) are segmented and down to
 the most important CAS types. This is heavily inspired by Epstein et al.,
-Making Watson fast.  Maybe look at Fig. 1 there before reading further.
+Making Watson fast.  Please take a look at the YodaQA papers (see
+http://ailao.eu/yodaqa/ for a list) first to get the general idea about
+how YodaQA answers questions (it even has a diagram!); this is the description
+of the same flow but on a a more technical level.
 
 QA Pipeline Flow
 ----------------
@@ -15,12 +18,15 @@ directly deal with CAS management etc.  Many of them are CAS multipliers.
 Specific NLP/ML algorithms are wrapped in annotators, here we are more
 concerned about the high level analysis flow.
 
-This is the barebones configuration. In time, we will want to add extra
-stages like Supporting Evidence. It is not set in stone, especially
+The configuration described below is a bit abstract, meant to give you
+a rough idea about YodaQA organization, but certainly not 1:1 with
+precisely what's implemented at any point.  It is not set in stone, especially
 feel free to further split phases and introduce extra intermediate CASes.
 Also, parts of it may still be hypothetical or not fully implemented.
 
-Each CAS has a CASId feature uniquely describing its origin.
+Most of the CASes have a special "...Info" featurestructure that contains
+description of the CAS origin, and some unique IDs.  Most of the generated
+resources are also stored in the question dashboard, see below for details.
 
 Some CASes are carried over to other CASes by the means of generating
 a separate view.
@@ -284,3 +290,12 @@ separate from scoring 1) and re-ranked.
 
 This IO phase is a CAS consumer that serializes the **AnswerHitlistCAS** to
 whatever output medium (the console, an IRC-connected pipe or whatever).
+
+## Addendum: Question Dashboard
+
+Independently of the UIMA CAS flow, we also collect information about
+answers, including their origin snippets (passages or relations) and
+sources (documents or entities), in the question dashboard (which resides
+in the flow.dashboard sub-package).  This information is redundant to a
+degree, it is used for serving question details and answers through the
+web interface.  We'll probably redesign this somehow later...
