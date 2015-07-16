@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.io.sqlite;
 
 import cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch;
 import cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch.BingResult;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,10 @@ public class BingResultsCache {
 	public void save(String query, List<BingResult> results) {
 		String[] cols = {"query" , "title", "description", "rank"};
 		for (BingResult bres: results) {
-			Object[] vals = {"'" + query + "'", "'" + bres.title + "'", "'" + bres.description + "'", bres.rank};
+
+			Object[] vals = {"'" + StringEscapeUtils.escapeSql(query) + "'",
+							 "'" + StringEscapeUtils.escapeSql(bres.title) + "'",
+					         "'" + StringEscapeUtils.escapeSql(bres.description) + "'", bres.rank};
 			connector.insert("answer", cols, vals);
 		}
 	}

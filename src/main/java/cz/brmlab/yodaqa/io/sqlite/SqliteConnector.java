@@ -42,15 +42,17 @@ public class SqliteConnector {
 		Statement stmt;
 		String colNames = StringUtils.join(columns, ", ");
 		String vals = StringUtils.join(values, ", ");
+		String sql = "";
 		try {
 			stmt = connection.createStatement();
-			String sql = "INSERT INTO " + table + " (" + colNames + ")"
+			sql = "INSERT INTO " + table + " (" + colNames + ")"
 					+ " VALUES (" + vals + ");";
 //			logger.info("SQL " + sql);
 			stmt.execute(sql);
 			stmt.close();
 		} catch (SQLException e) {
-			logger.error("Unable to save results to db: " + e.getMessage());
+			logger.error("Unable to save results to db: " + e.getMessage() + "\n"
+				+ "SQL query: " + sql);
 		}
 	}
 

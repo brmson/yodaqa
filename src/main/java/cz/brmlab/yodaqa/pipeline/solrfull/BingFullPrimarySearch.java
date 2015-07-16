@@ -147,7 +147,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 		try {
 			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
-			if (!skip) results = bingSearch(clues, hitListSize);
+			results = bingSearch(clues, hitListSize);
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
@@ -156,20 +156,25 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	private List<BingResult> bingSearch(Collection<Clue> clues, int hitListSize) {
 		ArrayList<BingResult> res;
 		StringBuilder sb = new StringBuilder();
+//		int numOfResults = hitListSize;
+		int numOfResults = 30;
 		for (Clue c: clues) {
 			sb.append(c.getLabel()).append(" ");
 		}
 		sb.deleteCharAt(sb.length() - 1);
-		logger.debug("Bing query " + sb.toString());
+		logger.info("QUERY: " + sb.toString());
 
 		res = cache.load(sb.toString());
-		if (res != null && res.size() > 0) return res;
+		if (res != null && res.size() > 0 || skip) return res;
 
 		String query;
-		final String bingUrlPattern = "https://api.datamarket.azure.com/Bing/Search/Web?Query=%%27%s%%27&$top=%d&$format=JSON";
+		String bingUrl = "";
+//		final String bingUrlPattern = "https://api.datamarket.azure.com/Bing/Search/Web?Query=%%27%s%%27&$top=%d&$format=JSON&$Market=en-US";
 		try {
 			query = URLEncoder.encode(sb.toString(), Charset.defaultCharset().name());
-			final String bingUrl = String.format(bingUrlPattern, query, hitListSize);
+			bingUrl = "https://api.datamarket.azure.com/Bing/Search/Web?"
+					+ "Query=%27" + query + "%27&$top=" + numOfResults + "&$format=JSON&Market=%27en-US%27";//&Market=%27en-US%27
+
 
 			final String accountKeyEnc = Base64.encodeBase64String((apikey + ":" + apikey).getBytes());
 
@@ -188,8 +193,11 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			}
 			cache.save(sb.toString(), res);
 		} catch (IOException e) {
+			logger.error("Unable to obtain bing results: " + e.getMessage());
+			logger.info("BINGURL " + bingUrl);
 			return res;
 		}
+		if (res.size() == 0) logger.info("No bing results.");
 		return res;
 	}
 
