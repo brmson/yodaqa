@@ -156,6 +156,11 @@
         <description>Answer Feature: 1 if the origin of this answer is a document title</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginBingSnippet</name>
+        <description>Answer Feature: 1 if the origin of this answer is a snippet from bing web fulltext search</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
 
       <!-- XXX: This looks kind of really awful, ugh. But how to do this sensibly? -->
       <typeDescription>

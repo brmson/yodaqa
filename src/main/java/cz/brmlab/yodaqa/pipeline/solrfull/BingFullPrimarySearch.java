@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import com.google.gson.GsonBuilder;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginBingSnippet;
 import cz.brmlab.yodaqa.provider.sqlite.BingResultsCache;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -225,6 +226,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 		AnswerFV afv = new AnswerFV();
 		afv.setFeature(AF_ResultRR.class, 1 / ((float) result.rank));
+		afv.setFeature(AF_OriginBingSnippet.class, 1.0);
 
 		ResultInfo ri = new ResultInfo(resultView);
 		ri.setDocumentId("1"); //FIXME dummy id
