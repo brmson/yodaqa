@@ -27,7 +27,7 @@ public class BingResultsCache {
 		ArrayList<BingResult> res = new ArrayList<>();
 		ResultSet set;
 		try {
-			set = connector.select("answer", "QUERY = '" + query + "'");
+			set = connector.select("answer", "QUERY = '" + StringEscapeUtils.escapeSql(query) + "'");
 			if (set.isClosed()) {
 				logger.info("No entry for query: " + query + " in cache.");
 				return res;
@@ -35,6 +35,7 @@ public class BingResultsCache {
 			while (set.next()) {
 				res.add(new BingResult(set.getString("title"),
 									   set.getString("description"),
+									   set.getString("url"),
 						  			   set.getInt("rank")));
 			}
 			logger.info("Bing results loaded from cache.");
@@ -47,12 +48,12 @@ public class BingResultsCache {
 	}
 
 	public void save(String query, List<BingResult> results) {
-		String[] cols = {"query" , "title", "description", "rank"};
+		String[] cols = {"query" , "title", "description", "url", "rank"};
 		for (BingResult bres: results) {
-
 			Object[] vals = {"'" + StringEscapeUtils.escapeSql(query) + "'",
 							 "'" + StringEscapeUtils.escapeSql(bres.title) + "'",
-					         "'" + StringEscapeUtils.escapeSql(bres.description) + "'", bres.rank};
+					         "'" + StringEscapeUtils.escapeSql(bres.description) + "'",
+					         "'" + StringEscapeUtils.escapeSql(bres.url) + "'", bres.rank};
 			connector.insert("answer", cols, vals);
 		}
 	}

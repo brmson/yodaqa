@@ -99,11 +99,13 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	public static class BingResult {
 		public String title;
 		public String description;
+		public String url;
 		public int rank;
 
-		public BingResult(String title, String description, int rank) {
+		public BingResult(String title, String description, String url, int rank) {
 			this.title = title;
 			this.description = description;
+			this.url = url;
 			this.rank = rank;
 		}
 	}
@@ -189,7 +191,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			ArrayList<Map> results = d.get("results");
 			int rank = 1;
 			for (Map<String, String> m : results) {
-				res.add(new BingResult(m.get("Title"), m.get("Description"), rank++));
+				res.add(new BingResult(m.get("Title"), m.get("Description"), m.get("Url"), rank++));
 			}
 			cache.save(sb.toString(), res);
 		} catch (IOException e) {

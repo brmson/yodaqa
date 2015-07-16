@@ -30,6 +30,7 @@ public class SqliteConnector {
 					" QUERY 		 TEXT 	  NOT NULL," +
 					" TITLE          TEXT     NOT NULL, " +
 					" DESCRIPTION    TEXT, " +
+					" URL    		 TEXT, " +
 					" RANK			 INTEGER)";
 			stmt.executeUpdate(sql);
 			stmt.close();
