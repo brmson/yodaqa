@@ -14,6 +14,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
@@ -121,7 +122,7 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 				AnswerInfo ai = new AnswerInfo(canAnswerView);
 				ai.setIsLast(i);
 				ai.addToIndexes();
-			}
+ 			}
 
 		} catch (Exception e) {
 			jcas.release();
@@ -142,12 +143,17 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 
 		/* Grab answer features */
 		AnswerFV srcFV = new AnswerFV(answer);
-
 		/* Generate the AnswerInfo singleton */
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setCanonText(answer.getCanonText());
 		ai.setFeatures(srcFV.toFSArray(jcas));
 		ai.setIsLast(isLast);
+		ai.setAnswerID(answer.getAnswerID());
+		//in this case, Answer should always have a a non-null IntegerArray, so I did not check it
+		//any null reference exception is an error in hitlist creation which should be fixed
+		ai.setSnippetIDs(new IntegerArray(jcas, answer.getSnippetIDs().size()));
+		ai.getSnippetIDs().copyFromArray(answer.getSnippetIDs().toArray(), 0, 0, answer.getSnippetIDs().size());
+
 
 		/* Generate the Focus */
 		if (answer.getFocus() != null) {

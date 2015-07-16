@@ -1,9 +1,12 @@
 package cz.brmlab.yodaqa.flow.dashboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
 
 /** A stateful question.  This question has been asked, can be referred to
  * and may or may not have been answered already.
@@ -14,8 +17,9 @@ public class Question {
 	protected String id;
 	protected String text;
 	protected QuestionSummary summary = null;
-	protected List<AnswerSource> sources = new ArrayList<>();
+	protected HashMap<Integer, AnswerSource> sources = new HashMap<>();
 	protected List<QuestionAnswer> answers = new ArrayList<>();
+	protected Map<Integer, AnsweringSnippet> snippets = new HashMap<>(); //key = ID of snippet, value = the actual snippet
 	protected boolean finished = false;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
@@ -41,25 +45,18 @@ public class Question {
 		this.summary = summary;
 	}
 
-	/** @return the sources */
-	public synchronized List<AnswerSource> getSources() { return sources; }
+	public synchronized void addSnippet(AnsweringSnippet snippet) {
+		snippets.put(snippet.getSnippetID(),snippet);
+	}
+
 	public synchronized void addSource(AnswerSource source) {
-		this.sources.add(source);
+		this.sources.put(source.getSourceID(), source);
 		gen_sources ++;
 	}
-	/** Update state of a given AnswerSource.
-	 * XXX: The enwiki-specificity is a horrid hack now before we introduce
-	 * unique ids for search results. */
-	public synchronized void setSourceState(String origin, int pageId, int state) {
-		for (AnswerSource as : sources) {
-			AnswerSourceEnwiki ase = (AnswerSourceEnwiki) as;
-			if (ase.origin == origin && ase.pageId == pageId) {
-				as.setState(state);
-				gen_sources ++;
-				return;
-			}
-		}
-		// XXX: throw something?
+
+	public synchronized void setSourceState(int sourceID, int state) {
+		sources.get(sourceID).setState(state);
+		gen_sources++;
 	}
 
 	/** @return the answer */

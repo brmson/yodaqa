@@ -55,8 +55,9 @@ public class WebInterface implements Runnable {
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
 				Question q = new Question(id, text);
 				QuestionDashboard.getInstance().askQuestion(q);
+				response.header("Access-Control-Allow-Origin", "*");
 				response.status(201);
-				return q.getId();
+				return "{\"id\":" + "\""+q.getId() + "\"" + "}";
 			}
 		});
 
@@ -65,6 +66,7 @@ public class WebInterface implements Runnable {
 			@Override
 			public Object handle(Request request, Response response) {
 				response.type("application/json");
+				response.header("Access-Control-Allow-Origin", "*");
 				String id;
 				try {
 					id = request.params("id");
@@ -90,6 +92,7 @@ public class WebInterface implements Runnable {
 			public Object handle(Request request, Response response) {
 				logger.debug("{} :: /q list", request.ip());
 				response.type("application/json");
+				response.header("Access-Control-Allow-Origin", "*");
 				QuestionDashboard qd = QuestionDashboard.getInstance();
 				List<String> qJson = new ArrayList<>();
 

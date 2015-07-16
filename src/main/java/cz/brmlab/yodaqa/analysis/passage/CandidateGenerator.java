@@ -4,6 +4,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 
@@ -85,6 +86,9 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 		ca.setPassage(p);
 		ca.setBase(np);
 		ca.setFeatures(fv.toFSArray(passagesView));
+		//Snippet added this way should already have the sourceID saved
+		ca.setSnippetIDs(new IntegerArray(passagesView, 1));
+		ca.setSnippetIDs(0, p.getSnippetID());
 		ca.addToIndexes();
 	}
 
