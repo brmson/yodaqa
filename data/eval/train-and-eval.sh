@@ -64,6 +64,8 @@ fi
 git clone "$baserepo" "$clonedir"
 pushd "$clonedir"
 git checkout "$cid"
+mkdir -p conf
+cp "$baserepo"/conf/bingapi.properties conf/bingapi.properties || :
 
 echo "Checked out in $clonedir"
 sleep 2
