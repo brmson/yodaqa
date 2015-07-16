@@ -9,6 +9,9 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import com.google.gson.GsonBuilder;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceBingSnippet;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginBingSnippet;
 import cz.brmlab.yodaqa.provider.sqlite.BingResultsCache;
 import org.apache.uima.UimaContext;
@@ -75,12 +78,15 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		public String description;
 		public String url;
 		public int rank;
+		public int sourceID;
 
 		public BingResult(String title, String description, String url, int rank) {
 			this.title = title;
 			this.description = description;
 			this.url = url;
 			this.rank = rank;
+
+
 		}
 	}
 
@@ -156,7 +162,12 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			ArrayList<Map> results = d.get("results");
 			int rank = 1;
 			for (Map<String, String> m : results) {
-				res.add(new BingResult(m.get("Title"), m.get("Description"), m.get("Url"), rank++));
+				BingResult br = new BingResult(m.get("Title"), m.get("Description"), m.get("Url"), rank++);
+				AnswerSourceBingSnippet as = new AnswerSourceBingSnippet(br.title);
+				br.sourceID = SourceIDGenerator.getInstance().generateID();
+				as.setSourceID(br.sourceID);
+				QuestionDashboard.getInstance().get(questionView).addSource(as);
+				res.add(br);
 			}
 			cache.save(sb.toString(), res);
 		} catch (IOException e) {
@@ -192,7 +203,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
 				/* XXX: Ugh. We clearly need global result ids. */
-				QuestionDashboard.getInstance().get(questionView).setSourceState(Integer.parseInt(ri.getDocumentId()), 1);
+				QuestionDashboard.getInstance().get(questionView).setSourceState(ri.getSourceID(), 1);
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */
@@ -235,6 +246,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setOrigin(resultInfoOrigin);
 		ri.setAnsfeatures(afv.toFSArray(resultView));
 		ri.setIsLast(isLast);
+		ri.setSourceID(result.sourceID);
 		ri.addToIndexes();
 		return ri;
 	}
