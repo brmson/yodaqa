@@ -1,6 +1,5 @@
-package cz.brmlab.yodaqa.io.sqlite;
+package cz.brmlab.yodaqa.provider.sqlite;
 
-import cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch;
 import cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch.BingResult;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;

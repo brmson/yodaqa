@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import com.google.gson.GsonBuilder;
-import cz.brmlab.yodaqa.io.sqlite.BingResultsCache;
+import cz.brmlab.yodaqa.provider.sqlite.BingResultsCache;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;

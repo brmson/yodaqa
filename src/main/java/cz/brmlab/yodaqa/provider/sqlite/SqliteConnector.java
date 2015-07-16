@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.io.sqlite;
+package cz.brmlab.yodaqa.provider.sqlite;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
