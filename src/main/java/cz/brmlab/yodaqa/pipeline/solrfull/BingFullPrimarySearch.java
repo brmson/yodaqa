@@ -1,6 +1,5 @@
 package cz.brmlab.yodaqa.pipeline.solrfull;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -29,7 +28,6 @@ import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.Question.Clue;
-import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
@@ -47,39 +45,14 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 	/** Number of results to grab and analyze. */
 	public static final String PARAM_HITLIST_SIZE = "hitlist-size";
-	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
+	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "30")
 	protected int hitListSize;
 
-	/** Number and baseline distance of gradually desensitivized
-	 * proximity searches. Total of proximity-num optional search
-	 * terms are included, covering proximity-base-dist * #of terms
-	 * neighborhood. For each proximity term, the coverage is
-	 * successively multiplied by proximity-base-factor; initial weight
-	 * is sum of individual weights and is successively halved. */
-	public static final String PARAM_PROXIMITY_NUM = "proximity-num";
-	@ConfigurationParameter(name = PARAM_PROXIMITY_NUM, mandatory = false, defaultValue = "3")
-	protected int proximityNum;
-	public static final String PARAM_PROXIMITY_BASE_DIST = "proximity-base-dist";
-	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_DIST, mandatory = false, defaultValue = "2")
-	protected int proximityBaseDist;
-	public static final String PARAM_PROXIMITY_BASE_FACTOR = "proximity-base-factor";
-	@ConfigurationParameter(name = PARAM_PROXIMITY_BASE_FACTOR, mandatory = false, defaultValue = "3")
-	protected int proximityBaseFactor;
-
-	/** Search full text of articles in addition to their titles. */
-	public static final String PARAM_SEARCH_FULL_TEXT = "search-full-text";
-	@ConfigurationParameter(name = PARAM_SEARCH_FULL_TEXT, mandatory = false, defaultValue = "true")
-	protected boolean searchFullText;
-
-	/** Make all clues required to be present. */
-	public static final String PARAM_CLUES_ALL_REQUIRED = "clues-all-required";
-	@ConfigurationParameter(name = PARAM_CLUES_ALL_REQUIRED, mandatory = false, defaultValue = "true")
-	protected boolean cluesAllRequired;
 
 	/** Origin field of ResultInfo. This can be used to fetch different
 	 * ResultInfos in different CAS flow branches. */
 	public static final String PARAM_RESULT_INFO_ORIGIN = "result-info-origin";
-	@ConfigurationParameter(name = PARAM_RESULT_INFO_ORIGIN, mandatory = false, defaultValue = "cz.brmlab.yodaqa.pipeline.solrfull.SolrFullPrimarySearch")
+	@ConfigurationParameter(name = PARAM_RESULT_INFO_ORIGIN, mandatory = false, defaultValue = "cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch")
 	protected String resultInfoOrigin;
 
 	protected SolrQuerySettings settings = null;
@@ -139,12 +112,6 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 		results = new ArrayList<>();
 		i = 0;
-
-		/* Run a search for concept clues (pageID)
-		 * if they weren't included above. */
-
-		Collection<ClueConcept> concepts;
-
 		/* Run a search for text clues. */
 
 		try {
@@ -158,8 +125,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	private List<BingResult> bingSearch(Collection<Clue> clues, int hitListSize) {
 		ArrayList<BingResult> res;
 		StringBuilder sb = new StringBuilder();
-//		int numOfResults = hitListSize;
-		int numOfResults = 30;
+		int numOfResults = hitListSize;
 		for (Clue c: clues) {
 			sb.append(c.getLabel()).append(" ");
 		}
@@ -167,16 +133,14 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		logger.info("QUERY: " + sb.toString());
 
 		res = cache.load(sb.toString());
-		if (res != null && res.size() > 0 || skip) return res;
+		if ((res != null && res.size() > 0) || skip) return res;
 
 		String query;
 		String bingUrl = "";
-//		final String bingUrlPattern = "https://api.datamarket.azure.com/Bing/Search/Web?Query=%%27%s%%27&$top=%d&$format=JSON&$Market=en-US";
 		try {
 			query = URLEncoder.encode(sb.toString(), Charset.defaultCharset().name());
 			bingUrl = "https://api.datamarket.azure.com/Bing/Search/Web?"
-					+ "Query=%27" + query + "%27&$top=" + numOfResults + "&$format=JSON&Market=%27en-US%27";//&Market=%27en-US%27
-
+					+ "Query=%27" + query + "%27&$top=" + numOfResults + "&$format=JSON&Market=%27en-US%27";
 
 			final String accountKeyEnc = Base64.encodeBase64String((apikey + ":" + apikey).getBytes());
 
@@ -255,13 +219,8 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 											int isLast)
 			throws AnalysisEngineProcessException {
 
-//		Integer id = (Integer) result.doc.getFieldValue("id");
-//		String title = (String) result.doc.getFieldValue("titleText");
-//		double score = ((Float) result.doc.getFieldValue("score")).floatValue();
-
-
 		// System.err.println("--8<-- " + text + " --8<--");
-		resultView.setDocumentText(result.description); //Title or decription
+		resultView.setDocumentText(result.description);
 		resultView.setDocumentLanguage("en"); // XXX
 
 		AnswerFV afv = new AnswerFV();
@@ -271,7 +230,6 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setDocumentId("1"); //FIXME dummy id
 		ri.setDocumentTitle(result.title);
 		ri.setSource(srcName);
-//		ri.setRelevance(score);
 		ri.setOrigin(resultInfoOrigin);
 		ri.setAnsfeatures(afv.toFSArray(resultView));
 		ri.setIsLast(isLast);
