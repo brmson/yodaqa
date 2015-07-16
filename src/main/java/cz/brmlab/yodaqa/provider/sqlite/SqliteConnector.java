@@ -23,7 +23,7 @@ public class SqliteConnector {
 		Statement stmt;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:bingresults.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:" + System.getProperty("user.home") + "/bingresults.db");
 			stmt = connection.createStatement();
 			String sql = "CREATE TABLE IF NOT EXISTS Answer " +
 					"(ID			 INTEGER	  PRIMARY KEY AUTOINCREMENT," +
