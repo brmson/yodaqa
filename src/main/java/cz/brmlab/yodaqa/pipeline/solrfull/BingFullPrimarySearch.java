@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline.solrfull;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -99,11 +100,11 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		cache = new BingResultsCache();
 		Properties prop = new Properties();
 		try {
-			prop.load(getClass().getResourceAsStream("bingapi.properties"));
+			prop.load(new FileInputStream("conf/bingapi.properties"));
 			apikey = (String)prop.get("apikey");
 			if (apikey == null) throw new NullPointerException("Api key is null");
 		} catch (IOException | NullPointerException e) {
-			logger.info("No api key for bing api!");
+			logger.info("No api key for bing api! " + e.getMessage());
 			skip = true;
 		}
 	}
