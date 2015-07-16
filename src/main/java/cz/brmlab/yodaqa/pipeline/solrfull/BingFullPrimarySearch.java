@@ -227,10 +227,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
 				/* XXX: Ugh. We clearly need global result ids. */
-//				QuestionDashboard.getInstance().get(questionView).setSourceState(
-//						"bing-fulltext",
-//						Integer.parseInt(ri.getDocumentId()),
-//						1);
+				QuestionDashboard.getInstance().get(questionView).setSourceState(Integer.parseInt(ri.getDocumentId()), 1);
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */
