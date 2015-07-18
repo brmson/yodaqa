@@ -142,6 +142,8 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-qacas.txt"));
 		}
 
-		return builder.createAggregateDescription();
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE");
+		return aed;
 	}
 }

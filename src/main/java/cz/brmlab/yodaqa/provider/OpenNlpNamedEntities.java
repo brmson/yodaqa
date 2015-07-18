@@ -21,7 +21,9 @@ public class OpenNlpNamedEntities {
 					SyncOpenNlpNameFinder.PARAM_VARIANT, variant));
 		}
 
-		return builder.createAggregateDescription();
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.provider.OpenNlpNamedEntities");
+		return aed;
 	}
 
 	/** Convert a given NamedEntity value feature (ne.getValue())

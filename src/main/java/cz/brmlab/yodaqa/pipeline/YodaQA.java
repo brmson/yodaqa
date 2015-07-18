@@ -89,6 +89,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.pipeline.YodaQA");
 		if (outputsNewCASes)
 			aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
@@ -303,6 +304,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.pipeline.YodaQA.AnswerProducer");
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
 	}
