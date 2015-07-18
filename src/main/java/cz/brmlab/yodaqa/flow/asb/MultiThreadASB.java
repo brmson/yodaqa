@@ -698,7 +698,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     public void dumpJobsState(PrintStream out) {
       for (Future<CasIterator> f : futureFrames.keySet()) {
 	StackFrame frame = futureFrames.get(f);
-	out.println("  - Future " + f
+	out.println(Thread.currentThread() + "  - Future " + f
 		    + " done " + f.isDone() + " canc " + f.isCancelled()
 		    + " :: AE " + frame.casMultiplierAeKey
 		    + " from CAS " + frame.originalCIF.cas
