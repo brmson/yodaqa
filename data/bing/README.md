@@ -1,5 +1,13 @@
+QA From Web Using Bing
+======================
+
+As one of our answer sources, YodaQA can also use web search using the Bing
+search engine.  It can improve recall nicely, but has the disadvantage of
+producing non-reproducible results as the response to a query can change
+any day.
+
 Obtaining API key
-=================
+-----------------
 
 Microsoft Bing search API provides 5000 free web search transactions per month.
 You can apply for an API key here:
@@ -14,7 +22,7 @@ After you have the account created, click on Sing up button near to 5000 transac
 No you can get Primary account key in "My account" section.
 
 Using your API key
-==================
+------------------
 
 Once you have your key generated you need to place it into property file. The application searches for key in
 
@@ -25,7 +33,7 @@ from bing search results as an answer source. If the file is not presented or it
 the application skips bing search.
 
 Caching results
-===============
+---------------
 
 Because of the limited number of transactions per month, it is good idea to cache results.
 The result (query, title, description and url) is saved into Sqlite database. The database file is located in
