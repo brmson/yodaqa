@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.DBpOntologyLAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaOntology;
@@ -26,13 +25,13 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 public class DBpediaOntologyPrimarySearch extends StructuredPrimarySearch {
 	public DBpediaOntologyPrimarySearch() {
-		super("DBpediaOntology", AF_OriginDBpOntology.class, AF_OriginDBpONoClue.class);
+		super("DBpediaOntology", AF_OriginDBpONoClue.class);
 		logger = LoggerFactory.getLogger(DBpediaOntologyPrimarySearch.class);
 	}
 
 	final DBpediaOntology dbo = new DBpediaOntology();
 
-	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
+	protected List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 			/* Query the DBpedia ontology dataset - cleaned up
 			 * but quite sparse infobox based data. */

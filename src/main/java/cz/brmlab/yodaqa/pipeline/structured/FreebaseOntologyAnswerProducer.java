@@ -14,6 +14,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 public class FreebaseOntologyAnswerProducer extends StructuredAnswerProducer {
 	public static AnalysisEngineDescription createEngineDescription()
 			throws ResourceInitializationException {
-		return createEngineDescription(FreebaseOntologyPrimarySearch.class);
+		return createEngineDescription("cz.brmlab.yodaqa.pipeline.structured.FreebaseOntologyAnswerProducer",
+				FreebaseOntologyPrimarySearch.class);
 	}
 }

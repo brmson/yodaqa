@@ -19,6 +19,7 @@
 
 package cz.brmlab.yodaqa.flow.asb;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -657,8 +658,24 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
         /* Wait until some async job finishes. */
         synchronized (finishedJobs) {
-          while (finishedJobs.get() == 0)
-            finishedJobs.wait();
+          while (finishedJobs.get() == 0) {
+	    /* When we get stuck for a while, it's time to explain
+	     * the situation. */
+	    long wait_start = System.currentTimeMillis();
+	    int timeout_s = 5*60;
+
+            finishedJobs.wait(timeout_s * 1000);
+
+	    if (finishedJobs.get() == 0 && System.currentTimeMillis() - wait_start >= timeout_s * 1000) {
+	      System.err.println("ALERT: " + Thread.currentThread().getName() + " seems stuck for more than " + timeout_s + "s waiting for a job delivery.");
+	      dumpJobsState(System.err);
+	    }
+
+	    if (futureFrames.keySet().isEmpty()) {
+	      System.err.println("ALERT: " + Thread.currentThread().getName() + " unexpectedly lost futureFrames.");
+	      break;
+	    }
+	  }
 
           for (Future<CasIterator> f : futureFrames.keySet()) {
             if (!f.isDone())
@@ -675,6 +692,17 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         }
         // childless job, do another
         //System.err.println("--- loop");
+      }
+    }
+
+    public void dumpJobsState(PrintStream out) {
+      for (Future<CasIterator> f : futureFrames.keySet()) {
+	StackFrame frame = futureFrames.get(f);
+	out.println(Thread.currentThread() + "  - Future " + f
+		    + " done " + f.isDone() + " canc " + f.isCancelled()
+		    + " :: AE " + frame.casMultiplierAeKey
+		    + " from CAS " + frame.originalCIF.cas
+		    + " (CIF " + frame.originalCIF + ")");
       }
     }
 

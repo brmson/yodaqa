@@ -3,16 +3,20 @@ package cz.brmlab.yodaqa.pipeline.structured;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFBOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT;
 import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
+import cz.brmlab.yodaqa.provider.rdf.PropertyPath;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 
 /* XXX: The clue-specific features, ugh. */
@@ -25,18 +29,40 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.*;
  * ontology relations. */
 
 public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
-	public FreebaseOntologyPrimarySearch() {
-		super("Freebase", AF_OriginFreebaseOntology.class, AF_OriginFBONoClue.class);
-		logger = LoggerFactory.getLogger(FreebaseOntologyPrimarySearch.class);
-	}
+	/* Number of top non-direct property paths to query.
+	 * It's ok to be liberal since most will likely be
+	 * non-matching. */
+	protected static final int N_TOP_PATHS = 15;
+
+	protected static FBPathLogistic fbpathLogistic = null;
 
 	final FreebaseOntology fbo = new FreebaseOntology();
 
-	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
+	public FreebaseOntologyPrimarySearch() {
+		super("Freebase", AF_OriginFBONoClue.class);
+		logger = LoggerFactory.getLogger(FreebaseOntologyPrimarySearch.class);
+	}
+
+	@Override
+	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {
+		super.initialize(aContext);
+
+		if (fbpathLogistic == null) {
+			fbpathLogistic = new FBPathLogistic();
+			fbpathLogistic.initialize();
+		}
+	}
+
+	protected synchronized List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
-		/* Query the Freebase ontology dataset. */
-		/* --- Comment out the next line to disable Freebase lookups. --- */
-		properties.addAll(fbo.query(concept.getLabel(), logger));
+		/* --- Uncomment the next line to disable Freebase lookups. --- */
+		// return properties;
+
+		/* Get a list of specific properties to query. */
+		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		/* Fetch concept properties from the Freebase ontology dataset. */
+		properties.addAll(fbo.query(concept.getLabel(), pathScs, logger));
+
 		return properties;
 	}
 
