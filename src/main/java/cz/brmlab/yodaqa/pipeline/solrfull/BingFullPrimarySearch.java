@@ -140,7 +140,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		sb.deleteCharAt(sb.length() - 1);
 		logger.info("QUERY: " + sb.toString());
 
-		res = cache.load(sb.toString());
+		res = cache.load(sb.toString(), questionView);
 		if ((res != null && res.size() > 0) || skip) return res;
 
 		String query;

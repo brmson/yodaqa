@@ -1,7 +1,11 @@
 package cz.brmlab.yodaqa.provider.sqlite;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceBingSnippet;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch.BingResult;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.uima.jcas.JCas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +27,7 @@ public class BingResultsCache {
 	}
 
 
-	public ArrayList<BingResult> load(String query) {
+	public ArrayList<BingResult> load(String query, JCas questionView) {
 		ArrayList<BingResult> res = new ArrayList<>();
 		ResultSet set;
 		try {
@@ -33,10 +37,15 @@ public class BingResultsCache {
 				return res;
 			}
 			while (set.next()) {
-				res.add(new BingResult(set.getString("title"),
-									   set.getString("description"),
-									   set.getString("url"),
-						  			   set.getInt("rank")));
+				BingResult br = new BingResult(set.getString("title"),
+						set.getString("description"),
+						set.getString("url"),
+						set.getInt("rank"));
+				AnswerSourceBingSnippet as = new AnswerSourceBingSnippet(br.title);
+				br.sourceID = SourceIDGenerator.getInstance().generateID();
+				as.setSourceID(br.sourceID);
+				QuestionDashboard.getInstance().get(questionView).addSource(as);
+				res.add(br);
 			}
 			logger.info("Bing results loaded from cache.");
 			set.close();
