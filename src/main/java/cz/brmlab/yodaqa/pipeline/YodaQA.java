@@ -20,6 +20,7 @@ import cz.brmlab.yodaqa.pipeline.structured.DBpediaOntologyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.DBpediaPropertyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.FreebaseOntologyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.AnswerHitlistSerialize;
+import cz.brmlab.yodaqa.provider.IPv6Check;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
@@ -38,8 +39,8 @@ import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	static {
-		/* Enable IPv6 usage  (if available). */
-		System.setProperty("java.net.preferIPv6Addresses", "true");
+		/* Enable IPv6 usage (if available). */
+		IPv6Check.enableIPv6IfItWorks();
 
 		try {
 			/* We have two options here - either use a local embedded
