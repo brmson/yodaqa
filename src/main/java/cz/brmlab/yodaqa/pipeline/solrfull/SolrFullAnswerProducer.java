@@ -88,6 +88,7 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer.bing");
 		return aed;
 	}
 
