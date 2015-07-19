@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: data/eval/train-and-eval.sh [-s N] [-d DATASET] [COMMIT [BASECOMMIT]]
+# Usage: data/eval/train-and-eval.sh [-s N] [-m MAXHEAPSIZE] [-d DATASET] [COMMIT [BASECOMMIT]]
 #
 # Perform full model training and performance evaluation of the given
 # commit (may be also a branch name, or nothing to eval the HEAD).
@@ -10,6 +10,9 @@
 # Sequential execution on training and test set may be specified instead
 # by the -s parameter, which takes an extra number N to be set as the
 # value of YODAQA_N_THREADS (typically your total #of CPUs).
+# (For more than 4 CPU cores, you may want to pass -m 6000M or some
+# such - it's more memory hungry over many questions than we expect
+# in the default configuration.)
 #
 # This produces answer TSV files for training and test set
 # (final, and pre-training ones with 'u' prefix before commit),
@@ -42,6 +45,11 @@ if [ "$1" = "-s" ]; then
 else
 	run_split="screen"  # this executes the split async
 fi
+if [ "$1" = "-m" ]; then
+	shift; maxheapsize=$1; shift
+else
+	maxheapsize=""
+fi
 if [ "$1" = "-d" ]; then
 	shift; dataset=$1; shift
 else
@@ -64,6 +72,10 @@ fi
 git clone "$baserepo" "$clonedir"
 pushd "$clonedir"
 git checkout "$cid"
+
+if [ -n "$maxheapsize" ]; then
+	sed -i -e 's/maxHeapSize.*/maxHeapSize = "'$maxheapsize'"/' build.gradle
+fi
 
 echo "Checked out in $clonedir"
 sleep 2
