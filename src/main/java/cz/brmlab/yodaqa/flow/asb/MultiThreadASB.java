@@ -97,6 +97,18 @@ import org.apache.uima.util.UimaTimer;
  * modifications to the AggregateCasIterator.  Due to extensive use
  * of private fields, it is impractical to sub-class it instead.
  *
+ * XXX: UIMA assumes that each CAS is processed by only one AE at once,
+ * something which we explicitly *REFUSE* to honor.  This assumption applies
+ * to read-only processing as well, as there may be AE-specific sofa name
+ * mappings and class loaders involved.  Aside of not guaranteeing these
+ * work, we need to also avoid race conditions e.g. in CASImpl.getView()
+ * (vs. setCurrentComponentInfo(null)).  We do this by tactical usage of
+ * synchronized(cas) blocks (marked as "setCurrentComponentInfo() critical
+ * section") that should cover all conflicting calls (as of uimaj-2.5.0)
+ * while keeping the parallelism at a useful level.
+ * (Of your Analysis Component methods, only hasNext() has the input CAS
+ * locked.)
+ *
  * FIXME: Exception handling, as well as continueOnFailure(), is likely
  * quite messed up, sorry.  And who knows what would happen if you
  * use any timeout functionality. */
@@ -470,7 +482,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       try {
         mInputCas = inputCas;
         // compute the flow for this CAS
-        FlowContainer flow = mFlowControllerContainer.computeFlow(inputCas);
+        FlowContainer flow;
+	synchronized (inputCas) {  // setCurrentComponentInfo() critical section
+          flow = mFlowControllerContainer.computeFlow(inputCas);
+        }
         // store CAS and Flow in an initial stack frame which will later be read by the
         // processUtilNextOutputCas method.
         CasInFlow cif = new CasInFlow(inputCas, flow);
@@ -794,8 +809,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         frame.originalCIF.depCounter -= 1;
       }
 
-      if (!frame.casIterator.hasNext())
-        frame.casIterator = null;
+      synchronized (frame.originalCIF.cas) {  // setCurrentComponentInfo() critical section
+        if (!frame.casIterator.hasNext())
+          frame.casIterator = null;
+      }
       return frame;
     }
 
@@ -809,8 +826,10 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         CAS cas;
         /* Do not let two threads call hasNext(), then next() simultaneously. */
         synchronized (frame.casIterator) {
-          if (!frame.casIterator.hasNext())
-            return null;
+          synchronized (frame.originalCIF.cas) {  // setCurrentComponentInfo() critical section
+            if (!frame.casIterator.hasNext())
+              return null;
+          }
           cas = frame.casIterator.next();
         }
         // this is a new output CAS so we need to compute a flow for it
@@ -851,7 +870,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         return null;
       }
 
-      cif.cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
+      synchronized (cif.cas) {  // setCurrentComponentInfo() critical section
+        cif.cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
+      }
       //System.err.println("--- flow back " + cif.depCounter + " to original " + cif.cas + " " + cif);
       return cif;
     }
@@ -942,7 +963,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           } else {
             // no new CASes are output; this cas is done being processed
             // by that AnalysisEngine so clear the componentInfo
-            cif.cas.setCurrentComponentInfo(null);
+            synchronized (cif.cas) {  // setCurrentComponentInfo() critical section
+              cif.cas.setCurrentComponentInfo(null);
+            }
           }
 
           nextStep = cif.flow.next();
