@@ -809,11 +809,19 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         frame.originalCIF.depCounter -= 1;
       }
 
-      synchronized (frame.originalCIF.cas) {  // setCurrentComponentInfo() critical section
-        if (!frame.casIterator.hasNext())
+        if (!casIterHasNext(frame.casIterator, frame.originalCIF.cas))
           frame.casIterator = null;
-      }
       return frame;
+    }
+
+    /** Check whether the given CasIterator has next,
+     * thread-safely wrt given CAS. */
+    protected boolean casIterHasNext(CasIterator iter, CAS cas) throws AnalysisEngineProcessException {
+      if (iter instanceof AggregateCasIterator) {
+        return iter.hasNext();
+      } else synchronized (cas) {  // setCurrentComponentInfo() critical section
+        return iter.hasNext();
+      }
     }
 
     /** Extract a new child CAS-in-flow from the given stack frame.
@@ -826,10 +834,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         CAS cas;
         /* Do not let two threads call hasNext(), then next() simultaneously. */
         synchronized (frame.casIterator) {
-          synchronized (frame.originalCIF.cas) {  // setCurrentComponentInfo() critical section
-            if (!frame.casIterator.hasNext())
-              return null;
-          }
+          if (!casIterHasNext(frame.casIterator, frame.originalCIF.cas))
+            return null;
           cas = frame.casIterator.next();
         }
         // this is a new output CAS so we need to compute a flow for it
