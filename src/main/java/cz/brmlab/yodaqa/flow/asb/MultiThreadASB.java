@@ -575,7 +575,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       StackFrame frame = casIteratorStack.peek();
       CasInFlow cif = newCasInFlowFromFrame(frame);
       if (cif != null) {
-        //System.err.println("--- flow from stack " + cif.cas);
+        trace("--- flow from stack " + cif.cas);
         return cif;
       }
 
@@ -607,7 +607,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
         CasInFlow cif = newCasInFlowFromFrame(frame);
         if (cif != null) {
-          //System.err.println("--- flow from future " + cif.cas);
+          trace("--- flow from future " + cif.cas);
           return cif;
         }
       }
@@ -618,7 +618,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
      * This is either a finished async job, or a stacked CAS-in-flow. */
     protected CasInFlow nextCasToProcess() throws Exception {
       while (true) {
-        //System.err.println("------------------- nextCasToProcess()" + " ["+this+"]");
+        trace("------------------- nextCasToProcess()" + " ["+this+"]");
         CasInFlow cif = null;
 
         /* First, check if some async job has been finished. */
@@ -627,7 +627,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
             for (Future<CasIterator> f : futureFrames.keySet()) {
               if (!f.isDone())
                 continue;
-              //System.err.println("--- flow from future");
+              trace("--- flow from future");
 	      try {
                 cif = casInFlowFromFuture(f);
               } finally {
@@ -656,12 +656,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         if (futureFrames.size() < maxJobs) {
           cif = casInFlowFromStack();
           if (cif != null) {
-            //System.err.println("-- flow from stack " + cif.cas);
+            trace("-- flow from stack " + cif.cas);
             return cif;
           }
         }
 
-        //System.err.println("--- future " + futureFrames.keySet().size());
+        trace("--- future " + futureFrames.keySet().size());
 
         /* Do we have anything to wait for? */
         if (futureFrames.keySet().isEmpty()) {
@@ -681,21 +681,34 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
             finishedJobs.wait(timeout_s * 1000);
 
-	    if (finishedJobs.get() == 0 && System.currentTimeMillis() - wait_start >= timeout_s * 1000) {
-	      System.err.println("ALERT: " + Thread.currentThread().getName() + " seems stuck for more than " + timeout_s + "s waiting for a job delivery.");
-	      dumpJobsState(System.err);
-	    }
+	    if (! (finishedJobs.get() == 0 && System.currentTimeMillis() - wait_start >= (timeout_s-1) * 1000))
+              continue;
+
+            System.err.println("ALERT: " + Thread.currentThread().getName() + " seems stuck for more than " + timeout_s + "s waiting for a job delivery.");
+            dumpJobsState(System.err);
 
 	    if (futureFrames.keySet().isEmpty()) {
 	      System.err.println("ALERT: " + Thread.currentThread().getName() + " unexpectedly lost futureFrames.");
 	      break;
 	    }
+
+            // XXX: This really triggers (albeit rarely, no idea why:( )
+            for (Future<CasIterator> f : futureFrames.keySet()) {
+              if (f.isDone()) {
+                System.err.println("ALERT: " + Thread.currentThread().getName()
+                      + " missed a finished " + futureFrames.get(f).casMultiplierAeKey
+                      + " (finishedJobs counter out of sync), repairing...");
+                finishedJobs.incrementAndGet();
+              }
+            }
+
+            System.err.println();
 	  }
 
           for (Future<CasIterator> f : futureFrames.keySet()) {
             if (!f.isDone())
               continue;
-            //System.err.println("--- flow from future " + finishedJobs + " " + futureFrames.keySet().size());
+            trace("--- flow from future " + finishedJobs + " " + futureFrames.keySet().size());
             try {
               cif = casInFlowFromFuture(f);
             } finally {
@@ -706,7 +719,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           }
         }
         // childless job, do another
-        //System.err.println("--- loop");
+        trace("--- loop");
       }
     }
 
@@ -740,8 +753,8 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           // invoke next AE in flow
           /* N.B. exceptions thrown here are re-thrown in main thread
            * at .get() time */
-          //System.err.println("job start " + nextAe + " " + inputCas);
-          CasIterator casIter;
+          trace("job start " + nextAe + " " + inputCas);
+          CasIterator casIter = null;
           /* In case we are dealing with a NO_MULTIPROCESSING engine,
            * we need to synchronize calls to it.  It is not enough for
            * the AE implementation to have synchronized process():
@@ -749,15 +762,18 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
            *    at org.apache.uima.analysis_engine.impl.ResultSpecification_impl.intersect(ResultSpecification_impl.java:700)
            *    at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:375)
            */
-          if (nextAe instanceof PrimitiveAnalysisEngine_impl) {
-            synchronized (nextAe) { casIter = nextAe.processAndOutputNewCASes(inputCas); }
-          } else {
-            casIter = nextAe.processAndOutputNewCASes(inputCas);
-          }
-          //System.err.println("job finish " + nextAe + " " + inputCas);
-          synchronized (finishedJobs) {
-            finishedJobs.incrementAndGet();
-            finishedJobs.notify();
+          try {
+            if (nextAe instanceof PrimitiveAnalysisEngine_impl) {
+              synchronized (nextAe) { casIter = nextAe.processAndOutputNewCASes(inputCas); }
+            } else {
+              casIter = nextAe.processAndOutputNewCASes(inputCas);
+            }
+          } finally {
+            synchronized (finishedJobs) {
+              finishedJobs.incrementAndGet();
+              finishedJobs.notify();
+            }
+            trace("job finish " + nextAe + " " + inputCas);
           }
           return casIter;
         }
@@ -770,11 +786,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
          * AE thread should be just sleeping all the time, so it's ok to
          * have many of them. */
         f = aggregateExecutor.submit(job);
-        //System.err.println("job aggregate submit " + nextAe + " " + inputCas + " " + f);
+        trace("job aggregate submit " + nextAe + " " + inputCas + " " + f);
       } else {
         /* Dispatch this job to the thread pool. */
         f = primitiveExecutor.submit(job);
-        //System.err.println("job primitive submit " + nextAe + " " + inputCas + " " + f);
+        trace("job primitive submit " + nextAe + " " + inputCas + " " + f);
       }
 
       StackFrame frame = new StackFrame(null, cif, nextAeKey);
@@ -789,7 +805,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
      * produced any. */
     protected StackFrame collectCasInFlow(Future<CasIterator> f) throws Exception {
       StackFrame frame = futureFrames.remove(f);
-      //System.err.println("job collect " + frame.originalCIF.cas + " " + f);
+      trace("job collect " + frame.originalCIF.cas + " " + f);
       String nextAeKey = frame.casMultiplierAeKey; // TODO: rename (not necessarily casMultiplier)
 
       try {
@@ -872,14 +888,14 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       if (cif.depCounter > 0) {
         /* Do not restore the original CAS-in-flow, there is another
          * child frame referring it still hanging around. */
-        //System.err.println("--- flow skip " + cif.depCounter + ", original dep block " + cif.cas + " " + cif);
+        trace("--- flow skip " + cif.depCounter + ", original dep block " + cif.cas + " " + cif);
         return null;
       }
 
       synchronized (cif.cas) {  // setCurrentComponentInfo() critical section
         cif.cas.setCurrentComponentInfo(null); // this CAS is done being processed by the previous AnalysisComponent
       }
-      //System.err.println("--- flow back " + cif.depCounter + " to original " + cif.cas + " " + cif);
+      trace("--- flow back " + cif.depCounter + " to original " + cif.cas + " " + cif);
       return cif;
     }
 
@@ -1022,11 +1038,11 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           CasInFlow cif = nextCasToProcess();
 
           if (cif == null) {
-            //System.err.println("::: finished flow ["+this+"]");
+            trace("::: finished flow ["+this+"]");
             return null;  // stack empty!
           }
 
-          //System.err.println("::: next step with " + cif.cas + " ["+this+"]");
+          trace("::: next step with " + cif.cas + " ["+this+"]");
           CAS outputCas = processCasInFlow(cif);
 
           // If this CAS has been dropped (FinalStep.forceCasToBeDropped),
@@ -1037,7 +1053,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           // If this is the input CAS, just return null to indicate we're done
           // processing it.
           if (outputCas == mInputCas) {
-            //System.err.println("::: finished flow by reaching the input ["+this+"]");
+            trace("::: finished flow by reaching the input ["+this+"]");
             return null;
           }
           // Otherwise, this is a new CAS produced within this Aggregate. We may or
@@ -1057,6 +1073,12 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           throw new AnalysisEngineProcessException(e);
         }
       }
+    }
+
+    protected void trace(String tracePrint) {
+      String mtdebug = System.getProperty("cz.brmlab.yodaqa.mtdebug");
+      if (mtdebug != null && !mtdebug.isEmpty())
+        System.err.println(tracePrint);
     }
   }
 
