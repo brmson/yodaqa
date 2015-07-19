@@ -27,11 +27,11 @@ public class BingResultsCache {
 	}
 
 
-	public ArrayList<BingResult> load(String query, JCas questionView) {
+	public ArrayList<BingResult> load(String query, JCas questionView, int hitListSize) {
 		ArrayList<BingResult> res = new ArrayList<>();
 		ResultSet set;
 		try {
-			set = connector.select("answer", "QUERY = '" + StringEscapeUtils.escapeSql(query) + "'");
+			set = connector.select("answer", "QUERY = '" + StringEscapeUtils.escapeSql(query) + "' LIMIT " + hitListSize);
 			if (set.isClosed()) {
 				logger.info("No entry for query: " + query + " in cache.");
 				return res;

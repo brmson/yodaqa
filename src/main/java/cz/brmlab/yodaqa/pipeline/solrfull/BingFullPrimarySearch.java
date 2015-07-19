@@ -50,7 +50,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 	/** Number of results to grab and analyze. */
 	public static final String PARAM_HITLIST_SIZE = "hitlist-size";
-	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "30")
+	@ConfigurationParameter(name = PARAM_HITLIST_SIZE, mandatory = false, defaultValue = "6")
 	protected int hitListSize;
 
 
@@ -133,15 +133,16 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	private List<BingResult> bingSearch(Collection<Clue> clues, int hitListSize) {
 		ArrayList<BingResult> res;
 		StringBuilder sb = new StringBuilder();
-		int numOfResults = hitListSize;
+		int numOfResults = 30;  /* XXX: Irrespective of hitListSize, for the benefit of the cache */
 		for (Clue c: clues) {
 			sb.append(c.getLabel()).append(" ");
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		logger.info("QUERY: " + sb.toString());
 
-		res = cache.load(sb.toString(), questionView);
-		if ((res != null && res.size() > 0) || skip) return res;
+		res = cache.load(sb.toString(), questionView, hitListSize);
+		if ((res != null && res.size() > 0) || skip)
+			return res;
 
 		String query;
 		String bingUrl = "";
@@ -163,12 +164,13 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			ArrayList<Map> results = d.get("results");
 			int rank = 1;
 			for (Map<String, String> m : results) {
-				BingResult br = new BingResult(m.get("Title"), m.get("Description"), m.get("Url"), rank++);
+				BingResult br = new BingResult(m.get("Title"), m.get("Description"), m.get("Url"), rank);
 				AnswerSourceBingSnippet as = new AnswerSourceBingSnippet(br.title);
 				br.sourceID = SourceIDGenerator.getInstance().generateID();
 				as.setSourceID(br.sourceID);
 				QuestionDashboard.getInstance().get(questionView).addSource(as);
 				res.add(br);
+				rank++;
 			}
 			cache.save(sb.toString(), res);
 		} catch (IOException e) {
@@ -176,7 +178,10 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			logger.info("BINGURL " + bingUrl);
 			return res;
 		}
-		if (res.size() == 0) logger.info("No bing results.");
+		if (res.size() == 0)
+			logger.info("No bing results.");
+		else if (res.size() > hitListSize)
+			res.subList(hitListSize, res.size()).clear();
 		return res;
 	}
 
