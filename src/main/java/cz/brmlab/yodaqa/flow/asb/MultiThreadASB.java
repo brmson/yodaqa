@@ -681,15 +681,28 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 
             finishedJobs.wait(timeout_s * 1000);
 
-	    if (finishedJobs.get() == 0 && System.currentTimeMillis() - wait_start >= timeout_s * 1000) {
-	      System.err.println("ALERT: " + Thread.currentThread().getName() + " seems stuck for more than " + timeout_s + "s waiting for a job delivery.");
-	      dumpJobsState(System.err);
-	    }
+	    if (! (finishedJobs.get() == 0 && System.currentTimeMillis() - wait_start >= (timeout_s-1) * 1000))
+              continue;
+
+            System.err.println("ALERT: " + Thread.currentThread().getName() + " seems stuck for more than " + timeout_s + "s waiting for a job delivery.");
+            dumpJobsState(System.err);
 
 	    if (futureFrames.keySet().isEmpty()) {
 	      System.err.println("ALERT: " + Thread.currentThread().getName() + " unexpectedly lost futureFrames.");
 	      break;
 	    }
+
+            // XXX: This really triggers (albeit rarely, no idea why:( )
+            for (Future<CasIterator> f : futureFrames.keySet()) {
+              if (f.isDone()) {
+                System.err.println("ALERT: " + Thread.currentThread().getName()
+                      + " missed a finished " + futureFrames.get(f).casMultiplierAeKey
+                      + " (finishedJobs counter out of sync), repairing...");
+                finishedJobs.incrementAndGet();
+              }
+            }
+
+            System.err.println();
 	  }
 
           for (Future<CasIterator> f : futureFrames.keySet()) {
