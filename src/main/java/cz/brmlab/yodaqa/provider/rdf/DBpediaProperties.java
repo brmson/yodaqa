@@ -60,7 +60,7 @@ public class DBpediaProperties extends DBpediaOntology {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "propName", "value", "/valres" }, 0);
+			new String[] { "propName", "value", "/valres", "/res" }, 0);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -71,8 +71,9 @@ public class DBpediaProperties extends DBpediaOntology {
 			 * links). */
 			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
+			String objRes = rawResult[3].getString();
 			logger.debug("DBpedia {} rawproperty: {} -> {} ({})", title, propLabel, value, valRes);
-			results.add(new PropertyValue(title, propLabel, value, valRes, AF_OriginDBpProperty.class));
+			results.add(new PropertyValue(title, objRes, propLabel, value, valRes, AF_OriginDBpProperty.class));
 		}
 
 		return results;

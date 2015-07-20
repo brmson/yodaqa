@@ -169,3 +169,11 @@ Caveats
 
   * Continue-on-failure exception handling or timeout functionality are
     probably totally broken at this point.
+
+  * Custom sofa mappings or class loaders are not supported in conjunction
+    with ParallelStep, as ParallelStep violates UIMA's assumption that
+    a CAS is processed only by a single AE at once.  If you aren't sure,
+    you probably do not use these (a little obscure) features.  Also,
+    your AEs in ParallelStep must take a base CAS, not a specific view.
+    These restrictions are to avoid some race conditions arising deep in
+    the UIMA internals (see the MultiThreadASB javadoc).

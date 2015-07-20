@@ -142,7 +142,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
-		int sourceID = getSourceID(property.getValRes(),property.getObject(),questionView);
+		int sourceID = getSourceID(property.getObjRes(), property.getObject(), questionView);
 		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
 		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
@@ -205,7 +205,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		QuestionDashboard.getInstance().get(questionView).addSource(asf);
 		sourceIDs.put(url, sourceID);
 		return sourceID;
-
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
