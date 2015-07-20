@@ -6,6 +6,9 @@ advantages over open-domain QA,both performance-wise and during analysis.
 For example, we can anticipate certain kinds of questions and optimize accordingly.
 Some questions also become an easy case of structured database search. 
 
+TODO:
+  * Literature: http://brenocon.com/watson_special_issue/08%20textual%20evidence%20gatherint.pdf
+
 Recognizing Yes/No Questions
 ----------------------------
 
