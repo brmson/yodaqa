@@ -49,7 +49,7 @@ Structure of answers JSON object is:
   src/main/java/cz/brmlab/yodaqa/flow/dashboard/AnswerSource*,
   but in general the source object has structure:
   * title - title of origin’s page
-  * type - type of source: “enwiki”, "dbpedia", "freebase"
+  * type - type of source: “enwiki”, "bing", "dbpedia", "freebase"
   * origin - strategy that was used to generate the answer from the source (this is partially type-specific):
     * "title-in-clue" - question was generated from document found by page title
     * "fulltext" - question was generated from full text search

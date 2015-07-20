@@ -11,7 +11,6 @@ import java.util.*;
 
 import com.google.gson.GsonBuilder;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceBingSnippet;
-import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginBingSnippet;
 import cz.brmlab.yodaqa.provider.sqlite.BingResultsCache;
