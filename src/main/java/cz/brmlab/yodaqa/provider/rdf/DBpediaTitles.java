@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
-import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 
 /** A wrapper around DBpedia "Titles" dataset that maps titles to
@@ -51,10 +50,10 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * of articles. */
 	public List<Article> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
-		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in each word. */
+		 * to be surprisingly tricky.  Cover 91% of all cases
+		 * by capitalizing words that are not stopwords  */
 		boolean wasCapitalized = Character.toUpperCase(title.charAt(0)) == title.charAt(0);
-		title = WordUtils.capitalize(title);
+		title = super.capitalizeTitle(title);
 
 		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
