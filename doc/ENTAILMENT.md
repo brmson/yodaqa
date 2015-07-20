@@ -59,11 +59,11 @@ For example when we ask “Did Keanu Reeves direct the Matrix?”, the answer sh
 
 ## Answering from Fulltext Knowledge Bases
 	
-It would be probably easier to answer this using fulltext search. In 
-this very simple case we could first find the list of movies where X starred. 
-Then in each of those movie entries, we would look for Y. This is both slow 
-(negating any performance boost from using structured database search in closed domain),
-hard to parallelize and just not elegant.
+As a baseline,
+we may simply run a phrase search for X or Y respectively in concept articles of Y, X,
+using log-number of occurences and the position of first occurence as a feature
+(important relationships will be mentioned early), and co-occurence of the selection verb
+as another feature.
 
 Scoring
 -------
