@@ -26,12 +26,17 @@ function showSources(container, sources) {
         $.each(sources, function(sid, source) {
 		var state_stags = ['<i>', '<b>', ''];
 		var state_etags = ['</i>', '</b>', ''];
-        if(!(typeof (source.pageId) ==="undefined")) { //this forces to only show en wiki
+        if (source.origin != "document title") {
+		if (source.type == "enwiki") {
+			url = 'http://en.wikipedia.org/?curid=' + source.pageId;
+		} else {
+			url = source.URL;
+		}
             container.append('<p class="source">'
                 + '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
-                + ' <a href="http://en.wikipedia.org/?curid=' + source.pageId + '" target="_blank">'
+                + ' <a href="' + url + '" target="_blank">'
                 + state_stags[source.state] + source.title + state_etags[source.state]
-                + '</a> (' + source.origin + ')</p>'); // TODO also include the first sentence?
+                + '</a> (' + source.type + ' ' + source.origin + ')</p>'); // TODO also include the first sentence?
         }
 	});
 }
@@ -47,16 +52,16 @@ function showAnswers(container, answers, snippets, sources) {
 
         for(var index = 0; index< a.snippetIDs.length; index++) {
             //origin is (fulltext)/(title-in-clue)/(documented search)
-            str +="("+sources[snippets[a.snippetIDs[index]].sourceID].origin+") \n";
-            str +=sources[snippets[a.snippetIDs[index]].sourceID].title + " \n";
+	    source = sources[snippets[a.snippetIDs[index]].sourceID]
+            str += "(" + source.type + " " + source.origin + ") \n";
+            str += source.title + " \n";
 
             //add either wikipedia document ID or source URL
-            if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].pageId )==="undefined")) {
-            str += "http://en.wikipedia.org/?curid=" + sources[snippets[a.snippetIDs[index]].sourceID].pageId + "\n";
-            }
-            else if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].URL )==="undefined")){
-                str+= sources[snippets[a.snippetIDs[index]].sourceID].URL+ "\n";
-            }
+	    if (source.type == "enwiki") {
+		    str += source.pageId + "\n";
+	    } else {
+		    str += source.URL + "\n";
+	    }
 
             //add either passage text or property label
             if (!(typeof (snippets[a.snippetIDs[index]].passageText) ==="undefined")) {

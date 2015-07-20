@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
 
 import org.apache.commons.logging.Log;
@@ -73,7 +74,7 @@ public class DBpediaProperties extends DBpediaOntology {
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
 			String objRes = rawResult[3].getString();
 			logger.debug("DBpedia {} rawproperty: {} -> {} ({})", title, propLabel, value, valRes);
-			results.add(new PropertyValue(title, objRes, propLabel, value, valRes, AF_OriginDBpProperty.class));
+			results.add(new PropertyValue(title, objRes, propLabel, value, valRes, AF_OriginDBpProperty.class, AnswerSourceStructured.ORIGIN_RAW_PROPERTY));
 		}
 
 		return results;

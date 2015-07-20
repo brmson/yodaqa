@@ -20,13 +20,17 @@ public class PropertyValue {
 	protected String propRes; // ok to be unset
 	protected String value;
 	protected String valRes;
+
 	Class<? extends AnswerFeature> originFeat;
+	String origin;  /* AnswerSourceStructured origin field. */
+
 	protected Double score; // ok to be unset
 
 	PropertyValue(String object_,
 			String objRes_, String property_,
 			String value_, String valRes_,
-			Class<? extends AnswerFeature> originFeat_) {
+			Class<? extends AnswerFeature> originFeat_,
+			String origin_) {
 		object = object_;
 		objRes = objRes_;
 		property = property_;
@@ -34,6 +38,7 @@ public class PropertyValue {
 		value = value_;
 		valRes = valRes_;
 		originFeat = originFeat_;
+		origin = origin_;
 		score = null;
 	}
 
@@ -43,6 +48,7 @@ public class PropertyValue {
 	public String getValue() { return value; }
 	public String getValRes() { return valRes; }
 	public Class<? extends AnswerFeature> getOriginFeat() { return originFeat; }
+	public String getOrigin() { return origin; }
 
 	public String getPropRes() { return propRes; }
 	public void setPropRes(String propRes) { this.propRes = propRes; }
