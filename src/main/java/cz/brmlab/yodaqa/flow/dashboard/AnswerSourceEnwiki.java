@@ -5,14 +5,12 @@ public class AnswerSourceEnwiki extends AnswerSource {
 	public static final String ORIGIN_FULL = "fulltext";
 	public static final String ORIGIN_TITLE = "title-in-clue";
 	public static final String ORIGIN_DOCUMENT = "document title";
-	protected String origin;
 
 	protected int pageId;
 	protected boolean isConcept = false;
 
 	public AnswerSourceEnwiki(String origin, String title, int pageId) {
-		super("enwiki", title);
-		this.origin = origin;
+		super("enwiki", origin, title);
 		this.pageId = pageId;
 	}
 

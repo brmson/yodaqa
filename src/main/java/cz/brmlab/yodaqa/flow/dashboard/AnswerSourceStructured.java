@@ -5,13 +5,14 @@ package cz.brmlab.yodaqa.flow.dashboard;
  */
 public class AnswerSourceStructured extends AnswerSource {
 	protected String URL;
-	protected String origin;
 	public static final String ORIGIN_STRUCTURED = "property";
 
 	public AnswerSourceStructured(String origin, String URL, String title) {
-		super(getType(URL), title);
+		/* XXX: Instead of getType(), we should just get this as
+		 * a parameter or have specific sub-classes (e.g. carry
+		 * a mid for Freebase). */
+		super(getType(URL), origin, title);
 		this.URL = URL;
-		this.origin = origin;
 	}
 
 	public static String getType(String URL) {
