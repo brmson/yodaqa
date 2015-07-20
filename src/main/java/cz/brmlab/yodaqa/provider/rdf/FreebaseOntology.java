@@ -13,7 +13,6 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 
 /** A wrapper around Freebase dataset that maps concepts to curated
@@ -136,9 +135,9 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * topic MIDs. */
 	public Set<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
-		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter of each word. */
-		title = WordUtils.capitalize(title);
+		 * to be surprisingly tricky.  Cover 91% of all cases
+		 * by capitalizing words that are not stopwords  */
+		title = super.capitalizeTitle(title);
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to SPARQL query interface,
@@ -204,6 +203,9 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Ignore properties with values that are still URLs,
 			 * i.e. pointers to an unlabelled topic. */
 			"FILTER( !ISURI(?value) )\n" +
+			/* Ignore non-English values (this checks even literals,
+			 * not target labels like the filter above. */
+			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"en\") )\n" +
 			/* Keep only ns: properties */
 			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
 			/* ...but ignore some common junk which yields mostly
@@ -339,6 +341,9 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Ignore properties with values that are still URLs,
 			 * i.e. pointers to an unlabelled topic. */
 			"FILTER( !ISURI(?value) )\n" +
+			/* Ignore non-English values (this checks even literals,
+			 * not target labels like the filter above. */
+			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"en\") )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,

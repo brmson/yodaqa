@@ -3,9 +3,12 @@ package cz.brmlab.yodaqa.provider.rdf;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
+import cz.brmlab.yodaqa.analysis.StopWordFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,7 @@ public abstract class CachedJenaLookup {
 	protected String service;
 	protected String prefixes;
 	private static RDFCache cache = new RDFCache();
+	private StopWordFilter filter = new StopWordFilter();
 
 	/** Initialize a CachedJenaLookup object. */
 	public CachedJenaLookup(String service_, String prefixes_) {
@@ -136,5 +140,23 @@ public abstract class CachedJenaLookup {
 			titles.add(canonTitle);
 
 		return titles;
+	}
+
+	/**
+	 * Converts title to upper case with the exception of stopwords (the, and, or.. etc.)
+	 * The first letter is always transformed
+	 */
+	protected String capitalizeTitle(String title) {
+		StringTokenizer str = new StringTokenizer(title);
+		String resultTitle = "";
+		while (str.hasMoreTokens()) {
+			String token = str.nextToken();
+			if (filter.contains(token)) {
+				resultTitle += token + " ";
+				continue;
+			}
+			resultTitle += WordUtils.capitalize(token)+" ";
+		}
+		return (Character.toUpperCase(resultTitle.charAt(0)) + resultTitle.substring(1)).trim();
 	}
 }

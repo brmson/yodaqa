@@ -4,13 +4,13 @@ YodaQA REST API
 Question asking
 ---------------
 
-To start answering process use POST request method to `/q` with text attribute set to asked question. Return value is ID of question.
+To start answering process use POST request method to `/q` with the *text* attribute set to asked question. Return value is ID of question.
 
 
 Answer retrieving
 -----------------
 
-To retrieve answers use GET request method in format `/q/<id>`, where `id` is id returned during questioning. Answers is returned in JSON.
+To retrieve answers use GET request method in format `/q/<id>`, where *id* is id returned during questioning. Answers is returned in JSON.
 
 
 Answered questions
@@ -31,10 +31,10 @@ Questions in queue
 To retrieve questions waiting in queue use GET request method in format `/q/?toAnswer`. Waiting questions are returned in JSON.
 
 
-Structure of answer's JSON object
+Structure of question JSON object
 ---------------------------------
 
-Structure of answers JSON object is:
+Structure of question JSON object is:
 
 * id - question's id
 * text - question's text
