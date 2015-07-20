@@ -26,12 +26,17 @@ function showSources(container, sources) {
         $.each(sources, function(sid, source) {
 		var state_stags = ['<i>', '<b>', ''];
 		var state_etags = ['</i>', '</b>', ''];
-        if (source.type == "enwiki" && source.origin != "document title") {
+        if (source.origin != "document title") {
+		if (source.type == "enwiki") {
+			url = 'http://en.wikipedia.org/?curid=' + source.pageId;
+		} else {
+			url = source.URL;
+		}
             container.append('<p class="source">'
                 + '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
-                + ' <a href="http://en.wikipedia.org/?curid=' + source.pageId + '" target="_blank">'
+                + ' <a href="' + url + '" target="_blank">'
                 + state_stags[source.state] + source.title + state_etags[source.state]
-                + '</a> (' + source.origin + ')</p>'); // TODO also include the first sentence?
+                + '</a> (' + source.type + ' ' + source.origin + ')</p>'); // TODO also include the first sentence?
         }
 	});
 }
