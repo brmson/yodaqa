@@ -32,5 +32,9 @@ public abstract class AnswerSource {
 		this.state = state;
 	}
 	public int getSourceID() { return sourceID; }
-	public void setSourceID(int sourceID) { this.sourceID = sourceID; }
+	public void setSourceID(int sourceID) {
+		/* XXX: This should really be a read-only constructor time
+		 * parameter, or even obtained internally within the class. */
+		this.sourceID = sourceID;
+	}
 };

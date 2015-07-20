@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATFBOntology;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT;
@@ -66,6 +67,9 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		return properties;
 	}
 
+	protected AnswerSourceStructured makeAnswerSource(String url, String label) {
+		return new AnswerSourceStructured(AnswerSourceStructured.TYPE_FREEBASE, AnswerSourceStructured.ORIGIN_ONTOLOGY, url, label);
+	}
 
 	protected void addTypeLAT(JCas jcas, AnswerFV fv, String type) throws AnalysisEngineProcessException {
 		fv.setFeature(AF_LATFBOntology.class, 1.0);

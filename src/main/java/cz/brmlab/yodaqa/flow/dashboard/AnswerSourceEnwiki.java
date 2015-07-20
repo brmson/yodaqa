@@ -2,6 +2,8 @@ package cz.brmlab.yodaqa.flow.dashboard;
 
 /** An enwiki-based answer source (wiki document). */
 public class AnswerSourceEnwiki extends AnswerSource {
+	/* Keep the following in sync with doc/REST-API.md */
+
 	public static final String ORIGIN_FULL = "fulltext";
 	public static final String ORIGIN_TITLE = "title-in-clue";
 	public static final String ORIGIN_DOCUMENT = "document title";

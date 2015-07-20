@@ -196,13 +196,16 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected int generateSource(String url, String label, JCas questionView){
+		/* XXX: The source ID caching and reusing should belong to
+		 * the dashboard classes. */
 		int sourceID;
 		if (sourceIDs.containsKey(url)) {
 			sourceID = sourceIDs.get(url);
 		} else {
 			sourceID = SourceIDGenerator.getInstance().generateID();
 		}
-		AnswerSourceStructured asf = new AnswerSourceStructured(AnswerSourceStructured.ORIGIN_STRUCTURED, url, label);
+		/* FIXME: Reuse existing AnswerSourceStructured instances. */
+		AnswerSourceStructured asf = makeAnswerSource(url, label);
 		asf.setSourceID(sourceID);
 		QuestionDashboard.getInstance().get(questionView).addSource(asf);
 		sourceIDs.put(url, sourceID);
@@ -241,6 +244,12 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
 		}
 	}
+
+	/** Create a specific AnswerSource instance for the given concept.
+	 * XXX: This API sucks, we should pass the property object, have
+	 * proper AnswerSourceStructured sub-classes, and generally overhaul
+	 * the way we assign and cache IDs etc. */
+	protected abstract AnswerSourceStructured makeAnswerSource(String url, String label);
 
 	/** Add an LAT of given type string. This should be an addTypeLAT()
 	 * wrapper that also generates an LAT feature and LAT instance
