@@ -12,7 +12,6 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 
 /** A wrapper around Freebase dataset that maps concepts to curated
@@ -135,9 +134,9 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * topic MIDs. */
 	public Set<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
-		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter of each word. */
-		title = WordUtils.capitalize(title);
+		 * to be surprisingly tricky.  Cover 91% of all cases
+		 * by capitalizing words that are not stopwords  */
+		title = super.capitalizeTitle(title);
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to SPARQL query interface,
@@ -185,6 +184,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
+			"BIND(ns:" + mid + " AS ?res)\n" +
 			/* Check if property is a labelled type, and use that
 			 * label as property name if so. */
 			"OPTIONAL {\n" +
@@ -234,7 +234,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop", "/val", "/res" }, PROP_LIMIT);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -253,8 +253,9 @@ public class FreebaseOntology extends FreebaseLookup {
 			String value = rawResult[1].getString();
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
+			String objRes = rawResult[4].getString();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
+			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
 		}
 
 		return results;
@@ -299,6 +300,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?proplabel .\n" +
 					"    FILTER(LANGMATCHES(LANG(?proplabel), \"en\"))\n" +
@@ -310,6 +312,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  ns:" + mid + " ns:" + path.get(0) + "/ns:" + path.get(1) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
 					"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
@@ -337,7 +340,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val", "score" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop", "/val", "/res", "score" }, PROP_LIMIT);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -356,9 +359,10 @@ public class FreebaseOntology extends FreebaseLookup {
 			String value = rawResult[1].getString();
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
-			double score = rawResult[4].getDouble();
+			String objRes = rawResult[4].getString();
+			double score = rawResult[5].getDouble();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {}", titleForm, mid, propLabel, prop, value, valRes, score);
-			PropertyValue pv = new PropertyValue(titleForm, propLabel, value, valRes, AF_OriginFreebaseSpecific.class);
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseSpecific.class);
 			pv.setPropRes(prop);
 			pv.setScore(score);
 			results.add(pv);

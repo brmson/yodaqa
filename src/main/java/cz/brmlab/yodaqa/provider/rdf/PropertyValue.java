@@ -15,6 +15,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
  * * score is a numeric confidence value by some auxiliary mechanism */
 public class PropertyValue {
 	protected String object;
+	protected String objRes;
 	protected String property;
 	protected String propRes; // ok to be unset
 	protected String value;
@@ -22,10 +23,12 @@ public class PropertyValue {
 	Class<? extends AnswerFeature> originFeat;
 	protected Double score; // ok to be unset
 
-	PropertyValue(String object_, String property_,
+	PropertyValue(String object_,
+			String objRes_, String property_,
 			String value_, String valRes_,
 			Class<? extends AnswerFeature> originFeat_) {
 		object = object_;
+		objRes = objRes_;
 		property = property_;
 		propRes = null;
 		value = value_;
@@ -35,6 +38,7 @@ public class PropertyValue {
 	}
 
 	public String getObject() { return object; }
+	public String getObjRes() { return objRes; }
 	public String getProperty() { return property; }
 	public String getValue() { return value; }
 	public String getValRes() { return valRes; }

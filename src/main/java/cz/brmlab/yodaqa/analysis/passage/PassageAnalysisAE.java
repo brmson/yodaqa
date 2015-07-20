@@ -104,6 +104,8 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-pacas.txt"));
 		}
 
-		return builder.createAggregateDescription();
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.analysis.passage.PassageAnalysisAE");
+		return aed;
 	}
 }

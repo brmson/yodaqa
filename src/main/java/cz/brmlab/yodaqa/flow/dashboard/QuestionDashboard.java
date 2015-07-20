@@ -41,6 +41,11 @@ public final class QuestionDashboard {
 	/* Questions that have been answered, last coming first. */
 	private List<Question> questionsAnswered = new LinkedList<>();
 
+	/* Each question may take up a few tens of kilobytes of memory
+	 * in the end with all the snippets and whatnot and it accumulates
+	 * in the heap which is fixed-size.  For now, let's just put an
+	 * upper bound on the number of answered questions to keep around. */
+	protected static final int maxQuestionsAnswered = 200;
 
 	public synchronized void askQuestion(Question q) {
 		questions.put(q.getId(), q);
@@ -71,6 +76,8 @@ public final class QuestionDashboard {
 	public synchronized void finishQuestion(Question q) {
 		q.setFinished(true);
 		questionsInProgress.remove(q);
+		if (questionsAnswered.size() >= maxQuestionsAnswered)
+			questionsAnswered.remove(questionsAnswered.size() - 1);
 		questionsAnswered.add(0, q);
 	}
 	public synchronized List<Question> getQuestionsToAnswer() { return new ArrayList<>(questionsToAnswer); }

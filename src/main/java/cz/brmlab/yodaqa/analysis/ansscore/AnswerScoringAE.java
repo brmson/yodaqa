@@ -42,6 +42,8 @@ public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 					AnswerScoreToFV.PARAM_SCORING_PHASE, scoringPhase),
 				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
-		return builder.createAggregateDescription();
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.analysis.ansscore.AnswerScoringAE");
+		return aed;
 	}
 }

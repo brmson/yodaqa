@@ -63,6 +63,8 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 			builder.add(createPrimitiveDescription(PassGSHook.class,
 						ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1));
 
-		return builder.createAggregateDescription();
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.analysis.passextract.PassageExtractorAE");
+		return aed;
 	}
 }
