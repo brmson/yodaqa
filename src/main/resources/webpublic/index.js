@@ -47,16 +47,16 @@ function showAnswers(container, answers, snippets, sources) {
 
         for(var index = 0; index< a.snippetIDs.length; index++) {
             //origin is (fulltext)/(title-in-clue)/(documented search)
-            str +="("+sources[snippets[a.snippetIDs[index]].sourceID].origin+") \n";
-            str +=sources[snippets[a.snippetIDs[index]].sourceID].title + " \n";
+	    source = sources[snippets[a.snippetIDs[index]].sourceID]
+            str += "(" + source.origin + ") \n";
+            str += source.title + " \n";
 
             //add either wikipedia document ID or source URL
-            if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].pageId )==="undefined")) {
-            str += "http://en.wikipedia.org/?curid=" + sources[snippets[a.snippetIDs[index]].sourceID].pageId + "\n";
-            }
-            else if(!(typeof(sources[snippets[a.snippetIDs[index]].sourceID].URL )==="undefined")){
-                str+= sources[snippets[a.snippetIDs[index]].sourceID].URL+ "\n";
-            }
+	    if (source.type == "enwiki") {
+		    str += source.pageId + "\n";
+	    } else {
+		    str += source.URL + "\n";
+	    }
 
             //add either passage text or property label
             if (!(typeof (snippets[a.snippetIDs[index]].passageText) ==="undefined")) {
