@@ -24,7 +24,7 @@ import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
  * already guess their LATs. */
 
 public class StructuredAnswerProducer /* XXX: extends AggregateBuilder ? */ {
-	public static AnalysisEngineDescription createEngineDescription(Class<? extends JCasMultiplier_ImplBase> primarySearchAE)
+	public static AnalysisEngineDescription createEngineDescription(String aggName, Class<? extends JCasMultiplier_ImplBase> primarySearchAE)
 			throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
@@ -73,6 +73,7 @@ public class StructuredAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
+		aed.getAnalysisEngineMetaData().setName(aggName);
 		return aed;
 	}
 }

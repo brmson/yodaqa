@@ -51,6 +51,8 @@ public class CanByBIOTaggerAE /* XXX: extends AggregateBuilder ? */ {
 		/* Generate CandidateAnswers. */
 		builder.add(AnalysisEngineFactory.createEngineDescription(CanByAnsBioMention.class));
 
-		return builder.createAggregateDescription();
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.analysis.passage.biotagger.CanByBIOTaggerAE");
+		return aed;
 	}
 }

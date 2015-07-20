@@ -51,6 +51,8 @@ public class AnswerEvidencingAE /* XXX: extends AggregateBuilder ? */ {
 				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-aecas.txt"));
 		}
 
-		return builder.createAggregateDescription();
+		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.analysis.ansevid.AnswerEvidencingAE");
+		return aed;
 	}
 }
