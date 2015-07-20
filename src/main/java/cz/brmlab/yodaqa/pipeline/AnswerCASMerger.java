@@ -337,6 +337,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			 * making both threads call next().  So don't make
 			 * a big fuss about this. */
 			logger.warn("Warning, racy CAS merger: next() on exhausted merger");
+			new Exception().printStackTrace(System.out);
 			return null;
 		}
 
