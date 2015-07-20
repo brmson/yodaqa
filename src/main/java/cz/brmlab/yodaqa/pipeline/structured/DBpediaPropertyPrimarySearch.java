@@ -56,8 +56,9 @@ public class DBpediaPropertyPrimarySearch extends StructuredPrimarySearch {
 		return properties;
 	}
 
-	protected AnswerSourceStructured makeAnswerSource(String url, String label) {
-		return new AnswerSourceStructured(AnswerSourceStructured.TYPE_DBPEDIA, AnswerSourceStructured.ORIGIN_RAW_PROPERTY, url, label);
+	protected AnswerSourceStructured makeAnswerSource(PropertyValue property) {
+		return new AnswerSourceStructured(AnswerSourceStructured.TYPE_DBPEDIA,
+				property.getOrigin(), property.getObjRes(), property.getObject());
 	}
 
 	protected void addTypeLAT(JCas jcas, AnswerFV fv, String type) throws AnalysisEngineProcessException {
