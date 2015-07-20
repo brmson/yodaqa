@@ -99,6 +99,11 @@
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_PropertyScore</name>
+        <description>Answer Feature: [0,1] score of originating property within structured database search, as determined e.g. by the fbpath model (estimated probability of it holding the correct answer).</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg</name>
         <description>Answer Feature: 1 if the origin of this answer is an in-document passage</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
@@ -211,6 +216,11 @@
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology</name>
         <description>Answer Feature: 1 if the origin of this answer is the Freebase curated ontology.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
+      </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific</name>
+        <description>Answer Feature: 1 if the origin of this answer is a specifically queries relation (based on the fbpath machine learned model) in the Freebase curated ontology.</description>
         <supertypeName>cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature</supertypeName>
       </typeDescription>
       <typeDescription>

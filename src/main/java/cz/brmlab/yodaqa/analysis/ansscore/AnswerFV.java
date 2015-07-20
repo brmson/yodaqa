@@ -30,6 +30,7 @@ public class AnswerFV {
 	public static ArrayList<Class<? extends AnswerFeature>> features;
 	public static String labels[] = {
 		"occurences", "resultRR", "resultLogScore", "passageLogScore",
+			"propertyScore",
 		"originPsg", "originPsgFirst",
 		"originPsgByClueToken", "originPsgByCluePhrase", "originPsgByClueSV",
 			"originPsgByClueNE", "originPsgByClueLAT",
@@ -52,7 +53,7 @@ public class AnswerFV {
 			"originDBpPClueSubject", "originDBpPClueSubjectNE",
 			"originDBpPClueSubjectToken", "originDBpPClueSubjectPhrase",
 			"originDBpPClueConcept",
-		"originFreebaseOntology", "originFBONoClue",
+		"originFreebaseOntology", "originFreebaseSpecific", "originFBONoClue",
 		"originFBOClueToken", "originFBOCluePhrase", "originFBOClueSV",
 			"originFBOClueNE", "originFBOClueLAT",
 			"originFBOClueSubject", "originFBOClueSubjectNE",
@@ -101,6 +102,7 @@ public class AnswerFV {
 			features.add(AF_ResultRR.class);
 			features.add(AF_ResultLogScore.class);
 			features.add(AF_PassageLogScore.class);
+			features.add(AF_PropertyScore.class);
 			features.add(AF_OriginPsg.class);
 			features.add(AF_OriginPsgFirst.class);
 			features.add(AF_OriginPsgByClueToken.class);
@@ -144,6 +146,7 @@ public class AnswerFV {
 			features.add(AF_OriginDBpPClueSubjectPhrase.class);
 			features.add(AF_OriginDBpPClueConcept.class);
 			features.add(AF_OriginFreebaseOntology.class);
+			features.add(AF_OriginFreebaseSpecific.class);
 			features.add(AF_OriginFBONoClue.class);
 			features.add(AF_OriginFBOClueToken.class);
 			features.add(AF_OriginFBOCluePhrase.class);
