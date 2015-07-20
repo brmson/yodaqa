@@ -26,7 +26,7 @@ function showSources(container, sources) {
         $.each(sources, function(sid, source) {
 		var state_stags = ['<i>', '<b>', ''];
 		var state_etags = ['</i>', '</b>', ''];
-        if(!(typeof (source.pageId) ==="undefined")) { //this forces to only show en wiki
+        if (source.type == "enwiki" && source.origin != "document title") {
             container.append('<p class="source">'
                 + '<img src="/wikipedia-w-logo.png" alt="W" class="wlogo" />'
                 + ' <a href="http://en.wikipedia.org/?curid=' + source.pageId + '" target="_blank">'
