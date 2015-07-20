@@ -45,15 +45,17 @@ such as the source.  Thus, we must gather evidence for either yes or no.
 
 Now we will try to (very) broadly show the solutions for the given question categories.
  We consider only freebase search, as the fulltext search would have different properties.
-* Questions about properties: Has X received an academy award – 
+* **Questions about properties:** Has X received an academy award – 
 	We would have to look for the “awards” property of X.
-* Questions about 2 entity relations: Did X play in/direct/wrote screenplay for Y – 
+	We may use fbpath infrastructure to learn mapping from dataset to properties.
+* **Questions about 2 entity relations:** Did X play in/direct/wrote screenplay for Y – 
 	We will have to search a path from X to Y with the same/similar label as the verb. 
 For example when we ask “Did Keanu Reeves direct the Matrix?”, the answer should be no.
-* Questions about 3 entity relations: Did X play with Y in a movie? - 
-	Questions of this kind have more 'concepts' which we currently do not answer, 
-	but it might still be desirable to do so. Considering the graph structure 
-	of the database, it is definitely not trivial.
+	We may again use the fbpath infrastructure to learn mapping from dataset to property paths between given concepts.
+* **Questions about 3 entity relations:** Did X play with Y in a movie? - 
+	Questions of this kind have more 'concepts' and
+	we must consider the graph structure of the database.
+	We can construct sub-graph match patterns like the paths for 2-entity relation matching.
 
 ## Answering from Fulltext Knowledge Bases
 	
