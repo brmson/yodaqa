@@ -9,8 +9,18 @@ public class AnswerSourceStructured extends AnswerSource {
 	public static final String ORIGIN_STRUCTURED = "structured";
 
 	public AnswerSourceStructured(String origin, String URL, String title) {
-		super("structured", title);
+		super(getType(URL), title);
 		this.URL = URL;
 		this.origin = origin;
+	}
+
+	public static String getType(String URL) {
+		if (URL.contains("freebase")) {
+			return "freebase";
+		} else if (URL.contains("dbpedia")) {
+			return "dbpedia";
+		} else {
+			return "unknown";
+		}
 	}
 }
