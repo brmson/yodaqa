@@ -6,7 +6,7 @@ package cz.brmlab.yodaqa.flow.dashboard;
 public class AnswerSourceStructured extends AnswerSource {
 	protected String URL;
 	protected String origin;
-	public static final String ORIGIN_STRUCTURED = "structured";
+	public static final String ORIGIN_STRUCTURED = "property";
 
 	public AnswerSourceStructured(String origin, String URL, String title) {
 		super(getType(URL), title);
