@@ -66,6 +66,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected Class<? extends AnswerFeature> noClueFeature;
 
 	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
+
 	public StructuredPrimarySearch(String sourceName_,
 			Class<? extends AnswerFeature> noClueFeature_) {
 		sourceName = sourceName_;
@@ -142,7 +143,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
-		int sourceID = getSourceID(property.getObjRes(), property.getObject(), questionView);
+		int sourceID = generateSource(property.getObjRes(), property.getObject(), questionView);
 		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
 		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
@@ -193,7 +194,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		ai.addToIndexes();
 	}
-	protected int getSourceID(String url, String label, JCas questionView){
+
+	protected int generateSource(String url, String label, JCas questionView){
 		int sourceID;
 		if (sourceIDs.containsKey(url)) {
 			sourceID = sourceIDs.get(url);
