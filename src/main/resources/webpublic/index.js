@@ -48,7 +48,7 @@ function showAnswers(container, answers, snippets, sources) {
         for(var index = 0; index< a.snippetIDs.length; index++) {
             //origin is (fulltext)/(title-in-clue)/(documented search)
 	    source = sources[snippets[a.snippetIDs[index]].sourceID]
-            str += "(" + source.origin + ") \n";
+            str += "(" + source.type + " " + source.origin + ") \n";
             str += source.title + " \n";
 
             //add either wikipedia document ID or source URL
