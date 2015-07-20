@@ -66,6 +66,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected Class<? extends AnswerFeature> noClueFeature;
 
 	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
+
 	public StructuredPrimarySearch(String sourceName_,
 			Class<? extends AnswerFeature> noClueFeature_) {
 		sourceName = sourceName_;
@@ -142,7 +143,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
-		int sourceID = getSourceID(property.getObjRes(), property.getObject(), questionView);
+		int sourceID = generateSource(property, questionView);
 		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
 		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
@@ -193,14 +194,20 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		ai.addToIndexes();
 	}
-	protected int getSourceID(String url, String label, JCas questionView){
+
+	protected int generateSource(PropertyValue property, JCas questionView){
+		/* XXX: The source ID caching and reusing should belong to
+		 * the dashboard classes. */
+		String url = property.getObjRes();
+		String label = property.getObject();
 		int sourceID;
 		if (sourceIDs.containsKey(url)) {
 			sourceID = sourceIDs.get(url);
 		} else {
 			sourceID = SourceIDGenerator.getInstance().generateID();
 		}
-		AnswerSourceStructured asf = new AnswerSourceStructured(AnswerSourceStructured.ORIGIN_STRUCTURED, url, label);
+		/* FIXME: Reuse existing AnswerSourceStructured instances. */
+		AnswerSourceStructured asf = makeAnswerSource(property);
 		asf.setSourceID(sourceID);
 		QuestionDashboard.getInstance().get(questionView).addSource(asf);
 		sourceIDs.put(url, sourceID);
@@ -239,6 +246,9 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
 		}
 	}
+
+	/** Create a specific AnswerSource instance for the given concept. */
+	protected abstract AnswerSourceStructured makeAnswerSource(PropertyValue property);
 
 	/** Add an LAT of given type string. This should be an addTypeLAT()
 	 * wrapper that also generates an LAT feature and LAT instance
