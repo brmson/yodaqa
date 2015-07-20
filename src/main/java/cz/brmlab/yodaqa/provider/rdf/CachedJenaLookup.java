@@ -157,6 +157,6 @@ public abstract class CachedJenaLookup {
 			}
 			resultTitle += WordUtils.capitalize(token)+" ";
 		}
-		return Character.toUpperCase(resultTitle.charAt(0)) + resultTitle.substring(1);
+		return (Character.toUpperCase(resultTitle.charAt(0)) + resultTitle.substring(1)).trim();
 	}
 }
