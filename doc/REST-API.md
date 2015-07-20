@@ -45,15 +45,17 @@ Structure of answers JSON object is:
     * pageID - id of Wikipedia concept page
 
 * sources - [Map] map of sources. Source is object representing web page, which contains answer. Source object has structure:
-  * URL - (optional) URL of source
-  * origin - contains information, where question was founded. Possible values are: 
-    * "title-in-clue" - question was founded in page title 
-    * "fulltext" - question was founded in full text search on page
-    * "structured" - question was founded in structured database
-  * pageId - (optional) id of Wikipedia page
-  * isConcept - (optional) if page is concept or not
-  * type - type of source (eg. “enwiki”, "structured")
   * title - title of origin’s page
+  * type - type of source: “enwiki”, "dbpedia", "freebase"
+  * origin - strategy that was used to generate the answer from the source (this is partially type-specific):
+    * "title-in-clue" - question was generated from document found by page title
+    * "fulltext" - question was generated from full text search
+    * "document title" - question was generated from page title based on full text search
+    * "ontology" - question was generated from a curated structured database
+    * "raw property" - question was generated from a noisy structured database
+  * pageId - (optional) id of Wikipedia page
+  * URL - (optional) URL of source
+  * isConcept - (optional) if page is concept or not
   * sourceID - source's id
   * state - state of source. Possible values are
     * 0 - source has not been extracted yet
