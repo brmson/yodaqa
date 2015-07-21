@@ -8,8 +8,8 @@ import sys
 argv = sys.argv
 input_filename = argv[1]
 output_filename = argv[2]
-train = file(output_filename + "_train.json", 'w')
-test = file(output_filename + "_test.json", 'w')
+train = file(output_filename + "-train.json", 'w')
+test = file(output_filename + "-test.json", 'w')
 
 train.write('[\r\n')
 test.write('[\r\n')
