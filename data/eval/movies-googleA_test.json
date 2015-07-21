@@ -1,0 +1,22 @@
+[
+{"qID": "8", "qText": "Who directed batman dark knight", "answers": ["Christopher Nolan"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "12", "qText": "who wrote music for inception", "answers": ["Hans Zimmer"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "16", "qText": "who directed norwegian wood", "answers": ["Tran Anh Hung"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "20", "qText": "who wrote the script for goodfellas", "answers": ["Nicholas Pileggi"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "24", "qText": "who starred in the prestige", "answers": ["Hugh Jackman", "Christian Bale", "Michael Caine", "Scarlett Johansson", "Rebecca Hall", "Andy Serkis"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "28", "qText": "who directed yojimbo", "answers": ["Akira Kurosawa"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "32", "qText": "when was metropolis released", "answers": ["1927", "2001"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "36", "qText": "when was wolf of wall street released", "answers": ["2013"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "40", "qText": "when was beautiful mind released", "answers": ["2001-12-13"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "44", "qText": "when was lord of the rings filmed/released", "answers": ["2001-12-18"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "48", "qText": "when was jurassic park released", "answers": ["1993"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "52", "qText": "when was roman holiday released", "answers": ["1953-08-27"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "56", "qText": "what did Hayao Miyazaki direct", "answers": ["Castle in the Sky", "The Castle of Cagliostro", "Kiki's Delivery Service", "Princess Mononoke", "Nausicaä of the Valley of the Wind", "Porco Rosso"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "60", "qText": "Who starred in Eyes Wide Shut", "answers": ["Tom Cruise", "Nicole Kidman", "Sydney Pollack", "Marie Richardson"], "author": "nguyeho7@fel.cvut.cz"},
+{"qID": "64", "qText": "when was frozen released", "answers": ["2013"], "author": "marekp17@fel.cvut.cz"},
+{"qID": "68", "qText": "Who played M in Skyfall?", "answers": ["Judi Dench"], "author": "marekp17@fel.cvut.cz"},
+{"qID": "72", "qText": "who won the academy award for best actress in 2014?", "answers": ["Julianne Moore"], "author": "pasky@ucw.cz"},
+{"qID": "76", "qText": "Has Brad Pitt received an academy award?", "answers": ["no"], "author": "pasky@ucw.cz"},
+{"qID": "80", "qText": "What is the name of the main song from Frozen?", "answers": ["Let it go"], "author": "honza.pichl@gmail.com"},
+{"qID": "84", "qText": "When did Mentalist serie ended?", "answers": ["2015-02-18"], "author": "honza.pichl@gmail.com"}
+]
