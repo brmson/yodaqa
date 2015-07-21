@@ -52,7 +52,7 @@ while question_counter < number_of_questions:
             	recall	 += 1
                 indicator = "recall   "
                 continue
-    print('%03s\t%.50s\t%.10s\t%.15s\t%.15s\t%s' % (ID, questionText.ljust(50),indicator, questionAnswer.ljust(15), answer_list[0]['text'].ljust(15), (URL+str(current_qID))))
+    print('%03s\t%.50s\t%.10s\t%.15s\t%.15s\t%s' % (ID, questionText.ljust(50),indicator, questionAnswer.ljust(15), answer_list[0]['text'].ljust(15), (URL+"/q/"+str(current_qID))))
     question_counter += 1
 
 print("correctly answered: " + str(correctly_answered))
