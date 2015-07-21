@@ -13,7 +13,7 @@ bug in query creation
 *	when was scarface released – did not find movie,  returned date of birth of musician
 *	when was ikiru released – found director, the actual movie is “to live” with “ikiru” as alias
 *	when was grapes of wrath released – does not find the movie
-*	when was kings speech released – does not find the movie (kings/king's doesnt work)
+*	when was kings speech released – RESULT: when we query "King's Speech", dbpedia returns an empty concept, the correct concept is "The King's Speech"
 *	when was rocky released   - does not find the movie
 *	Who directed Hobbit?  - doesnt not find the movie, returned topic
 
