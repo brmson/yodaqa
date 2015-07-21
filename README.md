@@ -19,15 +19,12 @@ for us.  For machine learning, we use a mix of scikit-learn and crfsuite
 (wrapped by ClearTK, jcrfsuite).  We also draw some inspiration from the
 OpenQA project and the Taming Text book.
 
-The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarrassingly often wrong; on the testing
-corpus, while about 79.3% of questions have the correct answer *suggested*
-in the process, it can currently choose the correct answer for about 32.6%
-of questions (but 47.6% of questions have the correct answer in top three
-and 52.7% in top five candidates).  You can read a pre-print of the first
-paper on YodaQA at:
-
-	http://pasky.or.cz/dev/brmson/yodaqa-poster2015.pdf
+This branch contains the "demo" version of YodaQA that maximizes the raw
+open domain accuracy rather than being scientifically rigorous.  Specifically,
+this version e.g. integrates a web full-text search using Bing, which improves
+the quality of answers but it makes the numerical results non-reproducible
+as the web search results can change day to day.  Please use the "master"
+branch for day-to-day development.
 
 ## Installation Instructions
 
