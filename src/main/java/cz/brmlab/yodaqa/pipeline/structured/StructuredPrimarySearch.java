@@ -11,6 +11,7 @@ import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -28,21 +29,16 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PropertyScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.ClueSubject;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
-
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 
@@ -63,13 +59,16 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected int i;
 
 	protected String sourceName;
-	protected Class<? extends AnswerFeature> noClueFeature;
+	protected String clueFeaturePrefix;
+	protected String noClueFeature;
 
 	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
 
 	public StructuredPrimarySearch(String sourceName_,
-			Class<? extends AnswerFeature> noClueFeature_) {
+			String clueFeaturePrefix_,
+			String noClueFeature_) {
 		sourceName = sourceName_;
+		clueFeaturePrefix = clueFeaturePrefix_;
 		noClueFeature = noClueFeature_;
 	}
 
@@ -159,11 +158,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.addToIndexes();
 
 		AnswerFV fv = new AnswerFV();
-		fv.setFeature(AF_Occurences.class, 1.0);
-		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
+		fv.setFeature(AF.Occurences, 1.0);
+		fv.setFeature(AF.ResultLogScore, Math.log(1 + ri.getRelevance()));
 		fv.setFeature(property.getOriginFeat(), 1.0);
 		if (property.getScore() != null)
-			fv.setFeature(AF_PropertyScore.class, property.getScore());
+			fv.setFeature(AF.PropertyScore, property.getScore());
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
@@ -237,13 +236,13 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 			if (!concept.getLabel().toLowerCase().equals(text.toLowerCase()))
 				continue;
 			// We don't set this since all our clues have concept origin
-			//afv.setFeature(AF_OriginConcept.class, 1.0);
+			//afv.setFeature(AF.OriginConcept, 1.0);
 			if (concept.getBySubject())
-				fv.setFeature(AF_OriginConceptBySubject.class, 1.0);
+				fv.setFeature(AF.OriginConceptBySubject, 1.0);
 			if (concept.getByLAT())
-				fv.setFeature(AF_OriginConceptByLAT.class, 1.0);
+				fv.setFeature(AF.OriginConceptByLAT, 1.0);
 			if (concept.getByNE())
-				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
+				fv.setFeature(AF.OriginConceptByNE, 1.0);
 		}
 	}
 
@@ -298,7 +297,20 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 	/** Generate primary search kind specific features indicating
 	 * the originating clue type. */
-	protected abstract void clueAnswerFeatures(AnswerFV afv, Clue clue);
+	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
+		afv.setFeature(clueFeaturePrefix + clue.getType().getShortName(), 1.0);
+		if (clue instanceof ClueSubject) {
+			afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
+		} else if (clue instanceof ClueConcept ) {
+			ClueConcept concept = (ClueConcept) clue;
+			if (concept.getBySubject())
+				afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
+			if (concept.getByLAT())
+				afv.setFeature(clueFeaturePrefix + "ClueLAT", 1.0);
+			if (concept.getByNE())
+				afv.setFeature(clueFeaturePrefix + "ClueNE", 1.0);
+		}
+	}
 
 
 	@Override

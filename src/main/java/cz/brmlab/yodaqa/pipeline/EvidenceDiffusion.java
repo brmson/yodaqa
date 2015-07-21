@@ -20,12 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDPrefixedScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDPrefixingScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDSubstredScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDSubstringScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDSuffixedScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_EvDSuffixingScore;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 
 /**
@@ -158,12 +153,12 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 				continue;
 
 			AnswerFV fv = new AnswerFV(a);
-			if (prefixedScores.size() > 0) fv.setFeature(AF_EvDPrefixedScore.class, mergeScores(prefixedScores));
-			if (prefixingScores.size() > 0) fv.setFeature(AF_EvDPrefixingScore.class, mergeScores(prefixingScores));
-			if (suffixedScores.size() > 0) fv.setFeature(AF_EvDSuffixedScore.class, mergeScores(suffixedScores));
-			if (suffixingScores.size() > 0) fv.setFeature(AF_EvDSuffixingScore.class, mergeScores(suffixingScores));
-			if (substredScores.size() > 0) fv.setFeature(AF_EvDSubstredScore.class, mergeScores(substredScores));
-			if (substringScores.size() > 0) fv.setFeature(AF_EvDSubstringScore.class, mergeScores(substringScores));
+			if (prefixedScores.size() > 0) fv.setFeature(AF.EvDPrefixedScore, mergeScores(prefixedScores));
+			if (prefixingScores.size() > 0) fv.setFeature(AF.EvDPrefixingScore, mergeScores(prefixingScores));
+			if (suffixedScores.size() > 0) fv.setFeature(AF.EvDSuffixedScore, mergeScores(suffixedScores));
+			if (suffixingScores.size() > 0) fv.setFeature(AF.EvDSuffixingScore, mergeScores(suffixingScores));
+			if (substredScores.size() > 0) fv.setFeature(AF.EvDSubstredScore, mergeScores(substredScores));
+			if (substringScores.size() > 0) fv.setFeature(AF.EvDSubstringScore, mergeScores(substringScores));
 			for (FeatureStructure af : a.getFeatures().toArray())
 				((AnswerFeature) af).removeFromIndexes();
 			a.removeFromIndexes();

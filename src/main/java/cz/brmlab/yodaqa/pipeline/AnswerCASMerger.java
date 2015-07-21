@@ -31,18 +31,7 @@ import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -77,7 +66,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	protected boolean doReuseHitlist;
 
 	/** The phase number. If non-zero, confidence of the answer is
-	 * pre-set to AF_Phase(n-1)Score. */
+	 * pre-set to AF.Phase(n-1)Score. */
 	public static final String PARAM_PHASE = "phase";
 	@ConfigurationParameter(name = PARAM_PHASE, mandatory = false, defaultValue = "0")
 	protected int phaseNum;
@@ -410,22 +399,22 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			/* At this point we can generate some features
 			 * to be aggregated over all individual answer
 			 * instances. */
-			if (mainFV.getFeatureValue(AF_OriginPsgFirst.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNP.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNE.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
-			    + mainFV.getFeatureValue(AF_OriginDocTitle.class)
-			    + mainFV.getFeatureValue(AF_OriginDBpOntology.class)
-			    + mainFV.getFeatureValue(AF_OriginDBpProperty.class)
-			    + mainFV.getFeatureValue(AF_OriginFreebaseOntology.class)
-			    + mainFV.getFeatureValue(AF_OriginFreebaseSpecific.class) > 1.0)
-				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
+			if (mainFV.getFeatureValue(AF.OriginPsgFirst)
+			    + mainFV.getFeatureValue(AF.OriginPsgNP)
+			    + mainFV.getFeatureValue(AF.OriginPsgNE)
+			    + mainFV.getFeatureValue(AF.OriginPsgNPByLATSubj)
+			    + mainFV.getFeatureValue(AF.OriginDocTitle)
+			    + mainFV.getFeatureValue(AF.OriginDBpOntology)
+			    + mainFV.getFeatureValue(AF.OriginDBpProperty)
+			    + mainFV.getFeatureValue(AF.OriginFreebaseOntology)
+			    + mainFV.getFeatureValue(AF.OriginFreebaseSpecific) > 1.0)
+				mainFV.setFeature(AF.OriginMultiple, 1.0);
 			/* Also restore confidence value if we already
 			 * determined it before. */
 			if (phaseNum == 1)
-				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase0Score.class));
+				mainAns.setConfidence(mainFV.getFeatureValue(AF.Phase0Score));
 			else if (phaseNum == 2)
-				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase1Score.class));
+				mainAns.setConfidence(mainFV.getFeatureValue(AF.Phase1Score));
 
 			mainAns.setFeatures(mainFV.toFSArray(finalAnswerHitlistView));
 			for (LAT lat : mainLats)

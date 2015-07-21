@@ -15,22 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCMatchScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCPrefixedScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCPrefixingScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSubstredScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSubstringScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSuffixedScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCSuffixingScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOCMetaMatchScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOMatchScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOPrefixedScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOPrefixingScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSubstredScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSubstringScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSuffixedScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOSuffixingScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ClOMetaMatchScore;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -87,11 +72,11 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 						return !(c instanceof ClueNE || c instanceof ClueConcept);
 					}
 				},
-				AF_ClOMatchScore.class,
-				AF_ClOPrefixedScore.class, AF_ClOPrefixingScore.class,
-				AF_ClOSuffixedScore.class, AF_ClOSuffixingScore.class,
-				AF_ClOSubstredScore.class, AF_ClOSubstringScore.class,
-				AF_ClOMetaMatchScore.class);
+				AF.ClOMatchScore,
+				AF.ClOPrefixedScore, AF.ClOPrefixingScore,
+				AF.ClOSuffixedScore, AF.ClOSuffixingScore,
+				AF.ClOSubstredScore, AF.ClOSubstringScore,
+				AF.ClOMetaMatchScore);
 
 		matchClues(ai, questionView, answerView,
 				new ClueFilter() {
@@ -99,22 +84,23 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 						return (c instanceof ClueNE || c instanceof ClueConcept);
 					}
 				},
-				AF_ClOCMatchScore.class,
-				AF_ClOCPrefixedScore.class, AF_ClOCPrefixingScore.class,
-				AF_ClOCSuffixedScore.class, AF_ClOCSuffixingScore.class,
-				AF_ClOCSubstredScore.class, AF_ClOCSubstringScore.class,
-				AF_ClOCMetaMatchScore.class);
+				AF.ClOCMatchScore,
+				AF.ClOCPrefixedScore, AF.ClOCPrefixingScore,
+				AF.ClOCSuffixedScore, AF.ClOCSuffixingScore,
+				AF.ClOCSubstredScore, AF.ClOCSubstringScore,
+				AF.ClOCMetaMatchScore);
 	}
 
-	/* XXX: This is so ugly calling convention... */
+	/* XXX: This is so ugly calling convention...
+	 * TODO: Repair now that we can generate custom feature names. */
 	protected void matchClues(AnswerInfo ai,
 			JCas questionView, JCas answerView,
 			ClueFilter filter,
-			Class<? extends AnswerFeature> matchAF,
-			Class<? extends AnswerFeature> prefixedAF, Class<? extends AnswerFeature> prefixingAF,
-			Class<? extends AnswerFeature> suffixedAF, Class<? extends AnswerFeature> suffixingAF,
-			Class<? extends AnswerFeature> substredAF, Class<? extends AnswerFeature> substringAF,
-			Class<? extends AnswerFeature> metaMatchAF)
+			String matchAF,
+			String prefixedAF, String prefixingAF,
+			String suffixedAF, String suffixingAF,
+			String substredAF, String substringAF,
+			String metaMatchAF)
 				throws AnalysisEngineProcessException {
 
 		String text = ai.getCanonText();
