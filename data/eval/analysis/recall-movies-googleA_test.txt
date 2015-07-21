@@ -1,6 +1,9 @@
 Error eval
+=====
+created from 62 questions in movies-googleA-train
+
 Incorrect:
-wrong query statement
+bug in query creation
 *	Who directed Titanic  -  Finds the ship instead of movie
 *	Who wrote the screenplay for the X-Men days of future past? - doesnt find the movie
 *	When was the last Frozen movie made? - did not find the movie
