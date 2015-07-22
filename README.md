@@ -19,15 +19,21 @@ for us.  For machine learning, we use a mix of scikit-learn and crfsuite
 (wrapped by ClearTK, jcrfsuite).  We also draw some inspiration from the
 OpenQA project and the Taming Text book.
 
-The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarrassingly often wrong; on the testing
-corpus, while about 79.3% of questions have the correct answer *suggested*
-in the process, it can currently choose the correct answer for about 32.6%
-of questions (but 47.6% of questions have the correct answer in top three
-and 52.7% in top five candidates).  You can read a pre-print of the first
-paper on YodaQA at:
+This branch (d/movies) contains a domain-specific adaptation of YodaQA on
+the movies domain - movies, directors, actors, screenplays, academy awards...
+We aim to maximize performance on this specific set, gather specific
+datasets, etc.  We use specifically trained models, but attempt not
+to implement specifically tuned heuristics or hard-coded rules.
 
-	http://pasky.or.cz/dev/brmson/yodaqa-poster2015.pdf
+There is also a d/movies-dt branch, which is being continuously rebased
+on top of d/movies, merging in f/dectrees until we merge it in for good.
+The performance is notably better with decision forest answer classifier
+on this domain:
+
+logistic regression:
+	moviesBE-tes u9186614 2015-07-20 Merge branch 'master... 55/115/168 32.7%/68.5% mrr 0.418 avgtime 1121.953
+f/dectrees:
+	moviesBE-tes u0af5e3d 2015-07-20 Merge remote-trackin... 63/115/168 37.5%/68.5% mrr 0.456 avgtime 650.212
 
 ## Installation Instructions
 
