@@ -8,6 +8,7 @@ import java.util.Set;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
 
@@ -202,6 +203,9 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Ignore properties with values that are still URLs,
 			 * i.e. pointers to an unlabelled topic. */
 			"FILTER( !ISURI(?value) )\n" +
+			/* Ignore non-English values (this checks even literals,
+			 * not target labels like the filter above. */
+			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"en\") )\n" +
 			/* Keep only ns: properties */
 			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
 			/* ...but ignore some common junk which yields mostly
@@ -255,7 +259,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseOntology.class));
+			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseOntology.class, AnswerSourceStructured.ORIGIN_ONTOLOGY));
 		}
 
 		return results;
@@ -337,6 +341,9 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Ignore properties with values that are still URLs,
 			 * i.e. pointers to an unlabelled topic. */
 			"FILTER( !ISURI(?value) )\n" +
+			/* Ignore non-English values (this checks even literals,
+			 * not target labels like the filter above. */
+			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"en\") )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
@@ -362,7 +369,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String objRes = rawResult[4].getString();
 			double score = rawResult[5].getDouble();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {}", titleForm, mid, propLabel, prop, value, valRes, score);
-			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseSpecific.class);
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseSpecific.class, AnswerSourceStructured.ORIGIN_SPECIFIC);
 			pv.setPropRes(prop);
 			pv.setScore(score);
 			results.add(pv);
