@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public final class GloveDictionary {
 	private static GloveDictionary gd = new GloveDictionary();
 	private final Map<String,double[]> dictionary;
-	private final String path="data/glove/vectors.6B.50d.txt";
+	private final String path="data/glove/glove.6B.50d.txt";
 
 	private GloveDictionary(){
 		Map<String,double[]> dictionary=new HashMap<>();
