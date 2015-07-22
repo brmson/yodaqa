@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,18 +17,12 @@ import java.util.logging.Logger;
 public class WWeights {
 	private static WWeights ww=new WWeights();
 	private final DoubleMatrix w;
-	private final String path="src/main/resources/cz/brmlab/yodaqa/analysis/passextract/weights.txt";
+	private final String path="weights.txt";
 
 	public WWeights(){
 		DoubleMatrix w=DoubleMatrix.zeros(4,1);
-		File f=new File(path);
-		FileReader fr = null;
-		try {
-			fr = new FileReader(f);
-		} catch (FileNotFoundException ex) {
-			Logger.getLogger(WWeights.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		BufferedReader br=new BufferedReader(fr);
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(MbWeights.class.getResourceAsStream(path)));
 		String line;
 		try {
 			int i=0;
