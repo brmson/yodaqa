@@ -24,10 +24,16 @@ some questions, even though it's embarrassingly often wrong; on the testing
 corpus, while about 79.3% of questions have the correct answer *suggested*
 in the process, it can currently choose the correct answer for about 32.6%
 of questions (but 47.6% of questions have the correct answer in top three
-and 52.7% in top five candidates).  You can read a pre-print of the first
-paper on YodaQA at:
+and 52.7% in top five candidates).  More details on YodaQA plus links to
+some papers are available at:
 
-	http://pasky.or.cz/dev/brmson/yodaqa-poster2015.pdf
+	http://ailao.eu/yodaqa/
+
+and you can play with a live demo at
+
+	http://live.ailao.eu/
+
+(this demo corresponds to the ``d/live`` branch of this git repo).
 
 ## Installation Instructions
 

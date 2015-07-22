@@ -52,9 +52,9 @@ public class DBpediaWNTypes extends DBpediaLookup {
 	 * of types. The type is in the form of string/synset. */
 	public List<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
-		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in each word. */
-		title = WordUtils.capitalize(title);
+		 * to be surprisingly tricky.  Cover 91% of all cases
+		 * by capitalizing words that are not stopwords  */
+		title = super.capitalizeTitle(title);
 
 		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =

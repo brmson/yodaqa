@@ -8,6 +8,7 @@ import org.apache.uima.jcas.JCas;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpProperty;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.TyCor.DBpPropertyLAT;
@@ -55,6 +56,10 @@ public class DBpediaPropertyPrimarySearch extends StructuredPrimarySearch {
 		return properties;
 	}
 
+	protected AnswerSourceStructured makeAnswerSource(PropertyValue property) {
+		return new AnswerSourceStructured(AnswerSourceStructured.TYPE_DBPEDIA,
+				property.getOrigin(), property.getObjRes(), property.getObject());
+	}
 
 	protected void addTypeLAT(JCas jcas, AnswerFV fv, String type) throws AnalysisEngineProcessException {
 		fv.setFeature(AF_LATDBpProperty.class, 1.0);
