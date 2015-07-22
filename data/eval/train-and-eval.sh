@@ -73,6 +73,9 @@ git clone "$baserepo" "$clonedir"
 pushd "$clonedir"
 git checkout "$cid"
 
+mkdir -p data/glove
+ln "$baserepo"/data/glove/glove.6B.50d.txt data/glove/
+
 if [ -n "$maxheapsize" ]; then
 	sed -i -e 's/maxHeapSize.*/maxHeapSize = "'$maxheapsize'"/' build.gradle
 fi
