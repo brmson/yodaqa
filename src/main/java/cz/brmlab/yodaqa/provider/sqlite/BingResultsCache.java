@@ -41,7 +41,7 @@ public class BingResultsCache {
 						set.getString("description"),
 						set.getString("url"),
 						set.getInt("rank"));
-				AnswerSourceBingSnippet as = new AnswerSourceBingSnippet(br.title);
+				AnswerSourceBingSnippet as = new AnswerSourceBingSnippet(br.title, br.url);
 				br.sourceID = SourceIDGenerator.getInstance().generateID();
 				as.setSourceID(br.sourceID);
 				QuestionDashboard.getInstance().get(questionView).addSource(as);
