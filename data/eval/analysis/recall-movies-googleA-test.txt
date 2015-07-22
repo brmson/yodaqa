@@ -3,19 +3,28 @@ Error eval
 created from 62 questions in movies-googleA-train
 
 Incorrect:
-bug in query creation
+doesnt find the movie at all
+*	When was the last Frozen movie made? - RESULT: the generated clues are "the last frozen movie" and "movie", "frozen" is clueByConstituent, which we do not search
+*	Who directed godfather – RESULT: The query did not find the movie, works when we look for "The Godfather"
+*	when was kings speech released – RESULT: when we query "King's Speech", dbpedia returns an empty concept, works when we add "the"
+	*	when was rocky released   - FIXED bug where we didn't add clues created from subjects to the query queue
+*	Who was the executive producer for The Shining –  RESULT: the generated clues are "Executive producer for The Shining", "Executive producer", "Shining". "The Shining" 														is missing
+*	Who wrote the screenplay for the X-Men days of future past? - RESULT:
+																1) DBpediaTitles doesn't ask the correct query, which is "X-Men Days of Future Past" - it is not generated
+																2) in DBPediaTitles raw query, the following commands filter out the result:
+																FILTER ( !BOUND(?redirTarget) )
+																FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )
+POSSIBLE SOLUTION: APPEND (film) behind queries ?
+
+doesnt recognize that we want to look for a movie
 *	Who directed Titanic  -  Finds the ship instead of movie
-*	Who wrote the screenplay for the X-Men days of future past? - doesnt find the movie
-*	When was the last Frozen movie made? - did not find the movie
-*	where was the lord of the rings filmed   - did not find it as a movie but as a book
-*	Who was the executive producer for The Shining –  did not find the movie, returned topic
-*	Who directed godfather – did not find movie, returned topic
+*	when was grapes of wrath released – does not find the movie, finds musical album even for the correct query
 *	when was scarface released – did not find movie,  returned date of birth of musician
-*	when was ikiru released – found director, the actual movie is “to live” with “ikiru” as alias
-*	when was grapes of wrath released – does not find the movie
-*	when was kings speech released – RESULT: when we query "King's Speech", dbpedia returns an empty concept, the correct concept is "The King's Speech"
-*	when was rocky released   - does not find the movie
-*	Who directed Hobbit?  - doesnt not find the movie, returned topic
+*	Who directed Hobbit?  - doesnt not find the movie, returned topic, it probably is too general
+*	where was the lord of the rings filmed   - did not find it as a movie but as a book
+*	when was ikiru released – found a director, the actual movie is “to live” with “ikiru” as alias
+
+
 
 multiple concept questions
 *	who played hulk in the incredible hulk – Daniel Dae Kim played IN hulk, but didn't play the character
