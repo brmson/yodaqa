@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
+import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
+import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -66,6 +68,10 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		for (Clue clue : JCasUtil.select(resultView, CluePhrase.class))
 			cluesByLen.add(clue);
 		for (Clue clue : JCasUtil.select(resultView, ClueNE.class))
+			cluesByLen.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectPhrase.class))
+			cluesByLen.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
 			cluesByLen.add(clue);
 
 		/* Check the clues in turn, starting by the longest - do they
