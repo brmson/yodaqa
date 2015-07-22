@@ -1,0 +1,41 @@
+Error eval
+=====
+created from 62 questions in movies-googleA-train
+
+Incorrect:
+bug in query creation
+*	Who directed Titanic  -  Finds the ship instead of movie
+*	Who wrote the screenplay for the X-Men days of future past? - doesnt find the movie
+*	When was the last Frozen movie made? - did not find the movie
+*	where was the lord of the rings filmed   - did not find it as a movie but as a book
+*	Who was the executive producer for The Shining –  did not find the movie, returned topic
+*	Who directed godfather – did not find movie, returned topic
+*	when was scarface released – did not find movie,  returned date of birth of musician
+*	when was ikiru released – found director, the actual movie is “to live” with “ikiru” as alias
+*	when was grapes of wrath released – does not find the movie
+*	when was kings speech released – RESULT: when we query "King's Speech", dbpedia returns an empty concept, the correct concept is "The King's Speech"
+*	when was rocky released   - does not find the movie
+*	Who directed Hobbit?  - doesnt not find the movie, returned topic
+
+multiple concept questions
+*	who played hulk in the incredible hulk – Daniel Dae Kim played IN hulk, but didn't play the character
+*	Who played Ryan Stone in Gravity – we are unable to detect that gravity is a movie and Ryan stone is a character
+*	Who did harrison ford play in enders game  - returned Han Solo
+
+years
+*	who received the academy award for best actor in 2011? - doesnt account for year
+*	who won the oscar for best actor in 2014?  - doesnt account for year
+*	who got the oscar for best actress in 2010? - doesnt account for year or gender..         
+
+
+misc
+*	Which network broadcasts House of Cards? - does it have a network broadcast property?
+*	when was harry potter released – tricky question
+
+recall:
+usually finds the topic, but doesn't use the correctly labeled graph path (i.e. finds actors instead of directors etc)
+*	who directed matrix reloaded – finds the actor instead of director
+*	who was the producer for star wars episode 1 – finds director instead of producer
+*	hich studio animated wall-e   - finds director instead of studio
+*	when was v for vendetta released – finds Topic
+*	When did Big Bang theory serie started? - the first answer has the property date, the correct (third) answer has properties “release date”, “first aired” and “air date of first episode”
