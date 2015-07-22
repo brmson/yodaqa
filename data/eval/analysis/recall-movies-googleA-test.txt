@@ -4,21 +4,28 @@ created from 62 questions in movies-googleA-train
 
 Incorrect:
 doesnt find the movie at all
-*	When was the last Frozen movie made? - RESULT: the generated clues are "the last frozen movie" and "movie", "frozen" is clueByConstituent, which we do not search
 *	Who directed godfather – RESULT: The query did not find the movie, works when we look for "The Godfather"
-*	when was kings speech released – RESULT: when we query "King's Speech", dbpedia returns an empty concept, works when we add "the"
 	*	when was rocky released   - FIXED bug where we didn't add clues created from subjects to the query queue
-*	Who was the executive producer for The Shining –  RESULT: the generated clues are "Executive producer for The Shining", "Executive producer", "Shining". "The Shining" 														is missing
+*	when was kings speech released – RESULT: when we query "King's Speech", dbpedia returns an empty concept, works when we add "the"
+
 *	Who wrote the screenplay for the X-Men days of future past? - RESULT:
 																1) DBpediaTitles doesn't ask the correct query, which is "X-Men Days of Future Past" - it is not generated
 																2) in DBPediaTitles raw query, the following commands filter out the result:
 																FILTER ( !BOUND(?redirTarget) )
 																FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )
+																3) in DBPediaOntology, this query filters out the results:
+																FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )
+																4) This is due to the ":" in "X-Men: Days of..", which we automatically filter out.
+Movies with disambiguation pages, which we can't traverse yet
+*	When was the last Frozen movie made? - There are 6 different movies
+*	Who was the executive producer for The Shining –  The Shining has both a book and a Movie
+*	when was grapes of wrath released – does not find the movie, finds musical album in freebase even for the correct query
+
+
 POSSIBLE SOLUTION: APPEND (film) behind queries ?
 
 doesnt recognize that we want to look for a movie
 *	Who directed Titanic  -  Finds the ship instead of movie
-*	when was grapes of wrath released – does not find the movie, finds musical album even for the correct query
 *	when was scarface released – did not find movie,  returned date of birth of musician
 *	Who directed Hobbit?  - doesnt not find the movie, returned topic, it probably is too general
 *	where was the lord of the rings filmed   - did not find it as a movie but as a book
