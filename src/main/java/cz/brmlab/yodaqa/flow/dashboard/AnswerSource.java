@@ -13,14 +13,16 @@ public abstract class AnswerSource {
 
 	protected String title;
 	protected int sourceID;
+	protected String URL;
 
 	/* state 0: not processed, 1: being processed, 2: done */
 	protected int state = 0;
 
-	public AnswerSource(String type, String origin, String title) {
+	public AnswerSource(String type, String origin, String title, String url) {
 		this.type = type;
 		this.origin = origin;
 		this.title = title;
+		this.URL = url;
 	}
 
 	public String getType() { return type; }
