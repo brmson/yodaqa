@@ -31,6 +31,7 @@ Download Data Files
 	wget http://downloads.dbpedia.org/2014/en/specific_mappingbased_properties_en.nt.bz2
 	wget http://downloads.dbpedia.org/2014/en/infobox_properties_en.nt.bz2
 	wget http://downloads.dbpedia.org/2014/en/infobox_property_definitions_en.nt.bz2
+	wget http://downloads.dbpedia.org/2014/en/disambiguations_en.nt.bz2
 	bunzip2 -k *.bz2
 	cd ..
 

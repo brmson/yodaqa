@@ -13,7 +13,8 @@ import org.slf4j.Logger;
  * exists.
  *
  * Articles are represented as (label, pageId), where label is the
- * article title. The label is included as we pass through redirects. */
+ * article title. The label is included as we pass through redirects
+ * and disambiguation pages. */
 
 public class DBpediaTitles extends DBpediaLookup {
 	public class Article {
@@ -64,18 +65,25 @@ public class DBpediaTitles extends DBpediaLookup {
 			   // (B) fetch also resources targetted by @title redirect
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
 			"  ?redir rdfs:label \"" + title + "\"@en .\n" +
+			"} UNION {\n" +
+			   // (C) fetch also resources targetted by @title disambiguation
+			"  ?disamb dbo:wikiPageDisambiguates ?res .\n" +
+			"  ?disamb rdfs:label \"" + title + "\"@en .\n" +
 			"}\n" +
-			 // for (B), we are also getting a redundant (A) entry;
+			 // for (B) and (C), we are also getting a redundant (A) entry;
 			 // identify the redundant (A) entry by filling
 			 // ?redirTarget in that case
 			"OPTIONAL { ?res dbo:wikiPageRedirects ?redirTarget . }\n" +
+			"OPTIONAL { ?res dbo:wikiPageDisambiguates ?disambTarget . }\n" +
 			 // set the output variables
 			"?res dbo:wikiPageID ?pageID .\n" +
 			"?res rdfs:label ?label .\n" +
 
-			 // ignore the redundant (A) entries (that are redirects)
+			 // ignore the redundant (A) entries (redirects, disambs)
 			"FILTER ( !BOUND(?redirTarget) )\n" +
+			"FILTER ( !BOUND(?disambTarget) )\n" +
 			 // weed out categories and other in-namespace junk
+			 // FIXME: this also covers X-Men:.*, 2001:.*, ... movie titles
 			"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			 // output only english labels, thankyouverymuch
 			"FILTER ( LANG(?label) = 'en' )\n" +
