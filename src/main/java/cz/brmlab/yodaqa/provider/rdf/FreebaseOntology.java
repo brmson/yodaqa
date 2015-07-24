@@ -118,7 +118,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * they bypass the blacklist and can traverse multiple nodes. */
 	public List<PropertyValue> query(String title, List<PathScore> paths, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
-			Set<String> topics = queryTitleForm(titleForm, logger);
+			Set<String> topics = queryTopicByTitleForm(titleForm, logger);
 			List<PropertyValue> results = new ArrayList<PropertyValue>();
 			for (String mid : topics) {
 				results.addAll(queryTopicGeneric(titleForm, mid, logger));
@@ -131,9 +131,34 @@ public class FreebaseOntology extends FreebaseLookup {
 		return new ArrayList<PropertyValue>();
 	}
 
+	class TitledMid {
+		String mid;
+		String title;
+
+		public TitledMid(String mid, String title) {
+			this.mid = mid;
+			this.title = title;
+		}
+	}
+
+	/** Query for a given enwiki pageID, returning a set of PropertyValue
+	 * instances.
+	 * The paths set are extra properties to specifically query for:
+	 * they bypass the blacklist and can traverse multiple nodes. */
+	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, Logger logger) {
+		Set<TitledMid> topics = queryTopicByPageID(pageID, logger);
+		List<PropertyValue> results = new ArrayList<PropertyValue>();
+		for (TitledMid topic : topics) {
+			results.addAll(queryTopicGeneric(topic.title, topic.mid, logger));
+			if (!paths.isEmpty())
+				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, logger));
+		}
+		return results;
+	}
+
 	/** Query for a given specific title form, returning a set of
 	 * topic MIDs. */
-	public Set<String> queryTitleForm(String title, Logger logger) {
+	public Set<String> queryTopicByTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 91% of all cases
 		 * by capitalizing words that are not stopwords  */
@@ -161,6 +186,28 @@ public class FreebaseOntology extends FreebaseLookup {
 			String key = rawResult[1].getString();
 			logger.debug("Freebase {} topic MID {} ({})", title, mid, key);
 			results.add(mid);
+		}
+
+		return results;
+	}
+
+	/** Query for a given enwiki pageID, returning a set of topic MIDs. */
+	public Set<TitledMid> queryTopicByPageID(int pageID, Logger logger) {
+		String rawQueryStr =
+			"?topic <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
+			"?topic rdfs:label ?label .\n" +
+			"FILTER( LANGMATCHES(LANG(?label), \"en\") )\n" +
+			"";
+		// logger.debug("executing sparql query: {}", rawQueryStr);
+		List<Literal[]> rawResults = rawQuery(rawQueryStr,
+			new String[] { "topic", "label" }, TOPIC_LIMIT);
+
+		Set<TitledMid> results = new HashSet<>(rawResults.size());
+		for (Literal[] rawResult : rawResults) {
+			String mid = rawResult[0].getString();
+			String title = rawResult[1].getString();
+			logger.debug("Freebase {} topic MID {} ({})", title, mid, pageID);
+			results.add(new TitledMid(mid, title));
 		}
 
 		return results;
