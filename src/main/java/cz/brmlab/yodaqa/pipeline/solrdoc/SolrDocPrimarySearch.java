@@ -164,9 +164,8 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		AnswerSourceEnwiki ac = new AnswerSourceEnwiki(AnswerSourceEnwiki.ORIGIN_DOCUMENT, (title != null ? title : ""), id);
-		ac.setSourceID(SourceIDGenerator.getInstance().generateID());
-		AnsweringDocTitle adt = new AnsweringDocTitle(SnippetIDGenerator.getInstance().generateID(), ac.getSourceID());
-		QuestionDashboard.getInstance().get(questionView).addSource(ac);
+		int sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(ac);
+		AnsweringDocTitle adt = new AnsweringDocTitle(SnippetIDGenerator.getInstance().generateID(), sourceID);
 		QuestionDashboard.getInstance().get(questionView).addSnippet(adt);
 
 		ResultInfo ri = new ResultInfo(jcas);
@@ -175,7 +174,7 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setSource(srcName);
 		ri.setRelevance(((Float) doc.getFieldValue("score")).floatValue());
 		ri.setIsLast(isLast);
-		ri.setSourceID(ac.getSourceID());
+		ri.setSourceID(sourceID);
 		ri.setOrigin("cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocPrimarySearch");
 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */

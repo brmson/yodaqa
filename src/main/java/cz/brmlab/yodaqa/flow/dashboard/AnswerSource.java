@@ -39,4 +39,27 @@ public abstract class AnswerSource {
 		 * parameter, or even obtained internally within the class. */
 		this.sourceID = sourceID;
 	}
-};
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		AnswerSource that = (AnswerSource) o;
+
+		if (!type.equals(that.type)) return false;
+		if (!origin.equals(that.origin)) return false;
+		if (!title.equals(that.title)) return false;
+		return URL.equals(that.URL);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = type.hashCode();
+		result = 31 * result + origin.hashCode();
+		result = 31 * result + title.hashCode();
+		result = 31 * result + URL.hashCode();
+		return result;
+	}
+}
