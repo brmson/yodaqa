@@ -67,14 +67,10 @@ Caching results
 Because of the limited number of transactions per month, it is good idea to cache results.
 The result (query, title, description and url) is saved into Sqlite database:
 
-	~/bingresults-master.db
+	~/bingresults.db
 
 If no file is found, a new one is created. If you search for query which generates same clues
 as some query you have already searched for, the cached results will be used instead of a new search from Bing.
-
-(N.B. This file is called differently from the db in the d/live branch to
-prevent accidental usage within the master branch.  FIXME: A more elegant
-approach like a .properties conf/ entry...)
 
 Pre-cached Data for the Large2180 Dataset
 -----------------------------------------
