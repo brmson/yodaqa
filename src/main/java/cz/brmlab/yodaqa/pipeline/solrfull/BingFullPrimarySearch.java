@@ -33,16 +33,15 @@ import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
-import cz.brmlab.yodaqa.provider.solr.Solr;
-import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
 import org.apache.commons.codec.binary.Base64;
 
 
 /**
- * Take a question CAS and search for keywords (or already resolved pageIDs)
- * in the Solr data source.  Each search results gets a new CAS.
+ * Take a question CAS and search for keywords in the Bing web search.
+ * Each search results gets a new CAS.
  *
- * We just feed most of the clues to a Solr search. */
+ * Details about the Bing search, an API key you need to get in order
+ * for this to get used, etc., are in data/bing/README.md. */
 
 public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(BingFullPrimarySearch.class);
@@ -58,10 +57,6 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	public static final String PARAM_RESULT_INFO_ORIGIN = "result-info-origin";
 	@ConfigurationParameter(name = PARAM_RESULT_INFO_ORIGIN, mandatory = false, defaultValue = "cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch")
 	protected String resultInfoOrigin;
-
-	protected SolrQuerySettings settings = null;
-	protected String srcName;
-	protected Solr solr;
 
 	protected JCas questionView;
 
@@ -245,7 +240,6 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		ResultInfo ri = new ResultInfo(resultView);
 		ri.setDocumentId("1"); //FIXME dummy id
 		ri.setDocumentTitle(result.title);
-		ri.setSource(srcName);
 		ri.setOrigin(resultInfoOrigin);
 		ri.setAnsfeatures(afv.toFSArray(resultView));
 		ri.setIsLast(isLast);
