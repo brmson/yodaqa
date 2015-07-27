@@ -1,10 +1,20 @@
 package cz.brmlab.yodaqa.analysis.ansscore;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
@@ -45,6 +55,7 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
  * for scoring in the second scoring phrase (after evidence gathering). */
 
 public class AnswerGSHook extends JCasAnnotator_ImplBase {
+
 	PrintWriter trainFile;
 
 	final Logger logger = LoggerFactory.getLogger(AnswerGSHook.class);
@@ -95,16 +106,17 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			logger.debug(a.getText() + ":" + a.getConfidence() + " -- " + Arrays.toString((new AnswerFV(a, astats)).getValues()));
 		}
 		*/
-
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		Pattern ap = null;
 		if (qi.getAnswerPattern() != null) {
 			ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
-
 		dumpQuestionCSV(answerHitlist, qi, ap, astats);
 		dumpQuestionFV(answerHitlist, qi, ap, astats);
+		createJacanaFiles(answerHitlist, qi, ap, questionView);
 	}
+
+
 
 	/** Possibly dump CSV data on answers, one file per question. */
 	protected void dumpQuestionCSV(JCas answerHitlist, QuestionInfo qi, Pattern ap, AnswerStats astats)
@@ -112,13 +124,74 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String csvDirName = System.getProperty("cz.brmlab.yodaqa.csv_answer" + scoringPhase);
 		if (csvDirName == null || csvDirName.isEmpty())
 			return;
-
 		(new File(csvDirName)).mkdir();
 		String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
 		PrintWriter csvFile = openAnswersCSV(csvFileName);
 		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
 			dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
 		}
+	}
+	private static int qnum=0;
+	/** Possibly create 3 jacana formated files for future training. One file for questions,positive and negative answers. */
+	protected void createJacanaFiles(JCas answerHitlist, QuestionInfo qi, Pattern ap, JCas questionView)
+			throws AnalysisEngineProcessException {
+//		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana");
+		String jacana = System.getProperty("cz.brmlab.yodaqa.jacana" + scoringPhase);
+		if (jacana == null || jacana.isEmpty())
+			return;
+		String jacanaQ="Q.txt";
+		String jacanaP="P.txt";
+		String jacanaN="N.txt";
+		PrintWriter pwq=null;
+		PrintWriter pwp=null;
+		PrintWriter pwn=null;
+		try {
+			if(qnum==0){
+				PrintWriter writer = new PrintWriter(jacana+"/"+jacanaQ);
+				writer.print("");
+				writer.close();
+				writer = new PrintWriter(jacana+"/"+jacanaP);
+				writer.print("");
+				writer.close();
+				writer = new PrintWriter(jacana+"/"+jacanaN);
+				writer.print("");
+				writer.close();
+			}
+			(new File(jacana)).mkdir();
+			pwq=new PrintWriter(new BufferedWriter(new FileWriter(jacana+"/"+jacanaQ,true)));
+			pwp=new PrintWriter(new BufferedWriter(new FileWriter(jacana+"/"+jacanaP,true)));
+			pwn=new PrintWriter(new BufferedWriter(new FileWriter(jacana+"/"+jacanaN,true)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		pwq.println("<Q "+qnum+">");
+		pwq.println(qi.getQuestionText());
+		pwq.println("</Q>");
+		pwp.println("<A " + qnum + ">");
+		pwn.println("<A " + qnum+">");
+		Set<Integer> ids = new HashSet<>();
+		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
+			for(int i : a.getSnippetIDs().toArray()) {
+				if(!ids.contains(i)){
+					ids.add(i);
+					AnsweringSnippet as = QuestionDashboard.getInstance().get(questionView).getSnippet(i);
+					if(as instanceof AnsweringPassage) {
+						String anspassage = ((AnsweringPassage) as).getPassageText();
+						if(ap.matcher(anspassage).find()){
+							pwp.println(anspassage);
+						}else {
+							pwn.println(anspassage);
+						}
+					}
+				}
+			}
+		}
+		pwp.println("</A>");
+		pwn.println("</A>");
+		pwq.close();
+		pwp.close();
+		pwn.close();
+		qnum++;
 	}
 
 	/** Possibly dump model training data.  We also require gold
@@ -128,7 +201,6 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer" + scoringPhase);
 		if (ap == null || trainFileName == null || trainFileName.isEmpty())
 			return;
-
 		/* It turns out to make sense to include only a single best
 		 * correct answer in the training set.  We find and store this
 		 * in refAnswer and skip all correct (matching) answers that

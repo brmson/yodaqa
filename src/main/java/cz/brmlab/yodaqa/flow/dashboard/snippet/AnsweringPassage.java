@@ -16,4 +16,8 @@ public class AnsweringPassage extends AnsweringSnippet {
 		return "Passage "+ super.getSnippetID()+" "+ passageText;
 	}
 
+	public String getPassageText() {
+		return passageText;
+	}
+
 }

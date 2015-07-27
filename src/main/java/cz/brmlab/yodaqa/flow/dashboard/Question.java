@@ -104,4 +104,8 @@ public class Question {
 	public synchronized String toJson() {
 		return gson.toJson(this);
 	}
+
+	public synchronized AnsweringSnippet getSnippet(int index) {
+		return snippets.get(index);
+	}
 }
