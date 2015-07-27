@@ -113,9 +113,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			AnswerSourceEnwiki as = new AnswerSourceEnwiki(
 					searchFullText ? AnswerSourceEnwiki.ORIGIN_FULL : AnswerSourceEnwiki.ORIGIN_TITLE,
 					title, id);
-			sourceID = SourceIDGenerator.getInstance().generateID();
-			as.setSourceID(sourceID);
-			QuestionDashboard.getInstance().get(questionView).addSource(as);
+			sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
 		}
 	};
 

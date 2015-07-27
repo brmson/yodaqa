@@ -1,14 +1,12 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
-import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
 import org.apache.uima.UimaContext;
@@ -64,8 +62,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 	protected String sourceName;
 	protected Class<? extends AnswerFeature> noClueFeature;
-
-	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
 
 	public StructuredPrimarySearch(String sourceName_,
 			Class<? extends AnswerFeature> noClueFeature_) {
@@ -143,7 +139,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
-		int sourceID = generateSource(property, questionView);
+		AnswerSourceStructured as = makeAnswerSource(property);
+		int sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
 		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
 		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
@@ -193,25 +190,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 
 		ai.addToIndexes();
-	}
-
-	protected int generateSource(PropertyValue property, JCas questionView){
-		/* XXX: The source ID caching and reusing should belong to
-		 * the dashboard classes. */
-		String url = property.getObjRes();
-		String label = property.getObject();
-		int sourceID;
-		if (sourceIDs.containsKey(url)) {
-			sourceID = sourceIDs.get(url);
-		} else {
-			sourceID = SourceIDGenerator.getInstance().generateID();
-		}
-		/* FIXME: Reuse existing AnswerSourceStructured instances. */
-		AnswerSourceStructured asf = makeAnswerSource(property);
-		asf.setSourceID(sourceID);
-		QuestionDashboard.getInstance().get(questionView).addSource(asf);
-		sourceIDs.put(url, sourceID);
-		return sourceID;
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
