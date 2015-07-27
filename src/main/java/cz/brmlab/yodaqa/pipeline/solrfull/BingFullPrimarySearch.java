@@ -136,7 +136,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		for (Clue c: clues) {
 			sb.append(c.getLabel()).append(" ");
 		}
-		sb.deleteCharAt(sb.length() - 1);
+		if (sb.length() > 0) sb.deleteCharAt(sb.length() - 1);
 		logger.info("QUERY: " + sb.toString());
 
 		res = cache.load(sb.toString(), questionView, hitListSize);
