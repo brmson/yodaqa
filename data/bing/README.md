@@ -31,6 +31,10 @@ You need an API key to use the Bing interface.  If you want to just
 test on large2180 or curated datasets, you can also download our
 pre-populated cache with the respective query results, see below.
 
+**CAVEAT:**  The default YodaQA answer classification models come
+pre-trained for a non-Bing scenario.  Check out the d/live branch
+to get the models trained for YodaQA+Bing instead.
+
 Obtaining API key
 -----------------
 
