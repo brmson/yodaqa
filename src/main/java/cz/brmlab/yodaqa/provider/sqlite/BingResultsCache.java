@@ -42,9 +42,7 @@ public class BingResultsCache {
 						set.getString("url"),
 						set.getInt("rank"));
 				AnswerSourceBingSnippet as = new AnswerSourceBingSnippet(br.title, br.url);
-				br.sourceID = SourceIDGenerator.getInstance().generateID();
-				as.setSourceID(br.sourceID);
-				QuestionDashboard.getInstance().get(questionView).addSource(as);
+				br.sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
 				res.add(br);
 			}
 			logger.info("Bing results loaded from cache.");

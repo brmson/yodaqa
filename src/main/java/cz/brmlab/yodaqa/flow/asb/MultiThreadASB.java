@@ -610,6 +610,9 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
           trace("--- flow from future " + cif.cas);
           return cif;
         }
+
+        casIteratorStack.pop();
+        frame.originalCIF.depCounter -= 1;
       }
       return originalCasInFlowFromFrame(frame);
     }
@@ -801,8 +804,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     }
 
     /** Collect CAS-in-flow from processing done by the nextAeKey engine.
-     * @return a StackFrame with a casIter producing new CASes if the engine
-     * produced any. */
+     * @return a StackFrame with a casIter producing new CASes. */
     protected StackFrame collectCasInFlow(Future<CasIterator> f) throws Exception {
       StackFrame frame = futureFrames.remove(f);
       trace("job collect " + frame.originalCIF.cas + " " + f);
@@ -825,8 +827,6 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
         frame.originalCIF.depCounter -= 1;
       }
 
-        if (!casIterHasNext(frame.casIterator, frame.originalCIF.cas))
-          frame.casIterator = null;
       return frame;
     }
 
@@ -964,6 +964,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
             } finally {
               synchronized (finishedJobs) { finishedJobs.decrementAndGet(); }
             }
+
             if (stackFrame.casIterator != null) {
               casIteratorStack.push(stackFrame);
               cif.depCounter += 1;
