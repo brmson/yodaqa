@@ -208,13 +208,14 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 			else assert(false);
 		} else if (clue instanceof ClueConcept ) {
 			afv.setFeature(AF_OriginPsgByClueConcept.class, 1.0);
-			ClueConcept concept = (ClueConcept) clue;
-			if (concept.getBySubject())
-				afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
-			if (concept.getByLAT())
-				afv.setFeature(AF_OriginPsgByClueLAT.class, 1.0);
-			if (concept.getByNE())
-				afv.setFeature(AF_OriginPsgByClueNE.class, 1.0);
+			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
+				if (concept.getBySubject())
+					afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
+				if (concept.getByLAT())
+					afv.setFeature(AF_OriginPsgByClueLAT.class, 1.0);
+				if (concept.getByNE())
+					afv.setFeature(AF_OriginPsgByClueNE.class, 1.0);
+			}
 		}
 		else assert(false);
 	}
