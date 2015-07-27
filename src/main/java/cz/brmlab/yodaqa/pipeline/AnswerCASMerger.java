@@ -322,12 +322,29 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		}
 	}
 
-	public synchronized boolean hasNext() throws AnalysisEngineProcessException {
+	protected boolean checkHasNext() {
 		return isLast >= isLastBarrier && seenCases >= needCases;
 	}
 
+	boolean gotHasNext = false;
+	public synchronized boolean hasNext() throws AnalysisEngineProcessException {
+		boolean ret = checkHasNext();
+		if (!ret)
+			return false;
+		/* We have problems with race conditions as per below,
+		 * this is another line of detection. */
+		if (!gotHasNext) {
+			gotHasNext = true;
+		} else {
+			logger.warn("Warning, hasNext()=true twice before a next() invocation");
+			new Exception().printStackTrace(System.out);
+		}
+		return ret;
+	}
+
 	public synchronized AbstractCas next() throws AnalysisEngineProcessException {
-		if (!hasNext()) {
+		gotHasNext = false;
+		if (!checkHasNext()) {
 			/* XXX: Ideally, this shouldn't happen.  However,
 			 * the CAS merger interface is racy in the multi-
 			 * threaded scenario: two threads simultanously

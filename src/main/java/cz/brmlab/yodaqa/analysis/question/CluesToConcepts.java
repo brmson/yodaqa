@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
+import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
+import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -67,83 +69,91 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			cluesByLen.add(clue);
 		for (Clue clue : JCasUtil.select(resultView, ClueNE.class))
 			cluesByLen.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectPhrase.class))
+			cluesByLen.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
+			cluesByLen.add(clue);
 
 		/* Check the clues in turn, starting by the longest - do they
 		 * correspond to enwiki articles? */
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
 			String clueLabel = clue.getLabel();
 			double weight = clue.getWeight();
+			boolean originalClueNEd = false; // see below
 
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
-			if (results.isEmpty())
-				continue;
+			for (DBpediaTitles.Article a : results) {
+				String cookedLabel = a.getLabel();
+				/* But in case of "list of...", keep the original label
+				 * (but still generate a conceptclue since we have
+				 * a confirmed named entity and we want to include
+				 * the list in our document set). */
+				if (cookedLabel.toLowerCase().matches("^list of .*")) {
+					logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
+					cookedLabel = new String(clueLabel);
+				}
+				/* Remove trailing (...) (e.g. (disambiguation)). */
+				/* TODO: We should model topicality of the
+				 * concept; when asking about the director of
+				 * "Frozen", the (film)-suffixed concepts should
+				 * be preferred over e.g. the (House) suffix. */
+				cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
-			/* Yay, got one! */
-			DBpediaTitles.Article a = results.get(0);
-			String cookedLabel = a.getLabel();
-			/* But in case of "list of...", keep the original label
-			 * (but still generate a conceptclue since we have
-			 * a confirmed named entity and we want to include
-			 * the list in our document set). */
-			if (cookedLabel.toLowerCase().matches("^list of .*")) {
-				logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
-				cookedLabel = new String(clueLabel);
+				/* Start constructing the annotation. */
+				ClueConcept conceptClue = new ClueConcept(resultView);
+
+				/* Now remove all the covered sub-clues. */
+				/* TODO: Mark the clues as alternatives so that we
+				 * don't require both during full-text search. */
+				clue.removeFromIndexes();
+				cluesByLen.remove(clue);
+				for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
+					logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
+					if (clueSub instanceof ClueSubject)
+						conceptClue.setBySubject(true);
+					else if (clueSub instanceof ClueLAT)
+						conceptClue.setByLAT(true);
+					else if (clueSub instanceof ClueNE)
+						conceptClue.setByNE(true);
+					if (clueSub.getWeight() > weight)
+						weight = clueSub.getWeight();
+					clueSub.removeFromIndexes();
+					cluesByLen.remove(clueSub);
+				}
+
+				/* Maybe the concept clue has a different label than
+				 * the original wording in question text.  That can
+				 * be a useful hint, but is also pretty unreliable;
+				 * be it for suffixes in parentheses " (band)" or
+				 * that "The ancient city" resolves to "King's Field
+				 * IV" etc.
+				 *
+				 * Therefore, in that case we will still create the
+				 * concept clue with redirect target, but also set
+				 * the flag @reworded which will make this reworded
+				 * text *optional* during full-text search and keep
+				 * the original text (required during search) within
+				 * a new ClueNE annotation. */
+				boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
+
+				/* Make a fresh concept clue. */
+				addClue(conceptClue, clue.getBegin(), clue.getEnd(),
+					clue.getBase(), weight,
+					a.getPageID(), cookedLabel, !reworded);
+
+				/* Make also an NE clue with always the original text
+				 * as label. */
+				/* A presence of wiki page with the text as a title is
+				 * a fair evidence that this is actually a named
+				 * entity. And we need a new clue since we removed all
+				 * sub-clues and the original clue might have been just
+				 * a CluePhrase that gets ignored during search. */
+				if (reworded && !originalClueNEd) {
+					addNEClue(resultView, clue.getBegin(), clue.getEnd(),
+						clue, clue.getLabel(), weight);
+					originalClueNEd = true; // once is enough
+				}
 			}
-			/* Remove trailing (...) (e.g. (disambiguation)). */
-			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
-
-			/* Start constructing the annotation. */
-			ClueConcept conceptClue = new ClueConcept(resultView);
-
-			/* Now remove all the covered sub-clues. */
-			/* TODO: Mark the clues as alternatives so that we
-			 * don't require both during full-text search. */
-			clue.removeFromIndexes();
-			cluesByLen.remove(clue);
-			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-				logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
-				if (clueSub instanceof ClueSubject)
-					conceptClue.setBySubject(true);
-				else if (clueSub instanceof ClueLAT)
-					conceptClue.setByLAT(true);
-				else if (clueSub instanceof ClueNE)
-					conceptClue.setByNE(true);
-				if (clueSub.getWeight() > weight)
-					weight = clueSub.getWeight();
-				clueSub.removeFromIndexes();
-				cluesByLen.remove(clueSub);
-			}
-
-			/* Maybe the concept clue has a different label than
-			 * the original wording in question text.  That can
-			 * be a useful hint, but is also pretty unreliable;
-			 * be it for suffixes in parentheses " (band)" or
-			 * that "The ancient city" resolves to "King's Field
-			 * IV" etc.
-			 *
-			 * Therefore, in that case we will still create the
-			 * concept clue with redirect target, but also set
-			 * the flag @reworded which will make this reworded
-			 * text *optional* during full-text search and keep
-			 * the original text (required during search) within
-			 * a new ClueNE annotation. */
-			boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
-
-			/* Make a fresh concept clue. */
-			addClue(conceptClue, clue.getBegin(), clue.getEnd(),
-				clue.getBase(), weight,
-				a.getPageID(), cookedLabel, !reworded);
-
-			/* Make also an NE clue with always the original text
-			 * as label. */
-			/* A presence of wiki page with the text as a title is
-			 * a fair evidence that this is actually a named
-			 * entity. And we need a new clue since we removed all
-			 * sub-clues and the original clue might have been just
-			 * a CluePhrase that gets ignored during search. */
-			if (reworded)
-				addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue, clue.getLabel(), weight);
 		}
 	}
 
