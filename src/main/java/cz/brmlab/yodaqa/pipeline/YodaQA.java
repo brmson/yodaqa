@@ -294,8 +294,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		builder.add(fbOnt);
 
 		/* Full-text search: */
+		/* XXX: These aggregates have "Solr" in name but do not
+		 * necessarily use just Solr, e.g. Bing. */
 		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
-		builder.add(solrFull); /* This one is worth 2 isLasts. */
+		builder.add(solrFull); /* This one is worth 3 isLasts. */
 		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
 		builder.add(solrDoc);
 
