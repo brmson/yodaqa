@@ -1,20 +1,22 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.TreeSet;
 
 import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSList;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -26,6 +28,7 @@ import cz.brmlab.yodaqa.model.Question.ClueLAT;
 import cz.brmlab.yodaqa.model.Question.ClueNE;
 import cz.brmlab.yodaqa.model.Question.CluePhrase;
 import cz.brmlab.yodaqa.model.Question.ClueSubject;
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
 
 /**
@@ -79,86 +82,110 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
 			String clueLabel = clue.getLabel();
 			double weight = clue.getWeight();
+			List<Concept> concepts = new ArrayList<>();
+			Set<String> labels = new TreeSet<>(); // stable ordering (?)
+
+			/* Generate Concepts and gather ConceptClue labels. */
+
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
-			if (results.isEmpty())
-				continue;
+			for (DBpediaTitles.Article a : results) {
+				String cookedLabel = a.getLabel();
+				/* But in case of "list of...", keep the original label
+				 * (but still generate a conceptclue since we have
+				 * a confirmed named entity and we want to include
+				 * the list in our document set). */
+				if (cookedLabel.toLowerCase().matches("^list of .*")) {
+					logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
+					cookedLabel = new String(clueLabel);
+				}
+				/* Remove trailing (...) (e.g. (disambiguation)). */
+				/* TODO: We should model topicality of the
+				 * concept; when asking about the director of
+				 * "Frozen", the (film)-suffixed concepts should
+				 * be preferred over e.g. the (House) suffix. */
+				cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
-			/* Yay, got one! */
-			DBpediaTitles.Article a = results.get(0);
-			String cookedLabel = a.getLabel();
-			/* But in case of "list of...", keep the original label
-			 * (but still generate a conceptclue since we have
-			 * a confirmed named entity and we want to include
-			 * the list in our document set). */
-			if (cookedLabel.toLowerCase().matches("^list of .*")) {
-				logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
-				cookedLabel = new String(clueLabel);
+				/* Start constructing the annotation. */
+				Concept concept = new Concept(resultView);
+				concept.setBegin(clue.getBegin());
+				concept.setEnd(clue.getEnd());
+				concept.setFullLabel(a.getLabel());
+				concept.setCookedLabel(cookedLabel);
+				concept.setPageID(a.getPageID());
+
+				/* Also remove all the covered sub-clues. */
+				/* TODO: Mark the clues as alternatives so that we
+				 * don't require both during full-text search. */
+				clue.removeFromIndexes();
+				cluesByLen.remove(clue);
+				for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
+					logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
+					if (clueSub instanceof ClueSubject)
+						concept.setBySubject(true);
+					else if (clueSub instanceof ClueLAT)
+						concept.setByLAT(true);
+					else if (clueSub instanceof ClueNE)
+						concept.setByNE(true);
+					if (clueSub.getWeight() > weight)
+						weight = clueSub.getWeight();
+					clueSub.removeFromIndexes();
+					cluesByLen.remove(clueSub);
+				}
+
+				concept.addToIndexes();
+				concepts.add(concept);
+				labels.add(cookedLabel);
 			}
-			/* Remove trailing (...) (e.g. (disambiguation)). */
-			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
-			/* Start constructing the annotation. */
-			ClueConcept conceptClue = new ClueConcept(resultView);
+			/* Generate ClueConcepts. */
 
-			/* Now remove all the covered sub-clues. */
-			/* TODO: Mark the clues as alternatives so that we
-			 * don't require both during full-text search. */
-			clue.removeFromIndexes();
-			cluesByLen.remove(clue);
-			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-				logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
-				if (clueSub instanceof ClueSubject)
-					conceptClue.setBySubject(true);
-				else if (clueSub instanceof ClueLAT)
-					conceptClue.setByLAT(true);
-				else if (clueSub instanceof ClueNE)
-					conceptClue.setByNE(true);
-				if (clueSub.getWeight() > weight)
-					weight = clueSub.getWeight();
-				clueSub.removeFromIndexes();
-				cluesByLen.remove(clueSub);
+			boolean originalClueNEd = false; // guard for single ClueNE generation
+			for (String cookedLabel : labels) {
+				/* Maybe the concept clue has a different label than
+				 * the original wording in question text.  That can
+				 * be a useful hint, but is also pretty unreliable;
+				 * be it for suffixes in parentheses " (band)" or
+				 * that "The ancient city" resolves to "King's Field
+				 * IV" etc.
+				 *
+				 * Therefore, in that case we will still create the
+				 * concept clue with redirect target, but also set
+				 * the flag @reworded which will make this reworded
+				 * text *optional* during full-text search and keep
+				 * the original text (required during search) within
+				 * a new ClueNE annotation. */
+				boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
+
+				/* Make a fresh concept clue. */
+				addClue(resultView, clue.getBegin(), clue.getEnd(),
+					clue.getBase(), weight,
+					FSCollectionFactory.createFSList(resultView, concepts),
+					cookedLabel, !reworded);
+
+				/* Make also an NE clue with always the original text
+				 * as label. */
+				/* A presence of wiki page with the text as a title is
+				 * a fair evidence that this is actually a named
+				 * entity. And we need a new clue since we removed all
+				 * sub-clues and the original clue might have been just
+				 * a CluePhrase that gets ignored during search. */
+				if (reworded && !originalClueNEd) {
+					addNEClue(resultView, clue.getBegin(), clue.getEnd(),
+						clue, clue.getLabel(), weight);
+					originalClueNEd = true; // once is enough
+				}
 			}
-
-			/* Maybe the concept clue has a different label than
-			 * the original wording in question text.  That can
-			 * be a useful hint, but is also pretty unreliable;
-			 * be it for suffixes in parentheses " (band)" or
-			 * that "The ancient city" resolves to "King's Field
-			 * IV" etc.
-			 *
-			 * Therefore, in that case we will still create the
-			 * concept clue with redirect target, but also set
-			 * the flag @reworded which will make this reworded
-			 * text *optional* during full-text search and keep
-			 * the original text (required during search) within
-			 * a new ClueNE annotation. */
-			boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
-
-			/* Make a fresh concept clue. */
-			addClue(conceptClue, clue.getBegin(), clue.getEnd(),
-				clue.getBase(), weight,
-				a.getPageID(), cookedLabel, !reworded);
-
-			/* Make also an NE clue with always the original text
-			 * as label. */
-			/* A presence of wiki page with the text as a title is
-			 * a fair evidence that this is actually a named
-			 * entity. And we need a new clue since we removed all
-			 * sub-clues and the original clue might have been just
-			 * a CluePhrase that gets ignored during search. */
-			if (reworded)
-				addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue, clue.getLabel(), weight);
 		}
 	}
 
-	protected void addClue(ClueConcept clue, int begin, int end, Annotation base,
-			double weight, int pageID, String label, boolean isReliable) {
+	protected void addClue(JCas jcas, int begin, int end, Annotation base,
+			double weight, FSList concepts, String label, boolean isReliable) {
+		ClueConcept clue = new ClueConcept(jcas);
 		clue.setBegin(begin);
 		clue.setEnd(end);
 		clue.setBase(base);
 		clue.setWeight(weight + 0.1); // ensure precedence during merge
-		clue.setPageID(pageID);
+		clue.setConcepts(concepts);
 		clue.setLabel(label);
 		clue.setIsReliable(isReliable);
 		clue.addToIndexes();

@@ -12,7 +12,7 @@ public class AnswerSourceEnwiki extends AnswerSource {
 	protected boolean isConcept = false;
 
 	public AnswerSourceEnwiki(String origin, String title, int pageId) {
-		super("enwiki", origin, title);
+		super("enwiki", origin, title, "http://en.wikipedia.org/?curid="+pageId);
 		this.pageId = pageId;
 	}
 

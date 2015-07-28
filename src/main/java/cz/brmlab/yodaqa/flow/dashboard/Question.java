@@ -49,11 +49,6 @@ public class Question {
 		snippets.put(snippet.getSnippetID(),snippet);
 	}
 
-	public synchronized void addSource(AnswerSource source) {
-		this.sources.put(source.getSourceID(), source);
-		gen_sources ++;
-	}
-
 	public synchronized void setSourceState(int sourceID, int state) {
 		sources.get(sourceID).setState(state);
 		gen_sources++;
@@ -77,6 +72,21 @@ public class Question {
 		this.answers.add(0, qa);
 		gen_answers ++;
 	}
+
+	/** Stores and deduplicates unique AnswerSource and returns its ID. */
+	public synchronized int storeAnswerSource(AnswerSource as) {
+		gen_sources++;
+		for (Map.Entry<Integer, AnswerSource> savedSource : sources.entrySet()) {
+			if (savedSource.getValue().equals(as)) {
+				as.setSourceID(savedSource.getValue().getSourceID());
+				return savedSource.getKey();
+			}
+		}
+		int sourceID = SourceIDGenerator.getInstance().generateID();
+		as.setSourceID(sourceID);
+		sources.put(sourceID, as);
+		return sourceID;
+	}
 	/** Reset the answer list, typically when have scored them.
 	 * @param answer the answer to set */
 	public synchronized void setAnswers(List<QuestionAnswer> answers) {
@@ -94,4 +104,4 @@ public class Question {
 	public synchronized String toJson() {
 		return gson.toJson(this);
 	}
-};
+}

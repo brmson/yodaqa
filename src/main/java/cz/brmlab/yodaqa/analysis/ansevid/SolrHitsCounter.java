@@ -107,8 +107,7 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 		Collection<Clue> clues = new ArrayList<Clue>();
 		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 			// do not include the LAT
-			if (clue instanceof ClueLAT
-			    || (clue instanceof ClueConcept && ((ClueConcept) clue).getByLAT()))
+			if (clue instanceof ClueLAT)
 				continue;
 			// do not include non-required clues
 			if (!clue.getIsReliable())
