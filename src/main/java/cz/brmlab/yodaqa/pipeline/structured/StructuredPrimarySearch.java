@@ -1,16 +1,15 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
-import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -39,10 +38,10 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
-
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 
@@ -65,8 +64,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected String sourceName;
 	protected Class<? extends AnswerFeature> noClueFeature;
 
-	protected HashMap<String, Integer> sourceIDs = new HashMap<>();
-
 	public StructuredPrimarySearch(String sourceName_,
 			Class<? extends AnswerFeature> noClueFeature_) {
 		sourceName = sourceName_;
@@ -78,8 +75,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		super.initialize(aContext);
 	}
 
-	/** Retrieve properties associated with a given ClueConcept. */
-	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept);
+	/** Retrieve properties associated with a given Concept. */
+	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, Concept concept);
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -87,7 +84,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
 			properties.addAll(getConceptProperties(questionView, concept));
 		}
 
@@ -143,7 +140,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
-		int sourceID = generateSource(property, questionView);
+		AnswerSourceStructured as = makeAnswerSource(property);
+		int sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
 		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
 		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
@@ -195,25 +193,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.addToIndexes();
 	}
 
-	protected int generateSource(PropertyValue property, JCas questionView){
-		/* XXX: The source ID caching and reusing should belong to
-		 * the dashboard classes. */
-		String url = property.getObjRes();
-		String label = property.getObject();
-		int sourceID;
-		if (sourceIDs.containsKey(url)) {
-			sourceID = sourceIDs.get(url);
-		} else {
-			sourceID = SourceIDGenerator.getInstance().generateID();
-		}
-		/* FIXME: Reuse existing AnswerSourceStructured instances. */
-		AnswerSourceStructured asf = makeAnswerSource(property);
-		asf.setSourceID(sourceID);
-		QuestionDashboard.getInstance().get(questionView).addSource(asf);
-		sourceIDs.put(url, sourceID);
-		return sourceID;
-	}
-
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
 		/* We will just generate a single dummy CAS
 		 * to avoid flow breakage. */
@@ -232,9 +211,9 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected void addConceptFeatures(JCas questionView, AnswerFV fv, String text) {
-		// XXX: Carry the clue reference in property object.
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			if (!concept.getLabel().toLowerCase().equals(text.toLowerCase()))
+		// XXX: Carry the clue reference in PropertyValue.
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			if (!concept.getCookedLabel().toLowerCase().equals(text.toLowerCase()))
 				continue;
 			// We don't set this since all our clues have concept origin
 			//afv.setFeature(AF_OriginConcept.class, 1.0);

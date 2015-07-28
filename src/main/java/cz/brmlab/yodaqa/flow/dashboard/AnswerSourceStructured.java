@@ -19,12 +19,9 @@ public class AnswerSourceStructured extends AnswerSource {
 	 * which was specifically targetted based on question type. */
 	public static final String ORIGIN_SPECIFIC = "specific property";
 
-	protected String URL;
-
 	public AnswerSourceStructured(String type, String origin, String URL, String title) {
 		/* XXX: Instead of type passed, we should just have specific
 		 * sub-classes (e.g. carry a mid for Freebase). */
-		super(type, origin, title);
-		this.URL = URL;
+		super(type, origin, title, URL);
 	}
 }
