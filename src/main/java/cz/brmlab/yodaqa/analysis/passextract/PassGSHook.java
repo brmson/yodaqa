@@ -1,9 +1,22 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import java.util.regex.Pattern;
 
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
+import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
+import cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueWeight;
+import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -84,12 +97,35 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 			for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
 				dumpPassageFV(trainFileName, passage, ap.matcher(passage.getCoveredText()).find());
 			}
-
 			if (trainFile != null) {
 				trainFile.println("");
 				trainFile.flush();
 			}
 		}
+		createJacanaFiles(passagesView,qi,ap);
+	}
+
+
+	/** Possibly create files for python training, one file per question. */
+	protected synchronized void createJacanaFiles(JCas passagesView, QuestionInfo qi, Pattern ap){
+		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana");
+		String jacana = System.getProperty("cz.brmlab.yodaqa.jacana");
+		if (jacana == null || jacana.isEmpty())
+			return;
+		Writer w=Writer.getInstance();
+		w.write(jacana + "/" + qi.getQuestionId() + ".txt", "<Q> "+qi.getQuestionText());
+		for (Passage p : JCasUtil.select(passagesView, Passage.class)) {
+			PassageFV fv = new PassageFV(p);
+			int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
+			int aboutClueWeight_i = PassageFV.featureIndex(PF_AboutClueWeight.class);
+			String clues=fv.getValues()[clueWeight_i]+" "+fv.getValues()[aboutClueWeight_i];
+			String anspassage=p.getCoveredText();
+				if(ap.matcher(anspassage).find()){
+					w.write(jacana + "/" + qi.getQuestionId() + ".txt", "1 " +clues+" "+ anspassage);
+				} else {
+					w.write(jacana+"/"+qi.getQuestionId()+".txt","0 "+clues+" "+anspassage);
+				}
+			}
 	}
 
 	protected void dumpPassageFV(String trainFileName, Passage passage, boolean isMatch) {
@@ -113,5 +149,19 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 		sb.append(isMatch ? 1 : 0);
 		trainFile.println(sb.toString());
 		trainFile.flush();
+	}
+}
+
+class Writer{
+	private static Writer instance = new Writer();
+	static Writer getInstance() {return instance;}
+	synchronized void write(String filepath,String s){
+		try {
+			PrintWriter pw=new PrintWriter(new BufferedWriter(new FileWriter(filepath,true)));
+			pw.println(s);
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

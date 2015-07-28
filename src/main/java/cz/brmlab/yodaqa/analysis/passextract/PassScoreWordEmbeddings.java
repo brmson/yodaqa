@@ -78,6 +78,8 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 			assert(clueWeight_i >= 0 && aboutClueWeight_i >= 0);
 
 //			double score = fv.getValues()[clueWeight_i] + 0.25 * fv.getValues()[aboutClueWeight_i];
+			double score = fv.getValues()[clueWeight_i];
+//			double score = -fv.getValues()[aboutClueWeight_i];
 //			System.out.println("passageText: "+passage.getCoveredText());
 
 			List<String> q=new ArrayList<>(Arrays.asList(questionView.getDocumentText().toLowerCase().split("\\W+")));
@@ -97,7 +99,7 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 //				a.add(t.getCoveredText());
 //			}
 
-			double score = p.probability(q,a);
+//			double score = p.probability(q,a);
 //			System.out.println("p2="+score);
 			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
 			passages.add(new PassScore(passage, score));
