@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.jcas.JCas;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +33,12 @@ public class DBpediaOntologyPrimarySearch extends StructuredPrimarySearch {
 
 	final DBpediaOntology dbo = new DBpediaOntology();
 
-	protected List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept) {
+	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
-			/* Query the DBpedia ontology dataset - cleaned up
-			 * but quite sparse infobox based data. */
-			properties.addAll(dbo.query(concept.getLabel(), logger));
+		/* Query the DBpedia ontology dataset - cleaned up
+		 * but quite sparse infobox based data. */
+		/* TODO: Fetch by pageID. */
+		properties.addAll(dbo.query(concept.getCookedLabel(), logger));
 		return properties;
 	}
 
@@ -64,13 +66,14 @@ public class DBpediaOntologyPrimarySearch extends StructuredPrimarySearch {
 			else assert(false);
 		} else if (clue instanceof ClueConcept ) {
 			afv.setFeature(AF_OriginDBpOClueConcept.class, 1.0);
-			ClueConcept concept = (ClueConcept) clue;
-			if (concept.getBySubject())
-				afv.setFeature(AF_OriginDBpOClueSubject.class, 1.0);
-			if (concept.getByLAT())
-				afv.setFeature(AF_OriginDBpOClueLAT.class, 1.0);
-			if (concept.getByNE())
-				afv.setFeature(AF_OriginDBpOClueNE.class, 1.0);
+			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
+				if (concept.getBySubject())
+					afv.setFeature(AF_OriginDBpOClueSubject.class, 1.0);
+				if (concept.getByLAT())
+					afv.setFeature(AF_OriginDBpOClueLAT.class, 1.0);
+				if (concept.getByNE())
+					afv.setFeature(AF_OriginDBpOClueNE.class, 1.0);
+			}
 		}
 		else assert(false);
 	}

@@ -9,6 +9,7 @@ import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -37,10 +38,10 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
-
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 
@@ -74,8 +75,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		super.initialize(aContext);
 	}
 
-	/** Retrieve properties associated with a given ClueConcept. */
-	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, ClueConcept concept);
+	/** Retrieve properties associated with a given Concept. */
+	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, Concept concept);
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -83,7 +84,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
 			properties.addAll(getConceptProperties(questionView, concept));
 		}
 
@@ -210,9 +211,9 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected void addConceptFeatures(JCas questionView, AnswerFV fv, String text) {
-		// XXX: Carry the clue reference in property object.
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			if (!concept.getLabel().toLowerCase().equals(text.toLowerCase()))
+		// XXX: Carry the clue reference in PropertyValue.
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			if (!concept.getCookedLabel().toLowerCase().equals(text.toLowerCase()))
 				continue;
 			// We don't set this since all our clues have concept origin
 			//afv.setFeature(AF_OriginConcept.class, 1.0);
