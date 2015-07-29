@@ -113,7 +113,6 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		}
 		dumpQuestionCSV(answerHitlist, qi, ap, astats);
 		dumpQuestionFV(answerHitlist, qi, ap, astats);
-//		createJacanaFiles(answerHitlist, qi, ap, questionView);
 	}
 
 
@@ -131,68 +130,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			dumpAnswerCSV(csvFile, a, ap != null ? ap.matcher(a.getText()).find() : false, astats);
 		}
 	}
-//	private static int qnum=0;
-//	/** Possibly create 3 jacana formated files for future training. One file for questions,positive and negative answers. */
-//	protected void createJacanaFiles(JCas answerHitlist, QuestionInfo qi, Pattern ap, JCas questionView)
-//			throws AnalysisEngineProcessException {
-////		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana");
-//		String jacana = System.getProperty("cz.brmlab.yodaqa.jacana" + scoringPhase);
-//		if (jacana == null || jacana.isEmpty())
-//			return;
-//		String jacanaQ="Q.txt";
-//		String jacanaP="P.txt";
-//		String jacanaN="N.txt";
-//		PrintWriter pwq=null;
-//		PrintWriter pwp=null;
-//		PrintWriter pwn=null;
-//		try {
-//			if(qnum==0){
-//				PrintWriter writer = new PrintWriter(jacana+"/"+jacanaQ);
-//				writer.print("");
-//				writer.close();
-//				writer = new PrintWriter(jacana+"/"+jacanaP);
-//				writer.print("");
-//				writer.close();
-//				writer = new PrintWriter(jacana+"/"+jacanaN);
-//				writer.print("");
-//				writer.close();
-//			}
-//			(new File(jacana)).mkdir();
-//			pwq=new PrintWriter(new BufferedWriter(new FileWriter(jacana+"/"+jacanaQ,true)));
-//			pwp=new PrintWriter(new BufferedWriter(new FileWriter(jacana+"/"+jacanaP,true)));
-//			pwn=new PrintWriter(new BufferedWriter(new FileWriter(jacana+"/"+jacanaN,true)));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		pwq.println("<Q "+qnum+">");
-//		pwq.println(qi.getQuestionText());
-//		pwq.println("</Q>");
-//		pwp.println("<A " + qnum + ">");
-//		pwn.println("<A " + qnum+">");
-//		Set<Integer> ids = new HashSet<>();
-//		for (Answer a : JCasUtil.select(answerHitlist, Answer.class)) {
-//			for(int i : a.getSnippetIDs().toArray()) {
-//				if(!ids.contains(i)){
-//					ids.add(i);
-//					AnsweringSnippet as = QuestionDashboard.getInstance().get(questionView).getSnippet(i);
-//					if(as instanceof AnsweringPassage) {
-//						String anspassage = ((AnsweringPassage) as).getPassageText();
-//						if(ap.matcher(anspassage).find()){
-//							pwp.println(anspassage);
-//						}else {
-//							pwn.println(anspassage);
-//						}
-//					}
-//				}
-//			}
-//		}
-//		pwp.println("</A>");
-//		pwn.println("</A>");
-//		pwq.close();
-//		pwp.close();
-//		pwn.close();
-//		qnum++;
-//	}
+
 
 	/** Possibly dump model training data.  We also require gold
 	 * standard for this, otherwise there is no training to do. */

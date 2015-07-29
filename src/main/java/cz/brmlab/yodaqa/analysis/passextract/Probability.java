@@ -23,11 +23,10 @@ public class Probability {
 	}
 
 	/** Counts probability using word counts. */
-	public double probability(List<String> qtext,List<String> atext){
+	public double[] probability(List<String> qtext,List<String> atext){
 		double p1=r.probability(qtext, atext);
-                return p1;
 //		System.out.println("p1="+p1);
-	/*	double count=0;
+		double count=0;
 		double idfcount=0;
 		for(String s:atext){
 			double f= Collections.frequency(qtext, s);
@@ -39,7 +38,10 @@ public class Probability {
 //		System.out.println("Count="+count);
 //		System.out.println("IDFCount="+idfcount);
 		DoubleMatrix x=new DoubleMatrix(new double[][] {{p1,count,idfcount,1}});
-		return 1/(1+Math.exp(-x.mmul(w.getW()).get(0)));*/
+		double p2= 1/(1+Math.exp(-x.mmul(w.getW()).get(0)));
+//		double[] res={p2,count,idfcount};
+		double[] res={p1,count,idfcount};
+		return res;
 	}
 
 

@@ -108,7 +108,7 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 
 	/** Possibly create files for python training, one file per question. */
 	protected synchronized void createJacanaFiles(JCas passagesView, QuestionInfo qi, Pattern ap){
-		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana");
+//		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana");
 		String jacana = System.getProperty("cz.brmlab.yodaqa.jacana");
 		if (jacana == null || jacana.isEmpty())
 			return;
