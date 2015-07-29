@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -58,20 +59,22 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 
 			Collection<Token> wtok=JCasUtil.select(passagesView, Token.class);
 			List<String> words = new ArrayList<>();
-			for (Token t : wtok) {
-				words.add(t.getCoveredText().toLowerCase());
-			}
-
-			p.setidf(words);
+			Collection<Passage> psg=JCasUtil.select(passagesView, Passage.class);
+//			int N=0;
+//			for (Token t : wtok) {
+//				N++;
+//				String word=t.getCoveredText().toLowerCase()
+//				if(StringUtils.isAlphanumeric(word)&&!words.contains(word)){
+//					words.add(t.getCoveredText().toLowerCase());
+//				}
+//			}
+			p.setidf(psg);
+			System.exit(0);
 
 			//JCasUtil.selectCovered(Token.class, passage)
 		List<PassScore> passages = new LinkedList<PassScore>();
-//			System.out.println("questionText: "+questionView.getDocumentText());
 		for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
 			PassageFV fv = new PassageFV(passage);
-
-
-
 
 			int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
 			int aboutClueWeight_i = PassageFV.featureIndex(PF_AboutClueWeight.class);
@@ -83,9 +86,6 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 
 			List<String> q=new ArrayList<>(Arrays.asList(questionView.getDocumentText().toLowerCase().split("\\W+")));
 			List<String> a=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
-
-
-
 
 //			Collection<Token> qtok=JCasUtil.select(passagesView, Token.class);
 //			List<String> q = new ArrayList<>();
@@ -99,7 +99,7 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 //			}
 
 			double[] res=p.probability(q,a);
-			double score = 3.433*res[0]+0.004*res[2]+0.41*fv.getValues()[clueWeight_i];
+			double score = 3.36257418*res[0]+0.00425064*res[2]+0.40970162*fv.getValues()[clueWeight_i];
 //			System.out.println("p2="+score);
 			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
 			passages.add(new PassScore(passage, score));

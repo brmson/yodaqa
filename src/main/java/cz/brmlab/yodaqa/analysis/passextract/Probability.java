@@ -1,12 +1,17 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
+import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import org.jblas.DoubleMatrix;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by silvicek on 7/22/15.
@@ -16,6 +21,7 @@ public class Probability {
 	private WWeights w;
 	private Relatedness r;
 	private Map<String,Double> idf;
+	private int N;
 
 	private Probability(){
 		this.w=WWeights.getInstance();
@@ -28,10 +34,11 @@ public class Probability {
 //		System.out.println("p1="+p1);
 		double count=0;
 		double idfcount=0;
+
 		for(String s:atext){
 			double f= Collections.frequency(qtext, s);
-			count+=f;
-			if(idf.get(s)!=null&& f>0)idfcount+=Math.log(idf.get(s)/f);
+			count+=f/atext.size();
+			if(f>0)idfcount+=f/atext.size()*Math.log(N/idf.get(s));
 		}
 //		System.out.println("Qtext= "+qtext.toString());
 //		System.out.println("Atext= "+atext.toString());
@@ -44,22 +51,22 @@ public class Probability {
 		return res;
 	}
 
-
 	/** Returns map of word counts. */
-	public void setidf(List<String> words){
+	public void setidf(Collection<Passage> psg){
 //		System.out.println("words size: "+words.size());
 		Map<String,Double> idf=new HashMap<>();
-		for(String word:words){
-			if(idf.containsKey(word)){
-				idf.put(word, idf.get(word)+1);
-			}else{
-				idf.put(word, 1.0);
+		for(Passage passage:psg){
+			Set<String> sentence=new HashSet<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
+			for(String word:sentence){
+				if(idf.containsKey(word)){
+					idf.put(word, idf.get(word)+1);
+				}else{
+					idf.put(word, 1.0);
+				}
 			}
 		}
 		this.idf=idf;
-//		System.out.println("IDF size="+idf.size());
-//		System.out.println("harry times "+idf.get("harry"));
-//		System.out.println("potter times "+idf.get("potter"));
+		this.N=psg.size();
 	}
 
 	public static Probability getInstance(){
