@@ -57,6 +57,10 @@ public class DBpediaTitles extends DBpediaLookup {
 		title = super.capitalizeTitle(title);
 
 		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
+		List<String> queries = LabelLookup.getInstance().getLabels(title, logger);
+		if (!queries.isEmpty()) {
+			title = queries.get(0); //XXX the queries are currently unranked, but we'll try the first one anyway
+		}
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
