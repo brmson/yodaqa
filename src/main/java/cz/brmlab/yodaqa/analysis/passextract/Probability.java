@@ -34,11 +34,19 @@ public class Probability {
 //		System.out.println("p1="+p1);
 		double count=0;
 		double idfcount=0;
+		double N=atext.size();
+		for(String s:qtext){
+			double f= Collections.frequency(atext, s);
+			count+=f/N;
 
-		for(String s:atext){
-			double f= Collections.frequency(qtext, s);
-			count+=f/atext.size();
-			if(f>0)idfcount+=f/atext.size()*Math.log(N/idf.get(s));
+			if(f>0&&idf.get(s)==null){
+				System.out.println("SOMETHINGs WRONG");
+				System.out.println("Q="+qtext);
+				System.out.println("A="+atext);
+			}
+			if(f>0&&idf.get(s)!=null){
+				idfcount+=f/N * Math.log(N / idf.get(s));
+			}
 		}
 //		System.out.println("Qtext= "+qtext.toString());
 //		System.out.println("Atext= "+atext.toString());
