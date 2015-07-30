@@ -31,7 +31,7 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
 public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(PassScoreSimple.class);
 
-	private Probability p=Probability.getInstance();
+//	private Probability p=Probability.getInstance();
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -68,7 +68,8 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 //					words.add(t.getCoveredText().toLowerCase());
 //				}
 //			}
-			p.setidf(psg);
+
+//			p.setidf(psg);
 
 			//JCasUtil.selectCovered(Token.class, passage)
 		List<PassScore> passages = new LinkedList<PassScore>();
@@ -79,28 +80,16 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 			int aboutClueWeight_i = PassageFV.featureIndex(PF_AboutClueWeight.class);
 			assert(clueWeight_i >= 0 && aboutClueWeight_i >= 0);
 
-//			double score = fv.getValues()[clueWeight_i] + 0.25 * fv.getValues()[aboutClueWeight_i];
+			double score = fv.getValues()[clueWeight_i] + 0.25 * fv.getValues()[aboutClueWeight_i];
 //			double score = -fv.getValues()[aboutClueWeight_i];
 //			System.out.println("passageText: "+passage.getCoveredText());
 
 			List<String> q=new ArrayList<>(Arrays.asList(questionView.getDocumentText().toLowerCase().split("\\W+")));
 			List<String> a=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
 
-//			Collection<Token> qtok=JCasUtil.select(passagesView, Token.class);
-//			List<String> q = new ArrayList<>();
-//			for (Token t : qtok) {
-//				q.add(t.getCoveredText());
-//			}
-//			Collection<Token> atok=JCasUtil.select(passagesView, Token.class);
-//			List<String> a = new ArrayList<>();
-//			for (Token t : atok) {
-//				a.add(t.getCoveredText());
-//			}
-
-			double[] res=p.probability(q,a);
+//			double[] res=p.probability(q,a);
 //			double score = 3.36257418*res[0]+0.00425064*res[2]+0.40970162*fv.getValues()[clueWeight_i];
-			double score = 3.36329552*res[0]+0.4130186*fv.getValues()[clueWeight_i];
-//			System.out.println("p2="+score);
+//			double score = 3.36329552*res[0]+0.4130186*fv.getValues()[clueWeight_i];
 			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
 			passages.add(new PassScore(passage, score));
 		}
