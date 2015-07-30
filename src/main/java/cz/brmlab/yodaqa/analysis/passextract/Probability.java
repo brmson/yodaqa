@@ -34,32 +34,29 @@ public class Probability {
 //		System.out.println("p1="+p1);
 		double count=0;
 		double idfcount=0;
-		for(String s:qtext){
-			double f= Collections.frequency(atext, s);
-			count+=f/N;
+//		for(String s:qtext){
+//			double f= Collections.frequency(atext, s);
+//			count+=f/N;
+//
+////			if(f>0&&idf.get(s)==null){
+////				System.out.println("SOMETHINGs WRONG");
+////				System.out.println("Q="+qtext);
+////				System.out.println("A="+atext);
+////				System.out.println("word="+s);
+////				System.exit(1);
+////			}
+////			if(f>0&&idf.get(s)!=null){
+////				idfcount+=f/N * Math.log(N / idf.get(s));
+////			}
+//		}
 
-			if(f>0&&idf.get(s)==null){
-				System.out.println("SOMETHINGs WRONG");
-				System.out.println("Q="+qtext);
-				System.out.println("A="+atext);
-				System.out.println("word="+s);
-				System.exit(1);
-			}
-			if(f>0&&idf.get(s)!=null){
-				idfcount+=f/N * Math.log(N / idf.get(s));
-			}
-		}
-//		System.out.println("Qtext= "+qtext.toString());
-//		System.out.println("Atext= "+atext.toString());
-//		System.out.println("Count="+count);
-//		System.out.println("IDFCount="+idfcount);
 		DoubleMatrix x=new DoubleMatrix(new double[][] {{p1,count,idfcount,1}});
 		double p2= 1/(1+Math.exp(-x.mmul(w.getW()).get(0)));
 //		double[] res={p2,count,idfcount};
 		double[] res={p1,count,idfcount};
 		return res;
 	}
-	
+
 
 	/** Returns map of word counts. */
 	public void setidf(Collection<Passage> psg){

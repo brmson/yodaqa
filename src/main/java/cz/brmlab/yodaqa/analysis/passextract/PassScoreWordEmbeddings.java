@@ -69,7 +69,7 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 //				}
 //			}
 
-			p.setidf(psg);
+//			p.setidf(psg);
 
 		List<PassScore> passages = new LinkedList<PassScore>();
 		for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
