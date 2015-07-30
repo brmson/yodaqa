@@ -57,8 +57,8 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 				throw new AnalysisEngineProcessException(e);
 			}
 
-			Collection<Token> wtok=JCasUtil.select(passagesView, Token.class);
-			List<String> words = new ArrayList<>();
+//			Collection<Token> wtok=JCasUtil.select(passagesView, Token.class);
+//			List<String> words = new ArrayList<>();
 			Collection<Passage> psg=JCasUtil.select(passagesView, Passage.class);
 //			int N=0;
 //			for (Token t : wtok) {
@@ -69,7 +69,7 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 //				}
 //			}
 
-//			p.setidf(psg);
+			p.setidf(psg);
 
 		List<PassScore> passages = new LinkedList<PassScore>();
 		for (Passage passage : JCasUtil.select(passagesView, Passage.class)) {
@@ -87,8 +87,8 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 			List<String> a=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
 
 			double[] res=p.probability(q,a);
-//			double score = 3.36257418*res[0]+0.00425064*res[2]+0.40970162*fv.getValues()[clueWeight_i];
-			double score = 3.36329552*res[0]+0.4130186*fv.getValues()[clueWeight_i];
+			double score = 3.36257418*res[0]+0.00425064*res[2]+0.40970162*fv.getValues()[clueWeight_i];
+//			double score = 3.36329552*res[0]+0.4130186*fv.getValues()[clueWeight_i];
 			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
 			passages.add(new PassScore(passage, score));
 		}
