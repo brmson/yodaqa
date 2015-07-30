@@ -42,6 +42,7 @@ public class Probability {
 				System.out.println("SOMETHINGs WRONG");
 				System.out.println("Q="+qtext);
 				System.out.println("A="+atext);
+				System.out.println("word="+s);
 				System.exit(1);
 			}
 			if(f>0&&idf.get(s)!=null){
@@ -58,6 +59,7 @@ public class Probability {
 		double[] res={p1,count,idfcount};
 		return res;
 	}
+	
 
 	/** Returns map of word counts. */
 	public void setidf(Collection<Passage> psg){
