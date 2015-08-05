@@ -1,8 +1,15 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import com.google.gson.stream.JsonReader;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import org.slf4j.Logger;
@@ -57,10 +64,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		title = super.capitalizeTitle(title);
 
 		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
-		List<String> queries = LabelLookup.getInstance().getLabels(title, logger);
-		if (!queries.isEmpty()) {
-			title = queries.get(0); //XXX the queries are currently unranked, but we'll try the first one anyway
-		}
+
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
@@ -106,7 +110,13 @@ public class DBpediaTitles extends DBpediaLookup {
 			if (!wasCapitalized && (label.length() > 1 && Character.toUpperCase(label.charAt(1)) != label.charAt(1)))
 				label = Character.toLowerCase(label.charAt(0)) + label.substring(1);
 			logger.debug("DBpedia {}: [[{}]]", title, label);
-			results.add(new Article(rawResult[0].getInt(), label));
+	//		results.add(new Article(rawResult[0].getInt(), label));
+		}
+		System.out.println("first dbpedia query");
+		System.out.println("now flask query");
+		for (Article a: getLabelsFromFlask(title,logger)) {
+			System.out.println(a.getLabel() + " " + a.getPageID());
+			results.add(a);
 		}
 
 		return results;
@@ -120,4 +130,35 @@ public class DBpediaTitles extends DBpediaLookup {
 				*/
 
 	}
+	public synchronized List<Article> getLabelsFromFlask(String name, Logger logger) {
+		List<Article> results = new LinkedList<>();
+		try {
+			String encodedName = URLEncoder.encode(name, "UTF-8").replace("+", "%20");
+			String requestURL = "http://localhost:5000/search/" + encodedName;
+			URL request = new URL(requestURL);
+			URLConnection connection = request.openConnection();
+			JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
+
+			jr.beginObject();
+			while (jr.hasNext()) {
+				jr.skipValue(); //result :
+				jr.beginArray();
+				while (jr.hasNext()) {
+					jr.beginArray();
+					String query = jr.nextString();
+					logger.debug("Server returned: {}", query);
+					int id = Integer.parseInt(jr.nextString());
+					results.add(new Article(id, query));
+					jr.endArray();
+				}
+				jr.endArray();
+			}
+			jr.endObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return results;
+		}
+		return results;
+	}
+
 }
