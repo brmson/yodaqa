@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.Gson;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import org.slf4j.Logger;
@@ -44,6 +45,25 @@ public class DBpediaTitles extends DBpediaLookup {
 		}
 	}
 
+	public class CustomArticle extends Article {
+		protected String name;
+		protected int distance;
+		public CustomArticle(int distance, String label, String name, int pageID) {
+			super(pageID, label);
+			this.name = name;
+			this.distance = distance;
+		}
+
+		/** @return the pageID */
+		public int getDistance() {
+			return distance;
+		}
+
+		/** @return the label */
+		public String getName() {
+			return name;
+		}
+	}
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
@@ -112,9 +132,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			logger.debug("DBpedia {}: [[{}]]", title, label);
 	//		results.add(new Article(rawResult[0].getInt(), label));
 		}
-		System.out.println("first dbpedia query");
-		System.out.println("now flask query");
-		for (Article a: getLabelsFromFlask(title,logger)) {
+		for (Article a: getLabelsFromFlask(title)) {
 			System.out.println(a.getLabel() + " " + a.getPageID());
 			results.add(a);
 		}
@@ -130,30 +148,31 @@ public class DBpediaTitles extends DBpediaLookup {
 				*/
 
 	}
-	public synchronized List<Article> getLabelsFromFlask(String name, Logger logger) {
+	public synchronized List<Article> getLabelsFromFlask(String name) {
 		List<Article> results = new LinkedList<>();
 		try {
 			String encodedName = URLEncoder.encode(name, "UTF-8").replace("+", "%20");
-			String requestURL = "http://localhost:5000/search/" + encodedName;
+			String requestURL = "http://dbp-labels.ailao.eu:5000/search/" + encodedName;
 			URL request = new URL(requestURL);
 			URLConnection connection = request.openConnection();
+			Gson gson = new Gson();
 			JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
 
 			jr.beginObject();
-			while (jr.hasNext()) {
-				jr.skipValue(); //result :
+				jr.nextName(); //results :
 				jr.beginArray();
 				while (jr.hasNext()) {
-					jr.beginArray();
-					String query = jr.nextString();
-					logger.debug("Server returned: {}", query);
-					int id = Integer.parseInt(jr.nextString());
-					results.add(new Article(id, query));
-					jr.endArray();
+					CustomArticle o = gson.fromJson(jr, CustomArticle.class);
+					results.add(o);
+						/*XXX this is a quick fix
+						since CustomArticle extends Article, nothing noteworthy should happen in the code using the same getters
+						to actually extract the new information, change the return value from List<Article> to List<CustomArticle>, cast it,
+						or just refactor CustomArticle to Article*/
+					logger.debug("Server returned: {} {} {} {}", o.getDistance(), o.getLabel(), o.getName(), o.getPageID());
 				}
 				jr.endArray();
-			}
 			jr.endObject();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			return results;
