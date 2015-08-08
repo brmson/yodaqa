@@ -163,7 +163,8 @@ public class DBpediaTitles extends DBpediaLookup {
 				jr.beginArray();
 				while (jr.hasNext()) {
 					CustomArticle o = gson.fromJson(jr, CustomArticle.class);
-					results.add(o);
+					if (results.isEmpty()) // XXX: Only pick the single nearest concept
+						results.add(o);
 						/*XXX this is a quick fix
 						since CustomArticle extends Article, nothing noteworthy should happen in the code using the same getters
 						to actually extract the new information, change the return value from List<Article> to List<CustomArticle>, cast it,
