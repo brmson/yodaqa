@@ -26,44 +26,31 @@ import org.slf4j.Logger;
 
 public class DBpediaTitles extends DBpediaLookup {
 	public class Article {
-		protected int pageID;
-		protected String label;
-
-		public Article(int pageID_, String label_) {
-			pageID = pageID_;
-			label = label_;
-		}
-
-		/** @return the pageID */
-		public int getPageID() {
-			return pageID;
-		}
-
-		/** @return the label */
-		public String getLabel() {
-			return label;
-		}
-	}
-
-	public class CustomArticle extends Article {
 		protected String name;
-		protected int distance;
-		public CustomArticle(int distance, String label, String name, int pageID) {
-			super(pageID, label);
+		protected int pageID;
+		protected String matchedLabel;
+		protected String canonLabel;
+		protected int distance; // edit dist.
+
+		public Article(String name, int pageID) {
 			this.name = name;
+			this.pageID = pageID;
+		}
+
+		public Article(String name, int pageID, String label, int distance) {
+			this(name, pageID);
+			this.matchedLabel = label;
+			this.canonLabel = label;
 			this.distance = distance;
 		}
 
-		/** @return the pageID */
-		public int getDistance() {
-			return distance;
-		}
-
-		/** @return the label */
-		public String getName() {
-			return name;
-		}
+		public String getName() { return name; }
+		public int getPageID() { return pageID; }
+		public String getMatchedLabel() { return matchedLabel; }
+		public String getCanonLabel() { return canonLabel; }
+		public int getDistance() { return distance; }
 	}
+
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
@@ -133,7 +120,7 @@ public class DBpediaTitles extends DBpediaLookup {
 	//		results.add(new Article(rawResult[0].getInt(), label));
 		}
 		for (Article a: getLabelsFromFlask(title)) {
-			System.out.println(a.getLabel() + " " + a.getPageID());
+			System.out.println(a.getCanonLabel() + " " + a.getPageID());
 			results.add(a);
 		}
 
@@ -162,14 +149,10 @@ public class DBpediaTitles extends DBpediaLookup {
 				jr.nextName(); //results :
 				jr.beginArray();
 				while (jr.hasNext()) {
-					CustomArticle o = gson.fromJson(jr, CustomArticle.class);
+					Article o = gson.fromJson(jr, Article.class);
 					if (results.isEmpty()) // XXX: Only pick the single nearest concept
 						results.add(o);
-						/*XXX this is a quick fix
-						since CustomArticle extends Article, nothing noteworthy should happen in the code using the same getters
-						to actually extract the new information, change the return value from List<Article> to List<CustomArticle>, cast it,
-						or just refactor CustomArticle to Article*/
-					logger.debug("Server returned: {} {} {} {}", o.getDistance(), o.getLabel(), o.getName(), o.getPageID());
+					logger.debug("Server returned: d{} ~{} [{}] {} {}", o.getDistance(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 				}
 				jr.endArray();
 			jr.endObject();

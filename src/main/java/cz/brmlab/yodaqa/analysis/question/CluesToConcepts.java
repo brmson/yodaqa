@@ -89,7 +89,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			for (DBpediaTitles.Article a : results) {
-				String cookedLabel = a.getLabel();
+				String cookedLabel = a.getCanonLabel();
 				/* But in case of "list of...", keep the original label
 				 * (but still generate a conceptclue since we have
 				 * a confirmed named entity and we want to include
@@ -109,7 +109,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				Concept concept = new Concept(resultView);
 				concept.setBegin(clue.getBegin());
 				concept.setEnd(clue.getEnd());
-				concept.setFullLabel(a.getLabel());
+				concept.setFullLabel(a.getCanonLabel());
 				concept.setCookedLabel(cookedLabel);
 				concept.setPageID(a.getPageID());
 
