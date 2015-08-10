@@ -1,7 +1,5 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
