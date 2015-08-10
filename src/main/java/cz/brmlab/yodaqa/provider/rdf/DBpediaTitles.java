@@ -119,7 +119,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			logger.debug("DBpedia {}: [[{}]]", title, label);
 	//		results.add(new Article(rawResult[0].getInt(), label));
 		}
-		for (Article a: getLabelsFromFlask(title)) {
+		for (Article a: queryLabelLookup(title)) {
 			System.out.println(a.getCanonLabel() + " " + a.getPageID());
 			results.add(a);
 		}
@@ -135,10 +135,19 @@ public class DBpediaTitles extends DBpediaLookup {
 				*/
 
 	}
-	public synchronized List<Article> getLabelsFromFlask(String name) {
+
+	/**
+	 * Query a label-lookup service (fuzzy search) for a concept label.
+	 * We use https://github.com/brmson/label-lookup/ as a fuzzy search
+	 * that's tolerant to wrong capitalization, omitted interpunction
+	 * and typos; we get the enwiki article metadata from here.
+	 *
+	 * XXX: This method should probably be in a different
+	 * provider subpackage altogether... */
+	public synchronized List<Article> queryLabelLookup(String label) {
 		List<Article> results = new LinkedList<>();
 		try {
-			String encodedName = URLEncoder.encode(name, "UTF-8").replace("+", "%20");
+			String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
 			String requestURL = "http://dbp-labels.ailao.eu:5000/search/" + encodedName;
 			URL request = new URL(requestURL);
 			URLConnection connection = request.openConnection();
@@ -158,10 +167,10 @@ public class DBpediaTitles extends DBpediaLookup {
 			jr.endObject();
 
 		} catch (IOException e) {
+			// FIXME: Retry mechanism.
 			e.printStackTrace();
 			return results;
 		}
 		return results;
 	}
-
 }
