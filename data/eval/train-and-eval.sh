@@ -72,6 +72,8 @@ fi
 git clone "$baserepo" "$clonedir"
 pushd "$clonedir"
 git checkout "$cid"
+mkdir -p conf
+cp "$baserepo"/conf/bingapi.properties conf/bingapi.properties || :
 
 mkdir -p data/glove
 ln "$baserepo"/data/glove/glove.6B.50d.txt data/glove/

@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.analysis.passage;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.IntegerArray;
@@ -106,13 +107,14 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 			else assert(false);
 		} else if (clue instanceof ClueConcept ) {
 			afv.setFeature(AF_PsgDistClueConcept.class, value);
-			ClueConcept concept = (ClueConcept) clue;
-			if (concept.getBySubject())
-				afv.setFeature(AF_PsgDistClueSubject.class, value);
-			if (concept.getByLAT())
-				afv.setFeature(AF_PsgDistClueLAT.class, value);
-			if (concept.getByNE())
-				afv.setFeature(AF_PsgDistClueNE.class, value);
+			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
+				if (concept.getBySubject())
+					afv.setFeature(AF_PsgDistClueSubject.class, value);
+				if (concept.getByLAT())
+					afv.setFeature(AF_PsgDistClueLAT.class, value);
+				if (concept.getByNE())
+					afv.setFeature(AF_PsgDistClueNE.class, value);
+			}
 		}
 		else assert(false);
 	}

@@ -137,7 +137,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 6,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 7,
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -294,8 +294,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		builder.add(fbOnt);
 
 		/* Full-text search: */
+		/* XXX: These aggregates have "Solr" in name but do not
+		 * necessarily use just Solr, e.g. Bing. */
 		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
-		builder.add(solrFull); /* This one is worth 2 isLasts. */
+		builder.add(solrFull); /* This one is worth 3 isLasts. */
 		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
 		builder.add(solrDoc);
 
