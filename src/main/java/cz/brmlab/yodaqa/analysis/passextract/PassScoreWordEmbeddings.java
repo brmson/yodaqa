@@ -87,7 +87,8 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 			List<String> a=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
 
 			double[] res=p.probability(q,a);
-			double score = 3.36257418*res[0]+0.00425064*res[2]+0.40970162*fv.getValues()[clueWeight_i];
+
+			double score = 2.26216399*res[0]+0.49076233*fv.getValues()[clueWeight_i];
 //			double score = 3.36329552*res[0]+0.4130186*fv.getValues()[clueWeight_i];
 			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
 			passages.add(new PassScore(passage, score));
