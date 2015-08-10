@@ -163,12 +163,16 @@ public class DBpediaTitles extends DBpediaLookup {
 				jr.beginArray();
 				while (jr.hasNext()) {
 					Article o = gson.fromJson(jr, Article.class);
+					// Record all exact-matching entities,
+					// or the single nearest fuzzy-matched
+					// one.
 					if (o.getDist() == 0) {
-						results.add(o);
-					}
-					else {
-						if (results.isEmpty())
+						// Sometimes, we get duplicates
+						// like "U.S. Navy" and "U.S. navy".
+						if (results.isEmpty() || !results.get(results.size() - 1).getName().equals(o.getName()))
 							results.add(o);
+					} else if (results.isEmpty()) {
+						results.add(o);
 					}
 					logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 				}
