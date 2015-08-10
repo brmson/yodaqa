@@ -32,15 +32,15 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected String canonLabel;
 		protected int distance; // edit dist.
 
-		public Article(String name, int pageID) {
-			this.name = name;
+		public Article(String label, int pageID) {
+			this.matchedLabel = label;
+			this.canonLabel = label;
 			this.pageID = pageID;
 		}
 
-		public Article(String name, int pageID, String label, int distance) {
-			this(name, pageID);
-			this.matchedLabel = label;
-			this.canonLabel = label;
+		public Article(String label, int pageID, String name, int distance) {
+			this(label, pageID);
+			this.name = name;
 			this.distance = distance;
 		}
 
@@ -117,7 +117,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			if (!wasCapitalized && (label.length() > 1 && Character.toUpperCase(label.charAt(1)) != label.charAt(1)))
 				label = Character.toLowerCase(label.charAt(0)) + label.substring(1);
 			logger.debug("DBpedia {}: [[{}]]", title, label);
-	//		results.add(new Article(rawResult[0].getInt(), label));
+	//		results.add(new Article(label, rawResult[0].getInt()));
 		}
 		for (Article a: queryLabelLookup(title)) {
 			System.out.println(a.getCanonLabel() + " " + a.getPageID());
