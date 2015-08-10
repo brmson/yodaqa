@@ -33,6 +33,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected String matchedLabel;
 		protected String canonLabel;
 		protected int dist; // edit dist.
+		protected int count; //number of matched queries
 
 		public Article(String label, int pageID) {
 			this.matchedLabel = label;
@@ -46,12 +47,13 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = dist;
 		}
 
-		public Article(Article baseA, String label, int pageID, String name) {
+		public Article(Article baseA, String label, int pageID, String name, int count) {
 			this.name = name;
 			this.pageID = pageID;
 			this.matchedLabel = baseA.matchedLabel;
 			this.canonLabel = label;
 			this.dist = baseA.dist;
+			this.count = count;
 		}
 
 		public String getName() { return name; }
@@ -59,6 +61,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
 		public int getDist() { return dist; }
+		public int getCount() { return count; }
 	}
 
 	/** Query for a given title, returning a set of articles. */
@@ -116,10 +119,25 @@ public class DBpediaTitles extends DBpediaLookup {
 			String label = rawResult[1].getString();
 			String tgName = rawResult[2].getString().substring("http://dbpedia.org/resource/".length());
 			logger.debug("DBpedia {}: [[{}]]", name, label);
-			results.add(new Article(baseA, label, pageID, tgName));
+			int count = queryCount(rawResult[2].getString());
+			results.add(new Article(baseA, label, pageID, tgName, count));
 		}
 
 		return results;
+	}
+	/** Counts the number of matches in rdf triplets (outward and inward) */
+	public int queryCount(String name) {
+		String queryString = "SELECT (count(*) as ?c) \n" +
+				"{" +
+					"{" +
+				    "?a ?b <"+ name +">"+
+				    "} UNION {" +
+				    "<"+name+"> ?a ?b" +
+				    "}" +
+				"}";
+		List<Literal[]> rawResults = rawQuery(queryString,
+				new String[] { "c" }, 0);
+		return rawResults.get(0)[0].getInt();
 	}
 
 	/**
@@ -132,6 +150,7 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * provider subpackage altogether... */
 	public List<Article> queryLabelLookup(String label, Logger logger) {
 		List<Article> results = new LinkedList<>();
+
 		try {
 			String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
 			String requestURL = "http://dbp-labels.ailao.eu:5000/search/" + encodedName;
@@ -139,14 +158,22 @@ public class DBpediaTitles extends DBpediaLookup {
 			URLConnection connection = request.openConnection();
 			Gson gson = new Gson();
 			JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
-
 			jr.beginObject();
 				jr.nextName(); //results :
 				jr.beginArray();
 				while (jr.hasNext()) {
 					Article o = gson.fromJson(jr, Article.class);
-					if (results.isEmpty()) // XXX: Only pick the single nearest concept
+					// Record all exact-matching entities,
+					// or the single nearest fuzzy-matched
+					// one.
+					if (o.getDist() == 0) {
+						// Sometimes, we get duplicates
+						// like "U.S. Navy" and "U.S. navy".
+						if (results.isEmpty() || !results.get(results.size() - 1).getName().equals(o.getName()))
+							results.add(o);
+					} else if (results.isEmpty()) {
 						results.add(o);
+					}
 					logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 				}
 				jr.endArray();
