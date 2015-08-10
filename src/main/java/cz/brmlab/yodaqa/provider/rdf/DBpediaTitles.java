@@ -130,7 +130,7 @@ public class DBpediaTitles extends DBpediaLookup {
 	 *
 	 * XXX: This method should probably be in a different
 	 * provider subpackage altogether... */
-	public synchronized List<Article> queryLabelLookup(String label, Logger logger) {
+	public List<Article> queryLabelLookup(String label, Logger logger) {
 		List<Article> results = new LinkedList<>();
 		try {
 			String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
