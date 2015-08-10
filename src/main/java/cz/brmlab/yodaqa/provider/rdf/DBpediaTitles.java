@@ -46,6 +46,14 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = dist;
 		}
 
+		public Article(Article baseA, String label, int pageID, String name) {
+			this.name = name;
+			this.pageID = pageID;
+			this.matchedLabel = baseA.matchedLabel;
+			this.canonLabel = label;
+			this.dist = baseA.dist;
+		}
+
 		public String getName() { return name; }
 		public int getPageID() { return pageID; }
 		public String getMatchedLabel() { return matchedLabel; }
@@ -56,36 +64,32 @@ public class DBpediaTitles extends DBpediaLookup {
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
-			List<Article> results = queryTitleForm(titleForm, logger);
+			List<Article> results = new ArrayList<>();
+			for (Article a : queryLabelLookup(titleForm, logger)) {
+				results.addAll(queryArticle(a, logger));
+			}
 			if (!results.isEmpty())
 				return results;
 		}
 		return new ArrayList<Article>();
 	}
 
-	/** Query for a given specific title form, returning a set
-	 * of articles. */
-	public List<Article> queryTitleForm(String title, Logger logger) {
-		/* XXX: Case-insensitive search via SPARQL turns out
-		 * to be surprisingly tricky.  Cover 91% of all cases
-		 * by capitalizing words that are not stopwords  */
-		boolean wasCapitalized = Character.toUpperCase(title.charAt(0)) == title.charAt(0);
-		title = super.capitalizeTitle(title);
-
-		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
-
+	/** Query for a given Article in full DBpedia, returning a set of
+	 * articles (transversing redirects and disambiguations). */
+	public List<Article> queryArticle(Article baseA, Logger logger) {
+		String name = baseA.getName();
 		String rawQueryStr =
 			"{\n" +
-			   // (A) fetch resources with @title label
-			"  ?res rdfs:label \"" + title + "\"@en.\n" +
+			   // (A) fetch resources with a given name
+			"  BIND(<http://dbpedia.org/resource/" + name + "> AS ?res)\n" +
 			"} UNION {\n" +
-			   // (B) fetch also resources targetted by @title redirect
+			   // (B) fetch also resources targetted by redirect
+			"  BIND(<http://dbpedia.org/resource/" + name + "> AS ?redir)\n" +
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
-			"  ?redir rdfs:label \"" + title + "\"@en .\n" +
 			"} UNION {\n" +
-			   // (C) fetch also resources targetted by @title disambiguation
+			   // (C) fetch also resources targetted by disambiguation
+			"  BIND(<http://dbpedia.org/resource/" + name + "> AS ?disamb)\n" +
 			"  ?disamb dbo:wikiPageDisambiguates ?res .\n" +
-			"  ?disamb rdfs:label \"" + title + "\"@en .\n" +
 			"}\n" +
 			 // for (B) and (C), we are also getting a redundant (A) entry;
 			 // identify the redundant (A) entry by filling
@@ -99,43 +103,23 @@ public class DBpediaTitles extends DBpediaLookup {
 			 // ignore the redundant (A) entries (redirects, disambs)
 			"FILTER ( !BOUND(?redirTarget) )\n" +
 			"FILTER ( !BOUND(?disambTarget) )\n" +
-			 // weed out categories and other in-namespace junk
-			 // FIXME: this also covers X-Men:.*, 2001:.*, ... movie titles
-			"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			 // output only english labels, thankyouverymuch
 			"FILTER ( LANG(?label) = 'en' )\n" +
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "pageID", "label" }, 0);
+			new String[] { "pageID", "label", "/res" }, 0);
 
 		List<Article> results = new ArrayList<Article>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
+			int pageID = rawResult[0].getInt();
 			String label = rawResult[1].getString();
-			/* Undo capitalization if the label isn't all-caps
-			 * and the original title wasn't capitalized either.
-			 * Otherwise, all our terms will end up all-caps,
-			 * a silly thing. */
-			if (!wasCapitalized && (label.length() > 1 && Character.toUpperCase(label.charAt(1)) != label.charAt(1)))
-				label = Character.toLowerCase(label.charAt(0)) + label.substring(1);
-			logger.debug("DBpedia {}: [[{}]]", title, label);
-	//		results.add(new Article(label, rawResult[0].getInt()));
-		}
-		for (Article a: queryLabelLookup(title)) {
-			System.out.println(a.getCanonLabel() + " " + a.getPageID());
-			results.add(a);
+			String tgName = rawResult[2].getString().substring("http://dbpedia.org/resource/".length());
+			logger.debug("DBpedia {}: [[{}]]", name, label);
+			results.add(new Article(baseA, label, pageID, tgName));
 		}
 
 		return results;
-
-		/*
-		return rawQuery("?res rdfs:label \"" + title + "\"@en.\n" +
-				"?res dbo:wikiPageID ?pageid\n" +
-				// weed out categories and other in-namespace junk
-				"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n",
-				"pageid");
-				*/
-
 	}
 
 	/**
@@ -146,7 +130,7 @@ public class DBpediaTitles extends DBpediaLookup {
 	 *
 	 * XXX: This method should probably be in a different
 	 * provider subpackage altogether... */
-	public synchronized List<Article> queryLabelLookup(String label) {
+	public synchronized List<Article> queryLabelLookup(String label, Logger logger) {
 		List<Article> results = new LinkedList<>();
 		try {
 			String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
@@ -163,7 +147,7 @@ public class DBpediaTitles extends DBpediaLookup {
 					Article o = gson.fromJson(jr, Article.class);
 					if (results.isEmpty()) // XXX: Only pick the single nearest concept
 						results.add(o);
-					logger.debug("Server returned: d{} ~{} [{}] {} {}", o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+					logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 				}
 				jr.endArray();
 			jr.endObject();
