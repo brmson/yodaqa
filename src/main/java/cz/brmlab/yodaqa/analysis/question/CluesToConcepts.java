@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.analysis.question;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -88,7 +89,22 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			/* Generate Concepts and gather ConceptClue labels. */
 
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
+
 			for (DBpediaTitles.Article a : results) {
+				String result = "Canon label: " + a.getCanonLabel() + " name: " + a.getName() + " matched queries: " + a.getCount() + " pageID: " + a.getPageID() + "\n";
+				System.out.println(result);
+				logger.debug("{}", result);
+			}
+
+			Collections.sort(results, new Comparator<DBpediaTitles.Article>() {
+				@Override
+				public int compare(DBpediaTitles.Article a1, DBpediaTitles.Article a2) {
+					return Integer.compare(a2.getCount(), a1.getCount());
+				}
+			} );
+
+			//look for top three or less
+			for (DBpediaTitles.Article a : results.subList(0, Math.min(3, results.size()))) {
 				String cookedLabel = a.getCanonLabel();
 				/* But in case of "list of...", keep the original label
 				 * (but still generate a conceptclue since we have

@@ -61,6 +61,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
 		public int getDist() { return dist; }
+		public int getCount() { return count; }
 	}
 
 	/** Query for a given title, returning a set of articles. */
@@ -136,7 +137,6 @@ public class DBpediaTitles extends DBpediaLookup {
 				"}";
 		List<Literal[]> rawResults = rawQuery(queryString,
 				new String[] { "c" }, 0);
-		System.out.println(name +"DONE "+rawResults.get(0)[0].getInt());
 		return rawResults.get(0)[0].getInt();
 	}
 
@@ -150,6 +150,7 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * provider subpackage altogether... */
 	public List<Article> queryLabelLookup(String label, Logger logger) {
 		List<Article> results = new LinkedList<>();
+
 		try {
 			String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
 			String requestURL = "http://dbp-labels.ailao.eu:5000/search/" + encodedName;
@@ -157,14 +158,18 @@ public class DBpediaTitles extends DBpediaLookup {
 			URLConnection connection = request.openConnection();
 			Gson gson = new Gson();
 			JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
-
 			jr.beginObject();
 				jr.nextName(); //results :
 				jr.beginArray();
 				while (jr.hasNext()) {
 					Article o = gson.fromJson(jr, Article.class);
-					if (results.isEmpty()) // XXX: Only pick the single nearest concept
+					if (o.getDist() == 0) {
 						results.add(o);
+					}
+					else {
+						if (results.isEmpty())
+							results.add(o);
+					}
 					logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 				}
 				jr.endArray();
