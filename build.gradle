@@ -110,7 +110,9 @@ dependencies {
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.tokit-asl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.berkeleyparser-gpl:$dkproVersion"
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.matetools-gpl:$dkproVersion"
-  compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:$dkproVersion"
+  compile("de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:$dkproVersion") {
+    exclude group: "com.io7m.xom", module: "xom"  // this dependency breaks XMI serialization by using utf16, c.f. UIMA-3818
+  }
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.parameter-asl:$dkproVersion"
   compile 'org.apache.solr:solr-solrj:3.6.0'
   compile 'org.apache.solr:solr-core:3.6.0'
@@ -119,8 +121,6 @@ dependencies {
   compile 'org.slf4j:slf4j-api:1.7.7'
   compile 'org.slf4j:slf4j-simple:1.7.7'
   compile 'org.apache.jena:apache-jena-libs:2.11.2'
-  compile 'xom:xom:+'
-  compile 'xalan:xalan:+'
   compile 'net.sf.extjwnl:extjwnl:1.8.0'
   compile 'net.sf.extjwnl:extjwnl-data-wn31:1.2'
   compile 'org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016'
