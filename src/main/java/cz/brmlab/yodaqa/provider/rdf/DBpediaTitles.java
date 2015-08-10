@@ -1,5 +1,7 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -33,6 +35,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected String matchedLabel;
 		protected String canonLabel;
 		protected int dist; // edit dist.
+		protected int count; //number of matched queries
 
 		public Article(String label, int pageID) {
 			this.matchedLabel = label;
@@ -46,12 +49,13 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = dist;
 		}
 
-		public Article(Article baseA, String label, int pageID, String name) {
+		public Article(Article baseA, String label, int pageID, String name, int count) {
 			this.name = name;
 			this.pageID = pageID;
 			this.matchedLabel = baseA.matchedLabel;
 			this.canonLabel = label;
 			this.dist = baseA.dist;
+			this.count = count;
 		}
 
 		public String getName() { return name; }
@@ -116,10 +120,26 @@ public class DBpediaTitles extends DBpediaLookup {
 			String label = rawResult[1].getString();
 			String tgName = rawResult[2].getString().substring("http://dbpedia.org/resource/".length());
 			logger.debug("DBpedia {}: [[{}]]", name, label);
-			results.add(new Article(baseA, label, pageID, tgName));
+			int count = queryCount(rawResult[2].getString());
+			results.add(new Article(baseA, label, pageID, tgName, count));
 		}
 
 		return results;
+	}
+	/** Counts the number of matches in rdf triplets (outward and inward) */
+	public int queryCount(String name) {
+		String queryString = "SELECT (count(*) as ?c) \n" +
+				"{" +
+					"{" +
+				    "?a ?b <"+ name +">"+
+				    "} UNION {" +
+				    "<"+name+"> ?a ?b" +
+				    "}" +
+				"}";
+		List<Literal[]> rawResults = rawQuery(queryString,
+				new String[] { "c" }, 0);
+		System.out.println(name +"DONE "+rawResults.get(0)[0].getInt());
+		return rawResults.get(0)[0].getInt();
 	}
 
 	/**
