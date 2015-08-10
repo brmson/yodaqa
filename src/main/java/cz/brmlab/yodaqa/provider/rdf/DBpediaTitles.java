@@ -25,12 +25,14 @@ import org.slf4j.Logger;
  * and disambiguation pages. */
 
 public class DBpediaTitles extends DBpediaLookup {
+	/** A container of enwiki article metadata.
+	 * This must 1:1 map to label-lookup API. */
 	public class Article {
 		protected String name;
 		protected int pageID;
 		protected String matchedLabel;
 		protected String canonLabel;
-		protected int distance; // edit dist.
+		protected int dist; // edit dist.
 
 		public Article(String label, int pageID) {
 			this.matchedLabel = label;
@@ -38,17 +40,17 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.pageID = pageID;
 		}
 
-		public Article(String label, int pageID, String name, int distance) {
+		public Article(String label, int pageID, String name, int dist) {
 			this(label, pageID);
 			this.name = name;
-			this.distance = distance;
+			this.dist = dist;
 		}
 
 		public String getName() { return name; }
 		public int getPageID() { return pageID; }
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
-		public int getDistance() { return distance; }
+		public int getDist() { return dist; }
 	}
 
 	/** Query for a given title, returning a set of articles. */
@@ -161,7 +163,7 @@ public class DBpediaTitles extends DBpediaLookup {
 					Article o = gson.fromJson(jr, Article.class);
 					if (results.isEmpty()) // XXX: Only pick the single nearest concept
 						results.add(o);
-					logger.debug("Server returned: d{} ~{} [{}] {} {}", o.getDistance(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+					logger.debug("Server returned: d{} ~{} [{}] {} {}", o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 				}
 				jr.endArray();
 			jr.endObject();
