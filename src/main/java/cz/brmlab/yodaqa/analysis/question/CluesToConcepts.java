@@ -101,8 +101,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				}
 			} );
 
-			//look for top three or less
-			for (DBpediaTitles.Article a : results.subList(0, Math.min(3, results.size()))) {
+			for (DBpediaTitles.Article a : results) {
 				String cookedLabel = a.getCanonLabel();
 				/* But in case of "list of...", keep the original label
 				 * (but still generate a conceptclue since we have
