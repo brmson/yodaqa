@@ -104,8 +104,8 @@ public class Solr implements Closeable {
 		term = term.replace('[', ' ');
 		term = term.replace(']', ' ');
 		term = term.replace('/', ' ');
+		term = term.replace("\\", "");
 		term = term.replaceAll("\'", "");
-		term = term.replaceAll("\\", "");
 		return term;
 	}
 
