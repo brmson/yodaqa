@@ -37,14 +37,6 @@ public class Probability {
 		for(String s:qtext){
 			double f= Collections.frequency(atext, s);
 			count+=f/N;
-
-//			if(f>0&&idf.get(s)==null){
-//				System.out.println("SOMETHINGs WRONG");
-//				System.out.println("Q="+qtext);
-//				System.out.println("A="+atext);
-//				System.out.println("word="+s);
-//				System.exit(1);
-//			}
 			if(f>0&&idf.get(s)!=null){
 				idfcount+=f/N * Math.log(N / idf.get(s));
 			}
