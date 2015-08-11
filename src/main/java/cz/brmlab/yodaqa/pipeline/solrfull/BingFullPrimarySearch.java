@@ -41,7 +41,10 @@ import org.apache.commons.codec.binary.Base64;
  * Each search results gets a new CAS.
  *
  * Details about the Bing search, an API key you need to get in order
- * for this to get used, etc., are in data/bing/README.md. */
+ * for this to get used, etc., are in data/bing/README.md.
+ *
+ * XXX: The containing package shouldn't be called "solrfull" as this
+ * search has nothing to do with Solr. */
 
 public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(BingFullPrimarySearch.class);
