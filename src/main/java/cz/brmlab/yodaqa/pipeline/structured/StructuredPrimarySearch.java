@@ -296,15 +296,12 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		return MultiThreadASB.maxJobs * 2;
 	}
 
-
-
 	/** Possibly create files for python training, one file per question. */
 	protected synchronized void createPropertyLabels(JCas questionView, PropertyValue p, AnswerInfo ai){
 		System.setProperty("cz.brmlab.yodaqa.property","data/jacana-property-test");
 		String jacana = System.getProperty("cz.brmlab.yodaqa.property");
 		if (jacana == null || jacana.isEmpty())
 			return;
-
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		String proptext=p.getValue();
@@ -318,13 +315,12 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		Writer w=Writer.getInstance();
 		w.write(jacana + "/" + qi.getQuestionId() + "-prop.txt", "<Q> "+qi.getQuestionText());
 		System.out.println("CanonText"+ai.getCanonText());
-		if(ap.matcher(ai.getCanonText()).find()){
+		if(ap.matcher(proptext).find()){
 		w.write(jacana + "/" + qi.getQuestionId() + "-prop.txt", "1 " +clues+" "+ proptext);
 		} else {
 				w.write(jacana+"/"+qi.getQuestionId()+"-prop.txt","0 "+clues+" "+proptext);
 			}
 	}
-
 
 }
 class Writer{
