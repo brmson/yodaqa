@@ -71,9 +71,9 @@ To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
-Alternatively, if things don't go well, try passing an extra parameter
-``-Dorg.slf4j.simpleLogger.defaultLogLevel=debug`` on the commandline,
-or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
+Alternatively, if things don't go well or you would like to watch YodaQA
+think, try passing an extra command line parameter
+``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug`` to gradle.
 
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
 on systems with less than 8GB RAM.  You may also need to tweak the
