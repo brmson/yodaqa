@@ -62,13 +62,8 @@ answer candidates and their confidence score are listed after a while
 loaded).
 Alternatively, you can use the "web" frontend by executing
 ``./gradlew web -q`` and opening e.g. http://localhost:4567/ in your browser.
-A shinier web interface is available at https://github.com/brmson/YodaQA-client .
-
-It is also possible to let YodaQA answer many questions at once, e.g. to
-measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
-the curated testing dataset from data/eval/.  (See also data/eval/README.md
-for more details, and a convenient wrapper script ``train-and-eval.sh``.)
-To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
+A shinier web interface is available at https://github.com/brmson/YodaQA-client
+and you can also use the web frontend as a REST API.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
@@ -82,6 +77,12 @@ minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
 on a 32-bit system.  By default, YodaQA will try to use *half* of the logical
 CPU cores available; set the YODAQA_N_THREADS environment variable to change
 the number of threads used.
+
+It is also possible to let YodaQA answer many questions at once, e.g. to
+measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
+the curated testing dataset from data/eval/.  (See also data/eval/README.md
+for more details, and a convenient wrapper script ``train-and-eval.sh``.)
+To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
 
 ## Data Sources
 
