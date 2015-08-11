@@ -200,7 +200,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		ai.addToIndexes();
 
-		createPropertyLabels(questionView,property);
+		createPropertyLabels(questionView,property,ai);
 
 	}
 
@@ -299,8 +299,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 
 	/** Possibly create files for python training, one file per question. */
-	protected synchronized void createPropertyLabels(JCas questionView,PropertyValue p){
-		System.setProperty("cz.brmlab.yodaqa.property","data/jacana-test");
+	protected synchronized void createPropertyLabels(JCas questionView, PropertyValue p, AnswerInfo ai){
+		System.setProperty("cz.brmlab.yodaqa.property","data/jacana-property-test");
 		String jacana = System.getProperty("cz.brmlab.yodaqa.property");
 		if (jacana == null || jacana.isEmpty())
 			return;
@@ -317,8 +317,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		Writer w=Writer.getInstance();
 		w.write(jacana + "/" + qi.getQuestionId() + "-prop.txt", "<Q> "+qi.getQuestionText());
-
-		if(ap.matcher(proptext).find()){
+		System.out.println("CanonText"+ai.getCanonText());
+		if(ap.matcher(ai.getCanonText()).find()){
 		w.write(jacana + "/" + qi.getQuestionId() + "-prop.txt", "1 " +clues+" "+ proptext);
 		} else {
 				w.write(jacana+"/"+qi.getQuestionId()+"-prop.txt","0 "+clues+" "+proptext);
