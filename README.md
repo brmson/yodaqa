@@ -60,9 +60,10 @@ frontend which offers a prompt and answers questions interactively;
 answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
-
 Alternatively, you can use the "web" frontend by executing
 ``./gradlew web -q`` and opening e.g. http://localhost:4567/ in your browser.
+A shinier web interface is available at https://github.com/brmson/YodaQA-client .
+
 It is also possible to let YodaQA answer many questions at once, e.g. to
 measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
 the curated testing dataset from data/eval/.  (See also data/eval/README.md
