@@ -21,7 +21,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * A collection that loads a collection of question and answer patterns
+ * from JSON file.
+ *
+ * The JSON file is an array consisting of json objects containing
+ * {qId, qText, answers, author}
+ *
+ * */
 public class JSONQuestionReader extends CasCollectionReader_ImplBase {
 
 	private class JSONQuestion{
