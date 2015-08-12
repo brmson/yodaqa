@@ -120,10 +120,11 @@ public class DBpediaTitles extends DBpediaLookup {
 			String tgName = rawResult[2].getString().substring("http://dbpedia.org/resource/".length());
 
 			/* We approximate the concept score simply by how
-			 * many relations it partakes in. */
-			double score = queryCount(rawResult[2].getString());
+			 * many relations it partakes in.  We take a log
+			 * though to keep it at least roughly normalized. */
+			double score = Math.log(queryCount(rawResult[2].getString()));
 
-			logger.debug("DBpedia {}: [[{}]]", name, label);
+			logger.debug("DBpedia {}: [[{}]] ({})", name, label, score);
 			results.add(new Article(baseA, label, pageID, tgName, score));
 		}
 
