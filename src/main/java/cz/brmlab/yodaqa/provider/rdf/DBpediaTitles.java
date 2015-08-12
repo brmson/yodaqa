@@ -32,7 +32,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected int pageID;
 		protected String matchedLabel;
 		protected String canonLabel;
-		protected int dist; // edit dist.
+		protected double dist; // edit dist.
 		protected double score; // relevance/prominence of the concept (universally or wrt. the question)
 
 		public Article(String label, int pageID) {
@@ -41,7 +41,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.pageID = pageID;
 		}
 
-		public Article(String label, int pageID, String name, int dist) {
+		public Article(String label, int pageID, String name, double dist) {
 			this(label, pageID);
 			this.name = name;
 			this.dist = dist;
@@ -60,7 +60,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		public int getPageID() { return pageID; }
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
-		public int getDist() { return dist; }
+		public double getDist() { return dist; }
 		public double getScore() { return score; }
 	}
 
