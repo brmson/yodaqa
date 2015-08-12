@@ -2,7 +2,6 @@ package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.lang.Math;
 
-import cz.brmlab.yodaqa.io.collection.CollectionQuestionReader;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;

@@ -1,12 +1,12 @@
 package cz.brmlab.yodaqa;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
-import org.apache.uima.collection.CollectionReaderDescription;
 
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
-import cz.brmlab.yodaqa.io.collection.CollectionQuestionReader;
+import cz.brmlab.yodaqa.io.collection.TSVQuestionReader;
 import cz.brmlab.yodaqa.io.collection.GoldStandardAnswerPrinter;
+import org.apache.uima.collection.CollectionReaderDescription;
 import cz.brmlab.yodaqa.pipeline.YodaQA;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
@@ -25,9 +25,9 @@ public class YodaQA_GS {
 		}
 
 		CollectionReaderDescription reader = createReaderDescription(
-				CollectionQuestionReader.class,
-				CollectionQuestionReader.PARAM_TSVFILE, args[0],
-				CollectionQuestionReader.PARAM_LANGUAGE, "en");
+				TSVQuestionReader.class,
+				TSVQuestionReader.PARAM_TSVFILE, args[0],
+				TSVQuestionReader.PARAM_LANGUAGE, "en");
 
 		AnalysisEngineDescription pipeline = YodaQA.createEngineDescription();
 
