@@ -49,6 +49,18 @@ task(tsvgs, dependsOn: 'classes', type: JavaExec) {
   systemProperties = System.getProperties()
 }
 
+task(jsongs, dependsOn: 'classes', type: JavaExec) {
+  main = 'cz.brmlab.yodaqa.YodaQA_JsonGS'
+  if (project.hasProperty('execArgs'))
+    args(execArgs.split(' '))
+  else
+    args = ['data/eval/output_train.json', 'json_results.tsv']
+  minHeapSize = "2048m"
+  maxHeapSize = "4500m"
+  classpath = sourceSets.main.runtimeClasspath
+  systemProperties = System.getProperties()
+}
+
 task(questionDump, dependsOn: 'classes', type: JavaExec) {
   main = 'cz.brmlab.yodaqa.QuestionDump'
   if (project.hasProperty('execArgs'))
