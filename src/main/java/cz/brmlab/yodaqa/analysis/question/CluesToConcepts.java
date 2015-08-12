@@ -94,6 +94,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				logger.debug("Canon label: " + a.getCanonLabel() + " name: " + a.getName() + " score: " + a.getScore() + " pageID: " + a.getPageID());
 			}
 
+			// Sort the results by score so that we can easily grab
+			// just top N.
 			Collections.sort(results, new Comparator<DBpediaTitles.Article>() {
 				@Override
 				public int compare(DBpediaTitles.Article a1, DBpediaTitles.Article a2) {
@@ -101,7 +103,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				}
 			} );
 
-			//look for top three or less
 			for (DBpediaTitles.Article a : results.subList(0, Math.min(3, results.size()))) {
 				String cookedLabel = a.getCanonLabel();
 				/* But in case of "list of...", keep the original label
