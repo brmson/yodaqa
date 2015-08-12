@@ -9,8 +9,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -306,7 +305,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseOntology.class, AnswerSourceStructured.ORIGIN_ONTOLOGY));
+			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF.OriginFreebaseOntology, AnswerSourceStructured.ORIGIN_ONTOLOGY));
 		}
 
 		return results;
@@ -416,7 +415,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String objRes = rawResult[4].getString();
 			double score = rawResult[5].getDouble();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {}", titleForm, mid, propLabel, prop, value, valRes, score);
-			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF_OriginFreebaseSpecific.class, AnswerSourceStructured.ORIGIN_SPECIFIC);
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF.OriginFreebaseSpecific, AnswerSourceStructured.ORIGIN_SPECIFIC);
 			pv.setPropRes(prop);
 			pv.setScore(score);
 			results.add(pv);
