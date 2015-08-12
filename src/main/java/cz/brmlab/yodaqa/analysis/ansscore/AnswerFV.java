@@ -90,6 +90,8 @@ public class AnswerFV {
 		"topAnswer", "solrHitsEv", "solrAHitsEv", "solrHitsANormEv", "solrMaxScoreEv",
 			"solrHitsMaxScoreEv",
 		"phase0Score", "phase1Score",
+		"questionClassABBR", "questionClassDESC", "questionClassENTY",
+	    "questionClassHUM", "questionClassLOC", "questionClassNUM"
 	};
 
 	protected double values[]; // the feature value

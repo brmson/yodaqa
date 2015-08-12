@@ -347,4 +347,18 @@ public class AF {
 	/** Answer Feature: Confidence computed in phase 1
 	 * (for use by next phases). */
 	public static final String Phase1Score = "phase1Score";
+
+	/** Answer Feature: 1 if question is in class ABBR */
+	public static final String QuestionClassABBR = "questionClassABBR";
+	/** Answer Feature: 1 if question is in class DESC */
+	public static final String QuestionClassDESC = "questionClassDESC";
+	/** Answer Feature: 1 if question is in class ENTY */
+	public static final String QuestionClassENTY = "questionClassENTY";
+	/** Answer Feature: 1 if question is in class HUM */
+	public static final String QuestionClassHUM = "questionClassHUM";
+	/** Answer Feature: 1 if question is in class LOC */
+	public static final String QuestionClassLOC = "questionClassLOC";
+	/** Answer Feature: 1 if question is in class NUM */
+	public static final String QuestionClassNUM = "questionClassNUM";
+
 };
