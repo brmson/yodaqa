@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.TreeUtil;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -102,7 +102,7 @@ public class CanByLATSubject extends CandidateGenerator {
 				AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 				fv.merge(new AnswerFV(p.getAnsfeatures()));
 				/* This is both origin and tycor feature, essentially. */
-				fv.setFeature(AF_OriginPsgNPByLATSubj.class, 1.0);
+				fv.setFeature(AF.OriginPsgNPByLATSubj, 1.0);
 
 				addCandidateAnswer(passagesView, p, base, fv);
 			}

@@ -12,8 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TopAnswer;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
@@ -48,7 +47,7 @@ public class AnswerTopMarker extends JCasAnnotator_ImplBase {
 		}
 
 		AnswerFV fv = new AnswerFV(ai);
-		fv.setFeature(AF_TopAnswer.class, 1.0);
+		fv.setFeature(AF.TopAnswer, 1.0);
 
 		for (FeatureStructure af : ai.getFeatures().toArray())
 			((AnswerFeature) af).removeFromIndexes();

@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpType;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
@@ -103,7 +103,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		}
 
 		for (String type : types) {
-			addLATFeature(jcas, AF_LATDBpType.class);
+			addLATFeature(jcas, AF.LATDBpType);
 			addTypeLAT(jcas, new DBpLAT(jcas), focus, type, 0, typelist);
 		}
 
@@ -157,7 +157,7 @@ public class LATByDBpedia extends JCasAnnotator_ImplBase {
 		lat.addToIndexes();
 	}
 
-	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f) throws AnalysisEngineProcessException {
+	protected void addLATFeature(JCas jcas, String f) throws AnalysisEngineProcessException {
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
 		fv.setFeature(f, 1.0);

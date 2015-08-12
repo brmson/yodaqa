@@ -17,25 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANone;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATANoWordNet;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQNoWordNet;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_NoTyCor;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBp;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorADBpProperty;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAFBOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorANE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantity;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAQuantityCD;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorAWnInstance;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorPassageDist;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpAHit;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpNoHit;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQHit;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpQAHit;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_TyCorSpMultiHit;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
@@ -111,10 +93,10 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		 * that are hits for at least one side. */
 		public void record(AnswerFV fv, String ansText) {
 			if (lat1.getSpecificity() == 0)
-				fv.setFeature(AF_TyCorSpQHit.class, 1.0);
+				fv.setFeature(AF.TyCorSpQHit, 1.0);
 
 			if (lat2.getSpecificity() == 0)
-				fv.setFeature(AF_TyCorSpAHit.class, 1.0);
+				fv.setFeature(AF.TyCorSpAHit, 1.0);
 
 			if (lat1.getSpecificity() == 0 || lat2.getSpecificity() == 0) {
 				/* Generate a TyCor if this has been a direct
@@ -122,21 +104,21 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				 * just a "semantic sibling"). */
 				LAT baselat2 = getBaseLat2();
 				if (baselat2 instanceof NELAT)
-					fv.setFeature(AF_TyCorANE.class, 1.0);
+					fv.setFeature(AF.TyCorANE, 1.0);
 				else if (baselat2 instanceof DBpLAT)
-					fv.setFeature(AF_TyCorADBp.class, 1.0);
+					fv.setFeature(AF.TyCorADBp, 1.0);
 				else if (baselat2 instanceof QuantityLAT)
-					fv.setFeature(AF_TyCorAQuantity.class, 1.0);
+					fv.setFeature(AF.TyCorAQuantity, 1.0);
 				else if (baselat2 instanceof QuantityCDLAT)
-					fv.setFeature(AF_TyCorAQuantityCD.class, 1.0);
+					fv.setFeature(AF.TyCorAQuantityCD, 1.0);
 				else if (baselat2 instanceof WnInstanceLAT)
-					fv.setFeature(AF_TyCorAWnInstance.class, 1.0);
+					fv.setFeature(AF.TyCorAWnInstance, 1.0);
 				else if (baselat2 instanceof DBpOntologyLAT)
-					fv.setFeature(AF_TyCorADBpOntology.class, 1.0);
+					fv.setFeature(AF.TyCorADBpOntology, 1.0);
 				else if (baselat2 instanceof DBpPropertyLAT)
-					fv.setFeature(AF_TyCorADBpProperty.class, 1.0);
+					fv.setFeature(AF.TyCorADBpProperty, 1.0);
 				else if (baselat2 instanceof FBOntologyLAT)
-					fv.setFeature(AF_TyCorAFBOntology.class, 1.0);
+					fv.setFeature(AF.TyCorAFBOntology, 1.0);
 				else assert(false);
 			}
 
@@ -144,7 +126,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				/* If both LATs match sharp, that's a good
 				 * sign OTOH. */
 				logger.debug("sharp LAT match for <<{}>>", ansText);
-				fv.setFeature(AF_TyCorSpQAHit.class, 1.0);
+				fv.setFeature(AF.TyCorSpQAHit, 1.0);
 			} else {
 				/* Fuzzy match, just produce a debug print
 				 * as well for grep's sake. */
@@ -244,10 +226,10 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		LATMatch match = matchLATs(questionView, answerView, fv);
 
 		if (match != null) {
-			fv.setFeature(AF_SpWordNet.class, Math.exp(match.getSpecificity()));
+			fv.setFeature(AF.SpWordNet, Math.exp(match.getSpecificity()));
 
 		/* We were the only ones doing type coercion here. */
-		} else if (!fv.isFeatureSet(AF_TyCorPassageDist.class)) {
+		} else if (!fv.isFeatureSet(AF.TyCorPassageDist)) {
 			/* XXX: Make the following a separate annotator?
 			 * When we get another type coercion stage. */
 
@@ -255,22 +237,22 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 			 * a pretty interesting negative feature on its own? */
 			if (aNoLAT) {
 				logger.debug("no LAT for <<{}>>", answerView.getDocumentText());
-				fv.setFeature(AF_LATANone.class, -1.0);
+				fv.setFeature(AF.LATANone, -1.0);
 
 			/* There is no type coercion match, but wordnet LATs
 			 * generated for both question and answer.  This means
 			 * we are fairly sure this answer is of a wrong type. */
 			} else if (!qNoWordnetLAT && !aNoWordnetLAT
-				   && !fv.isFeatureSet(AF_TyCorPassageDist.class)) {
+				   && !fv.isFeatureSet(AF.TyCorPassageDist)) {
 				logger.debug("failed TyCor for <<{}>>", answerView.getDocumentText());
-				fv.setFeature(AF_NoTyCor.class, -1.0);
+				fv.setFeature(AF.NoTyCor, -1.0);
 			}
 		}
 
 		if (qNoWordnetLAT)
-			fv.setFeature(AF_LATQNoWordNet.class, -1.0);
+			fv.setFeature(AF.LATQNoWordNet, -1.0);
 		if (!aNoLAT && aNoWordnetLAT)
-			fv.setFeature(AF_LATANoWordNet.class, -1.0);
+			fv.setFeature(AF.LATANoWordNet, -1.0);
 
 		if (ai.getFeatures() != null)
 			for (FeatureStructure af : ai.getFeatures().toArray())
@@ -358,12 +340,12 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				 * seems to be a negative signal that the
 				 * answer is less specifit than we want. */
 				logger.debug("generalizing both LATs for <<{}>>", answerView.getDocumentText());
-				fv.setFeature(AF_TyCorSpNoHit.class, -1.0);
+				fv.setFeature(AF.TyCorSpNoHit, -1.0);
 			} else if (hits > 0) {
 				/* Multiple hits, that's a positive signal
 				 * hopefully indicating strong evidence. */
 				logger.debug("multi-hit LAT match for <<{}>>", answerView.getDocumentText());
-				fv.setFeature(AF_TyCorSpMultiHit.class, 1.0);
+				fv.setFeature(AF.TyCorSpMultiHit, 1.0);
 			}
 		}
 		return bestMatch;
