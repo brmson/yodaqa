@@ -91,13 +91,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 
 			for (DBpediaTitles.Article a : results) {
-				logger.debug("Canon label: " + a.getCanonLabel() + " name: " + a.getName() + " matched queries: " + a.getCount() + " pageID: " + a.getPageID());
+				logger.debug("Canon label: " + a.getCanonLabel() + " name: " + a.getName() + " score: " + a.getScore() + " pageID: " + a.getPageID());
 			}
 
 			Collections.sort(results, new Comparator<DBpediaTitles.Article>() {
 				@Override
 				public int compare(DBpediaTitles.Article a1, DBpediaTitles.Article a2) {
-					return Integer.compare(a2.getCount(), a1.getCount());
+					return Double.compare(a2.getScore(), a1.getScore());
 				}
 			} );
 
