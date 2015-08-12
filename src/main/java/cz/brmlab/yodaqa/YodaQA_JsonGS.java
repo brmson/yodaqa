@@ -1,12 +1,12 @@
 package cz.brmlab.yodaqa;
 
+import cz.brmlab.yodaqa.io.collection.JSONQuestionReader;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.collection.CollectionReaderDescription;
 
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
-import cz.brmlab.yodaqa.io.collection.TSVQuestionReader;
 import cz.brmlab.yodaqa.io.collection.GoldStandardAnswerPrinter;
-import org.apache.uima.collection.CollectionReaderDescription;
 import cz.brmlab.yodaqa.pipeline.YodaQA;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
@@ -16,18 +16,18 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 /* FIXME: Massive code duplication of YodaQA_Interactive and YodaQA_GS.
  * Let's abstract out the processing pipeline later. */
 
-public class YodaQA_GS {
+public class YodaQA_JsonGS {
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
-			System.err.println("Usage: YodaQA_GS INPUT.TSV OUTPUT.TSV");
+			System.err.println("Usage: YodaQA_GS INPUT.json OUTPUT.TSV");
 			System.err.println("Measures YodaQA performance on some Gold Standard questions.");
 			System.exit(1);
 		}
 
 		CollectionReaderDescription reader = createReaderDescription(
-				TSVQuestionReader.class,
-				TSVQuestionReader.PARAM_TSVFILE, args[0],
-				TSVQuestionReader.PARAM_LANGUAGE, "en");
+				JSONQuestionReader.class,
+				JSONQuestionReader.PARAM_JSONFILE, args[0],
+				JSONQuestionReader.PARAM_LANGUAGE, "en");
 
 		AnalysisEngineDescription pipeline = YodaQA.createEngineDescription();
 
