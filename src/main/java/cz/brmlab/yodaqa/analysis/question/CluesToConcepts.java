@@ -106,6 +106,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
 
+			int rank = 1;
 			for (DBpediaTitles.Article a : results.subList(0, Math.min(3, results.size()))) {
 				String cookedLabel = a.getCanonLabel();
 				/* But in case of "list of...", keep the original label
@@ -130,6 +131,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setFullLabel(a.getCanonLabel());
 				concept.setCookedLabel(cookedLabel);
 				concept.setPageID(a.getPageID());
+				concept.setScore(a.getScore());
+				concept.setRr(1 / ((double) rank));
 
 				/* Also remove all the covered sub-clues. */
 				/* TODO: Mark the clues as alternatives so that we
@@ -156,6 +159,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				} else {
 					labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 				}
+				rank++;
 			}
 
 			/* Generate ClueConcepts. */
