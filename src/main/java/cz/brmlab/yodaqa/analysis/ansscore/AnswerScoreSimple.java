@@ -13,13 +13,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_PassageLogScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SimpleScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SpWordNet;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
@@ -51,26 +45,26 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 		AnswerFV fv = new AnswerFV(a);
 
 		double specificity;
-		if (fv.isFeatureSet(AF_SpWordNet.class))
-			specificity = fv.getFeatureValue(AF_SpWordNet.class);
+		if (fv.isFeatureSet(AF.SpWordNet))
+			specificity = fv.getFeatureValue(AF.SpWordNet);
 		else
 			specificity = Math.exp(-4);
 
 		double passageLogScore = 0;
-		if (fv.isFeatureSet(AF_PassageLogScore.class))
-			passageLogScore = fv.getFeatureValue(AF_PassageLogScore.class);
-		else if (fv.getFeatureValue(AF_OriginDocTitle.class) > 0.0)
+		if (fv.isFeatureSet(AF.PassageLogScore))
+			passageLogScore = fv.getFeatureValue(AF.PassageLogScore);
+		else if (fv.getFeatureValue(AF.OriginDocTitle) > 0.0)
 			passageLogScore = Math.log(1 + 2);
 
 		double neBonus = 0;
-		if (fv.isFeatureSet(AF_OriginPsgNE.class))
+		if (fv.isFeatureSet(AF.OriginPsgNE))
 			neBonus = 1;
 
 		double score = specificity
 			* Math.exp(neBonus)
-			* fv.getFeatureValue(AF_Occurences.class)
+			* fv.getFeatureValue(AF.Occurences)
 			* passageLogScore
-			* fv.getFeatureValue(AF_ResultLogScore.class);
+			* fv.getFeatureValue(AF.ResultLogScore);
 		return score;
 	}
 
@@ -92,7 +86,7 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 			/* ...but instead we just add it as an extra feature
 			 * for a more complex scorer. */
 			AnswerFV fv = new AnswerFV(as.a);
-			fv.setFeature(AF_SimpleScore.class, as.score);
+			fv.setFeature(AF.SimpleScore, as.score);
 
 			for (FeatureStructure af : as.a.getFeatures().toArray())
 				((AnswerFeature) af).removeFromIndexes();

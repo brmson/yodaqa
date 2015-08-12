@@ -5,6 +5,13 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSource;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
+import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringDocTitle;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.uima.UimaContext;
@@ -15,6 +22,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
@@ -22,10 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -155,22 +160,28 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentText(title.replaceAll("\\s+\\([^)]*\\)\\s*$", ""));
 		jcas.setDocumentLanguage("en"); // XXX
 
+		AnswerSourceEnwiki ac = new AnswerSourceEnwiki(AnswerSourceEnwiki.ORIGIN_DOCUMENT, (title != null ? title : ""), id);
+		int sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(ac);
+		AnsweringDocTitle adt = new AnsweringDocTitle(SnippetIDGenerator.getInstance().generateID(), sourceID);
+		QuestionDashboard.getInstance().get(questionView).addSnippet(adt);
+
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentId(id.toString());
 		ri.setDocumentTitle(title);
 		ri.setSource(srcName);
 		ri.setRelevance(((Float) doc.getFieldValue("score")).floatValue());
 		ri.setIsLast(isLast);
+		ri.setSourceID(sourceID);
 		ri.setOrigin("cz.brmlab.yodaqa.pipeline.solrdoc.SolrDocPrimarySearch");
 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */
 		ri.addToIndexes();
 
 		AnswerFV fv = new AnswerFV();
-		fv.setFeature(AF_Occurences.class, 1.0);
-		fv.setFeature(AF_ResultRR.class, 1 / ((float) i));
-		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
-		fv.setFeature(AF_OriginDocTitle.class, 1.0);
+		fv.setFeature(AF.Occurences, 1.0);
+		fv.setFeature(AF.ResultRR, 1 / ((float) i));
+		fv.setFeature(AF.ResultLogScore, Math.log(1 + ri.getRelevance()));
+		fv.setFeature(AF.OriginDocTitle, 1.0);
 
 		AnswerResource ar = new AnswerResource(jcas);
 		ar.setIri("http://en.wikipedia.org/wiki/" + title.replace(" ", "_"));
@@ -182,9 +193,10 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setResources(FSCollectionFactory.createFSArray(jcas, ars));
 		ai.setIsLast(1);
+		ai.setSnippetIDs(new IntegerArray(jcas, 1));
+		ai.setSnippetIDs(0, adt.getSnippetID());
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setSource("document search in wikipedia");
-		ai.addToIndexes();
+ 		ai.addToIndexes();
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {

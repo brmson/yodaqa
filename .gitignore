@@ -24,3 +24,7 @@ build
 
 # tests
 /*.tsv
+
+#bing api key
+bingapi.properties
+bingresults.db

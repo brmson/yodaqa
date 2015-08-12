@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import cz.brmlab.yodaqa.flow.dashboard.PassageIDGenerator;
-import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;
@@ -26,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.PF_ClueMatch;
 import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
@@ -100,7 +98,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 
 			/* Collect answer features. */
 			AnswerFV afv = new AnswerFV();
-			afv.setFeature(AF_OriginPsg.class, 1.0);
+			afv.setFeature(AF.OriginPsg, 1.0);
 
 			/* TODO: Put clues in a hierarchy so that we don't
 			 * try to match word clues of phrase clues we already
@@ -143,8 +141,6 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 				passage.setEnd(sentence.getEnd());
 				passage.setAnsfeatures(afv.toFSArray(passagesView));
 				passage.setFeatures(FSCollectionFactory.createFSArray(jcas, features));
-				passage.setPassageID(PassageIDGenerator.getInstance().generateID());
-				QuestionDashboard.getInstance().addPassage(passage.getPassageID(), passage.getCoveredText());
 				passage.addToIndexes();
 
 				logger.debug(featureStr + " | " + passage.getCoveredText());
@@ -199,27 +195,18 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 	}
 
 	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
-		     if (clue instanceof ClueToken     ) afv.setFeature(AF_OriginPsgByClueToken.class, 1.0);
-		else if (clue instanceof CluePhrase    ) afv.setFeature(AF_OriginPsgByCluePhrase.class, 1.0);
-		else if (clue instanceof ClueSV        ) afv.setFeature(AF_OriginPsgByClueSV.class, 1.0);
-		else if (clue instanceof ClueNE        ) afv.setFeature(AF_OriginPsgByClueNE.class, 1.0);
-		else if (clue instanceof ClueLAT       ) afv.setFeature(AF_OriginPsgByClueLAT.class, 1.0);
-		else if (clue instanceof ClueSubject   ) {
-			afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
-			     if (clue instanceof ClueSubjectNE) afv.setFeature(AF_OriginPsgByClueSubjectNE.class, 1.0);
-			else if (clue instanceof ClueSubjectToken) afv.setFeature(AF_OriginPsgByClueSubjectToken.class, 1.0);
-			else if (clue instanceof ClueSubjectPhrase) afv.setFeature(AF_OriginPsgByClueSubjectPhrase.class, 1.0);
-			else assert(false);
+		afv.setFeature(AF.OriginPsgBy_ClueType + clue.getType().getShortName(), 1.0);
+		if (clue instanceof ClueSubject) {
+			afv.setFeature(AF.OriginPsgBy_ClueType + "ClueSubject", 1.0);
 		} else if (clue instanceof ClueConcept ) {
-			afv.setFeature(AF_OriginPsgByClueConcept.class, 1.0);
-			ClueConcept concept = (ClueConcept) clue;
-			if (concept.getBySubject())
-				afv.setFeature(AF_OriginPsgByClueSubject.class, 1.0);
-			if (concept.getByLAT())
-				afv.setFeature(AF_OriginPsgByClueLAT.class, 1.0);
-			if (concept.getByNE())
-				afv.setFeature(AF_OriginPsgByClueNE.class, 1.0);
+			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
+				if (concept.getBySubject())
+					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueSubject", 1.0);
+				if (concept.getByLAT())
+					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueLAT", 1.0);
+				if (concept.getByNE())
+					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueNE", 1.0);
+			}
 		}
-		else assert(false);
 	}
 }

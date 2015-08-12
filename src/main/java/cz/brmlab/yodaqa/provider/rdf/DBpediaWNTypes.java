@@ -12,6 +12,7 @@ import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.dictionary.Dictionary;
 import net.sf.extjwnl.data.Synset;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -51,10 +52,9 @@ public class DBpediaWNTypes extends DBpediaLookup {
 	 * of types. The type is in the form of string/synset. */
 	public List<String> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
-		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in the sought
-		 * after title. */
-		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
+		 * to be surprisingly tricky.  Cover 91% of all cases
+		 * by capitalizing words that are not stopwords  */
+		title = super.capitalizeTitle(title);
 
 		title = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =

@@ -1,18 +1,27 @@
 Machine Learning
 ================
 
-Right now, we consider machine learned models in three cases:
+Right now, we consider machine learned models in several cases.
+
+First, cases which are not sharing the general YodaQA training infrastructure
+and are *not* covered in the rest of this document:
+
+  * In structured search, Freebase property paths to be considered are
+    generated based on some question analysis features using a separately
+    pre-trained model.
+    Its model data lives in ``data/ml/fbpath``, refer to the README there.
+
+  * Candidate answer extraction based on B-I-O tagging and chunking.
+    Its model data lives in ``data/ml/biocrf``, refer to the README there.
+
+Then, we have some generic infrastructure that we describe below and use for:
 
   * Passage scoring during the final step of passage extraction, where we
     choose which passages to analyze in more detail to generate candidate
     answers.
 
-  * Candidate answer scoring during the final answer choice.
-
-  * Candidate answer extraction based on B-I-O tagging and chunking;
-    this token sequence model does not share the rest of this infrastructure
-    (using Cleartk instead) and the rest of this document does not cover it;
-    its model data lives in ``data/ml/biocrf``, refer to the README there.
+  * Candidate answer scoring during the final answer choice.  (This is
+    the most important model.)
 
 In general, to train models, we first need to gather training data.
 We run YodaQA with the tsvgs frontend like during gold standard measurements,

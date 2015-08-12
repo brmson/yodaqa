@@ -20,6 +20,7 @@ import cz.brmlab.yodaqa.pipeline.structured.DBpediaOntologyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.DBpediaPropertyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.FreebaseOntologyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.AnswerHitlistSerialize;
+import cz.brmlab.yodaqa.provider.IPv6Check;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
@@ -38,8 +39,8 @@ import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 	static {
-		/* Enable IPv6 usage  (if available). */
-		System.setProperty("java.net.preferIPv6Addresses", "true");
+		/* Enable IPv6 usage (if available). */
+		IPv6Check.enableIPv6IfItWorks();
 
 		try {
 			/* We have two options here - either use a local embedded
@@ -89,6 +90,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					FixedFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.pipeline.YodaQA");
 		if (outputsNewCASes)
 			aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
@@ -135,7 +137,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 6,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 7,
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -292,8 +294,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		builder.add(fbOnt);
 
 		/* Full-text search: */
+		/* XXX: These aggregates have "Solr" in name but do not
+		 * necessarily use just Solr, e.g. Bing. */
 		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
-		builder.add(solrFull); /* This one is worth 2 isLasts. */
+		builder.add(solrFull); /* This one is worth 3 isLasts. */
 		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
 		builder.add(solrDoc);
 
@@ -303,6 +307,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 					FixedParallelFlowController.PARAM_ACTION_AFTER_CAS_MULTIPLIER, "drop"));
 
 		AnalysisEngineDescription aed = builder.createAggregateDescription();
+		aed.getAnalysisEngineMetaData().setName("cz.brmlab.yodaqa.pipeline.YodaQA.AnswerProducer");
 		aed.getAnalysisEngineMetaData().getOperationalProperties().setOutputsNewCASes(true);
 		return aed;
 	}

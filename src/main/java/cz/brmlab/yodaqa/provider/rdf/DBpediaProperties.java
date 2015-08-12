@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -23,10 +26,9 @@ public class DBpediaProperties extends DBpediaOntology {
 	 * PropertyValue instances. */
 	public List<PropertyValue> queryTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
-		 * to be surprisingly tricky.  Cover 90% of all cases
-		 * by force-capitalizing the first letter in the sought
-		 * after title. */
-		title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
+		 * to be surprisingly tricky.  Cover 91% of all cases
+		 * by capitalizing words that are not stopwords  */
+		title = super.capitalizeTitle(title);
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to e.g.
@@ -59,7 +61,7 @@ public class DBpediaProperties extends DBpediaOntology {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "propName", "value", "/valres" }, 0);
+			new String[] { "propName", "value", "/valres", "/res" }, 0);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -70,8 +72,9 @@ public class DBpediaProperties extends DBpediaOntology {
 			 * links). */
 			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
+			String objRes = rawResult[3].getString();
 			logger.debug("DBpedia {} rawproperty: {} -> {} ({})", title, propLabel, value, valRes);
-			results.add(new PropertyValue(title, propLabel, value, valRes));
+			results.add(new PropertyValue(title, objRes, propLabel, value, valRes, AF.OriginDBpProperty, AnswerSourceStructured.ORIGIN_RAW_PROPERTY));
 		}
 
 		return results;

@@ -5,6 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
+import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -12,6 +17,7 @@ import org.apache.uima.fit.component.JCasMultiplier_ImplBase;
 import org.apache.uima.fit.util.FSCollectionFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.IntegerArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.CasCopier;
@@ -21,20 +27,17 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.ClueSubject;
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
-
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 
@@ -55,13 +58,14 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected int i;
 
 	protected String sourceName;
-	protected Class<? extends AnswerFeature> originFeature, noClueFeature;
+	protected String clueFeaturePrefix;
+	protected String noClueFeature;
 
 	public StructuredPrimarySearch(String sourceName_,
-			Class<? extends AnswerFeature> originFeature_,
-			Class<? extends AnswerFeature> noClueFeature_) {
+			String clueFeaturePrefix_,
+			String noClueFeature_) {
 		sourceName = sourceName_;
-		originFeature = originFeature_;
+		clueFeaturePrefix = clueFeaturePrefix_;
 		noClueFeature = noClueFeature_;
 	}
 
@@ -70,8 +74,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		super.initialize(aContext);
 	}
 
-	/** Retrieve properties associated with a given ClueConcept. */
-	protected abstract List<PropertyValue> getConceptProperties(ClueConcept concept);
+	/** Retrieve properties associated with a given Concept. */
+	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, Concept concept);
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -79,8 +83,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			properties.addAll(getConceptProperties(concept));
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			properties.addAll(getConceptProperties(questionView, concept));
 		}
 
 		relIter = properties.iterator();
@@ -135,21 +139,28 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
+		AnswerSourceStructured as = makeAnswerSource(property);
+		int sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
+		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
+		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
 		ResultInfo ri = new ResultInfo(jcas);
 		ri.setDocumentTitle(title);
 		ri.setSource(sourceName);
 		ri.setRelevance(1.0);
 		ri.setIsLast(isLast);
+		ri.setSourceID(sourceID);
 		ri.setOrigin(this.getClass().getCanonicalName());
 		/* XXX: We ignore ansfeatures as we generate just
 		 * a single answer here. */
 		ri.addToIndexes();
 
 		AnswerFV fv = new AnswerFV();
-		fv.setFeature(AF_Occurences.class, 1.0);
-		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
-		fv.setFeature(originFeature, 1.0);
+		fv.setFeature(AF.Occurences, 1.0);
+		fv.setFeature(AF.ResultLogScore, Math.log(1 + ri.getRelevance()));
+		fv.setFeature(property.getOriginFeat(), 1.0);
+		if (property.getScore() != null)
+			fv.setFeature(AF.PropertyScore, property.getScore());
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
@@ -165,7 +176,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		ai.setFeatures(fv.toFSArray(jcas));
 		ai.setIsLast(1);
 		ai.setAnswerID(AnswerIDGenerator.getInstance().generateID());
-		ai.setSource("structured search in "+sourceName);
+		ai.setSnippetIDs(new IntegerArray(jcas, 1));
+		ai.setSnippetIDs(0,ap.getSnippetID());
 
 		/* Generate a resource descriptor if available. */
 		if (property.getValRes() != null) {
@@ -198,20 +210,23 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected void addConceptFeatures(JCas questionView, AnswerFV fv, String text) {
-		// XXX: Carry the clue reference in property object.
-		for (ClueConcept concept : JCasUtil.select(questionView, ClueConcept.class)) {
-			if (!concept.getLabel().toLowerCase().equals(text.toLowerCase()))
+		// XXX: Carry the clue reference in PropertyValue.
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			if (!concept.getCookedLabel().toLowerCase().equals(text.toLowerCase()))
 				continue;
 			// We don't set this since all our clues have concept origin
-			//afv.setFeature(AF_OriginConcept.class, 1.0);
+			//afv.setFeature(AF.OriginConcept, 1.0);
 			if (concept.getBySubject())
-				fv.setFeature(AF_OriginConceptBySubject.class, 1.0);
+				fv.setFeature(AF.OriginConceptBySubject, 1.0);
 			if (concept.getByLAT())
-				fv.setFeature(AF_OriginConceptByLAT.class, 1.0);
+				fv.setFeature(AF.OriginConceptByLAT, 1.0);
 			if (concept.getByNE())
-				fv.setFeature(AF_OriginConceptByNE.class, 1.0);
+				fv.setFeature(AF.OriginConceptByNE, 1.0);
 		}
 	}
+
+	/** Create a specific AnswerSource instance for the given concept. */
+	protected abstract AnswerSourceStructured makeAnswerSource(PropertyValue property);
 
 	/** Add an LAT of given type string. This should be an addTypeLAT()
 	 * wrapper that also generates an LAT feature and LAT instance
@@ -261,7 +276,21 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 	/** Generate primary search kind specific features indicating
 	 * the originating clue type. */
-	protected abstract void clueAnswerFeatures(AnswerFV afv, Clue clue);
+	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
+		afv.setFeature(clueFeaturePrefix + clue.getType().getShortName(), 1.0);
+		if (clue instanceof ClueSubject) {
+			afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
+		} else if (clue instanceof ClueConcept ) {
+			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
+				if (concept.getBySubject())
+					afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
+				if (concept.getByLAT())
+					afv.setFeature(clueFeaturePrefix + "ClueLAT", 1.0);
+				if (concept.getByNE())
+					afv.setFeature(clueFeaturePrefix + "ClueNE", 1.0);
+			}
+		}
+	}
 
 
 	@Override

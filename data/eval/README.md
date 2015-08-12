@@ -80,6 +80,12 @@ rid of old data, use:
 
 (WARNING: AUTOMATIC FILE REMOVAL, NO WARRANTY.)
 
+There is also a newer alternative way to batch-query a running YodaQA
+for a set of questions and evaluate the replies, using the REST API and
+questions stored in JSON files:
+
+	data/eval/rest-eval.py ../dataset-factoid-webquestions/main/devtest.json http://localhost:4567/
+
 Legacy Benchmarking
 -------------------
 

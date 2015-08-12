@@ -24,10 +24,16 @@ some questions, even though it's embarrassingly often wrong; on the testing
 corpus, while about 79.3% of questions have the correct answer *suggested*
 in the process, it can currently choose the correct answer for about 32.6%
 of questions (but 47.6% of questions have the correct answer in top three
-and 52.7% in top five candidates).  You can read a pre-print of the first
-paper on YodaQA at:
+and 52.7% in top five candidates).  More details on YodaQA plus links to
+some papers are available at:
 
-	http://pasky.or.cz/dev/brmson/yodaqa-poster2015.pdf
+	http://ailao.eu/yodaqa/
+
+and you can play with a live demo at
+
+	http://live.ailao.eu/
+
+(this demo corresponds to the ``d/live`` branch of this git repo).
 
 ## Installation Instructions
 
@@ -54,20 +60,16 @@ frontend which offers a prompt and answers questions interactively;
 answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
-
 Alternatively, you can use the "web" frontend by executing
 ``./gradlew web -q`` and opening e.g. http://localhost:4567/ in your browser.
-It is also possible to let YodaQA answer many questions at once, e.g. to
-measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
-the curated testing dataset from data/eval/.  (See also data/eval/README.md
-for more details, and a convenient wrapper script ``train-and-eval.sh``.)
-To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
+A shinier web interface is available at https://github.com/brmson/YodaQA-client
+and you can also use the web frontend as a REST API.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
-Alternatively, if things don't go well, try passing an extra parameter
-``-Dorg.slf4j.simpleLogger.defaultLogLevel=debug`` on the commandline,
-or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
+Alternatively, if things don't go well or you would like to watch YodaQA
+think, try passing an extra command line parameter
+``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug`` to gradle.
 
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
 on systems with less than 8GB RAM.  You may also need to tweak the
@@ -75,6 +77,12 @@ minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
 on a 32-bit system.  By default, YodaQA will try to use *half* of the logical
 CPU cores available; set the YODAQA_N_THREADS environment variable to change
 the number of threads used.
+
+It is also possible to let YodaQA answer many questions at once, e.g. to
+measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
+the curated testing dataset from data/eval/.  (See also data/eval/README.md
+for more details, and a convenient wrapper script ``train-and-eval.sh``.)
+To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
 
 ## Data Sources
 

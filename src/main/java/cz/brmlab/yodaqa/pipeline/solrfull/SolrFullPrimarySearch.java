@@ -2,8 +2,12 @@ package cz.brmlab.yodaqa.pipeline.solrfull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
+
+import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -25,19 +29,16 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConcept;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByLAT;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptByNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginConceptBySubject;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.provider.solr.Solr;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 import cz.brmlab.yodaqa.provider.solr.SolrQuerySettings;
 import cz.brmlab.yodaqa.provider.solr.SolrTerm;
+
 
 /**
  * Take a question CAS and search for keywords (or already resolved pageIDs)
@@ -93,10 +94,11 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 	protected class SolrResult {
 		public SolrDocument doc;
-		public ClueConcept concept;
+		public Concept concept;
 		public int rank;
+		public int sourceID;
 
-		public SolrResult(SolrDocument doc, ClueConcept concept, int rank) {
+		public SolrResult(SolrDocument doc, Concept concept, int rank) {
 			this.doc = doc;
 			this.concept = concept;
 			this.rank = rank;
@@ -107,11 +109,10 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			String title = (String) doc.getFieldValue("titleText");
 			double score = ((Float) doc.getFieldValue("score")).floatValue();
 			logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
-
 			AnswerSourceEnwiki as = new AnswerSourceEnwiki(
 					searchFullText ? AnswerSourceEnwiki.ORIGIN_FULL : AnswerSourceEnwiki.ORIGIN_TITLE,
 					title, id);
-			QuestionDashboard.getInstance().get(questionView).addSource(as);
+			sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
 		}
 	};
 
@@ -153,15 +154,16 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		results = new ArrayList<>();
 		i = 0;
 
-		/* Run a search for concept clues (pageID)
+		/* Run a search for concepts (pageID)
 		 * if they weren't included above. */
 
-		Collection<ClueConcept> concepts;
+		Map<Integer, Concept> concepts = new HashMap<>();
 		SolrDocumentList documents;
 		int i;
 		try {
-			concepts = JCasUtil.select(questionView, ClueConcept.class);
-			Collection<Integer> IDs = conceptsToIDs(concepts);
+			for (Concept concept : JCasUtil.select(questionView, Concept.class))
+				concepts.put(concept.getPageID(), concept);
+			Collection<Integer> IDs = concepts.keySet();
 			documents = solr.runIDQuery(IDs, hitListSize /* XXX: should we even limit this? */, logger);
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
@@ -171,17 +173,8 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		for (SolrDocument doc : documents) {
 			Integer id = (Integer) doc.getFieldValue("id");
 			visitedIDs.add(id);
-			/* Find the original concept again; XXX ugly */
-			ClueConcept concept = null;
-			for (ClueConcept c : concepts) {
-				if (c.getPageID() == id.intValue()) {
-					concept = c;
-					break;
-				}
-			}
-			assert(concept != null);
 			/* Record the result. */
-			results.add(new SolrResult(doc, concept, 1));
+			results.add(new SolrResult(doc, concepts.get(id), 1));
 		}
 
 		/* Run a search for text clues. */
@@ -207,13 +200,6 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 	}
 
-	protected List<Integer> conceptsToIDs(Collection<ClueConcept> concepts) {
-		List<Integer> terms = new ArrayList<Integer>(concepts.size());
-		for (ClueConcept concept : concepts)
-			terms.add(concept.getPageID());
-		return terms;
-	}
-
 	@Override
 	public boolean hasNext() throws AnalysisEngineProcessException {
 		return i < results.size() || i == 0;
@@ -237,13 +223,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 				ResultInfo ri = generateSolrResult(questionView, resultView, result, isLast ? i : 0);
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
-				/* XXX: Ugh. We clearly need global result ids. */
-				QuestionDashboard.getInstance().get(questionView).setSourceState(
-						ri.getOrigin() == "cz.brmlab.yodaqa.pipeline.solrfull.fulltext"
-							? AnswerSourceEnwiki.ORIGIN_FULL
-							: AnswerSourceEnwiki.ORIGIN_TITLE,
-						Integer.parseInt(ri.getDocumentId()),
-						1);
+				QuestionDashboard.getInstance().get(questionView).setSourceState(ri.getSourceID(), 1);
 			} else {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */
@@ -285,16 +265,16 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		resultView.setDocumentLanguage("en"); // XXX
 
 		AnswerFV afv = new AnswerFV();
-		afv.setFeature(AF_ResultRR.class, 1 / ((float) result.rank));
-		afv.setFeature(AF_ResultLogScore.class, Math.log(1 + score));
+		afv.setFeature(AF.ResultRR, 1 / ((float) result.rank));
+		afv.setFeature(AF.ResultLogScore, Math.log(1 + score));
 		if (result.concept != null) {
-			afv.setFeature(AF_OriginConcept.class, 1.0);
+			afv.setFeature(AF.OriginConcept, 1.0);
 			if (result.concept.getBySubject())
-				afv.setFeature(AF_OriginConceptBySubject.class, 1.0);
+				afv.setFeature(AF.OriginConceptBySubject, 1.0);
 			if (result.concept.getByLAT())
-				afv.setFeature(AF_OriginConceptByLAT.class, 1.0);
+				afv.setFeature(AF.OriginConceptByLAT, 1.0);
 			if (result.concept.getByNE())
-				afv.setFeature(AF_OriginConceptByNE.class, 1.0);
+				afv.setFeature(AF.OriginConceptByNE, 1.0);
 		}
 
 		ResultInfo ri = new ResultInfo(resultView);
@@ -305,6 +285,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.setOrigin(resultInfoOrigin);
 		ri.setAnsfeatures(afv.toFSArray(resultView));
 		ri.setIsLast(isLast);
+		ri.setSourceID(result.sourceID);
 		ri.addToIndexes();
 
 		return ri;

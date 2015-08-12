@@ -28,6 +28,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 public class DBpediaOntologyAnswerProducer extends StructuredAnswerProducer {
 	public static AnalysisEngineDescription createEngineDescription()
 			throws ResourceInitializationException {
-		return createEngineDescription(DBpediaOntologyPrimarySearch.class);
+		return createEngineDescription("cz.brmlab.yodaqa.pipeline.structured.DBpediaOntologyAnswerProducer",
+				DBpediaOntologyPrimarySearch.class);
 	}
 }

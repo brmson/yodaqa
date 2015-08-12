@@ -8,16 +8,12 @@ import org.apache.uima.jcas.JCas;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpProperty;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
-import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.TyCor.DBpPropertyLAT;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaProperties;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
-
-/* XXX: The clue-specific features, ugh. */
-import cz.brmlab.yodaqa.model.Question.*;
-import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 /**
  * From the QuestionCAS, generate a bunch of CandidateAnswerCAS
@@ -42,48 +38,28 @@ import cz.brmlab.yodaqa.model.CandidateAnswer.*;
 
 public class DBpediaPropertyPrimarySearch extends StructuredPrimarySearch {
 	public DBpediaPropertyPrimarySearch() {
-		super("DBpedia Property", AF_OriginDBpProperty.class, AF_OriginDBpPNoClue.class);
+		super("DBpedia Property", AF.OriginDBpP_ClueType, AF.OriginDBpPNoClue);
 		logger = LoggerFactory.getLogger(DBpediaPropertyPrimarySearch.class);
 	}
 
 	final DBpediaProperties dbp = new DBpediaProperties();
 
-	protected List<PropertyValue> getConceptProperties(ClueConcept concept) {
+	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* Query the DBpedia raw infobox dataset - uncleaned
 		 * but depnse infobox based data. */
-		properties.addAll(dbp.query(concept.getLabel(), logger));
+		/* TODO: Fetch by pageID. */
+		properties.addAll(dbp.query(concept.getCookedLabel(), logger));
 		return properties;
 	}
 
-
-	protected void addTypeLAT(JCas jcas, AnswerFV fv, String type) throws AnalysisEngineProcessException {
-		fv.setFeature(AF_LATDBpProperty.class, 1.0);
-		addTypeLAT(jcas, fv, type, new DBpPropertyLAT(jcas));
+	protected AnswerSourceStructured makeAnswerSource(PropertyValue property) {
+		return new AnswerSourceStructured(AnswerSourceStructured.TYPE_DBPEDIA,
+				property.getOrigin(), property.getObjRes(), property.getObject());
 	}
 
-	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
-		     if (clue instanceof ClueToken     ) afv.setFeature(AF_OriginDBpPClueToken.class, 1.0);
-		else if (clue instanceof CluePhrase    ) afv.setFeature(AF_OriginDBpPCluePhrase.class, 1.0);
-		else if (clue instanceof ClueSV        ) afv.setFeature(AF_OriginDBpPClueSV.class, 1.0);
-		else if (clue instanceof ClueNE        ) afv.setFeature(AF_OriginDBpPClueNE.class, 1.0);
-		else if (clue instanceof ClueLAT       ) afv.setFeature(AF_OriginDBpPClueLAT.class, 1.0);
-		else if (clue instanceof ClueSubject   ) {
-			afv.setFeature(AF_OriginDBpPClueSubject.class, 1.0);
-			     if (clue instanceof ClueSubjectNE) afv.setFeature(AF_OriginDBpPClueSubjectNE.class, 1.0);
-			else if (clue instanceof ClueSubjectToken) afv.setFeature(AF_OriginDBpPClueSubjectToken.class, 1.0);
-			else if (clue instanceof ClueSubjectPhrase) afv.setFeature(AF_OriginDBpPClueSubjectPhrase.class, 1.0);
-			else assert(false);
-		} else if (clue instanceof ClueConcept ) {
-			afv.setFeature(AF_OriginDBpPClueConcept.class, 1.0);
-			ClueConcept concept = (ClueConcept) clue;
-			if (concept.getBySubject())
-				afv.setFeature(AF_OriginDBpPClueSubject.class, 1.0);
-			if (concept.getByLAT())
-				afv.setFeature(AF_OriginDBpPClueLAT.class, 1.0);
-			if (concept.getByNE())
-				afv.setFeature(AF_OriginDBpPClueNE.class, 1.0);
-		}
-		else assert(false);
+	protected void addTypeLAT(JCas jcas, AnswerFV fv, String type) throws AnalysisEngineProcessException {
+		fv.setFeature(AF.LATDBpProperty, 1.0);
+		addTypeLAT(jcas, fv, type, new DBpPropertyLAT(jcas));
 	}
 }

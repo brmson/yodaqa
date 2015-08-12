@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.LinkedHashSet;
 
+import cz.brmlab.yodaqa.flow.dashboard.AnswerSource;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -30,17 +31,7 @@ import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
@@ -75,7 +66,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 	protected boolean doReuseHitlist;
 
 	/** The phase number. If non-zero, confidence of the answer is
-	 * pre-set to AF_Phase(n-1)Score. */
+	 * pre-set to AF.Phase(n-1)Score. */
 	public static final String PARAM_PHASE = "phase";
 	@ConfigurationParameter(name = PARAM_PHASE, mandatory = false, defaultValue = "0")
 	protected int phaseNum;
@@ -207,12 +198,11 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		answer.setText(canAnswer.getDocumentText());
 		answer.setCanonText(ai.getCanonText());
 		answer.setAnswerID(ai.getAnswerID());
-		if (ai.getPassageIDs() != null) { //Answer Info passageID is null when we created it using SORLDOC or structured search
-			answer.setPassageIDs(new IntegerArray(hitlistCas, ai.getPassageIDs().size()));
-			answer.getPassageIDs().copyFromArray(ai.getPassageIDs().toArray(), 0, 0, ai.getPassageIDs().size());
-		}
-		else { //create new IntegerArray of size 0
- 			answer.setPassageIDs(new IntegerArray(hitlistCas, 0));
+		if (ai.getSnippetIDs() != null) { // Since we now use AnsweringSnippet, this should never be null!!
+			answer.setSnippetIDs(new IntegerArray(hitlistCas, ai.getSnippetIDs().size()));
+			answer.getSnippetIDs().copyFromArray(ai.getSnippetIDs().toArray(), 0, 0, ai.getSnippetIDs().size());
+		} else { //create new IntegerArray of size 0
+		answer.setSnippetIDs(new IntegerArray(hitlistCas, 0));
 		}
 		int i = 0;
 		/* Store the Focus. */
@@ -302,31 +292,48 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			if (isAnswerLast(canAnswer, ai))
 				isLast++;
 			needCases += ai.getIsLast();
-			// logger.debug("in: canAnswer {}, isLast {}, cases {} < {}", canAnswer.getDocumentText(), isLast, seenCases, needCases);
+			logger.debug("in: canAnswer {}, isLast {} < {}, cases {} < {}",
+				canAnswer.getDocumentText(), isLast, isLastBarrier,
+				seenCases, needCases);
 
 			if (canAnswer.getDocumentText() == null)
 				return; // we received a dummy CAS
 			CompoundAnswer ca = loadAnswer(canAnswer, ai, finalAnswerHitlistView);
 			addAnswer(ca);
 			// System.err.println("AR process: " + ca.getAnswer().getText());
-			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0);
-			if (ai.getPassageIDs()!=null) { //found using either SorlDocPrimarySearch or StructuredSearch
-				for (int ID : ai.getPassageIDs().toArray()) {
-					qa.addToPassageList(ID);
-				}
+			QuestionAnswer qa = new QuestionAnswer(ca.getAnswer().getText(), 0, ai.getAnswerID());
+			if (ai.getSnippetIDs()!=null) { //should never be null
+				for (int ID : ai.getSnippetIDs().toArray()) {
+					qa.addToSnippetIDList(ID);
+ 				}
 			}
-			qa.setID(ai.getAnswerID());
-			qa.setSource(ai.getSource());
 			QuestionDashboard.getInstance().get(finalQuestionView).addAnswer(qa);
 		}
 	}
 
-	public synchronized boolean hasNext() throws AnalysisEngineProcessException {
+	protected boolean checkHasNext() {
 		return isLast >= isLastBarrier && seenCases >= needCases;
 	}
 
+	boolean gotHasNext = false;
+	public synchronized boolean hasNext() throws AnalysisEngineProcessException {
+		boolean ret = checkHasNext();
+		if (!ret)
+			return false;
+		/* We have problems with race conditions as per below,
+		 * this is another line of detection. */
+		if (!gotHasNext) {
+			gotHasNext = true;
+		} else {
+			logger.warn("Warning, hasNext()=true twice before a next() invocation");
+			new Exception().printStackTrace(System.out);
+		}
+		return ret;
+	}
+
 	public synchronized AbstractCas next() throws AnalysisEngineProcessException {
-		if (!hasNext()) {
+		gotHasNext = false;
+		if (!checkHasNext()) {
 			/* XXX: Ideally, this shouldn't happen.  However,
 			 * the CAS merger interface is racy in the multi-
 			 * threaded scenario: two threads simultanously
@@ -336,6 +343,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			 * making both threads call next().  So don't make
 			 * a big fuss about this. */
 			logger.warn("Warning, racy CAS merger: next() on exhausted merger");
+			new Exception().printStackTrace(System.out);
 			return null;
 		}
 
@@ -374,19 +382,19 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 
 				/* Merge PassageIDs*/
 				//we use Set to ignore duplicates
-				Set<Integer> passageIds= new LinkedHashSet<>();
-				for (int ID : answer.getPassageIDs().toArray()) {
-					passageIds.add(ID);
+				Set<Integer> getSnippetIds= new LinkedHashSet<>();
+				for (int ID : answer.getSnippetIDs().toArray()) {
+					getSnippetIds.add(ID);
 				}
-				for (int ID : mainAns.getPassageIDs().toArray()) {
-					passageIds.add(ID);
+				for (int ID : mainAns.getSnippetIDs().toArray()) {
+					getSnippetIds.add(ID);
 				}
 				//resize the passageID array in mainAns and fill it in a for cycle
-				mainAns.setPassageIDs(new IntegerArray(finalCas, passageIds.size()));
+				mainAns.setSnippetIDs(new IntegerArray(finalCas, getSnippetIds.size()));
 
 				int index = 0;
-				for (Integer i: passageIds) {
-					mainAns.setPassageIDs(index, i);
+				for (Integer i: getSnippetIds) {
+					mainAns.setSnippetIDs(index, i);
 					index++;
 				}
 
@@ -408,21 +416,22 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			/* At this point we can generate some features
 			 * to be aggregated over all individual answer
 			 * instances. */
-			if (mainFV.getFeatureValue(AF_OriginPsgFirst.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNP.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNE.class)
-			    + mainFV.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
-			    + mainFV.getFeatureValue(AF_OriginDocTitle.class)
-			    + mainFV.getFeatureValue(AF_OriginDBpOntology.class)
-			    + mainFV.getFeatureValue(AF_OriginDBpProperty.class)
-			    + mainFV.getFeatureValue(AF_OriginFreebaseOntology.class) > 1.0)
-				mainFV.setFeature(AF_OriginMultiple.class, 1.0);
+			if (mainFV.getFeatureValue(AF.OriginPsgFirst)
+			    + mainFV.getFeatureValue(AF.OriginPsgNP)
+			    + mainFV.getFeatureValue(AF.OriginPsgNE)
+			    + mainFV.getFeatureValue(AF.OriginPsgNPByLATSubj)
+			    + mainFV.getFeatureValue(AF.OriginDocTitle)
+			    + mainFV.getFeatureValue(AF.OriginDBpOntology)
+			    + mainFV.getFeatureValue(AF.OriginDBpProperty)
+			    + mainFV.getFeatureValue(AF.OriginFreebaseOntology)
+			    + mainFV.getFeatureValue(AF.OriginFreebaseSpecific) > 1.0)
+				mainFV.setFeature(AF.OriginMultiple, 1.0);
 			/* Also restore confidence value if we already
 			 * determined it before. */
 			if (phaseNum == 1)
-				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase0Score.class));
+				mainAns.setConfidence(mainFV.getFeatureValue(AF.Phase0Score));
 			else if (phaseNum == 2)
-				mainAns.setConfidence(mainFV.getFeatureValue(AF_Phase1Score.class));
+				mainAns.setConfidence(mainFV.getFeatureValue(AF.Phase1Score));
 
 			mainAns.setFeatures(mainFV.toFSArray(finalAnswerHitlistView));
 			for (LAT lat : mainLats)

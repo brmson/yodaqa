@@ -315,8 +315,9 @@ def dump_answers(cfier, fv_test, class_test):
         # print(list(cfier.predict_proba(fv_test)))
 
 
-def cross_validate_one(data):
-    idx, answersets, labels, cfier_factory = data
+def cross_validate_one(idx):
+    global _g_cv_data
+    (answersets, labels, cfier_factory) = _g_cv_data
     # Make sure each worker has a different random seed
     random.seed(random.randint(0,2**31) + idx)
     # Generate a random train/test set split
@@ -333,13 +334,19 @@ def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     Perform num_rounds-fold cross-validation of the model, returning
     the list of test scores in each fold.
     """
+
+    # Do not pass cv_data as parameters as that'll create a separate copy
+    # for each sub-process, dramatically increasing memory improvements;
+    # 16GB RAM is not enough for 8-thread cross-validation on large2180.
+    global _g_cv_data
+    _g_cv_data = (answersets, labels, cfier_factory)
+
     processes = os.environ.get('YODAQA_N_THREADS', None)
     if processes is not None:  processes = int(processes)
     pool = Pool(processes=processes)
 
-    cv_params = [(i, answersets, labels, cfier_factory) for i in range(num_rounds)]
     scores = []
-    for res in pool.imap(cross_validate_one, cv_params):
+    for res in pool.imap(cross_validate_one, range(num_rounds)):
         print('// (test) ' + test_msg(*res))
         scores.append(list(res))
     pool.close()
