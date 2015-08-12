@@ -5,16 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
 import java.util.regex.Pattern;
-
-import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
-import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
-import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
-import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueWeight;
 import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
 import org.apache.uima.UimaContext;
@@ -108,7 +99,7 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 
 	/** Possibly create files for python training, one file per question. */
 	protected synchronized void createJacanaFiles(JCas passagesView, QuestionInfo qi, Pattern ap){
-//		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana");
+//		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana-test");
 		String jacana = System.getProperty("cz.brmlab.yodaqa.jacana");
 		if (jacana == null || jacana.isEmpty())
 			return;
@@ -157,6 +148,7 @@ class Writer{
 	static Writer getInstance() {return instance;}
 	synchronized void write(String filepath,String s){
 		try {
+			(new File(filepath)).getParentFile().mkdirs();
 			PrintWriter pw=new PrintWriter(new BufferedWriter(new FileWriter(filepath,true)));
 			pw.println(s);
 			pw.close();

@@ -44,7 +44,6 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 		public PassScore(Passage passage_, double score_) {
 			passage = passage_;
 			score = score_;
-			//passage.getCoveredText()
 		}
 	}
 
@@ -57,17 +56,7 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 				throw new AnalysisEngineProcessException(e);
 			}
 
-//			Collection<Token> wtok=JCasUtil.select(passagesView, Token.class);
-//			List<String> words = new ArrayList<>();
 			Collection<Passage> psg=JCasUtil.select(passagesView, Passage.class);
-//			int N=0;
-//			for (Token t : wtok) {
-//				N++;
-//				String word=t.getCoveredText().toLowerCase()
-//				if(StringUtils.isAlphanumeric(word)&&!words.contains(word)){
-//					words.add(t.getCoveredText().toLowerCase());
-//				}
-//			}
 
 			p.setidf(psg);
 
@@ -76,21 +65,16 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 			PassageFV fv = new PassageFV(passage);
 
 			int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
-			int aboutClueWeight_i = PassageFV.featureIndex(PF_AboutClueWeight.class);
-			assert(clueWeight_i >= 0 && aboutClueWeight_i >= 0);
-
-//			double score = fv.getValues()[clueWeight_i] + 0.25 * fv.getValues()[aboutClueWeight_i];
-//			double score = -fv.getValues()[aboutClueWeight_i];
-//			System.out.println("passageText: "+passage.getCoveredText());
-
+			assert(clueWeight_i >= 0);
 			List<String> q=new ArrayList<>(Arrays.asList(questionView.getDocumentText().toLowerCase().split("\\W+")));
 			List<String> a=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
 
 			double[] res=p.probability(q,a);
 
-			double score = 2.26216399*res[0]+0.49076233*fv.getValues()[clueWeight_i];
-//			double score = 3.36329552*res[0]+0.4130186*fv.getValues()[clueWeight_i];
-			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
+//			double score = 2.26216399*res[0]+0.49076233*fv.getValues()[clueWeight_i];
+			double score = 3.32822695*res[0]+0.40156513*fv.getValues()[clueWeight_i]-3.96791205;
+			score=1/(1+Math.exp(-score));
+
 			passages.add(new PassScore(passage, score));
 		}
 

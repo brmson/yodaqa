@@ -24,7 +24,7 @@ public class PropertyValue {
 	Class<? extends AnswerFeature> originFeat;
 	String origin;  /* AnswerSourceStructured origin field. */
 
-	protected Double score; // ok to be unset
+	protected Double score; // ok to be unset //////////specificscorexxxscore
 
 	PropertyValue(String object_,
 			String objRes_, String property_,
