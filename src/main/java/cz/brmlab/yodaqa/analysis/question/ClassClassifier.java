@@ -62,12 +62,14 @@ public class ClassClassifier extends JCasAnnotator_ImplBase {
 		for (LAT lat : JCasUtil.select(jCas, LAT.class)) {
 			if (lat instanceof WordnetLAT) continue;
 			featureName = "lat/" + lat.getText() + "/" + lat.getClass().getSimpleName();
+			if (model.featureIndices.containsKey(featureName))
 			vector[model.featureIndices.get(featureName)] = 1;
 		}
 		Collection<SV> supportVerbs = JCasUtil.select(jCas, SV.class);
 		for (SV sv : supportVerbs) {
 			featureName = "sv=" + sv.getCoveredText();
-			vector[model.featureIndices.get(featureName)] = 1;
+			if (model.featureIndices.containsKey(featureName))
+				vector[model.featureIndices.get(featureName)] = 1;
 		}
 		if (supportVerbs.size() == 0) vector[model.featureIndices.get("sv_not_present")] = 1;
 		List<Double> probs = classify(vector);
