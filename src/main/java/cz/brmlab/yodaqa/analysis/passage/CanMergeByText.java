@@ -92,10 +92,5 @@ public class CanMergeByText extends JCasAnnotator_ImplBase {
 			mainCan.setFeatures(mainCanFV.toFSArray(resultView));
 			mainCan.addToIndexes();
 		}
-
-		/* Debug print for all CandidateAnswers. */
-		for (CandidateAnswer can : JCasUtil.select(resultView, CandidateAnswer.class)) {
-			logger.debug(can.getCoveredText() + " -- " + Arrays.toString((new AnswerFV(can)).getValues()));
-		}
 	}
 }

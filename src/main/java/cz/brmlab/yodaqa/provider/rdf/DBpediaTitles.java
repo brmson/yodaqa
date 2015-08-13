@@ -32,8 +32,8 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected int pageID;
 		protected String matchedLabel;
 		protected String canonLabel;
-		protected int dist; // edit dist.
-		protected int count; //number of matched queries
+		protected double dist; // edit dist.
+		protected double score; // relevance/prominence of the concept (universally or wrt. the question)
 
 		public Article(String label, int pageID) {
 			this.matchedLabel = label;
@@ -41,27 +41,27 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.pageID = pageID;
 		}
 
-		public Article(String label, int pageID, String name, int dist) {
+		public Article(String label, int pageID, String name, double dist) {
 			this(label, pageID);
 			this.name = name;
 			this.dist = dist;
 		}
 
-		public Article(Article baseA, String label, int pageID, String name, int count) {
+		public Article(Article baseA, String label, int pageID, String name, double score) {
 			this.name = name;
 			this.pageID = pageID;
 			this.matchedLabel = baseA.matchedLabel;
 			this.canonLabel = label;
 			this.dist = baseA.dist;
-			this.count = count;
+			this.score = score;
 		}
 
 		public String getName() { return name; }
 		public int getPageID() { return pageID; }
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
-		public int getDist() { return dist; }
-		public int getCount() { return count; }
+		public double getDist() { return dist; }
+		public double getScore() { return score; }
 	}
 
 	/** Query for a given title, returning a set of articles. */
@@ -118,16 +118,21 @@ public class DBpediaTitles extends DBpediaLookup {
 			int pageID = rawResult[0].getInt();
 			String label = rawResult[1].getString();
 			String tgName = rawResult[2].getString().substring("http://dbpedia.org/resource/".length());
-			logger.debug("DBpedia {}: [[{}]]", name, label);
-			int count = queryCount(rawResult[2].getString());
-			results.add(new Article(baseA, label, pageID, tgName, count));
+
+			/* We approximate the concept score simply by how
+			 * many relations it partakes in.  We take a log
+			 * though to keep it at least roughly normalized. */
+			double score = Math.log(queryCount(rawResult[2].getString()));
+
+			logger.debug("DBpedia {}: [[{}]] ({})", name, label, score);
+			results.add(new Article(baseA, label, pageID, tgName, score));
 		}
 
 		return results;
 	}
-	/** Counts the number of matches in rdf triplets (outward and inward) */
+	/** Counts the number of matches in rdf triplets (outward and inward). */
 	public int queryCount(String name) {
-		String queryString = "SELECT (count(*) as ?c) \n" +
+		String queryString = "SELECT (COUNT(*) AS ?c) \n" +
 				"{" +
 					"{" +
 				    "?a ?b <"+ name +">"+

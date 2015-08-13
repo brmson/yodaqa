@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATWnInstance;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
@@ -90,7 +90,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 	}
 
 	protected void addWordnetLAT(JCas jcas, Annotation base, Synset synset) throws Exception {
-		addLATFeature(jcas, AF_LATWnInstance.class);
+		addLATFeature(jcas, AF.LATWnInstance);
 		
 		List<Word> words = synset.getWords();
 		Word word = words.get(0);
@@ -126,7 +126,7 @@ public class LATByWnInstance extends JCasAnnotator_ImplBase {
 		lat.addToIndexes();
 	}
 
-	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f) throws AnalysisEngineProcessException {
+	protected void addLATFeature(JCas jcas, String f) throws AnalysisEngineProcessException {
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
 		fv.setFeature(f, 1.0);

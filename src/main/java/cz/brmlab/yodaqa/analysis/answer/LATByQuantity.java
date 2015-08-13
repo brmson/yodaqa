@@ -12,8 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQuantity;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATQuantityCD;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
@@ -99,12 +98,12 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		/* Also set a feature when the quantity is an actual number
 		 * (as opposed to e.g. "many"). */
 		if (isCD) {
-			addLATFeature(jcas, AF_LATQuantityCD.class);
+			addLATFeature(jcas, AF.LATQuantityCD);
 			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
 			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
 			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
 		} else {
-			addLATFeature(jcas, AF_LATQuantity.class);
+			addLATFeature(jcas, AF.LATQuantity);
 			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
 			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
 			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
@@ -150,7 +149,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		lat.addToIndexes();
 	}
 
-	protected void addLATFeature(JCas jcas, Class<? extends AnswerFeature> f) throws AnalysisEngineProcessException {
+	protected void addLATFeature(JCas jcas, String f) throws AnalysisEngineProcessException {
 		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
 		AnswerFV fv = new AnswerFV(ai);
 		fv.setFeature(f, 1.0);

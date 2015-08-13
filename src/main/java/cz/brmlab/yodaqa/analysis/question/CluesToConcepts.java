@@ -1,11 +1,15 @@
 package cz.brmlab.yodaqa.analysis.question;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
@@ -83,24 +87,26 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
 			String clueLabel = clue.getLabel();
 			double weight = clue.getWeight();
-			List<Concept> concepts = new ArrayList<>();
-			Set<String> labels = new TreeSet<>(); // stable ordering (?)
 
 			/* Generate Concepts and gather ConceptClue labels. */
 
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
-
 			for (DBpediaTitles.Article a : results) {
-				logger.debug("Canon label: " + a.getCanonLabel() + " name: " + a.getName() + " matched queries: " + a.getCount() + " pageID: " + a.getPageID());
+				logger.debug("Canon label: " + a.getCanonLabel() + " name: " + a.getName() + " score: " + a.getScore() + " pageID: " + a.getPageID());
 			}
 
+			// Sort the results by score so that we can easily grab
+			// just top N.
 			Collections.sort(results, new Comparator<DBpediaTitles.Article>() {
 				@Override
 				public int compare(DBpediaTitles.Article a1, DBpediaTitles.Article a2) {
-					return Integer.compare(a2.getCount(), a1.getCount());
+					return Double.compare(a2.getScore(), a1.getScore());
 				}
 			} );
 
+			Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
+
+			int rank = 1;
 			for (DBpediaTitles.Article a : results) {
 				String cookedLabel = a.getCanonLabel();
 				/* But in case of "list of...", keep the original label
@@ -125,6 +131,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setFullLabel(a.getCanonLabel());
 				concept.setCookedLabel(cookedLabel);
 				concept.setPageID(a.getPageID());
+				concept.setScore(a.getScore());
+				concept.setRr(1 / ((double) rank));
 
 				/* Also remove all the covered sub-clues. */
 				/* TODO: Mark the clues as alternatives so that we
@@ -146,14 +154,21 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				}
 
 				concept.addToIndexes();
-				concepts.add(concept);
-				labels.add(cookedLabel);
+				if (labels.containsKey(cookedLabel)) {
+					labels.get(cookedLabel).add(concept);
+				} else {
+					labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+				}
+				rank++;
 			}
 
 			/* Generate ClueConcepts. */
 
 			boolean originalClueNEd = false; // guard for single ClueNE generation
-			for (String cookedLabel : labels) {
+			for (Entry<String, List<Concept>> labelEntry : labels.entrySet()) {
+				String cookedLabel = labelEntry.getKey();
+				List<Concept> concepts = labelEntry.getValue();
+
 				/* Maybe the concept clue has a different label than
 				 * the original wording in question text.  That can
 				 * be a useful hint, but is also pretty unreliable;
