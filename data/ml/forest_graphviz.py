@@ -1,7 +1,8 @@
 """
-This module defines export functions for decision trees.
+This module defines export functions for decision trees and forests.
 """
 
+# Based on the export_graphviz module.
 # Authors: Gilles Louppe <g.louppe@gmail.com>
 #          Peter Prettenhofer <peter.prettenhofer@gmail.com>
 #          Brian Holt <bdholt1@gmail.com>
@@ -99,8 +100,13 @@ def export_graphviz(decision_trees, out_file="tree.dot", feature_names=None,
 
         # Add node with description
         if max_depth is None or depth <= max_depth:
+            if left_child != _tree.TREE_LEAF:
+                node_attrs = fill_node_attrs(tree_color)
+            else:
+                node_attrs = fill_node_attrs(-1)
+
             out_file.write('%d [label="%s", shape="box"%s] ;\n' %
-                           (node_id + node_id_offset, node_to_str(tree, node_id, criterion), fill_node_attrs(tree_color)))
+                           (node_id + node_id_offset, node_to_str(tree, node_id, criterion), node_attrs))
 
             if parent is not None:
                 # Add edge to parent
