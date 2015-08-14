@@ -77,8 +77,9 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		// Mimick WordEmbeddings sigmoid scoring procedure and coefficients.
 		/* XXX: These constants are kind of arbitrarily selected
 		 * to reflect that our weight is just #clues, not sum of their
-		 * weights, and that we assume some intrinsic positive alignment. */
-		passage.setScore(1.0 / (1.0 + Math.exp(-(weight*1.0 - 2.0))));
+		 * weights, and that we assume that 2 out of 6 selected
+		 * documents on average bear answer in the first passage. */
+		passage.setScore(1.0 / (1.0 + Math.exp(-(3.3*2/6.0 + 0.5*weight - 4.0))));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
 
