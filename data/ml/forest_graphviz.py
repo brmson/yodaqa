@@ -1,7 +1,8 @@
 """
-This module defines export functions for decision trees.
+This module defines export functions for decision trees and forests.
 """
 
+# Based on the export_graphviz module.
 # Authors: Gilles Louppe <g.louppe@gmail.com>
 #          Peter Prettenhofer <peter.prettenhofer@gmail.com>
 #          Brian Holt <bdholt1@gmail.com>

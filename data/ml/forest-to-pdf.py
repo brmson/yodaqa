@@ -14,7 +14,7 @@
 
 
 import joblib
-from export_graphviz import export_graphviz
+from forest_graphviz import export_graphviz
 from sklearn.externals.six import StringIO
 import pydot
 from argparse import ArgumentParser
