@@ -32,7 +32,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected int pageID;
 		protected String matchedLabel;
 		protected String canonLabel;
-		protected int dist; // edit dist.
+		protected double dist; // edit dist.
 		protected double score; // relevance/prominence of the concept (universally or wrt. the question)
 
 		public Article(String label, int pageID) {
@@ -41,7 +41,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.pageID = pageID;
 		}
 
-		public Article(String label, int pageID, String name, int dist) {
+		public Article(String label, int pageID, String name, double dist) {
 			this(label, pageID);
 			this.name = name;
 			this.dist = dist;
@@ -60,7 +60,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		public int getPageID() { return pageID; }
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
-		public int getDist() { return dist; }
+		public double getDist() { return dist; }
 		public double getScore() { return score; }
 	}
 
@@ -120,10 +120,11 @@ public class DBpediaTitles extends DBpediaLookup {
 			String tgName = rawResult[2].getString().substring("http://dbpedia.org/resource/".length());
 
 			/* We approximate the concept score simply by how
-			 * many relations it partakes in. */
-			double score = queryCount(rawResult[2].getString());
+			 * many relations it partakes in.  We take a log
+			 * though to keep it at least roughly normalized. */
+			double score = Math.log(queryCount(rawResult[2].getString()));
 
-			logger.debug("DBpedia {}: [[{}]]", name, label);
+			logger.debug("DBpedia {}: [[{}]] ({})", name, label, score);
 			results.add(new Article(baseA, label, pageID, tgName, score));
 		}
 
