@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
@@ -23,6 +24,7 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -68,6 +70,7 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 		pickedPassagesView.setDocumentText(passagesView.getDocumentText());
 		pickedPassagesView.setDocumentLanguage(passagesView.getDocumentLanguage());
 
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		int sourceID = JCasUtil.selectSingle(resultView, ResultInfo.class).getSourceID();
 
 		/* Pre-index covering info. */
@@ -98,11 +101,22 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 				}
 			}
 
+			/* Indicate if this is an answer-bearing passage
+			 * in the debug print. */
+			String correctIndicator = "?";
+			if (qi.getAnswerPattern() != null) {
+				Pattern apat = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+				if (apat.matcher(passage.getCoveredText()).find())
+					correctIndicator = "+";
+				else
+					correctIndicator = "-";
+			}
+
 			/* Count tokens, just for a debug print.
 			 * This is relevant because of StanfordParser
 			 * MAX_TOKENS limit. */
 			int n_tokens = JCasUtil.selectCovered(Token.class, passage).size();
-			logger.debug(passage.getScore() + " | " + passage.getCoveredText() + " | " + n_tokens);
+			logger.debug(passage.getScore() + " | " + correctIndicator + " | " + passage.getCoveredText() + " | " + n_tokens);
 		}
 	}
 }
