@@ -92,16 +92,16 @@ answer hitlist (all scored answers for a particular question) and ! is a
 value which is 1.0 if the feature has _not_ been set.  An answer has positive
 class (1) if the answer regex matches it.
 
-We use a Logistic Regression classifier, sorting answers by the
+We use a Gradient Boosting decision forest classifier, sorting answers by the
 estimated probability of class 1.  You can invoke this classifier as:
 
-	data/ml/answer-train-logistic.py <data/ml/tsv/training-answer-COMMIT.tsv | tee logistic.txt
+	data/ml/answer-train-gradboost.py <data/ml/tsv/training-answer-COMMIT.tsv | tee gb.txt
 
-The Java implementation of logistic classifier is stored in:
+The Java implementation of decision forest is stored in:
 
-	src/main/java/cz/brmlab/yodaqa/analysis/answer/AnswerScoreLogistic.java
+	src/main/java/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreDecisionForest.java
 
-For machine learning model development, we use the v1.0 (0ae3b79) system
+For machine learning model development, we used the v1.0 (0ae3b79) system
 on the curated dataset:
 
   * The CSV and TSV dumps of answer feature vectors:
@@ -109,6 +109,9 @@ on the curated dataset:
 
   * The XMI dumps of answer CASes (for re-running YodaQA with new ML model):
     http://pasky.or.cz/dev/brmson/answer-xmidump-0ae3b79.tar.xz
+
+(but as of now, it doesn't include some important features like the question
+type).
 
 The tool `data/ml/answer-comparefv.py` can be used for comparing effect
 of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
