@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
@@ -82,130 +81,146 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
 			cluesByLen.add(clue);
 
+		HashMap<Clue, List<DBpediaTitles.Article>> cluesAndArticles = new HashMap<>();
+
+		PriorityQueue<ClueAndArticle> clueAndArticleQueue = new PriorityQueue<>(32, new ClueAndArticleLengthComparator());
 		/* Check the clues in turn, starting by the longest - do they
 		 * correspond to enwiki articles? */
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
 			String clueLabel = clue.getLabel();
-			double weight = clue.getWeight();
-
-			/* Generate Concepts and gather ConceptClue labels. */
+			cluesAndArticles.put(clue, new ArrayList<DBpediaTitles.Article>());
 
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			for (DBpediaTitles.Article a : results) {
+				cluesAndArticles.get(clue).add(a);
+				clueAndArticleQueue.add(new ClueAndArticle(a, clue));
 				logger.debug("Canon label: " + a.getCanonLabel() + " name: " + a.getName() + " score: " + a.getScore() + " pageID: " + a.getPageID());
 			}
+		}
+		Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
 
-			// Sort the results by score so that we can easily grab
-			// just top N.
-			Collections.sort(results, new Comparator<DBpediaTitles.Article>() {
-				@Override
-				public int compare(DBpediaTitles.Article a1, DBpediaTitles.Article a2) {
-					return Double.compare(a2.getScore(), a1.getScore());
-				}
-			} );
+		List<ClueAndArticle> subduedClues = new ArrayList<>();
+		int rank = 1;
+		//remove shorter/worse results
+		for (ClueAndArticle c; (c = clueAndArticleQueue.poll()) != null; ) {
+			Clue clue = c.getClue();
+			String clueLabel = clue.getLabel();
+			boolean foundBetter = false;
+			DBpediaTitles.Article a = c.getArticle();
+			String cookedLabel = a.getCanonLabel();
+			double weight = clue.getWeight();
 
-			Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
-
-			int rank = 1;
-			for (DBpediaTitles.Article a : results.subList(0, Math.min(3, results.size()))) {
-				String cookedLabel = a.getCanonLabel();
-				/* But in case of "list of...", keep the original label
-				 * (but still generate a conceptclue since we have
-				 * a confirmed named entity and we want to include
-				 * the list in our document set). */
-				if (cookedLabel.toLowerCase().matches("^list of .*")) {
-					logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
-					cookedLabel = new String(clueLabel);
-				}
+			if (cookedLabel.toLowerCase().matches("^list of .*")) {
+				logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
+				cookedLabel = new String(clueLabel);
+			}
 				/* Remove trailing (...) (e.g. (disambiguation)). */
 				/* TODO: We should model topicality of the
 				 * concept; when asking about the director of
 				 * "Frozen", the (film)-suffixed concepts should
 				 * be preferred over e.g. the (House) suffix. */
-				cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
-				/* Start constructing the annotation. */
-				Concept concept = new Concept(resultView);
-				concept.setBegin(clue.getBegin());
-				concept.setEnd(clue.getEnd());
-				concept.setFullLabel(a.getCanonLabel());
-				concept.setCookedLabel(cookedLabel);
-				concept.setPageID(a.getPageID());
-				concept.setScore(a.getScore());
-				concept.setRr(1 / ((double) rank));
+			Concept concept = new Concept(resultView);
+			concept.setBegin(clue.getBegin());
+			concept.setEnd(clue.getEnd());
+			concept.setFullLabel(a.getCanonLabel());
+			concept.setCookedLabel(cookedLabel);
+			concept.setPageID(a.getPageID());
+			concept.setScore(a.getScore());
+			concept.setRr(1 / ((double) rank)); // XXX ranking this way is certainly wrong!
 
-				/* Also remove all the covered sub-clues. */
-				/* TODO: Mark the clues as alternatives so that we
-				 * don't require both during full-text search. */
-				clue.removeFromIndexes();
-				cluesByLen.remove(clue);
-				for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-					logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
-					if (clueSub instanceof ClueSubject)
-						concept.setBySubject(true);
-					else if (clueSub instanceof ClueLAT)
-						concept.setByLAT(true);
-					else if (clueSub instanceof ClueNE)
-						concept.setByNE(true);
-					if (clueSub.getWeight() > weight)
-						weight = clueSub.getWeight();
-					clueSub.removeFromIndexes();
-					cluesByLen.remove(clueSub);
+			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
+				List<DBpediaTitles.Article> l = cluesAndArticles.get(clueSub);  //get covered articles
+				double distance;
+				if (l != null) { //check if the clue actually has an article
+					DBpediaTitles.Article curr = l.get(0);
+					distance = curr.getDist();
+					if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
+						logger.debug("Concept {} subduing {} {}", clueSub.getLabel(), clue.getType().getShortName(), cookedLabel);
+						foundBetter = true;
+						clue.removeFromIndexes();
+						break;
+					} else if (!(a.getDist() - distance > 1.0)) { //the longer article won
+						logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
+						cluesAndArticles.remove(clueSub);
+						if (clueSub instanceof ClueSubject)
+							concept.setBySubject(true);
+						else if (clueSub instanceof ClueLAT)
+							concept.setByLAT(true);
+						else if (clueSub instanceof ClueNE)
+							concept.setByNE(true);
+						if (clueSub.getWeight() > weight)
+							weight = clueSub.getWeight();
+						clueAndArticleQueue.remove(clueSub);
+						clueSub.removeFromIndexes();
+					}
 				}
-
-				concept.addToIndexes();
-				if (labels.containsKey(cookedLabel)) {
-					labels.get(cookedLabel).add(concept);
-				} else {
-					labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
-				}
-				rank++;
 			}
+			if (foundBetter)
+				continue;
+			subduedClues.add(c);
+			if (labels.containsKey(cookedLabel)) { //XXX This is awkward since each ClueAndArticle contains exactly one Article instead of a list
+				logger.debug("adding {} to label list", concept.getCookedLabel()); //labels is now a global map instead of a local one
+				labels.get(cookedLabel).add(concept);
+			} else {
+				labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+			}
+			rank++;
+		}
+		boolean originalClueNEd = false; // guard for single ClueNE generation
 
-			/* Generate ClueConcepts. */
+		Collections.sort(subduedClues, new ClueAndArticleScoreComparator());
 
-			boolean originalClueNEd = false; // guard for single ClueNE generation
-			for (Entry<String, List<Concept>> labelEntry : labels.entrySet()) {
-				String cookedLabel = labelEntry.getKey();
-				List<Concept> concepts = labelEntry.getValue();
+		//sorted using score, we now can take the top N
+		for(int i = 0; i < subduedClues.size(); i++) {
+			Clue clue = subduedClues.get(i).getClue();
+			DBpediaTitles.Article a = subduedClues.get(i).getArticle();
+			String clueLabel = clue.getLabel();
+			double weight = clue.getWeight();
+			String cookedLabel = a.getCanonLabel();
+			if (cookedLabel.toLowerCase().matches("^list of .*")) {
+				cookedLabel = new String(clueLabel);
+			}
+			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+			clue.removeFromIndexes();
 
-				/* Maybe the concept clue has a different label than
-				 * the original wording in question text.  That can
-				 * be a useful hint, but is also pretty unreliable;
-				 * be it for suffixes in parentheses " (band)" or
-				 * that "The ancient city" resolves to "King's Field
-				 * IV" etc.
-				 *
-				 * Therefore, in that case we will still create the
-				 * concept clue with redirect target, but also set
-				 * the flag @reworded which will make this reworded
-				 * text *optional* during full-text search and keep
-				 * the original text (required during search) within
-				 * a new ClueNE annotation. */
-				boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
+			List<Concept> concepts = labels.get(cookedLabel);
 
-				/* Make a fresh concept clue. */
-				addClue(resultView, clue.getBegin(), clue.getEnd(),
+			/* Maybe the concept clue has a different label than
+			 * the original wording in question text.  That can
+			 * be a useful hint, but is also pretty unreliable;
+			 * be it for suffixes in parentheses " (band)" or
+			 * that "The ancient city" resolves to "King's Field
+			 * IV" etc.
+			 *
+			 * Therefore, in that case we will still create the
+			 * concept clue with redirect target, but also set
+			 * the flag @reworded which will make this reworded
+			 * text *optional* during full-text search and keep
+			 * the original text (required during search) within
+			 * a new ClueNE annotation. */
+			boolean reworded = !clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
+			/* Make a fresh concept clue. */
+			addClue(resultView, clue.getBegin(), clue.getEnd(),
 					clue.getBase(), weight,
 					FSCollectionFactory.createFSList(resultView, concepts),
 					cookedLabel, !reworded);
 
-				/* Make also an NE clue with always the original text
-				 * as label. */
-				/* A presence of wiki page with the text as a title is
-				 * a fair evidence that this is actually a named
-				 * entity. And we need a new clue since we removed all
-				 * sub-clues and the original clue might have been just
-				 * a CluePhrase that gets ignored during search. */
-				if (reworded && !originalClueNEd) {
+			/* Make also an NE clue with always the original text
+			 * as label. */
+			/* A presence of wiki page with the text as a title is
+			 * a fair evidence that this is actually a named
+			 * entity. And we need a new clue since we removed all
+			 * sub-clues and the original clue might have been just
+			 * a CluePhrase that gets ignored during search. */
+			if (reworded && !originalClueNEd) {
 					addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-						clue, clue.getLabel(), weight);
-					originalClueNEd = true; // once is enough
-				}
+							clue, clue.getLabel(), weight);
+				originalClueNEd = true; // once is enough
 			}
 		}
 	}
-
 	protected void addClue(JCas jcas, int begin, int end, Annotation base,
 			double weight, FSList concepts, String label, boolean isReliable) {
 		ClueConcept clue = new ClueConcept(jcas);
@@ -232,4 +247,38 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		clue.addToIndexes();
 		logger.debug("new(NE) by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
+
+	private class ClueAndArticle {
+		protected DBpediaTitles.Article result;
+		protected Clue clue;
+
+		public ClueAndArticle(DBpediaTitles.Article result, Clue clue) {
+			this.result = result;
+			this.clue = clue;
+		}
+		public DBpediaTitles.Article getArticle() {
+			return result;
+		}
+		public Clue getClue() {
+			return clue;
+		}
+	}
+
+	/* Compares using the String length */
+	private class ClueAndArticleLengthComparator implements Comparator<ClueAndArticle> {
+		@Override
+		public int compare(ClueAndArticle t1, ClueAndArticle t2) {
+			int l1 = t1.getClue().getEnd() - t1.getClue().getBegin();
+			int l2 = t1.getClue().getEnd() - t2.getClue().getBegin();
+			return -Integer.compare(l1,l2);
+		}
+	}
+	/* Compares using the Article Score */
+	private class ClueAndArticleScoreComparator implements Comparator<ClueAndArticle> {
+		@Override
+		public int compare(ClueAndArticle t1, ClueAndArticle t2) {
+			return -Double.compare(t1.getArticle().getScore(), t2.getArticle().getScore());
+		}
+	}
+
 }
