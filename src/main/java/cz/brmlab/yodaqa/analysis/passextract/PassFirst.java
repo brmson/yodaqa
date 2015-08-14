@@ -74,7 +74,11 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		Passage passage = new Passage(passagesView);
 		passage.setBegin(sentence.getBegin());
 		passage.setEnd(sentence.getEnd());
-		passage.setScore(Math.sqrt(weight));
+		// Mimick WordEmbeddings sigmoid scoring procedure and coefficients.
+		/* XXX: These constants are kind of arbitrarily selected
+		 * to reflect that our weight is just #clues, not sum of their
+		 * weights, and that we assume some intrinsic positive alignment. */
+		passage.setScore(1.0 / (1.0 + Math.exp(-(weight*1.0 - 2.0))));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
 
