@@ -133,8 +133,8 @@ We can also leverage another structured data source, the Freebase.
 We use its RDF export with SPARQL endpoint, running on infrastructure
 provided by the author's academic group (Jan Šedivý's 3C Group at the
 Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
-for some reason, you can also disable Freebase usage by commenting
-out the fbo.query() line in the code of:
+for some reason, you can also disable Freebase usage by editing the
+method getConceptProperties() (instructions inside) of:
 
 	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
 
