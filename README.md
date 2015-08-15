@@ -121,11 +121,8 @@ to page id we can use to fetch the page from solr) and redirect walking.
 By default, we rely on a DBpedia-2014 SPARQL endpoint running on the author's
 computer.  In case it is offline, you can try to switch it to the public
 DBpedia SPARQL endpoint, though it is prone to outages and we shouldn't use
-it too heavily anyway.  Simply edit the ``service`` attribute value in file
-``src/main/java/cz/brmlab/yodaqa/provider/rdf/CachedJenaLookup.java``.
-
-Detailed instrutions for setup of local DBpedia SPARQL endpoint can be found
-in ``data/dbpedia/README.md``.
+it too heavily anyway, or you can fairly easily set up a local instance of
+DBpedia.  Detailed instrutions can be found in ``data/dbpedia/README.md``.
 
 ### Freebase Data Source
 
