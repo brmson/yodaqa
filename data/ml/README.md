@@ -118,10 +118,19 @@ of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
 used for feature occurence statistics.  These analysis tools are further
 explained in data/eval/README.md.
 
-Visualization of the trees
---------------------------
+Analysis of Decision Forests
+---------------------------
 
-We can use script for generating pdf file with visualization of the desicion
+Visualization of the trees
+
+We can use script for generating pdf files with visualization of the desicion
 trees contained in provided pkl file:
 
-	usage: forest-to-pdf.py [-h] input_file output_file
+	mkdir output_dir
+	./forest-to-pdf.py input_file.pkl output_dir
+
+Also, we can use the Python module forest_analysis to examine various
+aspects of the forest.  See the pydoc in forest_analysis.py, or you can
+construct one-liners like:
+
+	python -c 'from forest_analysis import *; import joblib; cl = joblib.load("/tmp/GBC.pkl"); print "\n".join([str(c) for c in rulechains_by_significance(cl)]);'
