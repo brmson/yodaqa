@@ -129,7 +129,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			Clue clue = keptClues.get(i).getClue();
 			DBpediaTitles.Article a = keptClues.get(i).getArticle();
 			String clueLabel = clue.getLabel();
-			double weight = clue.getWeight();
 			String cookedLabel = cookLabel(clueLabel, a.getCanonLabel());
 			clue.removeFromIndexes();
 
@@ -157,7 +156,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			boolean reworded = !clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
 			/* Make a fresh concept clue. */
 			addClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue.getBase(), weight,
+					clue.getBase(), clue.getWeight(),
 					FSCollectionFactory.createFSList(resultView, concepts),
 					cookedLabel, !reworded);
 
@@ -170,7 +169,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * a CluePhrase that gets ignored during search. */
 			if (reworded && !originalClueNEd) {
 					addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-							clue, clue.getLabel(), weight);
+							clue, clue.getLabel(), clue.getWeight());
 				originalClueNEd = true; // once is enough
 			}
 		}
@@ -221,8 +220,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			Concept concept,
 			HashMap<Clue, Double> clueBestDists,
 			PriorityQueue<ClueLabel> labelsByLen) {
-		double weight = clue.getWeight();
-
 		for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
 			Double subDist = clueBestDists.get(clueSub);
 
@@ -244,8 +241,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 					concept.setByLAT(true);
 				else if (clueSub instanceof ClueNE)
 					concept.setByNE(true);
-				if (clueSub.getWeight() > weight)
-					weight = clueSub.getWeight();
+				if (clueSub.getWeight() > clue.getWeight()) {
+					clue.setWeight(clueSub.getWeight());
+				}
 
 				clueSub.removeFromIndexes();
 				if (subDist != null)
