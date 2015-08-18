@@ -14,6 +14,9 @@ and are *not* covered in the rest of this document:
   * Candidate answer extraction based on B-I-O tagging and chunking.
     Its model data lives in ``data/ml/biocrf``, refer to the README there.
 
+  * Question classification by logistic regression using question features.
+    Its model data lives in ``data/ml/qclass``, refer to the README there.
+
 Then, we have some generic infrastructure that we describe below and use for:
 
   * Passage scoring during the final step of passage extraction, where we
