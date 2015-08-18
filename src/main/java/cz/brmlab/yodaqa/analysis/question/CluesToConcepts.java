@@ -105,29 +105,29 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		Map<String, ClueLabel> labels = new TreeMap<>(); // stable ordering (?)
 		for (LinkedClue c : keptClues) {
 			Clue clue = c.getClue();
-			for (DBpediaTitles.Article a : c.getArticles()) {  // XXX: reindent
-			String cookedLabel = cookLabel(clue.getLabel(), a.getCanonLabel());
+			for (DBpediaTitles.Article a : c.getArticles()) {
+				String cookedLabel = cookLabel(clue.getLabel(), a.getCanonLabel());
 
-			logger.debug("creating concept <<{}>>, cooked <<{}>>, d={}",
-					a.getCanonLabel(), cookedLabel, a.getDist());
-			Concept concept = new Concept(resultView);
-			concept.setBegin(clue.getBegin());
-			concept.setEnd(clue.getEnd());
-			concept.setFullLabel(a.getCanonLabel());
-			concept.setCookedLabel(cookedLabel);
-			concept.setPageID(a.getPageID());
-			concept.setScore(a.getScore());
-			concept.setBySubject(c.isBySubject());
-			concept.setByLAT(c.isByLAT());
-			concept.setByNE(c.isByNE());
+				logger.debug("creating concept <<{}>>, cooked <<{}>>, d={}",
+						a.getCanonLabel(), cookedLabel, a.getDist());
+				Concept concept = new Concept(resultView);
+				concept.setBegin(clue.getBegin());
+				concept.setEnd(clue.getEnd());
+				concept.setFullLabel(a.getCanonLabel());
+				concept.setCookedLabel(cookedLabel);
+				concept.setPageID(a.getPageID());
+				concept.setScore(a.getScore());
+				concept.setBySubject(c.isBySubject());
+				concept.setByLAT(c.isByLAT());
+				concept.setByNE(c.isByNE());
 
-			if (!labels.containsKey(cookedLabel)) {
-				/* First time for this particular label. */
-				ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
-				labels.put(cookedLabel, cl);
-			} else {
-				labels.get(cookedLabel).add(concept);
-			}
+				if (!labels.containsKey(cookedLabel)) {
+					/* First time for this particular label. */
+					ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+					labels.put(cookedLabel, cl);
+				} else {
+					labels.get(cookedLabel).add(concept);
+				}
 			}
 		}
 
@@ -136,61 +136,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		List<ClueLabel> labelList = new ArrayList<>(labels.values());
 		Collections.sort(labelList, new ClueLabelScoreComparator());
 		addCluesForLabels(resultView, labelList);
-	}
-
-	/** Add clue(s) and register concepts for each label
-	 * in the given list. */
-	protected void addCluesForLabels(JCas resultView, List<ClueLabel> labelList) {
-		boolean originalClueNEd = false; // guard for single ClueNE generation
-		int rank = 1;
-		for (ClueLabel cl : labelList) {
-			Clue clue = cl.getClue();
-			String clueLabel = clue.getLabel();
-			String cookedLabel = cl.getCookedLabel();
-
-			/* Remove the original clue, but do not worry, it shall
-			 * be reborn stronger than ever before! */
-			clue.removeFromIndexes();
-
-			for (Concept concept : cl.getConcepts()) {
-				concept.setRr(1 / ((double) rank));
-				concept.addToIndexes();
-				rank++;
-			}
-
-			/* Maybe the concept clue has a different label than
-			 * the original wording in question text.  That can
-			 * be a useful hint, but is also pretty unreliable;
-			 * be it for suffixes in parentheses " (band)" or
-			 * that "The ancient city" resolves to "King's Field
-			 * IV" etc.
-			 *
-			 * Therefore, in that case we will still create the
-			 * concept clue with redirect target, but also set
-			 * the flag @reworded which will make this reworded
-			 * text *optional* during full-text search and keep
-			 * the original text (required during search) within
-			 * a new ClueNE annotation. */
-			boolean reworded = !clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
-			/* Make a fresh concept clue. */
-			addClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue.getBase(), clue.getWeight(),
-					FSCollectionFactory.createFSList(resultView, cl.getConcepts()),
-					cookedLabel, !reworded);
-
-			/* Make also an NE clue with always the original text
-			 * as label. */
-			/* A presence of wiki page with the text as a title is
-			 * a fair evidence that this is actually a named
-			 * entity. And we need a new clue since we removed all
-			 * sub-clues and the original clue might have been just
-			 * a CluePhrase that gets ignored during search. */
-			if (reworded && !originalClueNEd) {
-					addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-							clue, clue.getLabel(), clue.getWeight());
-				originalClueNEd = true; // once is enough
-			}
-		}
 	}
 
 	/** Get a set of clues to check for concept links. */
@@ -284,6 +229,61 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		 * in linkedClues. */
 		for (LinkedClue c : toRemove)
 			linkedClues.remove(c);
+	}
+
+	/** Add clue(s) and register concepts for each label
+	 * in the given list. */
+	protected void addCluesForLabels(JCas resultView, List<ClueLabel> labelList) {
+		boolean originalClueNEd = false; // guard for single ClueNE generation
+		int rank = 1;
+		for (ClueLabel cl : labelList) {
+			Clue clue = cl.getClue();
+			String clueLabel = clue.getLabel();
+			String cookedLabel = cl.getCookedLabel();
+
+			/* Remove the original clue, but do not worry, it shall
+			 * be reborn stronger than ever before! */
+			clue.removeFromIndexes();
+
+			for (Concept concept : cl.getConcepts()) {
+				concept.setRr(1 / ((double) rank));
+				concept.addToIndexes();
+				rank++;
+			}
+
+			/* Maybe the concept clue has a different label than
+			 * the original wording in question text.  That can
+			 * be a useful hint, but is also pretty unreliable;
+			 * be it for suffixes in parentheses " (band)" or
+			 * that "The ancient city" resolves to "King's Field
+			 * IV" etc.
+			 *
+			 * Therefore, in that case we will still create the
+			 * concept clue with redirect target, but also set
+			 * the flag @reworded which will make this reworded
+			 * text *optional* during full-text search and keep
+			 * the original text (required during search) within
+			 * a new ClueNE annotation. */
+			boolean reworded = !clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
+			/* Make a fresh concept clue. */
+			addClue(resultView, clue.getBegin(), clue.getEnd(),
+					clue.getBase(), clue.getWeight(),
+					FSCollectionFactory.createFSList(resultView, cl.getConcepts()),
+					cookedLabel, !reworded);
+
+			/* Make also an NE clue with always the original text
+			 * as label. */
+			/* A presence of wiki page with the text as a title is
+			 * a fair evidence that this is actually a named
+			 * entity. And we need a new clue since we removed all
+			 * sub-clues and the original clue might have been just
+			 * a CluePhrase that gets ignored during search. */
+			if (reworded && !originalClueNEd) {
+					addNEClue(resultView, clue.getBegin(), clue.getEnd(),
+							clue, clue.getLabel(), clue.getWeight());
+				originalClueNEd = true; // once is enough
+			}
+		}
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base,
