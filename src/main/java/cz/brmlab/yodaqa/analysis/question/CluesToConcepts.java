@@ -225,14 +225,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 		for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
 			Double subDist = clueBestDists.get(clueSub);
-			if (subDist == null) {
-				/* There is no ClueLabel match for this
-				 * clue. */
-				/* FIXME: Subdue it anyway! */
-				continue;
-			}
 
-			if (a.getDist() - subDist > 1.0) {
+			if (subDist != null && a.getDist() - subDist > 1.0) {
 				// we found a shorter clue with (significantly) better edit distance
 				logger.debug("Concept <<{}>> subduing {} <<{}>>",
 						clueSub.getLabel(), clue.getType().getShortName(), concept.getCookedLabel());
@@ -254,8 +248,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				if (clueSub.getWeight() > weight)
 					weight = clueSub.getWeight();
 
-				clueBestDists.remove(clueSub);
 				clueSub.removeFromIndexes();
+				if (subDist != null)
+					clueBestDists.remove(clueSub);
 				removeLabelsByClue(labelsByLen, clueSub);
 			}
 		}
