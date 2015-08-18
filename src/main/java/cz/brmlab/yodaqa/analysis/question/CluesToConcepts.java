@@ -89,21 +89,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		for (ClueLabel c; (c = labelsByLen.poll()) != null; ) {
 			Clue clue = c.getClue();
 			String clueLabel = clue.getLabel();
-			boolean foundBetter = false;
 			DBpediaTitles.Article a = c.getArticle();
-			String cookedLabel = a.getCanonLabel();
-			double weight = clue.getWeight();
-
-			if (cookedLabel.toLowerCase().matches("^list of .*")) {
-				logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
-				cookedLabel = new String(clueLabel);
-			}
-			/* Remove trailing (...) (e.g. (disambiguation)). */
-			/* TODO: We should model topicality of the
-			 * concept; when asking about the director of
-			 * "Frozen", the (film)-suffixed concepts should
-			 * be preferred over e.g. the (House) suffix. */
-			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+			String cookedLabel = cookLabel(clueLabel, a.getCanonLabel());
 
 			logger.debug("creating concept <<{}>>, cooked <<{}>>, d={}",
 					a.getCanonLabel(), cookedLabel, a.getDist());
@@ -115,44 +102,15 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			concept.setPageID(a.getPageID());
 			concept.setScore(a.getScore());
 
-			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-				List<DBpediaTitles.Article> l = clueArticles.get(clueSub);  // get covered articles
-				if (l == null || l.size() == 0)
-					continue;
-
-				DBpediaTitles.Article curr = l.get(0); // XXX should iterate through articles too?
-				double distance = curr.getDist();
-				if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
-					logger.debug("Concept <<{}>> subduing {} <<{}>>",
-							clueSub.getLabel(), clue.getType().getShortName(), cookedLabel);
-					foundBetter = true;
-					clue.removeFromIndexes();
-					break;
-
-				} else if (!(a.getDist() - distance > 1.0)) { //the longer article won
-					logger.debug("Concept <<{}>> subduing {} <<{}>>",
-							cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
-					clueArticles.remove(clueSub);
-					if (clueSub instanceof ClueSubject)
-						concept.setBySubject(true);
-					else if (clueSub instanceof ClueLAT)
-						concept.setByLAT(true);
-					else if (clueSub instanceof ClueNE)
-						concept.setByNE(true);
-					if (clueSub.getWeight() > weight)
-						weight = clueSub.getWeight();
-
-					if (labelsByLen.remove(new ClueLabel(curr, clueSub)) == false)
-						logger.error("removing {} from queue not successfull", clueSub.getLabel());
-					clueSub.removeFromIndexes();
-				}
+			if (subdueCoveredClues(clue, a, concept, clueArticles, labelsByLen)) {
+				/* In fact, the covered clue subdued *us*.
+				 * Typically, we have higher edit distance
+				 * than the covered clue is a crisper match. */
+				continue;
 			}
 
-			if (foundBetter)
-				continue;
-
 			keptClues.add(c);
-			if (labels.containsKey(cookedLabel)) { //XXX This is awkward since each ClueLabel contains exactly one Article instead of a list
+			if (labels.containsKey(cookedLabel)) {
 				labels.get(cookedLabel).add(concept);
 			} else {
 				labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
@@ -168,13 +126,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			Clue clue = keptClues.get(i).getClue();
 			DBpediaTitles.Article a = keptClues.get(i).getArticle();
 			String clueLabel = clue.getLabel();
-
 			double weight = clue.getWeight();
-			String cookedLabel = a.getCanonLabel();
-			if (cookedLabel.toLowerCase().matches("^list of .*")) {
-				cookedLabel = new String(clueLabel);
-			}
-			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+			String cookedLabel = cookLabel(clueLabel, a.getCanonLabel());
 			clue.removeFromIndexes();
 
 			List<Concept> concepts = labels.get(cookedLabel);
@@ -232,6 +185,74 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
 			clues.add(clue);
 		return clues;
+	}
+
+	/** Produce a pretty label from sometimes-unwieldy enwiki article
+	 * name. */
+	protected String cookLabel(String clueLabel, String canonLabel) {
+		String cookedLabel = new String(canonLabel);
+		if (cookedLabel.toLowerCase().matches("^list of .*")) {
+			logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
+			cookedLabel = new String(clueLabel);
+		}
+
+		/* Remove trailing (...) (e.g. (disambiguation)). */
+		/* TODO: We should model topicality of the
+		 * concept; when asking about the director of
+		 * "Frozen", the (film)-suffixed concepts should
+		 * be preferred over e.g. the (House) suffix. */
+		cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+
+		return cookedLabel;
+	}
+
+	/** Check overlapping clues and subdue them.  Subduing means
+	 * that they are removed from the clue set, and also not considered
+	 * for concept creation anymore.
+	 *
+	 * However, the method returns true if it's the passed @clue
+	 * that has been subdued - in case it has high edit distance
+	 * relative to the covered clues, i.e. typically a false positive
+	 * (relying solely on that clue is typically disastrous). */
+	protected boolean subdueCoveredClues(Clue clue, DBpediaTitles.Article a,
+			Concept concept,
+			HashMap<Clue, List<DBpediaTitles.Article>> clueArticles,
+			PriorityQueue<ClueLabel> labelsByLen) {
+		double weight = clue.getWeight();
+
+		for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
+			List<DBpediaTitles.Article> l = clueArticles.get(clueSub);  // get covered articles
+			if (l == null || l.size() == 0)
+				continue;
+
+			DBpediaTitles.Article curr = l.get(0); // XXX should iterate through articles too?
+			double distance = curr.getDist();
+			if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
+				logger.debug("Concept <<{}>> subduing {} <<{}>>",
+						clueSub.getLabel(), clue.getType().getShortName(), concept.getCookedLabel());
+				clue.removeFromIndexes();
+				return true;
+
+			} else if (!(a.getDist() - distance > 1.0)) { //the longer article won
+				logger.debug("Concept <<{}>> subduing {} <<{}>>",
+						concept.getCookedLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
+				clueArticles.remove(clueSub);
+				if (clueSub instanceof ClueSubject)
+					concept.setBySubject(true);
+				else if (clueSub instanceof ClueLAT)
+					concept.setByLAT(true);
+				else if (clueSub instanceof ClueNE)
+					concept.setByNE(true);
+				if (clueSub.getWeight() > weight)
+					weight = clueSub.getWeight();
+
+				if (labelsByLen.remove(new ClueLabel(curr, clueSub)) == false)
+					logger.error("removing {} from queue not successfull", clueSub.getLabel());
+				clueSub.removeFromIndexes();
+			}
+		}
+
+		return false;
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base,
