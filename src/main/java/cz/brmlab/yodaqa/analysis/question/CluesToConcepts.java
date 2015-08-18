@@ -232,8 +232,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 						clueSub.getLabel(), clue.getType().getShortName(), concept.getCookedLabel());
 
 				clue.removeFromIndexes();
-				/* FIXME: removeLabelsByClue(labelsByLen, clue); */
-
+				removeLabelsByClue(labelsByLen, clue);
 				return true;
 
 			} else { // the longer clue wins
