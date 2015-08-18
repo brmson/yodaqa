@@ -62,29 +62,14 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas resultView) throws AnalysisEngineProcessException {
-		/* Put all relevant Clues in a length-ordered list. */
-		PriorityQueue<Clue> cluesByLen = new PriorityQueue<Clue>(32,
-			new Comparator<Clue>(){ @Override
-				public int compare(Clue c1, Clue c2) {
-					int l1 = c1.getEnd() - c1.getBegin();
-					int l2 = c2.getEnd() - c2.getBegin();
-					return -(l1 - l2); // from largest length
-				}
-			});
-		for (Clue clue : JCasUtil.select(resultView, CluePhrase.class))
-			cluesByLen.add(clue);
-		for (Clue clue : JCasUtil.select(resultView, ClueNE.class))
-			cluesByLen.add(clue);
-		for (Clue clue : JCasUtil.select(resultView, ClueSubjectPhrase.class))
-			cluesByLen.add(clue);
-		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
-			cluesByLen.add(clue);
+		List<Clue> clues = cluesToCheck(resultView);
 
-		/* Check the clues in turn, starting by the longest - do they
-		 * correspond to enwiki articles? */
+		/* Try to generate more canonical labels for the clues
+		 * by linking them to enwiki articles and creating
+		 * a length-ordered label list. */
 		HashMap<Clue, List<DBpediaTitles.Article>> cluesAndArticles = new HashMap<>();
 		PriorityQueue<ClueAndArticle> clueAndArticleQueue = new PriorityQueue<>(32, new ClueAndArticleLengthComparator());
-		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
+		for (Clue clue : clues) {
 			String clueLabel = clue.getLabel();
 			cluesAndArticles.put(clue, new ArrayList<DBpediaTitles.Article>());
 			/* Execute entity linking from clue text to
@@ -235,6 +220,20 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				originalClueNEd = true; // once is enough
 			}
 		}
+	}
+
+	/** Get a set of clues to check for concept links. */
+	protected List<Clue> cluesToCheck(JCas resultView) {
+		List<Clue> clues = new ArrayList<>();
+		for (Clue clue : JCasUtil.select(resultView, CluePhrase.class))
+			clues.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueNE.class))
+			clues.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectPhrase.class))
+			clues.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
+			clues.add(clue);
+		return clues;
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base,
