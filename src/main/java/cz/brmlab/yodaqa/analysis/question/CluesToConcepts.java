@@ -67,26 +67,26 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Try to generate more canonical labels for the clues
 		 * by linking them to enwiki articles and creating
 		 * a length-ordered label list. */
-		HashMap<Clue, List<DBpediaTitles.Article>> cluesAndArticles = new HashMap<>();
-		PriorityQueue<ClueAndArticle> clueAndArticleQueue = new PriorityQueue<>(32, new ClueAndArticleLengthComparator());
+		HashMap<Clue, List<DBpediaTitles.Article>> clueArticles = new HashMap<>();
+		PriorityQueue<ClueLabel> labelsByLen = new PriorityQueue<>(32, new ClueLabelLengthComparator());
 		for (Clue clue : clues) {
 			String clueLabel = clue.getLabel();
-			cluesAndArticles.put(clue, new ArrayList<DBpediaTitles.Article>());
+			clueArticles.put(clue, new ArrayList<DBpediaTitles.Article>());
 			/* Execute entity linking from clue text to
 			 * a corresponding enwiki article.  This internally
 			 * involves also some fuzzy lookups and such. */
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			for (DBpediaTitles.Article a : results) {
-				cluesAndArticles.get(clue).add(a);
-				clueAndArticleQueue.add(new ClueAndArticle(a, clue));
+				clueArticles.get(clue).add(a);
+				labelsByLen.add(new ClueLabel(a, clue));
 			}
 		}
 
 		/* If we match multiple overlapping clues, prefer the
 		 * longest one, and construct a final list of labels. */
 		Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
-		List<ClueAndArticle> keptClues = new ArrayList<>(); // final list of clues, without subdued ones
-		for (ClueAndArticle c; (c = clueAndArticleQueue.poll()) != null; ) {
+		List<ClueLabel> keptClues = new ArrayList<>(); // final list of clues, without subdued ones
+		for (ClueLabel c; (c = labelsByLen.poll()) != null; ) {
 			Clue clue = c.getClue();
 			String clueLabel = clue.getLabel();
 			boolean foundBetter = false;
@@ -116,14 +116,14 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			concept.setScore(a.getScore());
 
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-				List<DBpediaTitles.Article> l = cluesAndArticles.get(clueSub);  // get covered articles
+				List<DBpediaTitles.Article> l = clueArticles.get(clueSub);  // get covered articles
 				if (l == null || l.size() == 0)
 					continue;
 
 				DBpediaTitles.Article curr = l.get(0); // XXX should iterate through articles too?
 				double distance = curr.getDist();
 				if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
-					logger.debug("Concept <<{}>> subduing {} {}>>",
+					logger.debug("Concept <<{}>> subduing {} <<{}>>",
 							clueSub.getLabel(), clue.getType().getShortName(), cookedLabel);
 					foundBetter = true;
 					clue.removeFromIndexes();
@@ -132,7 +132,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				} else if (!(a.getDist() - distance > 1.0)) { //the longer article won
 					logger.debug("Concept <<{}>> subduing {} <<{}>>",
 							cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
-					cluesAndArticles.remove(clueSub);
+					clueArticles.remove(clueSub);
 					if (clueSub instanceof ClueSubject)
 						concept.setBySubject(true);
 					else if (clueSub instanceof ClueLAT)
@@ -142,7 +142,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 					if (clueSub.getWeight() > weight)
 						weight = clueSub.getWeight();
 
-					if (clueAndArticleQueue.remove(new ClueAndArticle(curr, clueSub)) == false)
+					if (labelsByLen.remove(new ClueLabel(curr, clueSub)) == false)
 						logger.error("removing {} from queue not successfull", clueSub.getLabel());
 					clueSub.removeFromIndexes();
 				}
@@ -152,18 +152,16 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				continue;
 
 			keptClues.add(c);
-			if (labels.containsKey(cookedLabel)) { //XXX This is awkward since each ClueAndArticle contains exactly one Article instead of a list
-				logger.debug("adding {} to label list", concept.getCookedLabel()); //labels is now a global map instead of a local one
+			if (labels.containsKey(cookedLabel)) { //XXX This is awkward since each ClueLabel contains exactly one Article instead of a list
 				labels.get(cookedLabel).add(concept);
 			} else {
-				logger.debug("adding unique {} to label list", concept.getCookedLabel());
 				labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 			}
 		}
 
 		/* Sort labels by their score (editDist-based) and generate
 		 * new clues from them. */
-		Collections.sort(keptClues, new ClueAndArticleScoreComparator());
+		Collections.sort(keptClues, new ClueLabelScoreComparator());
 		boolean originalClueNEd = false; // guard for single ClueNE generation
 		int rank = 1;
 		for(int i = 0; i < keptClues.size(); i++) {
@@ -263,11 +261,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		logger.debug("new(NE) by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
 
-	private class ClueAndArticle {
+	/** A container of (Clue, Article) tuple which basically represents
+	 * a single candidate label for a new Concept. */
+	private class ClueLabel {
 		protected DBpediaTitles.Article result;
 		protected Clue clue;
 
-		public ClueAndArticle(DBpediaTitles.Article result, Clue clue) {
+		public ClueLabel(DBpediaTitles.Article result, Clue clue) {
 			this.result = result;
 			this.clue = clue;
 		}
@@ -283,7 +283,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			ClueAndArticle that = (ClueAndArticle) o;
+			ClueLabel that = (ClueLabel) o;
 
 			if (result != null ? !result.equals(that.result) : that.result != null) return false;
 			return !(clue != null ? !clue.equals(that.clue) : that.clue != null);
@@ -299,18 +299,18 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	}
 
 	/* Compares using the String length */
-	private class ClueAndArticleLengthComparator implements Comparator<ClueAndArticle> {
+	private class ClueLabelLengthComparator implements Comparator<ClueLabel> {
 		@Override
-		public int compare(ClueAndArticle t1, ClueAndArticle t2) {
+		public int compare(ClueLabel t1, ClueLabel t2) {
 			int l1 = t1.getClue().getEnd() - t1.getClue().getBegin();
 			int l2 = t1.getClue().getEnd() - t2.getClue().getBegin();
 			return -Integer.compare(l1, l2); // longest first
 		}
 	}
 	/* Compares using the Article Score */
-	private class ClueAndArticleScoreComparator implements Comparator<ClueAndArticle> {
+	private class ClueLabelScoreComparator implements Comparator<ClueLabel> {
 		@Override
-		public int compare(ClueAndArticle t1, ClueAndArticle t2) {
+		public int compare(ClueLabel t1, ClueLabel t2) {
 			return -Double.compare(t1.getArticle().getScore(), t2.getArticle().getScore()); // highest first
 		}
 	}
