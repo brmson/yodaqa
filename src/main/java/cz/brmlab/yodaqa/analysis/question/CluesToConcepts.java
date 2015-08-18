@@ -67,33 +67,46 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Try to generate more canonical labels for the clues
 		 * by linking them to enwiki articles and creating
 		 * a length-ordered label list. */
-		PriorityQueue<ClueLabel> labelsByLen = new PriorityQueue<>(32, new ClueLabelLengthComparator());
-		HashMap<Clue, Double> clueBestDists = new HashMap<>();
+		HashMap<Clue, LinkedClue> linkedClues = new HashMap<>();  // auxiliary mapping, not canonical list!
+		PriorityQueue<LinkedClue> cluesByLen = new PriorityQueue<>(32, new LinkedClueLengthComparator());
 		for (Clue clue : clues) {
 			String clueLabel = clue.getLabel();
+
 			/* Execute entity linking from clue text to
 			 * a corresponding enwiki article.  This internally
 			 * involves also some fuzzy lookups and such. */
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
-			for (DBpediaTitles.Article a : results) {
-				if (!clueBestDists.containsKey(clue)) {
-					/* The first returned article has
-					 * the closest editDist. */
-					clueBestDists.put(clue, a.getDist());
-				}
-				labelsByLen.add(new ClueLabel(a, clue));
-			}
+			if (results.size() == 0)
+				continue; // no linkage
+
+			LinkedClue lc = new LinkedClue(clue, results);
+			linkedClues.put(clue, lc);
+			cluesByLen.add(lc);
 		}
 
-		/* If we match multiple overlapping clues, prefer the
-		 * longest one, and construct a final list of labels. */
-		Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
-		List<ClueLabel> keptClues = new ArrayList<>(); // final list of clues, without subdued ones
-		for (ClueLabel c; (c = labelsByLen.poll()) != null; ) {
+		/* If our linked clues cover other shorter clues, drop these. */
+		List<LinkedClue> keptClues = new ArrayList<>(); // final list of clues
+		for (LinkedClue c; (c = cluesByLen.poll()) != null; ) {
+			if (subdueCoveredClues(c, linkedClues, cluesByLen)) {
+				/* In fact, the covered clue subdued *us*.
+				 * Typically, we have higher edit distance
+				 * than the covered clue is a crisper match. */
+				continue;
+			}
+			keptClues.add(c);
+		}
+
+		/* Build Concept annotations out of the linked clues,
+		 * aggregated by their labels.  (For example, the clue
+		 * "Madonna" would generate many concepts labelled
+		 * "Madonna", then one concept "Madonna, Maryland", etc.) */
+		/* XXX: We assume no two different (non-subdued) clues
+		 * ever produce the same label. */
+		Map<String, ClueLabel> labels = new TreeMap<>(); // stable ordering (?)
+		for (LinkedClue c : keptClues) {
 			Clue clue = c.getClue();
-			String clueLabel = clue.getLabel();
-			DBpediaTitles.Article a = c.getArticle();
-			String cookedLabel = cookLabel(clueLabel, a.getCanonLabel());
+			for (DBpediaTitles.Article a : c.getArticles()) {  // XXX: reindent
+			String cookedLabel = cookLabel(clue.getLabel(), a.getCanonLabel());
 
 			logger.debug("creating concept <<{}>>, cooked <<{}>>, d={}",
 					a.getCanonLabel(), cookedLabel, a.getDist());
@@ -104,37 +117,42 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			concept.setCookedLabel(cookedLabel);
 			concept.setPageID(a.getPageID());
 			concept.setScore(a.getScore());
+			concept.setBySubject(c.isBySubject());
+			concept.setByLAT(c.isByLAT());
+			concept.setByNE(c.isByNE());
 
-			if (subdueCoveredClues(clue, a, concept, clueBestDists, labelsByLen)) {
-				/* In fact, the covered clue subdued *us*.
-				 * Typically, we have higher edit distance
-				 * than the covered clue is a crisper match. */
-				continue;
-			}
-
-			keptClues.add(c);
-			if (labels.containsKey(cookedLabel)) {
-				labels.get(cookedLabel).add(concept);
+			if (!labels.containsKey(cookedLabel)) {
+				/* First time for this particular label. */
+				ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+				labels.put(cookedLabel, cl);
 			} else {
-				labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+				labels.get(cookedLabel).add(concept);
+			}
 			}
 		}
 
 		/* Sort ClueLabels by their score (editDist-based) and generate
 		 * new clues from them. */
-		Collections.sort(keptClues, new ClueLabelScoreComparator());
+		List<ClueLabel> labelList = new ArrayList<>(labels.values());
+		Collections.sort(labelList, new ClueLabelScoreComparator());
+		addCluesForLabels(resultView, labelList);
+	}
+
+	/** Add clue(s) and register concepts for each label
+	 * in the given list. */
+	protected void addCluesForLabels(JCas resultView, List<ClueLabel> labelList) {
 		boolean originalClueNEd = false; // guard for single ClueNE generation
 		int rank = 1;
-		for(int i = 0; i < keptClues.size(); i++) {
-			Clue clue = keptClues.get(i).getClue();
-			DBpediaTitles.Article a = keptClues.get(i).getArticle();
+		for (ClueLabel cl : labelList) {
+			Clue clue = cl.getClue();
 			String clueLabel = clue.getLabel();
-			String cookedLabel = cookLabel(clueLabel, a.getCanonLabel());
+			String cookedLabel = cl.getCookedLabel();
+
+			/* Remove the original clue, but do not worry, it shall
+			 * be reborn stronger than ever before! */
 			clue.removeFromIndexes();
 
-			List<Concept> concepts = labels.get(cookedLabel);
-			for (int j = 0; j < concepts.size(); j++) {
-				Concept concept = concepts.get(j);
+			for (Concept concept : cl.getConcepts()) {
 				concept.setRr(1 / ((double) rank));
 				concept.addToIndexes();
 				rank++;
@@ -157,7 +175,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			/* Make a fresh concept clue. */
 			addClue(resultView, clue.getBegin(), clue.getEnd(),
 					clue.getBase(), clue.getWeight(),
-					FSCollectionFactory.createFSList(resultView, concepts),
+					FSCollectionFactory.createFSList(resultView, cl.getConcepts()),
 					cookedLabel, !reworded);
 
 			/* Make also an NE clue with always the original text
@@ -216,53 +234,56 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	 * that has been subdued - in case it has high edit distance
 	 * relative to the covered clues, i.e. typically a false positive
 	 * (relying solely on that clue is typically disastrous). */
-	protected boolean subdueCoveredClues(Clue clue, DBpediaTitles.Article a,
-			Concept concept,
-			HashMap<Clue, Double> clueBestDists,
-			PriorityQueue<ClueLabel> labelsByLen) {
+	protected boolean subdueCoveredClues(LinkedClue lc,
+			HashMap<Clue, LinkedClue> linkedClues,
+			PriorityQueue<LinkedClue> cluesByLen) {
+		Clue clue = lc.getClue();
 		for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-			Double subDist = clueBestDists.get(clueSub);
+			LinkedClue linkedClueSub = linkedClues.get(clueSub);
 
-			if (subDist != null && a.getDist() - subDist > 1.0) {
+			if (linkedClueSub != null && lc.getDist() - linkedClueSub.getDist() > 1.0) {
 				// we found a shorter clue with (significantly) better edit distance
 				logger.debug("Concept <<{}>> subduing Concept <<{}>>",
-						clueSub.getLabel(), concept.getCookedLabel());
+						clueSub.getLabel(), lc.getClue().getLabel());
 
 				clue.removeFromIndexes();
-				removeLabelsByClue(labelsByLen, clue);
+				removeLinkedClue(linkedClues, cluesByLen, clue);
 				return true;
 
 			} else { // the longer clue wins
 				logger.debug("Concept <<{}>> subduing {} <<{}>>",
-						concept.getCookedLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
+						lc.getClue().getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
 				if (clueSub instanceof ClueSubject)
-					concept.setBySubject(true);
+					lc.setBySubject(true);
 				else if (clueSub instanceof ClueLAT)
-					concept.setByLAT(true);
+					lc.setByLAT(true);
 				else if (clueSub instanceof ClueNE)
-					concept.setByNE(true);
+					lc.setByNE(true);
 				if (clueSub.getWeight() > clue.getWeight()) {
 					clue.setWeight(clueSub.getWeight());
 				}
 
 				clueSub.removeFromIndexes();
-				if (subDist != null)
-					clueBestDists.remove(clueSub);
-				removeLabelsByClue(labelsByLen, clueSub);
+				removeLinkedClue(linkedClues, cluesByLen, clueSub);
 			}
 		}
 
 		return false;
 	}
 
-	/** Remove all labels pertaining the given @clue from a label queue. */
-	protected void removeLabelsByClue(PriorityQueue<ClueLabel> labelQueue, Clue clue) {
-		List<ClueLabel> toRemove = new ArrayList<>();
-		for (ClueLabel c : labelQueue)
+	/** Remove the entity link records of a given clue. */
+	protected void removeLinkedClue(Map<Clue, LinkedClue> linkedClues, PriorityQueue<LinkedClue> clueQueue, Clue clue) {
+		List<LinkedClue> toRemove = new ArrayList<>();
+		for (LinkedClue c : clueQueue)
 			if (c.getClue() == clue)
 				toRemove.add(c);
-		for (ClueLabel c : toRemove)
-			labelQueue.remove(c);
+		for (LinkedClue c : toRemove)
+			clueQueue.remove(c);
+
+		/* XXX: This way, we might maybe keep some stale entries
+		 * in linkedClues. */
+		for (LinkedClue c : toRemove)
+			linkedClues.remove(c);
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base,
@@ -292,57 +313,90 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		logger.debug("new(NE) by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
 
-	/** A container of (Clue, Article) tuple which basically represents
-	 * a single candidate label for a new Concept. */
-	private class ClueLabel {
-		protected DBpediaTitles.Article result;
+	/** A container that holds a clue with all its linked articles
+	 * (sorted by edit distance). */
+	private class LinkedClue {
 		protected Clue clue;
+		protected List<DBpediaTitles.Article> articles;
 
-		public ClueLabel(DBpediaTitles.Article result, Clue clue) {
-			this.result = result;
+		/** Edit distance of the best linked match. */
+		protected double dist;
+		/** Length of the clue, for subduing purposes. */
+		protected int len;
+
+		/** Whether this linked clue subdued another clue
+		 * of a certain kind. */
+		protected boolean bySubject, byLAT, byNE;
+
+		public LinkedClue(Clue clue, List<DBpediaTitles.Article> articles) {
 			this.clue = clue;
+			this.articles = articles;
+
+			this.dist = articles.get(0).getDist();
+			this.len = clue.getEnd() - clue.getBegin();
 		}
-		public DBpediaTitles.Article getArticle() {
-			return result;
-		}
-		public Clue getClue() {
-			return clue;
-		}
+
+		public Clue getClue() { return clue; }
+		public List<DBpediaTitles.Article> getArticles() { return articles; }
+		public double getDist() { return dist; }
+		public int getLen() { return len; }
+
+		public boolean isBySubject() { return bySubject; }
+		public void setBySubject(boolean bySubject) { this.bySubject = bySubject; }
+		public boolean isByLAT() { return byLAT; }
+		public void setByLAT(boolean byLAT) { this.byLAT = byLAT; }
+		public boolean isByNE() { return byNE; }
+		public void setByNE(boolean byNE) { this.byNE = byNE; }
 
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			ClueLabel that = (ClueLabel) o;
-
-			if (result != null ? !result.equals(that.result) : that.result != null) return false;
-			return !(clue != null ? !clue.equals(that.clue) : that.clue != null);
-
+			LinkedClue that = (LinkedClue) o;
+			return that.getClue() == this.getClue();
 		}
 
 		@Override
 		public int hashCode() {
-			int result1 = result != null ? result.hashCode() : 0;
-			result1 = 31 * result1 + (clue != null ? clue.hashCode() : 0);
-			return result1;
+			return this.getClue().hashCode();
 		}
 	}
 
-	/* Compares using the String length */
-	private class ClueLabelLengthComparator implements Comparator<ClueLabel> {
+	/** A clue label corresponds to a (Clue, Concepts[]) tuple
+	 * holding all concepts sharing a particular label.
+	 *
+	 * The concepts are assumed to be sorted by edit distance. */
+	private class ClueLabel {
+		protected Clue clue;
+		protected String cookedLabel;
+		protected List<Concept> concepts;
+
+		public ClueLabel(Clue clue, String cookedLabel, List<Concept> concepts) {
+			this.clue = clue;
+			this.cookedLabel = cookedLabel;
+			this.concepts = concepts;
+		}
+
+		public Clue getClue() { return clue; }
+		public String getCookedLabel() { return cookedLabel; }
+		public List<Concept> getConcepts() { return concepts; }
+		public void add(Concept concept) { concepts.add(concept); }
+	}
+
+	/* Compares LinkedClues using the clue length */
+	private class LinkedClueLengthComparator implements Comparator<LinkedClue> {
 		@Override
-		public int compare(ClueLabel t1, ClueLabel t2) {
-			int l1 = t1.getClue().getEnd() - t1.getClue().getBegin();
-			int l2 = t1.getClue().getEnd() - t2.getClue().getBegin();
-			return -Integer.compare(l1, l2); // longest first
+		public int compare(LinkedClue t1, LinkedClue t2) {
+			return -Integer.compare(t1.getLen(), t2.getLen()); // longest first
 		}
 	}
-	/* Compares using the Article Score */
+	/* Compares ClueLabels using the concept score */
 	private class ClueLabelScoreComparator implements Comparator<ClueLabel> {
 		@Override
 		public int compare(ClueLabel t1, ClueLabel t2) {
-			return -Double.compare(t1.getArticle().getScore(), t2.getArticle().getScore()); // highest first
+			return -Double.compare(t1.getConcepts().get(0).getScore(),
+						t2.getConcepts().get(0).getScore()); // highest first
 		}
 	}
 
