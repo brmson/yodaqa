@@ -90,8 +90,7 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		double w=0;
 
 		for(Clue c:JCasUtil.select(questionView, Clue.class)){
-			w=c.getWeight();
-			break;
+			w+=c.getWeight();
 		}
 		passage.setScore(1.0 / (1.0 + Math.exp(-(3.3*2/6.0 + 0.4*w - 4.0))));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
