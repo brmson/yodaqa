@@ -101,7 +101,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
 
 		List<ClueAndArticle> subduedClues = new ArrayList<>(); //the final list
-		int rank = 1;
 		//remove shorter/worse results
 		logger.debug("now checking queue, there are " + clueAndArticleQueue.size() + " cluesWithArticles");
 		for (ClueAndArticle c; (c = clueAndArticleQueue.poll()) != null; ) {
@@ -130,7 +129,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			concept.setCookedLabel(cookedLabel);
 			concept.setPageID(a.getPageID());
 			concept.setScore(a.getScore());
-			concept.setRr(1 / ((double) rank)); // XXX ranking this way is certainly wrong!
 
 			logger.debug("selecting covered labels for {}", cookedLabel);
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
@@ -183,7 +181,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				logger.debug("adding unique {} to label list", concept.getCookedLabel());
 				labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 			}
-			rank++;
 		}
 		boolean originalClueNEd = false; // guard for single ClueNE generation
 
@@ -192,6 +189,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 		//sorted using score, we now can take the top N
 		// XXX will have to change originalClueNE and such
+		int rank = 1;
 		for(int i = 0; i < subduedClues.size(); i++) {
 			Clue clue = subduedClues.get(i).getClue();
 			DBpediaTitles.Article a = subduedClues.get(i).getArticle();
@@ -210,7 +208,10 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			logger.debug("{} has {} concepts",cookedLabel, concepts.size());
 
 			for(int j = 0; j<concepts.size(); j++ ) {
-				concepts.get(j).addToIndexes();
+				Concept concept = concepts.get(j);
+				concept.setRr(1 / ((double) rank));
+				concept.addToIndexes();
+				rank++;
 			}
 
 			//XXX God knows what happens next
