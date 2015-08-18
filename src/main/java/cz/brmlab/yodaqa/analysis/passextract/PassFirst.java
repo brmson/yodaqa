@@ -64,6 +64,12 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 			return;
 
 		int numClues = JCasUtil.select(questionView, Clue.class).size();
+
+//		for(Clue c:JCasUtil.select(questionView, Clue.class)){
+//			System.out.println("CLUE WEIGTH:"+c.getWeight());
+//		}
+//		System.exit(0);
+
 		double weight = numClues; // proportional to #clues since so is PassByClue
 
 		/* Generate features. */
@@ -81,11 +87,12 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		 * weights, and that we assume that 2 out of 6 selected
 		 * documents on average bear answer in the first passage. */
 
-		PassageFV fv = new PassageFV(passage);
-		int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
-		double w=fv.getValues()[clueWeight_i];
+		double w=0;
 
-
+		for(Clue c:JCasUtil.select(questionView, Clue.class)){
+			w=c.getWeight();
+			break;
+		}
 		passage.setScore(1.0 / (1.0 + Math.exp(-(3.3*2/6.0 + 0.4*w - 4.0))));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
