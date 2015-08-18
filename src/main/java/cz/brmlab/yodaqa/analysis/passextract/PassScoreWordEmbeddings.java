@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import cz.brmlab.yodaqa.model.Question.Clue;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
@@ -73,6 +74,13 @@ public class PassScoreWordEmbeddings extends JCasAnnotator_ImplBase {
 
 //			double score = 2.26216399*res[0]+0.49076233*fv.getValues()[clueWeight_i];
 			double score = 3.32822695*res[0]+0.40156513*fv.getValues()[clueWeight_i]-3.96791205;
+//			System.out.println("TEXT:"+passage.getCoveredText());
+//			for(int i=0;i<fv.getValues().length;i++){
+//				System.out.println("fv.getValues "+i+":"+fv.getValues()[i]);
+//			}
+//			int numClues = JCasUtil.select(questionView, Clue.class).size();
+//			System.out.println("numClues="+numClues);
+//			if(Math.random()>0.99)System.exit(0);
 			score=1/(1+Math.exp(-score));
 
 			passages.add(new PassScore(passage, score));

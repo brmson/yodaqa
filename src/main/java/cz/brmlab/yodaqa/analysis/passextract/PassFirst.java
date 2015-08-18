@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.analysis.passextract;
 import java.lang.Math;
 
 import cz.brmlab.yodaqa.io.collection.CollectionQuestionReader;
+import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;
@@ -79,7 +80,13 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		 * to reflect that our weight is just #clues, not sum of their
 		 * weights, and that we assume that 2 out of 6 selected
 		 * documents on average bear answer in the first passage. */
-		passage.setScore(1.0 / (1.0 + Math.exp(-(3.3*2/6.0 + 0.5*weight - 4.0))));
+
+		PassageFV fv = new PassageFV(passage);
+		int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
+		double w=fv.getValues()[clueWeight_i];
+
+
+		passage.setScore(1.0 / (1.0 + Math.exp(-(3.3*2/6.0 + 0.4*w - 4.0))));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
 
