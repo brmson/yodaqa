@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa;
 
+import cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
@@ -18,7 +19,13 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 
 public class YodaQA_GS {
 	public static void main(String[] args) throws Exception {
-		if (args.length != 2) {
+		BingFullPrimarySearch.DISABLED = true;
+		if (args.length > 0) {
+			for (int i = 0; i < args.length; i++) {
+				if (args[i].equals("use-bing")) BingFullPrimarySearch.DISABLED = false;
+			}
+		}
+		if (args.length != 2 && args.length != 3) {
 			System.err.println("Usage: YodaQA_GS INPUT.TSV OUTPUT.TSV");
 			System.err.println("Measures YodaQA performance on some Gold Standard questions.");
 			System.exit(1);

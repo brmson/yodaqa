@@ -51,6 +51,7 @@ public class SqliteConnector {
 //			logger.info("SQL " + sql);
 			stmt.execute(sql);
 			stmt.close();
+			logger.info("The query successfully saved to db.");
 		} catch (SQLException e) {
 			logger.error("Unable to save results to db: " + e.getMessage() + "\n"
 				+ "SQL query: " + sql);
