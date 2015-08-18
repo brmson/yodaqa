@@ -86,10 +86,11 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		PriorityQueue<ClueAndArticle> clueAndArticleQueue = new PriorityQueue<>(32, new ClueAndArticleLengthComparator());
 		/* Check the clues in turn, starting by the longest - do they
 		 * correspond to enwiki articles? */
+		logger.debug("there are " + cluesByLen.size() + "  clues");
 		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
 			String clueLabel = clue.getLabel();
 			cluesAndArticles.put(clue, new ArrayList<DBpediaTitles.Article>());
-
+			logger.debug("clueLabel search: "+clueLabel);
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			for (DBpediaTitles.Article a : results) {
 				cluesAndArticles.get(clue).add(a);
@@ -99,9 +100,10 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		}
 		Map<String, List<Concept>> labels = new TreeMap<>(); // stable ordering (?)
 
-		List<ClueAndArticle> subduedClues = new ArrayList<>();
+		List<ClueAndArticle> subduedClues = new ArrayList<>(); //the final list
 		int rank = 1;
 		//remove shorter/worse results
+		logger.debug("now checking queue, there are " + clueAndArticleQueue.size() + " cluesWithArticles");
 		for (ClueAndArticle c; (c = clueAndArticleQueue.poll()) != null; ) {
 			Clue clue = c.getClue();
 			String clueLabel = clue.getLabel();
@@ -120,7 +122,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				 * "Frozen", the (film)-suffixed concepts should
 				 * be preferred over e.g. the (House) suffix. */
 			cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
-
+			logger.debug("creating concept " + a.getCanonLabel());
 			Concept concept = new Concept(resultView);
 			concept.setBegin(clue.getBegin());
 			concept.setEnd(clue.getEnd());
@@ -130,14 +132,21 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			concept.setScore(a.getScore());
 			concept.setRr(1 / ((double) rank)); // XXX ranking this way is certainly wrong!
 
+			logger.debug("selecting covered labels for {}", cookedLabel);
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
+				logger.debug("clueSub " + clueSub.getLabel());
 				List<DBpediaTitles.Article> l = cluesAndArticles.get(clueSub);  //get covered articles
 				double distance;
 				if (l != null) { //check if the clue actually has an article
-					DBpediaTitles.Article curr = l.get(0);
+					if (l.size()==0) {
+						continue;
+					}
+					DBpediaTitles.Article curr = l.get(0); //XXX should iterate through articles too?
 					distance = curr.getDist();
+					logger.debug("comparing " + cookedLabel + " " + a.getDist() + " with " + clueSub.getLabel() + " " + distance);
 					if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
 						logger.debug("Concept {} subduing {} {}", clueSub.getLabel(), clue.getType().getShortName(), cookedLabel);
+						logger.debug("found better");
 						foundBetter = true;
 						clue.removeFromIndexes();
 						break;
@@ -152,18 +161,26 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 							concept.setByNE(true);
 						if (clueSub.getWeight() > weight)
 							weight = clueSub.getWeight();
-						clueAndArticleQueue.remove(clueSub);
+
+						if (clueAndArticleQueue.remove(new ClueAndArticle(curr, clueSub)) == false) {
+							logger.debug("removing {} from queue not successfull", clueSub.getLabel());
+						}
+						else {
+							logger.debug("removed {} from queue",clueSub.getLabel());
+						}
 						clueSub.removeFromIndexes();
 					}
 				}
 			}
 			if (foundBetter)
 				continue;
+
 			subduedClues.add(c);
 			if (labels.containsKey(cookedLabel)) { //XXX This is awkward since each ClueAndArticle contains exactly one Article instead of a list
 				logger.debug("adding {} to label list", concept.getCookedLabel()); //labels is now a global map instead of a local one
 				labels.get(cookedLabel).add(concept);
 			} else {
+				logger.debug("adding unique {} to label list", concept.getCookedLabel());
 				labels.put(cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 			}
 			rank++;
@@ -171,12 +188,16 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		boolean originalClueNEd = false; // guard for single ClueNE generation
 
 		Collections.sort(subduedClues, new ClueAndArticleScoreComparator());
+		logger.debug("subduedClues size " + subduedClues.size());
 
 		//sorted using score, we now can take the top N
+		// XXX will have to change originalClueNE and such
 		for(int i = 0; i < subduedClues.size(); i++) {
 			Clue clue = subduedClues.get(i).getClue();
 			DBpediaTitles.Article a = subduedClues.get(i).getArticle();
 			String clueLabel = clue.getLabel();
+			logger.debug("{}th clue is {} {}", i, clueLabel, a.getCanonLabel());
+
 			double weight = clue.getWeight();
 			String cookedLabel = a.getCanonLabel();
 			if (cookedLabel.toLowerCase().matches("^list of .*")) {
@@ -186,6 +207,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			clue.removeFromIndexes();
 
 			List<Concept> concepts = labels.get(cookedLabel);
+			logger.debug("{} has {} concepts",cookedLabel, concepts.size());
+
+			for(int j = 0; j<concepts.size(); j++ ) {
+				concepts.get(j).addToIndexes();
+			}
+
+			//XXX God knows what happens next
 
 			/* Maybe the concept clue has a different label than
 			 * the original wording in question text.  That can
@@ -221,6 +249,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			}
 		}
 	}
+
 	protected void addClue(JCas jcas, int begin, int end, Annotation base,
 			double weight, FSList concepts, String label, boolean isReliable) {
 		ClueConcept clue = new ClueConcept(jcas);
@@ -261,6 +290,25 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		}
 		public Clue getClue() {
 			return clue;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			ClueAndArticle that = (ClueAndArticle) o;
+
+			if (result != null ? !result.equals(that.result) : that.result != null) return false;
+			return !(clue != null ? !clue.equals(that.clue) : that.clue != null);
+
+		}
+
+		@Override
+		public int hashCode() {
+			int result1 = result != null ? result.hashCode() : 0;
+			result1 = 31 * result1 + (clue != null ? clue.hashCode() : 0);
+			return result1;
 		}
 	}
 
