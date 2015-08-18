@@ -134,40 +134,37 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
 				logger.debug("clueSub " + clueSub.getLabel());
 				List<DBpediaTitles.Article> l = cluesAndArticles.get(clueSub);  //get covered articles
-				double distance;
-				if (l != null) { //check if the clue actually has an article
-					if (l.size()==0) {
-						continue;
-					}
-					DBpediaTitles.Article curr = l.get(0); //XXX should iterate through articles too?
-					distance = curr.getDist();
-					logger.debug("comparing " + cookedLabel + " " + a.getDist() + " with " + clueSub.getLabel() + " " + distance);
-					if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
-						logger.debug("Concept {} subduing {} {}", clueSub.getLabel(), clue.getType().getShortName(), cookedLabel);
-						logger.debug("found better");
-						foundBetter = true;
-						clue.removeFromIndexes();
-						break;
-					} else if (!(a.getDist() - distance > 1.0)) { //the longer article won
-						logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
-						cluesAndArticles.remove(clueSub);
-						if (clueSub instanceof ClueSubject)
-							concept.setBySubject(true);
-						else if (clueSub instanceof ClueLAT)
-							concept.setByLAT(true);
-						else if (clueSub instanceof ClueNE)
-							concept.setByNE(true);
-						if (clueSub.getWeight() > weight)
-							weight = clueSub.getWeight();
+				if (l == null || l.size() == 0)
+					continue;
 
-						if (clueAndArticleQueue.remove(new ClueAndArticle(curr, clueSub)) == false) {
-							logger.debug("removing {} from queue not successfull", clueSub.getLabel());
-						}
-						else {
-							logger.debug("removed {} from queue",clueSub.getLabel());
-						}
-						clueSub.removeFromIndexes();
+				DBpediaTitles.Article curr = l.get(0); //XXX should iterate through articles too?
+				double distance = curr.getDist();
+				logger.debug("comparing " + cookedLabel + " " + a.getDist() + " with " + clueSub.getLabel() + " " + distance);
+				if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
+					logger.debug("Concept {} subduing {} {}", clueSub.getLabel(), clue.getType().getShortName(), cookedLabel);
+					logger.debug("found better");
+					foundBetter = true;
+					clue.removeFromIndexes();
+					break;
+				} else if (!(a.getDist() - distance > 1.0)) { //the longer article won
+					logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
+					cluesAndArticles.remove(clueSub);
+					if (clueSub instanceof ClueSubject)
+						concept.setBySubject(true);
+					else if (clueSub instanceof ClueLAT)
+						concept.setByLAT(true);
+					else if (clueSub instanceof ClueNE)
+						concept.setByNE(true);
+					if (clueSub.getWeight() > weight)
+						weight = clueSub.getWeight();
+
+					if (clueAndArticleQueue.remove(new ClueAndArticle(curr, clueSub)) == false) {
+						logger.debug("removing {} from queue not successfull", clueSub.getLabel());
 					}
+					else {
+						logger.debug("removed {} from queue",clueSub.getLabel());
+					}
+					clueSub.removeFromIndexes();
 				}
 			}
 			if (foundBetter)
