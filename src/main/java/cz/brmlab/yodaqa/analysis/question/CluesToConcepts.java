@@ -188,12 +188,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			if (linkedClueSub != null && lc.getDist() - linkedClueSub.getDist() > 1.0) {
 				// we found a shorter clue with (significantly) better edit distance
-				logger.debug("Concept <<{}>> subduing Concept <<{}>>",
+				logger.debug("Concept <<{}>> resisting subdue by Concept <<{}>>",
 						clueSub.getLabel(), lc.getClue().getLabel());
-
-				clue.removeFromIndexes();
-				removeLinkedClue(linkedClues, cluesByLen, clue);
-				return true;
 
 			} else { // the longer clue wins
 				logger.debug("Concept <<{}>> subduing {} <<{}>>",
