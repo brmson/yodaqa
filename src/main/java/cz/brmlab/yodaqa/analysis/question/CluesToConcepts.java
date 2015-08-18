@@ -228,8 +228,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 			if (subDist != null && a.getDist() - subDist > 1.0) {
 				// we found a shorter clue with (significantly) better edit distance
-				logger.debug("Concept <<{}>> subduing {} <<{}>>",
-						clueSub.getLabel(), clue.getType().getShortName(), concept.getCookedLabel());
+				logger.debug("Concept <<{}>> subduing Concept <<{}>>",
+						clueSub.getLabel(), concept.getCookedLabel());
 
 				clue.removeFromIndexes();
 				removeLabelsByClue(labelsByLen, clue);
