@@ -67,17 +67,20 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Try to generate more canonical labels for the clues
 		 * by linking them to enwiki articles and creating
 		 * a length-ordered label list. */
-		HashMap<Clue, List<DBpediaTitles.Article>> clueArticles = new HashMap<>();
 		PriorityQueue<ClueLabel> labelsByLen = new PriorityQueue<>(32, new ClueLabelLengthComparator());
+		HashMap<Clue, Double> clueBestDists = new HashMap<>();
 		for (Clue clue : clues) {
 			String clueLabel = clue.getLabel();
-			clueArticles.put(clue, new ArrayList<DBpediaTitles.Article>());
 			/* Execute entity linking from clue text to
 			 * a corresponding enwiki article.  This internally
 			 * involves also some fuzzy lookups and such. */
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
 			for (DBpediaTitles.Article a : results) {
-				clueArticles.get(clue).add(a);
+				if (!clueBestDists.containsKey(clue)) {
+					/* The first returned article has
+					 * the closest editDist. */
+					clueBestDists.put(clue, a.getDist());
+				}
 				labelsByLen.add(new ClueLabel(a, clue));
 			}
 		}
@@ -102,7 +105,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			concept.setPageID(a.getPageID());
 			concept.setScore(a.getScore());
 
-			if (subdueCoveredClues(clue, a, concept, clueArticles, labelsByLen)) {
+			if (subdueCoveredClues(clue, a, concept, clueBestDists, labelsByLen)) {
 				/* In fact, the covered clue subdued *us*.
 				 * Typically, we have higher edit distance
 				 * than the covered clue is a crisper match. */
@@ -117,7 +120,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			}
 		}
 
-		/* Sort labels by their score (editDist-based) and generate
+		/* Sort ClueLabels by their score (editDist-based) and generate
 		 * new clues from them. */
 		Collections.sort(keptClues, new ClueLabelScoreComparator());
 		boolean originalClueNEd = false; // guard for single ClueNE generation
@@ -216,27 +219,32 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	 * (relying solely on that clue is typically disastrous). */
 	protected boolean subdueCoveredClues(Clue clue, DBpediaTitles.Article a,
 			Concept concept,
-			HashMap<Clue, List<DBpediaTitles.Article>> clueArticles,
+			HashMap<Clue, Double> clueBestDists,
 			PriorityQueue<ClueLabel> labelsByLen) {
 		double weight = clue.getWeight();
 
 		for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-			List<DBpediaTitles.Article> l = clueArticles.get(clueSub);  // get covered articles
-			if (l == null || l.size() == 0)
+			Double subDist = clueBestDists.get(clueSub);
+			if (subDist == null) {
+				/* There is no ClueLabel match for this
+				 * clue. */
+				/* FIXME: Subdue it anyway! */
 				continue;
+			}
 
-			DBpediaTitles.Article curr = l.get(0); // XXX should iterate through articles too?
-			double distance = curr.getDist();
-			if (!(a.getDist() - distance <= 1.0)) { //we found a shorter article with better edit distance
+			if (a.getDist() - subDist > 1.0) {
+				// we found a shorter clue with (significantly) better edit distance
 				logger.debug("Concept <<{}>> subduing {} <<{}>>",
 						clueSub.getLabel(), clue.getType().getShortName(), concept.getCookedLabel());
+
 				clue.removeFromIndexes();
+				/* FIXME: removeLabelsByClue(labelsByLen, clue); */
+
 				return true;
 
-			} else if (!(a.getDist() - distance > 1.0)) { //the longer article won
+			} else { // the longer clue wins
 				logger.debug("Concept <<{}>> subduing {} <<{}>>",
 						concept.getCookedLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
-				clueArticles.remove(clueSub);
 				if (clueSub instanceof ClueSubject)
 					concept.setBySubject(true);
 				else if (clueSub instanceof ClueLAT)
@@ -246,13 +254,23 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				if (clueSub.getWeight() > weight)
 					weight = clueSub.getWeight();
 
-				if (labelsByLen.remove(new ClueLabel(curr, clueSub)) == false)
-					logger.error("removing {} from queue not successfull", clueSub.getLabel());
+				clueBestDists.remove(clueSub);
 				clueSub.removeFromIndexes();
+				removeLabelsByClue(labelsByLen, clueSub);
 			}
 		}
 
 		return false;
+	}
+
+	/** Remove all labels pertaining the given @clue from a label queue. */
+	protected void removeLabelsByClue(PriorityQueue<ClueLabel> labelQueue, Clue clue) {
+		List<ClueLabel> toRemove = new ArrayList<>();
+		for (ClueLabel c : labelQueue)
+			if (c.getClue() == clue)
+				toRemove.add(c);
+		for (ClueLabel c : toRemove)
+			labelQueue.remove(c);
 	}
 
 	protected void addClue(JCas jcas, int begin, int end, Annotation base,
