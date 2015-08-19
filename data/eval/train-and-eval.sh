@@ -37,6 +37,9 @@
 # -d DATASET allows "train and eval" on a different dataset than
 # "curated".  E.g. -d large2180 will test on the 2180-question
 # noisier dataset.
+# 
+# You can specify system property with -D. At this time there is only one
+# system property supported: -Dcz.brmlab.yodaqa.use_bing=yes
 
 set -e
 

@@ -44,6 +44,9 @@ import org.apache.commons.codec.binary.Base64;
  * Details about the Bing search, an API key you need to get in order
  * for this to get used, etc., are in data/bing/README.md.
  *
+ * Bing search is disabled by default. You need to set system property
+ * cz.brmlab.yodaqa.use_bing=yes to enabled it.
+ *
  * XXX: The containing package shouldn't be called "solrfull" as this
  * search has nothing to do with Solr. */
 
