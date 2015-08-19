@@ -33,13 +33,13 @@ import java.util.List;
 public class JSONQuestionReader extends CasCollectionReader_ImplBase {
 
 	private class JSONQuestion{
-		String qID;
+		String qId;
 		String qText;
 		List<String> answers;
 		String author;
 
-		public String getqID() {
-			return qID;
+		public String getqId() {
+			return qId;
 		}
 		public String getqText() {
 			return qText;
@@ -51,8 +51,8 @@ public class JSONQuestionReader extends CasCollectionReader_ImplBase {
 			return author;
 		}
 
-		public JSONQuestion(String qID, String qText, List<String> answers, String author) {
-			this.qID = qID;
+		public JSONQuestion(String qId, String qText, List<String> answers, String author) {
+			this.qId = qId;
 			this.qText = qText;
 			this.answers = answers;
 			this.author = author;
@@ -94,14 +94,14 @@ public class JSONQuestionReader extends CasCollectionReader_ImplBase {
 	public void getNext(CAS aCAS) throws IOException, CollectionException {
 		index++;
 		JSONQuestion j = gson.fromJson(jsonreader, JSONQuestion.class);
-		Question q = new Question(j.getqID(), j.getqText());
+		Question q = new Question(j.getqId(), j.getqText());
 
 		QuestionDashboard.getInstance().askQuestion(q);
 		QuestionDashboard.getInstance().getQuestionToAnswer();
 
 		try {
 			JCas jcas = aCAS.getJCas();
-			initCas(jcas, /* id */ j.getqID(),
+			initCas(jcas, /* id */ j.getqId(),
 				/* type */ "factoid",
 				/* text */ j.getqText(),
 				/* answerpcre */ j.getAnswers());
