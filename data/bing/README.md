@@ -71,7 +71,7 @@ You can run yodaqa with this command:
 
 If you want to run data/eval/train-and-eval.py you need to pass the parameter as well:
 
-	data/eval/train-and-eval.py -Dcz.brmlab.yodaqa.use_bing=yes
+	data/eval/train-and-eval.sh -Dcz.brmlab.yodaqa.use_bing=yes
 
 Caching results
 ---------------
