@@ -26,6 +26,12 @@ the quality of answers but it makes the numerical results non-reproducible
 as the web search results can change day to day.  Please use the "master"
 branch for day-to-day development.
 
+**Bing search is disabled by default. You need to set system property
+  cz.brmlab.yodaqa.use_bing=yes to enabled it. 
+  You can run yodaqa with this command:**
+
+  ./gradlew run -q -Dcz.brmlab.yodaqa.use_bing=yes  
+
 ## Installation Instructions
 
 Quick instructions for setting up, building and running (focused on Debian Wheezy):
