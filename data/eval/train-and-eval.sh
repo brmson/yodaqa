@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: data/eval/train-and-eval.sh [-s N] [-m MAXHEAPSIZE] [-d DATASET] [-b] [COMMIT [BASECOMMIT]]
+# Usage: data/eval/train-and-eval.sh [-s N] [-m MAXHEAPSIZE] [-d DATASET] [COMMIT [BASECOMMIT]]
 #
 # Perform full model training and performance evaluation of the given
 # commit (may be also a branch name, or nothing to eval the HEAD).
@@ -37,8 +37,6 @@
 # -d DATASET allows "train and eval" on a different dataset than
 # "curated".  E.g. -d large2180 will test on the 2180-question
 # noisier dataset.
-# 
-# if the -b is present the bing search will be used
 
 set -e
 
@@ -56,11 +54,6 @@ if [ "$1" = "-d" ]; then
 	shift; dataset=$1; shift
 else
 	dataset=curated
-fi
-if [ "$1" = "-b" ]; then
-	shift; bing="use-bing"
-else
-	bing=""
 fi
 
 cid=$(git rev-parse --short "${1:-HEAD}")
@@ -102,9 +95,9 @@ else
 fi
 
 screen -m sh -c "
-	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 $basecid $bing;
+	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 $basecid;
 	if [ $wait_on_barriers = 0 ]; then rm _multistage-barrier*; else sleep 10; fi
-	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 $wait_on_barriers $basecid $bing
+	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 $wait_on_barriers $basecid
 "
 
 popd

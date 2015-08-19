@@ -1,6 +1,5 @@
 package cz.brmlab.yodaqa;
 
-import cz.brmlab.yodaqa.pipeline.solrfull.BingFullPrimarySearch;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
 
@@ -19,13 +18,6 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 
 public class YodaQA_Interactive {
 	public static void main(String[] args) throws Exception {
-		BingFullPrimarySearch.DISABLED = true;
-		if (args.length > 0) {
-			for (int i = 0; i < args.length; i++) {
-				if (args[i].equals("use-bing")) BingFullPrimarySearch.DISABLED = false;
-			}
-		}
-
 		CollectionReaderDescription reader = createReaderDescription(
 				InteractiveQuestionReader.class,
 				InteractiveQuestionReader.PARAM_LANGUAGE, "en");

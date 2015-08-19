@@ -64,8 +64,6 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 
 	protected JCas questionView;
 
-	public static boolean DISABLED;
-
 
 	protected List<BingResult> results;
 	protected int i;
@@ -107,7 +105,6 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			logger.info("No api key for bing api! " + e.getMessage());
 			skip = true;
 		}
-		if (DISABLED) logger.info("Bing search is disabled!");
 	}
 
 	@Override
@@ -123,13 +120,11 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		i = 0;
 		/* Run a search for text clues. */
 
-		if (!DISABLED) {
-			try {
-				Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
-				results = bingSearch(clues, hitListSize);
-			} catch (Exception e) {
-				throw new AnalysisEngineProcessException(e);
-			}
+		try {
+			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
+			results = bingSearch(clues, hitListSize);
+		} catch (Exception e) {
+			throw new AnalysisEngineProcessException(e);
 		}
 	}
 

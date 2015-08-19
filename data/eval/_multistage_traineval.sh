@@ -30,7 +30,6 @@ dataset="$2"
 retrain="$3"
 wait_for_train="$4"
 basecommit="$5"
-bing="$6"
 args0=
 argsF=
 
@@ -64,7 +63,6 @@ if [ -e $barrierfile -o -e ${barrierfile}1 -o -e ${barrierfile}2 ]; then
 	read x
 	exit 1
 fi
-
 
 train_and_sync() {
 	i=$1
@@ -100,7 +98,7 @@ if [ -z "$basecommit" ]; then
 	## Gather answers once, also storing the answerfvs
 	echo "First run..."
 	time ./gradlew tsvgs \
-		-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile0 ${use-bing}" \
+		-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile0" \
 		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
 		$args0
@@ -118,7 +116,7 @@ train_and_sync "" "$base_atrainfile0" "$modelfile0"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile0 ${use-bing}" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile0" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$base_xmidir" \
 	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
@@ -126,7 +124,7 @@ time ./gradlew tsvgs \
 
 
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile1 ${use-bing}" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -136,7 +134,7 @@ train_and_sync "1" "$atrainfile1" "$modelfile1"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile1 ${use-bing}" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile1" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
@@ -144,7 +142,7 @@ time ./gradlew tsvgs \
 
 
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile2 ${use-bing}" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
@@ -154,7 +152,7 @@ train_and_sync "2" "$atrainfile2" "$modelfile2"
 
 # Re-score with new model
 time ./gradlew tsvgs \
-	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile2 ${use-bing}" \
+	-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile2" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
