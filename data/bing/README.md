@@ -61,6 +61,14 @@ Once you key the key int he file, the application starts using snippets
 from bing search results as an answer source. If the file is not presented or it does not contain proper API key,
 the application skips bing search.
 
+Enable bing
+-----------
+
+Bing search is disabled by default. You need to set system property "cz.brmlab.yodaqa.use_bing=yes" to enabled it.
+You can run yodaqa with this command:
+
+	./gradlew run -q -Dcz.brmlab.yodaqa.use_bing=yes	
+
 Caching results
 ---------------
 

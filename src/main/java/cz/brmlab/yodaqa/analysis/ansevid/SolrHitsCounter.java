@@ -18,11 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrAHitsEv;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsEv;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsANormEv;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrMaxScoreEv;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_SolrHitsMaxScoreEv;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -128,13 +124,13 @@ public class SolrHitsCounter extends JCasAnnotator_ImplBase {
 
 		AnswerFV fv = new AnswerFV(ai);
 		if (dAnswer.getNumFound() > 0)
-			fv.setFeature(AF_SolrAHitsEv.class, dAnswer.getNumFound());
+			fv.setFeature(AF.SolrAHitsEv, dAnswer.getNumFound());
 		if (n > 0) {
-			fv.setFeature(AF_SolrHitsEv.class, n);
+			fv.setFeature(AF.SolrHitsEv, n);
 			if (dAnswer.getNumFound() > 0)
-				fv.setFeature(AF_SolrHitsANormEv.class, (float) n / dAnswer.getNumFound());
-			fv.setFeature(AF_SolrMaxScoreEv.class, s);
-			fv.setFeature(AF_SolrHitsMaxScoreEv.class, n * s);
+				fv.setFeature(AF.SolrHitsANormEv, (float) n / dAnswer.getNumFound());
+			fv.setFeature(AF.SolrMaxScoreEv, s);
+			fv.setFeature(AF.SolrHitsMaxScoreEv, n * s);
 		}
 
 		logger.debug("{} => (a {}; c {}, {}) n {}, {} => {}", answerView.getDocumentText(),

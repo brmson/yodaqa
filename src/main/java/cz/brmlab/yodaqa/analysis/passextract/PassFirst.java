@@ -2,7 +2,6 @@ package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.lang.Math;
 
-import cz.brmlab.yodaqa.io.collection.CollectionQuestionReader;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;
@@ -19,8 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsg;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
@@ -67,8 +65,8 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 
 		/* Generate features. */
 		AnswerFV afv = new AnswerFV();
-		afv.setFeature(AF_OriginPsg.class, 1.0);
-		afv.setFeature(AF_OriginPsgFirst.class, 1.0);
+		afv.setFeature(AF.OriginPsg, 1.0);
+		afv.setFeature(AF.OriginPsgFirst, 1.0);
 
 		/* Annotate */
 		Passage passage = new Passage(passagesView);

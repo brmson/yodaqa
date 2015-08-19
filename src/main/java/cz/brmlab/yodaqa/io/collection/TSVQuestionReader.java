@@ -29,7 +29,7 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * The TSV file has one question per line, with tab-separated columns:
  * ID TYPE QUESTION ANSWERPCRE */
 
-public class CollectionQuestionReader extends CasCollectionReader_ImplBase {
+public class TSVQuestionReader extends CasCollectionReader_ImplBase {
 	/**
 	 * Name of optional configuration parameter that contains the language
 	 * of questions. This is mandatory as x-unspecified will break e.g. OpenNLP.

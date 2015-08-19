@@ -51,20 +51,16 @@ frontend which offers a prompt and answers questions interactively;
 answer candidates and their confidence score are listed after a while
 (the first question takes a bit longer to answer as the models etc. are
 loaded).
-
 Alternatively, you can use the "web" frontend by executing
 ``./gradlew web -q`` and opening e.g. http://localhost:4567/ in your browser.
-It is also possible to let YodaQA answer many questions at once, e.g. to
-measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
-the curated testing dataset from data/eval/.  (See also data/eval/README.md
-for more details, and a convenient wrapper script ``train-and-eval.sh``.)
-To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
+A shinier web interface is available at https://github.com/brmson/YodaQA-client
+and you can also use the web frontend as a REST API.
 
 By default, there is a lot of output regarding progress of the answering
 process; redirect stderr, e.g. ``2>/dev/null``, to get rid of that.
-Alternatively, if things don't go well, try passing an extra parameter
-``-Dorg.slf4j.simpleLogger.defaultLogLevel=debug`` on the commandline,
-or specifically ``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug``.
+Alternatively, if things don't go well or you would like to watch YodaQA
+think, try passing an extra command line parameter
+``-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug`` to gradle.
 
 Sometimes, Java may find itself short on memory; don't try to run YodaQA
 on systems with less than 8GB RAM.  You may also need to tweak the
@@ -72,6 +68,12 @@ minHeapSize and maxHeapSize parameters in ``build.gradle`` when running
 on a 32-bit system.  By default, YodaQA will try to use *half* of the logical
 CPU cores available; set the YODAQA_N_THREADS environment variable to change
 the number of threads used.
+
+It is also possible to let YodaQA answer many questions at once, e.g. to
+measure the performance; use ``./gradlew tsvgs`` to feed YodaQA
+the curated testing dataset from data/eval/.  (See also data/eval/README.md
+for more details, and a convenient wrapper script ``train-and-eval.sh``.)
+To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
 
 ## Data Sources
 
@@ -110,11 +112,8 @@ to page id we can use to fetch the page from solr) and redirect walking.
 By default, we rely on a DBpedia-2014 SPARQL endpoint running on the author's
 computer.  In case it is offline, you can try to switch it to the public
 DBpedia SPARQL endpoint, though it is prone to outages and we shouldn't use
-it too heavily anyway.  Simply edit the ``service`` attribute value in file
-``src/main/java/cz/brmlab/yodaqa/provider/rdf/CachedJenaLookup.java``.
-
-Detailed instrutions for setup of local DBpedia SPARQL endpoint can be found
-in ``data/dbpedia/README.md``.
+it too heavily anyway, or you can fairly easily set up a local instance of
+DBpedia.  Detailed instrutions can be found in ``data/dbpedia/README.md``.
 
 ### Freebase Data Source
 
@@ -122,8 +121,8 @@ We can also leverage another structured data source, the Freebase.
 We use its RDF export with SPARQL endpoint, running on infrastructure
 provided by the author's academic group (Jan Šedivý's 3C Group at the
 Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
-for some reason, you can also disable Freebase usage by commenting
-out the fbo.query() line in the code of:
+for some reason, you can also disable Freebase usage by editing the
+method getConceptProperties() (instructions inside) of:
 
 	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
 
