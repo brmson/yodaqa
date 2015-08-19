@@ -19,6 +19,7 @@ import org.apache.uima.util.ProgressImpl;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -103,22 +104,29 @@ public class JSONQuestionReader extends CasCollectionReader_ImplBase {
 			initCas(jcas, /* id */ j.getqID(),
 				/* type */ "factoid",
 				/* text */ j.getqText(),
-				/* answerpcre */ j.getAnswers().get(0)); //XXX: we only take the first answer
+				/* answerpcre */ j.getAnswers());
 			jcas.setDocumentText(j.getqText());
 		} catch (CASException e) {
 			throw new CollectionException(e);
 		}
 	}
 
-	protected void initCas(JCas jcas, String id, String type, String text, String answer) {
+	protected void initCas(JCas jcas, String id, String type, String text, List<String> answers) {
 		jcas.setDocumentLanguage(language);
-
+		Iterator<String> answerIterator = answers.iterator();
+		String answerPattern = "";
+		while(answerIterator.hasNext()) {
+			answerPattern += answerIterator.next();
+			if (answerIterator.hasNext()) {
+				answerPattern += "|";
+			}
+		}
 		QuestionInfo qInfo = new QuestionInfo(jcas);
 		qInfo.setSource("interactive");
 		qInfo.setQuestionId(id);
 		qInfo.setQuestionType(type);
 		qInfo.setQuestionText(text);
-		qInfo.setAnswerPattern(answer);
+		qInfo.setAnswerPattern(answerPattern);
 		qInfo.setProcBeginTime(System.currentTimeMillis());
 		qInfo.addToIndexes(jcas);
 	}
