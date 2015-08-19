@@ -121,11 +121,8 @@ to page id we can use to fetch the page from solr) and redirect walking.
 By default, we rely on a DBpedia-2014 SPARQL endpoint running on the author's
 computer.  In case it is offline, you can try to switch it to the public
 DBpedia SPARQL endpoint, though it is prone to outages and we shouldn't use
-it too heavily anyway.  Simply edit the ``service`` attribute value in file
-``src/main/java/cz/brmlab/yodaqa/provider/rdf/CachedJenaLookup.java``.
-
-Detailed instrutions for setup of local DBpedia SPARQL endpoint can be found
-in ``data/dbpedia/README.md``.
+it too heavily anyway, or you can fairly easily set up a local instance of
+DBpedia.  Detailed instrutions can be found in ``data/dbpedia/README.md``.
 
 ### Freebase Data Source
 
@@ -133,8 +130,8 @@ We can also leverage another structured data source, the Freebase.
 We use its RDF export with SPARQL endpoint, running on infrastructure
 provided by the author's academic group (Jan Šedivý's 3C Group at the
 Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
-for some reason, you can also disable Freebase usage by commenting
-out the fbo.query() line in the code of:
+for some reason, you can also disable Freebase usage by editing the
+method getConceptProperties() (instructions inside) of:
 
 	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
 
