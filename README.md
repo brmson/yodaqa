@@ -32,6 +32,10 @@ branch for day-to-day development.
 
   ./gradlew run -q -Dcz.brmlab.yodaqa.use_bing=yes  
 
+If you want to run data/eval/train-and-eval.py with Bing search you need to pass the parameter:
+
+  data/eval/train-and-eval.py -Dcz.brmlab.yodaqa.use_bing=yes
+
 ## Installation Instructions
 
 Quick instructions for setting up, building and running (focused on Debian Wheezy):
