@@ -91,7 +91,7 @@ Using Bing
 
 If you want to run data/eval/train-and-eval.py with Bing search you need to pass the parameter:
 
-	data/eval/train-and-eval.py -Dcz.brmlab.yodaqa.use_bing=yes
+	data/eval/train-and-eval.sh -Dcz.brmlab.yodaqa.use_bing=yes
 
 Legacy Benchmarking
 -------------------
