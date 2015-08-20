@@ -36,6 +36,12 @@ public class AF {
 	 * (estimated probability of it holding the correct answer). */
 	public static final String PropertyScore = "propertyScore";
 
+	/** Answer Feature: [0,1] score of originating property within
+	 * structured database search. As determined by word embedding matrix,
+	 * based on the label. */
+	public static final String PropertyGloVeScore = "propertyGloVeScore";
+
+
 	/** Answer Feature: 1 if the origin of this answer is an in-document
 	 * passage */
 	public static final String OriginPsg = "originPsg";

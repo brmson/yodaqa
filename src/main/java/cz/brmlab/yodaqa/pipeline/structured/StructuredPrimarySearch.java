@@ -1,14 +1,22 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import cz.brmlab.yodaqa.analysis.rdf.PropertyGloVeScoring;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -89,6 +97,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 
 		relIter = properties.iterator();
 		i = 0;
+
 	}
 
 
@@ -162,6 +171,12 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		if (property.getScore() != null)
 			fv.setFeature(AF.PropertyScore, property.getScore());
 
+
+		double gloVeScore = PropertyGloVeScoring.getInstance().relatedness(questionView.getDocumentText(),property.getProperty());
+
+
+		fv.setFeature(AF.PropertyGloVeScore, gloVeScore);
+
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
 
@@ -190,6 +205,9 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 
 		ai.addToIndexes();
+
+		createPropertyLabels(questionView,property,jcas);
+
 	}
 
 	protected void dummyAnswer(JCas jcas, int isLast) throws Exception {
@@ -296,5 +314,44 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	@Override
 	public int getCasInstancesRequired() {
 		return MultiThreadASB.maxJobs * 2;
+	}
+
+	/** Possibly create files for python training, one file per question. */
+	protected synchronized void createPropertyLabels(JCas questionView, PropertyValue p, JCas jcas){
+//		System.setProperty("cz.brmlab.yodaqa.property","data/jacana-property-train");
+		String jacana = System.getProperty("cz.brmlab.yodaqa.property");
+		if (jacana == null || jacana.isEmpty())
+			return;
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
+		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+		String proptext=p.getProperty();
+		int clues = 0;
+		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
+			if (!proptext.matches(PassByClue.getClueRegex(clue)))
+				continue;
+			clues++;
+		}
+		Writer w=Writer.getInstance();
+		w.write(jacana + "/" + qi.getQuestionId() + "-prop.txt", "<Q> " + qi.getQuestionText());
+		if(ap.matcher(jcas.getDocumentText()).find()){
+		w.write(jacana + "/" + qi.getQuestionId() + "-prop.txt", "1 " +clues+" "+ proptext);
+		} else {
+				w.write(jacana+"/"+qi.getQuestionId()+"-prop.txt","0 "+clues+" "+proptext);
+			}
+	}
+
+}
+class Writer{
+	private static Writer instance = new Writer();
+	static Writer getInstance() {return instance;}
+	synchronized void write(String filepath,String s){
+		try {
+			(new File(filepath)).getParentFile().mkdirs();
+			PrintWriter pw=new PrintWriter(new BufferedWriter(new FileWriter(filepath,true)));
+			pw.println(s);
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
