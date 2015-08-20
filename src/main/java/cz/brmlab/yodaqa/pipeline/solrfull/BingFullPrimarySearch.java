@@ -10,10 +10,10 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import com.google.gson.GsonBuilder;
+
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceBingSnippet;
-import cz.brmlab.yodaqa.flow.dashboard.SourceIDGenerator;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginBingSnippet;
 import cz.brmlab.yodaqa.provider.sqlite.BingResultsCache;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -27,12 +27,13 @@ import org.apache.uima.util.CasCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+
 import org.apache.commons.codec.binary.Base64;
 
 
@@ -41,7 +42,10 @@ import org.apache.commons.codec.binary.Base64;
  * Each search results gets a new CAS.
  *
  * Details about the Bing search, an API key you need to get in order
- * for this to get used, etc., are in data/bing/README.md. */
+ * for this to get used, etc., are in data/bing/README.md.
+ *
+ * XXX: The containing package shouldn't be called "solrfull" as this
+ * search has nothing to do with Solr. */
 
 public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(BingFullPrimarySearch.class);
@@ -234,8 +238,8 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		resultView.setDocumentLanguage("en"); // XXX
 
 		AnswerFV afv = new AnswerFV();
-		afv.setFeature(AF_ResultRR.class, 1 / ((float) result.rank));
-		afv.setFeature(AF_OriginBingSnippet.class, 1.0);
+		afv.setFeature(AF.ResultRR, 1 / ((float) result.rank));
+		afv.setFeature(AF.OriginBingSnippet, 1.0);
 
 		ResultInfo ri = new ResultInfo(resultView);
 		ri.setDocumentId("1"); //FIXME dummy id

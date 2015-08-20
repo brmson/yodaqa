@@ -29,7 +29,7 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * A consumer that displays the questions with a LAT dump to json file
  * The format is:
  * {"qId": "...", "SV": ["...", "..."], "LAT" : [ {"synset" : "...", "text" : "...", "specificity" : "..." "type" : "..."}, {...}, {...}]} \n
- * Pair this with CollectionQuestionReader e.g. on data/eval/.
+ * Pair this with TSVQuestionReader or JSONQuestionReader e.g. on data/eval/.
  */
 
 public class QuestionPrinter extends JCasConsumer_ImplBase {

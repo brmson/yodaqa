@@ -11,8 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgSurprise;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
@@ -66,10 +65,10 @@ public class CanByNPSurprise extends CandidateGenerator {
 			Passage p = JCasUtil.selectCovering(Passage.class, np).get(0);
 			AnswerFV fv = new AnswerFV(ri.getAnsfeatures());
 			fv.merge(new AnswerFV(p.getAnsfeatures()));
-			fv.setFeature(AF_OriginPsgNP.class, 1.0);
+			fv.setFeature(AF.OriginPsgNP, 1.0);
 			if (!matches) {
 				/* Surprise! */
-				fv.setFeature(AF_OriginPsgSurprise.class, 1.0);
+				fv.setFeature(AF.OriginPsgSurprise, 1.0);
 			}
 
 			addCandidateAnswer(passagesView, p, np, fv);
