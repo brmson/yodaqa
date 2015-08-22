@@ -117,12 +117,25 @@ public class DBpediaTitles extends DBpediaLookup {
 		for (Literal[] rawResult : rawResults) {
 			int pageID = rawResult[0].getInt();
 			String label = rawResult[1].getString();
-			String tgName = rawResult[2].getString().substring("http://dbpedia.org/resource/".length());
+			String tgRes = rawResult[2].getString();
+
+			/* http://dbpedia.org/resource/-al is valid IRI, but
+			 * Jena bastardizes it automatically to :-al which is
+			 * not valid and must be written as :\-al.
+			 * XXX: Unfortunately, Jena also eats the backslashes
+			 * it sees during that process, so we just give up and
+			 * throw away these rare cases. */
+			if (tgRes.contains("/-")) {
+				logger.warn("Giving up on DBpedia {}", tgRes);
+				continue;
+			}
+
+			String tgName = tgRes.substring("http://dbpedia.org/resource/".length());
 
 			/* We approximate the concept score simply by how
 			 * many relations it partakes in.  We take a log
 			 * though to keep it at least roughly normalized. */
-			double score = Math.log(queryCount(rawResult[2].getString()));
+			double score = Math.log(queryCount(tgRes));
 
 			logger.debug("DBpedia {}: [[{}]] ({})", name, label, score);
 			results.add(new Article(baseA, label, pageID, tgName, score));
