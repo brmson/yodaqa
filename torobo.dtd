@@ -1,0 +1,96 @@
+<!--DTD renewed on May 24. 5/13日からの変更内容：(1)formulaの子にblankを追加 (2)choiceにansnum属性を追加 (3)cellの子にlTextを追加 (4) question, choicesのanscol属性をCDATAに-->
+<!ELEMENT caption (#PCDATA | label|garbled|ref|missing|blank|br|choice|cNum|lText|formula|quote|source|uText)*>
+<!ELEMENT uText (#PCDATA | label|garbled|ref|missing|blank|br|choice|cNum|lText|formula|quote|source|uText|math)*>
+<!ATTLIST uText
+	id ID #REQUIRED
+>
+<!ELEMENT title (#PCDATA|garbled |missing|br)*>
+<!ELEMENT tbl (#PCDATA|row|label|choice|cNum|br|cell|blank|ref|uText|choices|formula|quote|source|garbled|missing)*>
+<!ATTLIST tbl
+	numOfCols CDATA #IMPLIED
+	numOfRows CDATA #IMPLIED
+>
+<!ELEMENT row (#PCDATA | cell|label|choice|br|blank|ref|cNum|uText|choices|formula|quote|source)*>
+<!ELEMENT ref (#PCDATA|garbled |missing|br|formula|uText|lText)*>
+<!ATTLIST ref
+	comment CDATA #IMPLIED
+	target IDREF #IMPLIED
+>
+<!ELEMENT question (#PCDATA |garbled| label | instruction | data | question | ansColumn | choice | img | tbl | choices|cNum|missing |ref|br|formula|quote|source|lText|info)*>
+<!ATTLIST question
+	id ID #REQUIRED
+	minimal (null|yes | no) #REQUIRED
+	answer_style CDATA #IMPLIED
+	answer_type CDATA #IMPLIED
+	knowledge_type CDATA #IMPLIED
+	anscol CDATA #IMPLIED
+	title CDATA #IMPLIED
+	sectionId CDATA #IMPLIED
+	comment CDATA #IMPLIED
+>
+<!ELEMENT label (#PCDATA|br|garbled|missing)*>
+<!ELEMENT lText (#PCDATA |garbled| label|ref|missing|blank|br|choice|cNum|uText|formula|quote|source|math)*>
+<!ATTLIST lText
+	id ID #REQUIRED
+>
+<!ELEMENT instruction (#PCDATA |garbled| ref|missing |label |ansColumn|lText|uText|br|blank|formula|quote|source|img|choices|data|math)*>
+<!ELEMENT info (#PCDATA|garbled|missing|br)*>
+<!ELEMENT img EMPTY>
+<!ATTLIST img
+	src CDATA #REQUIRED
+	comment CDATA #IMPLIED
+>
+<!ELEMENT exam (#PCDATA|title|info|question|cNum|label|garbled|missing|choice|choices|br|ref|ansColumn)*>
+<!ATTLIST exam
+	source CDATA #IMPLIED
+	srcTxtURL CDATA #IMPLIED
+	subject CDATA #REQUIRED
+	year CDATA #IMPLIED
+	range_of_options IDREFS #IMPLIED
+	num_of_options CDATA #IMPLIED
+	xml:space (default|preserve) "default"
+>
+<!ELEMENT data (#PCDATA |garbled| blank | img | lText | tbl | label | uText | caption | ansColumn | source | note | quote | choice|cNum|missing|ref |data|br|choices|formula|row|cell|caption)*>
+<!ATTLIST data
+	id ID #REQUIRED
+	type (complex | text | table | image ) #REQUIRED
+>
+<!ELEMENT choices (#PCDATA |garbled| cNum | ref | img | tbl | row | cell| uText | lText |choice|missing|br |label|formula|quote|source)*>
+<!ATTLIST choices
+	comment CDATA #IMPLIED
+	anscol CDATA #IMPLIED
+>
+<!ELEMENT choice (#PCDATA |garbled| cNum | ref | img | tbl | uText | lText|missing |cell|br|label|formula|quote|source|math|data)*>
+<!ATTLIST choice
+	ra (no | yes) #IMPLIED
+	comment CDATA #IMPLIED
+	ansnum CDATA #IMPLIED
+>
+<!ELEMENT cell (#PCDATA |garbled| blank | ansColumn | ref|missing|label|cNum|br |choice|uText|choices|formula|quote|source|lText|math)*>
+<!ATTLIST cell
+	type (label | data) #IMPLIED
+	colspan CDATA #IMPLIED
+	rowspan CDATA #IMPLIED
+>
+
+<!ELEMENT cNum (#PCDATA|garbled|missing|br)*>
+<!ELEMENT blank (#PCDATA |garbled| label | ansColumn|missing|br)*>
+<!ATTLIST blank
+	id ID #REQUIRED
+	digits CDATA #IMPLIED
+>
+<!ELEMENT ansColumn (#PCDATA | label|garbled|missing|ref|br)*>
+<!ATTLIST ansColumn
+	id ID #REQUIRED
+>
+<!ELEMENT source (#PCDATA|garbled|missing|br)*>
+<!ELEMENT note (#PCDATA | label|garbled|missing|br)*>
+<!ATTLIST note id ID #REQUIRED>
+<!ELEMENT quote (#PCDATA|garbled|missing|br|uText|lText|ref|label|blank|note|source)*>
+<!ELEMENT garbled (#PCDATA|br|label)*>
+<!ATTLIST garbled correction CDATA #IMPLIED>
+<!ELEMENT missing EMPTY>
+<!ATTLIST missing string CDATA #IMPLIED>
+<!ELEMENT formula (#PCDATA|garbled|missing|br|blank)*>
+<!ATTLIST formula comment CDATA #IMPLIED>
+<!ELEMENT br EMPTY>
