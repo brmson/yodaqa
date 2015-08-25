@@ -61,6 +61,18 @@ task(jsongs, dependsOn: 'classes', type: JavaExec) {
   systemProperties = System.getProperties()
 }
 
+task(ntcir, dependsOn: 'classes', type: JavaExec) {
+    main = 'cz.brmlab.yodaqa.YodaQA_ntcirGS'
+    if (project.hasProperty('execArgs'))
+        args(execArgs.split(' '))
+    else
+        args = ['data/eval/ntcir.xml', 'json_results.txt']
+    minHeapSize = "2048m"
+    maxHeapSize = "4500m"
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties = System.getProperties()
+}
+
 task(questionDump, dependsOn: 'classes', type: JavaExec) {
   main = 'cz.brmlab.yodaqa.QuestionDump'
   if (project.hasProperty('execArgs'))
@@ -101,6 +113,13 @@ task(biocrftrain, dependsOn: 'classes', type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
+
+def f = new File('data/glove/glove.6B.50d.txt.gz')
+if (!f.exists()) {
+    new URL('http://www-nlp.stanford.edu/data/glove.6B.50d.txt.gz').withInputStream{ i -> f.withOutputStream{ it << i }}
+}
+
+
 
 repositories {
   mavenCentral()
