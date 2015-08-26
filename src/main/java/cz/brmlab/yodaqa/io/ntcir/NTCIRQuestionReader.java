@@ -119,10 +119,12 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 	String experimentId;
 	String datasetId;
 	String experimentInvoker;
+	int currentQuestion;
 
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+		currentQuestion = 0;
 		try {
 			File inputDir = new File(questionDir);
 			File goldStandardFile = new File(goldStandardFileName);
@@ -132,7 +134,6 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 						.println("Cannot find gold standard file or it is not a file");
 				System.exit(1);
 			}
-
 			parseGoldStandards(goldStandardFile);
 
 			if (!inputDir.exists() || !inputDir.isDirectory()) {
@@ -298,7 +299,7 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 			nCurrDoc = 0;
 			nCurrFile++;
 			documents = null;
-			getQuestion(aCAS);
+//			getQuestion(aCAS);
 		}
 		JCas jcas;
 		try {
@@ -335,7 +336,9 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 				}
 				if (nodeName.equals("question")) {
 					Element qElement = questionSetNode;
+					System.out.println("Before annotate");
 					QuestionAnswerSet qaSet = annotateQuestion(qElement, jcas);
+					System.out.println("After annotate");
 					qaList.add(qaSet);
 					qaSet.getQuestion().setContextData(contextData);
 					qaSet.getQuestion().setSetinstruction(setInstruction);
@@ -343,41 +346,41 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 				if (nodeName.equals("label")) {
 					String docId = questionSetNode.getTextContent().trim();
 				}
-				if (nodeName.equals("instruction")) {
-					String topInstructionText = questionSetNode
-							.getTextContent().trim();
-// Create SetInstruction
-					setInstruction = new SetInstruction(jcas);
-					String topic = extrctTopicFromSetInstruction(topInstructionText);
-					setInstruction.setTopic(topic);
-					setInstruction.setText(topInstructionText);
-					setInstruction.addToIndexes();
-					String instructionMarker = "[Overall Instruction]\n";
-					documentText.append(instructionMarker + topInstructionText);
-					annoOffset += instructionMarker.length();
-					setInstruction.setBegin(annoOffset);
-					setInstruction.setEnd(annoOffset
-							+ topInstructionText.length());
-					documentText.append("\n\n");
-					annoOffset += topInstructionText.length() + 2;
-				}
+//				if (nodeName.equals("instruction")) {
+//					String topInstructionText = questionSetNode
+//							.getTextContent().trim();
+//// Create SetInstruction
+////					setInstruction = new SetInstruction(jcas);
+//					String topic = extrctTopicFromSetInstruction(topInstructionText);
+//					setInstruction.setTopic(topic);
+//					setInstruction.setText(topInstructionText);
+//					setInstruction.addToIndexes();
+//					String instructionMarker = "[Overall Instruction]\n";
+//					documentText.append(instructionMarker + topInstructionText);
+//					annoOffset += instructionMarker.length();
+//					setInstruction.setBegin(annoOffset);
+//					setInstruction.setEnd(annoOffset
+//							+ topInstructionText.length());
+//					documentText.append("\n\n");
+//					annoOffset += topInstructionText.length() + 2;
+//				}
 			}
 		}
-		FSList fsQAList = FSCollectionFactory.createFSList(jcas, qaList);
-		TestDocument testDoc = new TestDocument(jcas);
-		testDoc.setId(String.valueOf(nCurrDoc));
-		testDoc.setInstruction(setInstruction);
-		testDoc.setQAList(fsQAList);
-		testDoc.addToIndexes();
+//		FSList fsQAList = FSCollectionFactory.createFSList(jcas, qaList);
+//		TestDocument testDoc = new TestDocument(jcas);
+//		testDoc.setId(String.valueOf(nCurrDoc));
+//		testDoc.setInstruction(setInstruction);
+//		testDoc.setQAList(fsQAList);
+//		testDoc.addToIndexes();
 //		jcas.setDocumentText(documentText.toString());
-		jcas.setDocumentLanguage("en");
-		File currentFile = testFile[nCurrFile];
-		setSourceDocumentInformation(jcas, currentFile.toURI().toString(),
-				(int) currentFile.length(), hasNext(), nCurrDoc);
-		connectReferences(jcas);
+//		jcas.setDocumentLanguage("en");
+//		File currentFile = testFile[nCurrFile];
+//		setSourceDocumentInformation(jcas, currentFile.toURI().toString(),
+//				(int) currentFile.length(), hasNext(), nCurrDoc);
+//		connectReferences(jcas);
 		nCurrDoc++;
 //		annotateExperimentMetadata(jcas);
-		jcas.getDocumentText();
+//		jcas.getDocumentText();
 
 	}
 
@@ -610,14 +613,16 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 
 	private QuestionAnswerSet annotateQuestion(Element qElement, JCas jcas) {
 		String qid = qElement.getAttribute("id");// qElement.getElementsByTagName("id").item(0).getTextContent().trim();
+		this.qId = qid;
+		System.out.println("QID " + qid);
 		String questionLabel = qElement.getElementsByTagName("label").item(0)
 				.getTextContent().trim();
 		String ansType = qElement.getAttribute("answer_type");
 		String knowledgeType = qElement.getAttribute("knowledge_type");
 		String ansColumn = qElement.getElementsByTagName("ansColumn").item(0)
 				.getTextContent().trim();
-		Instruction instr = new Instruction(jcas);
-		instr.addToIndexes();
+//		Instruction instr = new Instruction(jcas);
+//		instr.addToIndexes();
 		ArrayList<QData> qDataList = new ArrayList<QData>();
 		ArrayList<AnswerChoice> answerChoiceList = new ArrayList<AnswerChoice>();
 
@@ -633,29 +638,28 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 					String instText = instrEle.getTextContent().trim();
 
 					String instructionMarker = questionLabel + ": ";
-
 					documentText.append(instructionMarker);
 					annoOffset += instructionMarker.length();
 
 					// before format text
 					int instrBegin = annoOffset;
-					ArrayListMultimap<String, Annotation> generatedTags = formatTaggedText(
-							instrEle, jcas);
+//					ArrayListMultimap<String, Annotation> generatedTags = formatTaggedText(
+//							instrEle, jcas);
 					// after format text
 					int instrEnd = annoOffset;
 
 					ArrayList<Refs> refList = new ArrayList<Refs>();
-					for (Annotation instrRefAnno : generatedTags.get("ref")) {
-						Refs instrRef = (Refs) instrRefAnno;
-						refList.add(instrRef);
-					}
-					FSList fsRefList = FSCollectionFactory.createFSList(jcas,
-							refList);
-					instr.setText(instText);
-					instr.setRefList(fsRefList);
-
-					instr.setBegin(instrBegin);
-					instr.setEnd(instrEnd);
+//					for (Annotation instrRefAnno : generatedTags.get("ref")) {
+//						Refs instrRef = (Refs) instrRefAnno;
+//						refList.add(instrRef);
+//					}
+//					FSList fsRefList = FSCollectionFactory.createFSList(jcas,
+//							refList);
+//					instr.setText(instText);
+//					instr.setRefList(fsRefList);
+//
+//					instr.setBegin(instrBegin);
+//					instr.setEnd(instrEnd);
 
 					documentText.append("\n\n");
 					annoOffset += 2;
@@ -668,21 +672,22 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 					}
 					String dataId = qDataEle.getAttribute("id");
 					String dataText = qDataEle.getTextContent().trim();
-
+					System.out.println("TEXT " + dataText);
+					this.qText = dataText;
 					String qDataMarker = "[Question Data] \n";
 					documentText.append(qDataMarker);
 					annoOffset += qDataMarker.length();
 
 					int qDataBegin = annoOffset;
-					ArrayListMultimap<String, Annotation> generatedTags = formatTaggedText(
-							qDataEle, jcas);
+//					ArrayListMultimap<String, Annotation> generatedTags = formatTaggedText(
+//							qDataEle, jcas);
 					int qDataEnd = annoOffset;
 
 					// Create annotation QData
-					QData qData = new QData(jcas, qDataBegin, qDataEnd);
-					qData.addToIndexes();
-					qData.setId(dataId);
-					qData.setText(dataText);
+//					QData qData = new QData(jcas, qDataBegin, qDataEnd);
+//					qData.addToIndexes();
+//					qData.setId(dataId);
+//					qData.setText(dataText);
 
 					documentText.append("\n\n");
 					annoOffset += 2;
@@ -690,42 +695,42 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 					// Add tags into qData
 					ArrayList<Gaps> gaps = new ArrayList<Gaps>();
 
-					for (Annotation blankAnno : generatedTags.get("blank")) {
-						Gaps instrRef = (Gaps) blankAnno;
-						gaps.add(instrRef);
-					}
+//					for (Annotation blankAnno : generatedTags.get("blank")) {
+//						Gaps instrRef = (Gaps) blankAnno;
+//						gaps.add(instrRef);
+//					}
 
 					ArrayList<ListItem> listItems = new ArrayList<ListItem>();
 
-					for (Annotation listAnno : generatedTags.get("lText")) {
-						ListItem listItem = (ListItem) listAnno;
-						listItems.add(listItem);
-					}
+//					for (Annotation listAnno : generatedTags.get("lText")) {
+//						ListItem listItem = (ListItem) listAnno;
+//						listItems.add(listItem);
+//					}
 
 					ArrayList<Refs> refs = new ArrayList<Refs>();
 
-					for (Annotation refAnno : generatedTags.get("ref")) {
-						Refs ref = (Refs) refAnno;
-						refs.add(ref);
-					}
+//					for (Annotation refAnno : generatedTags.get("ref")) {
+//						Refs ref = (Refs) refAnno;
+//						refs.add(ref);
+//					}
 
-					if (gaps.size() > 0) {
-						FSList fsGapList = FSCollectionFactory.createFSList(
-								jcas, gaps);
-						qData.setGaps(fsGapList);
-					}
-					if (listItems.size() > 0) {
-						FSList fslstList = FSCollectionFactory.createFSList(
-								jcas, listItems);
-						qData.setListItems(fslstList);
-					}
-					if (refs.size() > 0) {
-						FSList fsRefList = FSCollectionFactory.createFSList(
-								jcas, refs);
-						qData.setRefs(fsRefList);
-					}
-
-					qDataList.add(qData);
+//					if (gaps.size() > 0) {
+//						FSList fsGapList = FSCollectionFactory.createFSList(
+//								jcas, gaps);
+//						qData.setGaps(fsGapList);
+//					}
+//					if (listItems.size() > 0) {
+//						FSList fslstList = FSCollectionFactory.createFSList(
+//								jcas, listItems);
+//						qData.setListItems(fslstList);
+//					}
+//					if (refs.size() > 0) {
+//						FSList fsRefList = FSCollectionFactory.createFSList(
+//								jcas, refs);
+//						qData.setRefs(fsRefList);
+//					}
+//
+//					qDataList.add(qData);
 
 				} else if (elementName.equals("choices")) {
 					Element choicesEle = (Element) questionChild;
@@ -733,7 +738,6 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 							.getElementsByTagName("choice");
 					for (int j = 0; j < choiceList.getLength(); j++) {
 						Element choice = (Element) choiceList.item(j);
-
 						// Create annotation AnswerChoice
 						String choiceMarker = "    ";
 
@@ -741,49 +745,51 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 
 						annoOffset += choiceMarker.length();
 
-						AnswerChoice ansChoice = new AnswerChoice(jcas);
-
-						ansChoice.setBegin(annoOffset);
-						ArrayListMultimap<String, Annotation> generatedTags = formatTaggedText(
-								choice, jcas);
-						ansChoice.setEnd(annoOffset);
-
+//						AnswerChoice ansChoice = new AnswerChoice(jcas);
+//
+//						ansChoice.setBegin(annoOffset);
+//						ArrayListMultimap<String, Annotation> generatedTags = formatTaggedText(
+//								choice, jcas);
+//						ansChoice.setEnd(annoOffset);
+						this.ans=new ArrayList<>();
+						ans.add(choice.getTextContent().trim());
+						System.out.println("Choice " + choice.getTextContent().trim());
 						documentText.append("\n");
 						annoOffset += 1;
 
-						Annotation cNum = generatedTags.get("cNum").get(0);
-
-						String ansChoiceId = documentText.substring(
-								cNum.getBegin(), cNum.getEnd());
-
-						ansChoice.setId(ansChoiceId);
-						ansChoice.setText(choice.getTextContent().trim());//
+//						Annotation cNum = generatedTags.get("cNum").get(0);
+//
+//						String ansChoiceId = documentText.substring(
+//								cNum.getBegin(), cNum.getEnd());
+//
+//						ansChoice.setId(ansChoiceId);
+//						ansChoice.setText(choice.getTextContent().trim());//
 
 						ArrayList<Refs> refList = new ArrayList<Refs>();
 						int refIdx = 0;
-						for (Annotation refAnno : generatedTags.get("ref")) {
-							Refs instrRef = (Refs) refAnno;
-							String refText = choice.getElementsByTagName("ref").item(refIdx).getNextSibling().getTextContent();
-							instrRef.setText(refText);
-							refList.add(instrRef);
-							refIdx++;
-						}
+//						for (Annotation refAnno : generatedTags.get("ref")) {
+//							Refs instrRef = (Refs) refAnno;
+//							String refText = choice.getElementsByTagName("ref").item(refIdx).getNextSibling().getTextContent();
+//							instrRef.setText(refText);
+//							refList.add(instrRef);
+//							refIdx++;
+//						}
 
-						FSList fsRefList = FSCollectionFactory.createFSList(
-								jcas, refList);
-						ansChoice.setRefList(fsRefList);
-						ansChoice.addToIndexes();
+//						FSList fsRefList = FSCollectionFactory.createFSList(
+//								jcas, refList);
+//						ansChoice.setRefList(fsRefList);
+//						ansChoice.addToIndexes();
 
 						Integer correctChoice = hshAnswers.get(qid);
 						if (correctChoice == null) {
 							continue;
 						}
-						if (correctChoice == j + 1) {
-							ansChoice.setIsCorrect(true);
-						} else {
-							ansChoice.setIsCorrect(false);
-						}
-						answerChoiceList.add(ansChoice);
+//						if (correctChoice == j + 1) {
+//							ansChoice.setIsCorrect(true);
+//						} else {
+//							ansChoice.setIsCorrect(false);
+//						}
+//						answerChoiceList.add(ansChoice);
 
 					}
 				}
@@ -798,25 +804,22 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 		// Create annotation Question
 		// question is associate with meta data not related to document text.
 		Question question = new Question(jcas);
-
 		question.setId(qid);
 		question.setKnowledgeType(knowledgeType);
 		question.setQuestionType(ansType);
-		question.setInstruction(instr);
-
+//		question.setInstruction(instr);
 		FSList fsQDataList = FSCollectionFactory.createFSList(jcas, qDataList);
 		question.setQdataList(fsQDataList);
 
 		QuestionAnswerSet qaSet = new QuestionAnswerSet(jcas);
 		qaSet.setQuestion(question);
-
 		FSList fsAnswerChoiceList = FSCollectionFactory.createFSList(jcas,
 				answerChoiceList);
 		qaSet.setAnswerChoiceList(fsAnswerChoiceList);
-		this.qId=qid;
-		this.qText=question.getCoveredText();
-		this.ans=new ArrayList<>();
-		ans.add(answerChoiceList.get(0).getText());
+//		this.qId=qid;
+//		this.qText=question.getCoveredText();
+//		this.ans=new ArrayList<>();
+//		ans.add(answerChoiceList.get(0).getText());
 		return qaSet;
 	}
 
