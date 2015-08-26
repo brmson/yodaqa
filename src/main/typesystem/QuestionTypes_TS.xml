@@ -249,6 +249,16 @@
             <description>Whether this concept has subdued a ClueNE.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>score</name>
+            <description>The score of the concept, expressing its prominence or relevance to question.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>rr</name>
+            <description>The reciprocial rank in the per-clue list of concepts sorted by score.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
     </types>

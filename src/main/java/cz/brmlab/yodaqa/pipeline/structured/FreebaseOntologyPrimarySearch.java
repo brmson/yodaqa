@@ -52,7 +52,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 	protected synchronized List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* --- Uncomment the next line to disable Freebase lookups. --- */
-		// return properties;
+		// if (true) return properties;
 
 		/* Get a list of specific properties to query. */
 		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
