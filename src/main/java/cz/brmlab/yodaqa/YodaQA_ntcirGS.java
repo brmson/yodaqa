@@ -18,22 +18,23 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
 
 public class YodaQA_ntcirGS {
 	public static void main(String[] args) throws Exception {
-		if (args.length != 2) {
-//			System.err.println("Usage: YodaQA_GS INPUT.json OUTPUT.TSV");
+		if (args.length != 3) {
+			System.err.println("Usage: YodaQA_GS GOLD_STANDARD.xml QUESTION_DIR OUTPUT.TSV");
 			System.err.println("Measures YodaQA performance on ntcir-12 questions.");
 			System.exit(1);
 		}
 
 		CollectionReaderDescription reader = createReaderDescription(
 				NTCIRQuestionReader.class,
-				NTCIRQuestionReader.PARAM_JSONFILE, args[0],
+				NTCIRQuestionReader.PARAM_GOLDSTANDARD_FILE, args[0],
+				NTCIRQuestionReader.PARAM_QUESTION_DIR, args[1],
 				NTCIRQuestionReader.PARAM_LANGUAGE, "en");
 
 		AnalysisEngineDescription pipeline = YodaQA.createEngineDescription();
 
 		AnalysisEngineDescription printer = createEngineDescription(
 				GoldStandardAnswerPrinter.class,
-				GoldStandardAnswerPrinter.PARAM_TSVFILE, args[1],
+				GoldStandardAnswerPrinter.PARAM_TSVFILE, args[2],
 				ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 
 		ParallelEngineFactory.registerFactory(); // comment out for a linear single-thread flow
