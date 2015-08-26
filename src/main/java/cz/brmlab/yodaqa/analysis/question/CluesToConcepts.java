@@ -1,11 +1,14 @@
 package cz.brmlab.yodaqa.analysis.question;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
@@ -33,7 +36,7 @@ import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
 
 /**
  * Potentially convert CluePhrase and ClueNE instances to ClueConcept
- * annotations.
+ * annotations.  This is basically an **Entity Linking** task execution.
  *
  * ClueConcept instances are much more powerful than CluePhrase and ClueNE
  * since they carry semantic information about correspondence between
@@ -59,121 +62,222 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas resultView) throws AnalysisEngineProcessException {
-		/* Put all relevant Clues in a length-ordered list. */
-		PriorityQueue<Clue> cluesByLen = new PriorityQueue<Clue>(32,
-			new Comparator<Clue>(){ @Override
-				public int compare(Clue c1, Clue c2) {
-					int l1 = c1.getEnd() - c1.getBegin();
-					int l2 = c2.getEnd() - c2.getBegin();
-					return -(l1 - l2); // from largest length
-				}
-			});
-		for (Clue clue : JCasUtil.select(resultView, CluePhrase.class))
-			cluesByLen.add(clue);
-		for (Clue clue : JCasUtil.select(resultView, ClueNE.class))
-			cluesByLen.add(clue);
-		for (Clue clue : JCasUtil.select(resultView, ClueSubjectPhrase.class))
-			cluesByLen.add(clue);
-		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
-			cluesByLen.add(clue);
+		List<Clue> clues = cluesToCheck(resultView);
 
-		/* Check the clues in turn, starting by the longest - do they
-		 * correspond to enwiki articles? */
-		for (Clue clue; (clue = cluesByLen.poll()) != null; ) {
+		/* Try to generate more canonical labels for the clues
+		 * by linking them to enwiki articles and creating
+		 * a length-ordered label list. */
+		HashMap<Clue, LinkedClue> linkedClues = new HashMap<>();  // auxiliary mapping, not canonical list!
+		PriorityQueue<LinkedClue> cluesByLen = new PriorityQueue<>(32, new LinkedClueLengthComparator());
+		for (Clue clue : clues) {
 			String clueLabel = clue.getLabel();
-			double weight = clue.getWeight();
-			List<Concept> concepts = new ArrayList<>();
-			Set<String> labels = new TreeSet<>(); // stable ordering (?)
 
-			/* Generate Concepts and gather ConceptClue labels. */
-
+			/* Execute entity linking from clue text to
+			 * a corresponding enwiki article.  This internally
+			 * involves also some fuzzy lookups and such. */
 			List<DBpediaTitles.Article> results = dbp.query(clueLabel, logger);
-			for (DBpediaTitles.Article a : results) {
-				String cookedLabel = a.getLabel();
-				/* But in case of "list of...", keep the original label
-				 * (but still generate a conceptclue since we have
-				 * a confirmed named entity and we want to include
-				 * the list in our document set). */
-				if (cookedLabel.toLowerCase().matches("^list of .*")) {
-					logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
-					cookedLabel = new String(clueLabel);
-				}
-				/* Remove trailing (...) (e.g. (disambiguation)). */
-				/* TODO: We should model topicality of the
-				 * concept; when asking about the director of
-				 * "Frozen", the (film)-suffixed concepts should
-				 * be preferred over e.g. the (House) suffix. */
-				cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+			if (results.size() == 0)
+				continue; // no linkage
 
-				/* Start constructing the annotation. */
+			LinkedClue lc = new LinkedClue(clue, results);
+			linkedClues.put(clue, lc);
+			cluesByLen.add(lc);
+		}
+
+		/* If our linked clues cover other shorter clues, drop these. */
+		List<LinkedClue> keptClues = new ArrayList<>(); // final list of clues
+		for (LinkedClue c; (c = cluesByLen.poll()) != null; ) {
+			if (subdueCoveredClues(c, linkedClues, cluesByLen)) {
+				/* In fact, the covered clue subdued *us*.
+				 * Typically, we have higher edit distance
+				 * than the covered clue is a crisper match. */
+				continue;
+			}
+			keptClues.add(c);
+		}
+
+		/* Build Concept annotations out of the linked clues,
+		 * aggregated by their labels.  (For example, the clue
+		 * "Madonna" would generate many concepts labelled
+		 * "Madonna", then one concept "Madonna, Maryland", etc.) */
+		/* XXX: We assume no two different (non-subdued) clues
+		 * ever produce the same label. */
+		Map<String, ClueLabel> labels = new TreeMap<>(); // stable ordering (?)
+		for (LinkedClue c : keptClues) {
+			Clue clue = c.getClue();
+			for (DBpediaTitles.Article a : c.getArticles()) {
+				String cookedLabel = cookLabel(clue.getLabel(), a.getCanonLabel());
+
+				logger.debug("creating concept <<{}>>, cooked <<{}>>, d={}",
+						a.getCanonLabel(), cookedLabel, a.getDist());
 				Concept concept = new Concept(resultView);
 				concept.setBegin(clue.getBegin());
 				concept.setEnd(clue.getEnd());
-				concept.setFullLabel(a.getLabel());
+				concept.setFullLabel(a.getCanonLabel());
 				concept.setCookedLabel(cookedLabel);
 				concept.setPageID(a.getPageID());
+				concept.setScore(a.getScore());
+				concept.setBySubject(c.isBySubject());
+				concept.setByLAT(c.isByLAT());
+				concept.setByNE(c.isByNE());
 
-				/* Also remove all the covered sub-clues. */
-				/* TODO: Mark the clues as alternatives so that we
-				 * don't require both during full-text search. */
-				clue.removeFromIndexes();
-				cluesByLen.remove(clue);
-				for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
-					logger.debug("Concept {} subduing {} {}", cookedLabel, clueSub.getType().getShortName(), clueSub.getLabel());
-					if (clueSub instanceof ClueSubject)
-						concept.setBySubject(true);
-					else if (clueSub instanceof ClueLAT)
-						concept.setByLAT(true);
-					else if (clueSub instanceof ClueNE)
-						concept.setByNE(true);
-					if (clueSub.getWeight() > weight)
-						weight = clueSub.getWeight();
-					clueSub.removeFromIndexes();
-					cluesByLen.remove(clueSub);
+				if (!labels.containsKey(cookedLabel)) {
+					/* First time for this particular label. */
+					ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+					labels.put(cookedLabel, cl);
+				} else {
+					labels.get(cookedLabel).add(concept);
+				}
+			}
+		}
+
+		/* Sort ClueLabels by their score (editDist-based) and generate
+		 * new clues from them. */
+		List<ClueLabel> labelList = new ArrayList<>(labels.values());
+		Collections.sort(labelList, new ClueLabelScoreComparator());
+		addCluesForLabels(resultView, labelList);
+	}
+
+	/** Get a set of clues to check for concept links. */
+	protected List<Clue> cluesToCheck(JCas resultView) {
+		List<Clue> clues = new ArrayList<>();
+		for (Clue clue : JCasUtil.select(resultView, CluePhrase.class))
+			clues.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueNE.class))
+			clues.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectPhrase.class))
+			clues.add(clue);
+		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
+			clues.add(clue);
+		return clues;
+	}
+
+	/** Produce a pretty label from sometimes-unwieldy enwiki article
+	 * name. */
+	protected String cookLabel(String clueLabel, String canonLabel) {
+		String cookedLabel = new String(canonLabel);
+		if (cookedLabel.toLowerCase().matches("^list of .*")) {
+			logger.debug("ignoring label <<{}>> for <<{}>>", cookedLabel, clueLabel);
+			cookedLabel = new String(clueLabel);
+		}
+
+		/* Remove trailing (...) (e.g. (disambiguation)). */
+		/* TODO: We should model topicality of the
+		 * concept; when asking about the director of
+		 * "Frozen", the (film)-suffixed concepts should
+		 * be preferred over e.g. the (House) suffix. */
+		cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
+
+		return cookedLabel;
+	}
+
+	/** Check overlapping clues and subdue them.  Subduing means
+	 * that they are removed from the clue set, and also not considered
+	 * for concept creation anymore.
+	 *
+	 * However, the method returns true if it's the passed @clue
+	 * that has been subdued - in case it has high edit distance
+	 * relative to the covered clues, i.e. typically a false positive
+	 * (relying solely on that clue is typically disastrous). */
+	protected boolean subdueCoveredClues(LinkedClue lc,
+			HashMap<Clue, LinkedClue> linkedClues,
+			PriorityQueue<LinkedClue> cluesByLen) {
+		Clue clue = lc.getClue();
+		for (Clue clueSub : JCasUtil.selectCovered(Clue.class, clue)) {
+			LinkedClue linkedClueSub = linkedClues.get(clueSub);
+
+			if (linkedClueSub != null && lc.getDist() - linkedClueSub.getDist() > 1.0) {
+				// we found a shorter clue with (significantly) better edit distance
+				logger.debug("Concept <<{}>> resisting subdue by Concept <<{}>>",
+						clueSub.getLabel(), lc.getClue().getLabel());
+
+			} else { // the longer clue wins
+				logger.debug("Concept <<{}>> subduing {} <<{}>>",
+						lc.getClue().getLabel(), clueSub.getType().getShortName(), clueSub.getLabel());
+				if (clueSub instanceof ClueSubject)
+					lc.setBySubject(true);
+				else if (clueSub instanceof ClueLAT)
+					lc.setByLAT(true);
+				else if (clueSub instanceof ClueNE)
+					lc.setByNE(true);
+				if (clueSub.getWeight() > clue.getWeight()) {
+					clue.setWeight(clueSub.getWeight());
 				}
 
+				clueSub.removeFromIndexes();
+				removeLinkedClue(linkedClues, cluesByLen, clueSub);
+			}
+		}
+
+		return false;
+	}
+
+	/** Remove the entity link records of a given clue. */
+	protected void removeLinkedClue(Map<Clue, LinkedClue> linkedClues, PriorityQueue<LinkedClue> clueQueue, Clue clue) {
+		List<LinkedClue> toRemove = new ArrayList<>();
+		for (LinkedClue c : clueQueue)
+			if (c.getClue() == clue)
+				toRemove.add(c);
+		for (LinkedClue c : toRemove)
+			clueQueue.remove(c);
+
+		/* XXX: This way, we might maybe keep some stale entries
+		 * in linkedClues. */
+		for (LinkedClue c : toRemove)
+			linkedClues.remove(c);
+	}
+
+	/** Add clue(s) and register concepts for each label
+	 * in the given list. */
+	protected void addCluesForLabels(JCas resultView, List<ClueLabel> labelList) {
+		boolean originalClueNEd = false; // guard for single ClueNE generation
+		int rank = 1;
+		for (ClueLabel cl : labelList) {
+			Clue clue = cl.getClue();
+			String clueLabel = clue.getLabel();
+			String cookedLabel = cl.getCookedLabel();
+
+			/* Remove the original clue, but do not worry, it shall
+			 * be reborn stronger than ever before! */
+			clue.removeFromIndexes();
+
+			for (Concept concept : cl.getConcepts()) {
+				concept.setRr(1 / ((double) rank));
 				concept.addToIndexes();
-				concepts.add(concept);
-				labels.add(cookedLabel);
+				rank++;
 			}
 
-			/* Generate ClueConcepts. */
-
-			boolean originalClueNEd = false; // guard for single ClueNE generation
-			for (String cookedLabel : labels) {
-				/* Maybe the concept clue has a different label than
-				 * the original wording in question text.  That can
-				 * be a useful hint, but is also pretty unreliable;
-				 * be it for suffixes in parentheses " (band)" or
-				 * that "The ancient city" resolves to "King's Field
-				 * IV" etc.
-				 *
-				 * Therefore, in that case we will still create the
-				 * concept clue with redirect target, but also set
-				 * the flag @reworded which will make this reworded
-				 * text *optional* during full-text search and keep
-				 * the original text (required during search) within
-				 * a new ClueNE annotation. */
-				boolean reworded = ! clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
-
-				/* Make a fresh concept clue. */
-				addClue(resultView, clue.getBegin(), clue.getEnd(),
-					clue.getBase(), weight,
-					FSCollectionFactory.createFSList(resultView, concepts),
+			/* Maybe the concept clue has a different label than
+			 * the original wording in question text.  That can
+			 * be a useful hint, but is also pretty unreliable;
+			 * be it for suffixes in parentheses " (band)" or
+			 * that "The ancient city" resolves to "King's Field
+			 * IV" etc.
+			 *
+			 * Therefore, in that case we will still create the
+			 * concept clue with redirect target, but also set
+			 * the flag @reworded which will make this reworded
+			 * text *optional* during full-text search and keep
+			 * the original text (required during search) within
+			 * a new ClueNE annotation. */
+			boolean reworded = !clueLabel.toLowerCase().equals(cookedLabel.toLowerCase());
+			/* Make a fresh concept clue. */
+			addClue(resultView, clue.getBegin(), clue.getEnd(),
+					clue.getBase(), clue.getWeight(),
+					FSCollectionFactory.createFSList(resultView, cl.getConcepts()),
 					cookedLabel, !reworded);
 
-				/* Make also an NE clue with always the original text
-				 * as label. */
-				/* A presence of wiki page with the text as a title is
-				 * a fair evidence that this is actually a named
-				 * entity. And we need a new clue since we removed all
-				 * sub-clues and the original clue might have been just
-				 * a CluePhrase that gets ignored during search. */
-				if (reworded && !originalClueNEd) {
+			/* Make also an NE clue with always the original text
+			 * as label. */
+			/* A presence of wiki page with the text as a title is
+			 * a fair evidence that this is actually a named
+			 * entity. And we need a new clue since we removed all
+			 * sub-clues and the original clue might have been just
+			 * a CluePhrase that gets ignored during search. */
+			if (reworded && !originalClueNEd) {
 					addNEClue(resultView, clue.getBegin(), clue.getEnd(),
-						clue, clue.getLabel(), weight);
-					originalClueNEd = true; // once is enough
-				}
+							clue, clue.getLabel(), clue.getWeight());
+				originalClueNEd = true; // once is enough
 			}
 		}
 	}
@@ -204,4 +308,92 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		clue.addToIndexes();
 		logger.debug("new(NE) by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
 	}
+
+	/** A container that holds a clue with all its linked articles
+	 * (sorted by edit distance). */
+	private class LinkedClue {
+		protected Clue clue;
+		protected List<DBpediaTitles.Article> articles;
+
+		/** Edit distance of the best linked match. */
+		protected double dist;
+		/** Length of the clue, for subduing purposes. */
+		protected int len;
+
+		/** Whether this linked clue subdued another clue
+		 * of a certain kind. */
+		protected boolean bySubject, byLAT, byNE;
+
+		public LinkedClue(Clue clue, List<DBpediaTitles.Article> articles) {
+			this.clue = clue;
+			this.articles = articles;
+
+			this.dist = articles.get(0).getDist();
+			this.len = clue.getEnd() - clue.getBegin();
+		}
+
+		public Clue getClue() { return clue; }
+		public List<DBpediaTitles.Article> getArticles() { return articles; }
+		public double getDist() { return dist; }
+		public int getLen() { return len; }
+
+		public boolean isBySubject() { return bySubject; }
+		public void setBySubject(boolean bySubject) { this.bySubject = bySubject; }
+		public boolean isByLAT() { return byLAT; }
+		public void setByLAT(boolean byLAT) { this.byLAT = byLAT; }
+		public boolean isByNE() { return byNE; }
+		public void setByNE(boolean byNE) { this.byNE = byNE; }
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			LinkedClue that = (LinkedClue) o;
+			return that.getClue() == this.getClue();
+		}
+
+		@Override
+		public int hashCode() {
+			return this.getClue().hashCode();
+		}
+	}
+
+	/** A clue label corresponds to a (Clue, Concepts[]) tuple
+	 * holding all concepts sharing a particular label.
+	 *
+	 * The concepts are assumed to be sorted by edit distance. */
+	private class ClueLabel {
+		protected Clue clue;
+		protected String cookedLabel;
+		protected List<Concept> concepts;
+
+		public ClueLabel(Clue clue, String cookedLabel, List<Concept> concepts) {
+			this.clue = clue;
+			this.cookedLabel = cookedLabel;
+			this.concepts = concepts;
+		}
+
+		public Clue getClue() { return clue; }
+		public String getCookedLabel() { return cookedLabel; }
+		public List<Concept> getConcepts() { return concepts; }
+		public void add(Concept concept) { concepts.add(concept); }
+	}
+
+	/* Compares LinkedClues using the clue length */
+	private class LinkedClueLengthComparator implements Comparator<LinkedClue> {
+		@Override
+		public int compare(LinkedClue t1, LinkedClue t2) {
+			return -Integer.compare(t1.getLen(), t2.getLen()); // longest first
+		}
+	}
+	/* Compares ClueLabels using the concept score */
+	private class ClueLabelScoreComparator implements Comparator<ClueLabel> {
+		@Override
+		public int compare(ClueLabel t1, ClueLabel t2) {
+			return -Double.compare(t1.getConcepts().get(0).getScore(),
+						t2.getConcepts().get(0).getScore()); // highest first
+		}
+	}
+
 }
