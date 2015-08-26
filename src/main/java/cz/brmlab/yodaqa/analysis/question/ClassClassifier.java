@@ -23,7 +23,10 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
- * Created by honza on 13.8.15.
+ * Generate class fro each question. It uses logistic regression classifier
+ * to determine question class. The classifier needs to be trained by
+ * data/ml/qclass/train_question_classifier.py and the model needs to placed
+ * in src/main/resources/cz/brmlab/yodaqa/analysis/question/question-classifier.model
  */
 public class ClassClassifier extends JCasAnnotator_ImplBase {
 	private class Model {

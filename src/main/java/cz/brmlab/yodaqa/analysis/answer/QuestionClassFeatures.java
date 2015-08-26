@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by honza on 13.8.15.
+ * Creates features according to the question class. There is one feature for each possible class.
+ * If the question belongs to the corresponding class, the feature is set to 1, otherwise 0.
+ * Each question belongs exactly to one class so only one feature is set to 1.
  */
 public class QuestionClassFeatures extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(QuestionClassFeatures.class);

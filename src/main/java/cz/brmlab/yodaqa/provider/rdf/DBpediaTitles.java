@@ -171,7 +171,7 @@ public class DBpediaTitles extends DBpediaLookup {
 
 		try {
 			String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
-			String requestURL = "http://dbp-labels.ailao.eu:5000/search/" + encodedName;
+			String requestURL = "http://dbp-labels.ailao.eu:5000/search/" + encodedName + "?ver=1";
 			URL request = new URL(requestURL);
 			URLConnection connection = request.openConnection();
 			Gson gson = new Gson();
