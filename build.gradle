@@ -66,7 +66,7 @@ task(ntcir, dependsOn: 'classes', type: JavaExec) {
     if (project.hasProperty('execArgs'))
         args(execArgs.split(' '))
     else
-        args = ['data/eval/ntcir.xml', 'json_results.txt']
+        args = ['data/eval/ntcir/H792W10.xml','data/eval/ntcir/questions', 'tsv_results.tsv']
     minHeapSize = "2048m"
     maxHeapSize = "4500m"
     classpath = sourceSets.main.runtimeClasspath
