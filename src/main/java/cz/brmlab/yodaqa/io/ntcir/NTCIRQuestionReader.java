@@ -184,7 +184,7 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 	private void parseGoldStandards(File goldFile) throws Exception {
 		DOMParser parser = new DOMParser();
 		try {
-			parser.parse(new InputSource(new FileReader(goldFile)));
+			parser.parse(new InputSource(new FileInputStream(goldFile)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -259,17 +259,23 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 
 		QuestionDashboard.getInstance().askQuestion(q);
 		QuestionDashboard.getInstance().getQuestionToAnswer();
-
+		System.out.println("GETNEXT:"+qId+" "+qText+" "+ans);
 		try {
+			//////////////////////XXX
+			if(this.ans==null)this.ans=new ArrayList<>();
 			JCas jcas = aCAS.getJCas();
 			initCas(jcas, /* id */ this.qId,
 				/* type */ "factoid",
 				/* text */ this.qText,
 				/* answerpcre */ this.ans);
 			jcas.setDocumentText(this.qText);
+
+			System.err.println(jcas.getDocumentLanguage() + " >>>> " + jcas.getDocumentText());
 		} catch (CASException e) {
 			throw new CollectionException(e);
 		}
+
+
 	}
 
 	protected void initCas(JCas jcas, String id, String type, String text, List<String> answers) {
@@ -619,8 +625,8 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 				.getTextContent().trim();
 		String ansType = qElement.getAttribute("answer_type");
 		String knowledgeType = qElement.getAttribute("knowledge_type");
-		String ansColumn = qElement.getElementsByTagName("ansColumn").item(0)
-				.getTextContent().trim();
+//		String ansColumn = qElement.getElementsByTagName("ansColumn").item(0)
+//				.getTextContent().trim();
 //		Instruction instr = new Instruction(jcas);
 //		instr.addToIndexes();
 		ArrayList<QData> qDataList = new ArrayList<QData>();
@@ -636,7 +642,7 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 					// question
 					Element instrEle = (Element) questionChild;
 					String instText = instrEle.getTextContent().trim();
-
+					this.qText = instText;
 					String instructionMarker = questionLabel + ": ";
 					documentText.append(instructionMarker);
 					annoOffset += instructionMarker.length();
