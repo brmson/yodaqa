@@ -1,16 +1,16 @@
-K844W10_Q2	term_other	            Enter the appropriate words in blanks 	Malacca Sultanate
-K844W10_Q3	term_other	            With regards to underlined section 	Satyagraha
-K844W10_Q4	term_other	            With regards to underlined section 	Aryan
-K844W10_Q8	term_other term_person	            With regards to underlined section 	Bonifatius VIII
-K844W10_Q10	term_other	            With regards to underlined section 	Wat Tyler's Rebellion
-K844W10_Q11	term_other term_person	            With regards to underlined section 	Montesquieu
-K844W10_Q12	term_other	            With regards to underlined section 	Fronde
-K844W10_Q13	term_person term_other	            With regards to underlined section 	French East India Company
-K844W10_Q18	term_person	            With regards to underlined section 	Pizarro
-K844W10_Q24	term_other	            Enter the appropriate words in blanks 	Treaty of Kyakhta
-K844W10_Q25	term_other term_person	            With regards to underlined section 	Puyi
-K844W10_Q26	sentence term_other	            With regards to underlined section 	White Lotus
-K844W10_Q27	term_person term_other	            With regards to underlined section 	Donglin movement
+K844W10_Q2	term_other	            Enter the appropriate words in blanks A through D.        	Malacca Sultanate
+K844W10_Q3	term_other	            With regards to underlined section (1), (A)what is the name of the English act passed in 1919 to govern India, (B) what was the name of the political party Gandhi joined after World War I, and (C) what was the philosophy (methodology) of the resistance movement advocated by Gandhi?        	Satyagraha
+K844W10_Q4	term_other	            With regards to underlined section (2), (A) what is the name of a representative urban ruin from this civilization, and (B) what is the name of the people that invaded India after the fall of this civilization?        	Aryan
+K844W10_Q8	term_other term_person	            With regards to underlined section (1), (A)what was this fought over? (B) What was the name of this pope?        	Bonifatius VIII
+K844W10_Q10	term_other	            With regards to underlined section (3), what were the names of the peasant rebellions which occurred during the Hundred Years' War (A)in 1358 in France, and (B)in 1381 in England?        	Wat Tyler's Rebellion
+K844W10_Q11	term_other term_person	            With regards to underlined section (4), (A)what was the name of the public agency that became, in place of the Estates General, the center of resistance by the nobility against the centralization of authority under the king, and (B)who was the author of the Spirit of the Laws, which advocated limits to royal authority?        	Montesquieu
+K844W10_Q12	term_other	            With regards to underlined section (5), what was the name of this rebellion?        	Fronde
+K844W10_Q13	term_person term_other	            With regards to underlined section (6), (A)what was the name of this Controller-General of Finances, and (B) what was the name of the charter company reconstituted at this time?        	French East India Company
+K844W10_Q18	term_person	            With regards to underlined section (2), what was the name of the conqueror?        	Pizarro
+K844W10_Q24	term_other	            Enter the appropriate words in blanks A through C.        	Treaty of Kyakhta
+K844W10_Q25	term_other term_person	            With regards to underlined section (1), (A) what is another name for emperor, meaning supreme ruler with the Mandate of Heaven? (B) What is the name of the entire imperial palace in which the Ming and Qing emperors resided? (C) What is the name of the peasant rebellion which led to the fall of the Qin Dynasty, which began with the first emperor, Qin Shi Huang ? (D) What is the name of the last Qing Dynasty emperor, the Xuantong Emperor, who stepped down after the Xinhai Revolution?        	Puyi
+K844W10_Q26	sentence term_other	            With regards to underlined section (2), (A)the 18th century was also one of explosive population growth in China. Concisely explain the food staple situation which supported this rapid population growth. (B)What is the name of the religion that played an important role in the rebellion which occurred after the abdication of the Qianlong Emperor at the end of the 18th century?        	White Lotus
+K844W10_Q27	term_person term_other	            With regards to underlined section (3), (A) what was the full name of the Grand Secretariat that held effective power during the early years of the Wanli Emperor of the Ming Dynasty during the latter half of the 16th century? (B) What is the name of the political party later formed primarily of bureaucrats and scholar-officials in opposition to the cabinet?        	Donglin movement
 F247W20_Q3	term_location	                Write in the name of one city-state involved.            	Ur
 F247W20_Q4	term_other	                What were the people of the Mitanni Kingdom called?            	Hurrian
 F247W20_Q5	term_other	                What was the name of the people who belonged to the dynasty which controlled the Babylonian Kingdom at that time?            	Kassites
@@ -43,7 +43,7 @@ F247W20_Q40	term_other	                That event further inflamed anti-Japanese
 F247W20_Q41	term_person	                Who was the first General Secretary of that party?            	Chen Duxiu
 F247W20_Q42	term_other	                During the course of the Long March, the Chinese Communist Party declared a "Message to all Compatriots on Resistance against the Japanese and National Salvation," calling upon the nation to end the civil war and organize a National United Front. Write in the name of that declaration.            	August 1 Declaration
 F247W20_Q43	term_other	                As a result of that alliance, the forces of the Communist Party of China were reorganized into the National Revolutionary Army. Among those forces, what was the name given to the troops that were active around the central and downstream areas bordering the Yangtze River?            	New Fourth Army
-F247W20_Q44	o(symbol-symbol-symbol-symbol)	                All of the following 	C.
+F247W20_Q44	o(symbol-symbol-symbol-symbol)	                All of the following events took place after the Establishment of the People's Republic of China. Arrange them in chronological order and write in the corresponding letters.            	C.
 F247W20_Q47	term_location	                What was the name of the capital of Sogdia, where the Sogdians lived, and which was referred to as the "Kang Kingdom" during the reigns of the Sui and Tang Dynasties in China?            	Samarkand
 F247W20_Q48	term_other	                What was the name of the people who conquered the Uyghurs in the 9th century?            	Kyrgyzstan
 F247W20_Q49	term_person	                What was the name of a figure who was a member of the Khitan royal family in the Liao Dynasty and who built Western Liao (Kara-Khitan Khanate)?            	Yelü Dashi
@@ -100,12 +100,12 @@ H247W10_Q3	term_location	                Which city became the capital of Assyri
 H247W10_Q4	term_location	                What was the name of that kingdom?            	Kingdom of Israel
 H247W10_Q5	term_other	                What was that position called?            	Satrap
 H247W10_Q6	term_other	                What were those inspectors called, in typical translated terms?            	eye of the king and ear of the king
-H247W10_Q7	term_location	                Out of those dynasties, 	Ptolemaic dynasty
-H247W10_Q8	term_other term_location	                	Kushan
+H247W10_Q7	term_location	                Out of those dynasties, (a) which one survived longest? (b) Write in the name of that dynasty.            	Ptolemaic dynasty
+H247W10_Q8	term_other term_location	                (a) What was the name of the Buddhist art form that was strongly influenced by the Hellenistic culture? In addition, (b) what was the name of the dynasty that preserved it?            	Kushan
 H247W10_Q9	term_person	                Who was the emperor at that time?            	Caracalla
 H247W10_Q10	term_person	                Which emperor instated Christianity as the official religion of the Roman Empire?            	Theodosius the Great
 H247W10_Q11	term_other	                What was that calendar called?            	Julian calendar
-H247W10_Q12	term_person term_other	                	Germania
+H247W10_Q12	term_person term_other	                (a) Who wrote an ethnographic book on the Germanic peoples? In addition, (b) what was the name of that book?            	Germania
 H247W10_Q13	term_person	                Which emperor of the Byzantine Empire attempted to restore the ancient imperial regime and compiled a collection of Roman laws?            	Justinian the Great
 H247W10_Q14	term_location	                Write in the capital of that caliphate.            	Damascus
 H247W10_Q15	term_other	                What name was that battle typically known by?            	Battle of Tours
@@ -120,7 +120,7 @@ H247W10_Q23	term_other	                What was the Spanish fleet at that time t
 H247W10_Q24	term_other	                What were those people typically called?            	Creole peoples
 H247W10_Q25	term_person	                Who led the uprising that triggered the Mexican independence movement?            	Hidalgo
 H247W10_Q26	term_person	                Write in the name of the figure who led peasants in the Mexican Revolution that started in 1910.            	Zapata
-H247W10_Q27	term_person term_location	                	Cuba
+H247W10_Q27	term_person term_location	                (a) A major causative factor was the Spanish-American War of 1898. Who was the American president at that time? In addition, (b) which country became a de facto protectorate of the United States?            	Cuba
 H247W10_Q30	term_location	                Which nation was the first to gain independence among the European territories under Ottoman Empire control?            	Greece
 H247W10_Q31	term_other	                What was the name of that treaty?            	Treaty of Karlowitz
 H247W10_Q32	term_location	                Subsequently, Russia expanded southward, fighting against the Ottoman Empire and forging to the Black Sea. At that time, which country on the Black Sea coast was annexed by Russia?            	Crimean Khanate
@@ -151,12 +151,12 @@ F750W10_Q11	term_person	                Write the name of the leader of the peas
 F750W10_Q13	term_other	                The Indus Valley Civilization flourished in the Indus river valley between 2,300 to 1,800 BC. Write the name of the most well-known archeological site of the Indus River Civilization in the Punjab region.            	Harappa
 F750W10_Q14	term_other	                People were classified according to social class as having one of four basic social status levels. What word that originally meant "color" is used to describe this basic social status (or social class)?            	Varna
 F750W10_Q15	term_person	                At the time of the Kushan Empire, Mahayana Buddhism flourished alongside more traditional forms of Buddhism. Who established the main doctrines of Mahayana Buddhism between the 2nd and 3rd centuries AD?            	Nagarjuna
-F750W10_Q16	term_location term_other	                Babur was the prince of a dynasty that ruled over a wide expanse of central and western Asia from the late 14th century. 	Uzbeks
-F750W10_Q17	term_other term_location	               Three religions, Hinduism and Islam, as well as Buddhism, spread to southeast Asia, and on the island of Java all three of these religions flourished. 	Majapahit
+F750W10_Q16	term_location term_other	                Babur was the prince of a dynasty that ruled over a wide expanse of central and western Asia from the late 14th century. (A)Write the name of this dynasty. (B)Write the name of the Turkmen people of central Asia that overthrew this dynasty in the early 16th century.            	Uzbeks
+F750W10_Q17	term_other term_location	               Three religions, Hinduism and Islam, as well as Buddhism, spread to southeast Asia, and on the island of Java all three of these religions flourished. (A) Write the name of the huge Buddhist site in Central Java, considered to be a relic of the Sailendra Dynasty from the 8th to 9th centuries AD. (B) Write the name of the king (dynasty name) considered to be the last Hindu king (dynasty) of Java, destroyed by Islamic forces in the early 16th century.            	Majapahit
 F750W10_Q21	term_person	                Who was the emperor at this time?            	Trajan
 F750W10_Q22	term_person	                Who was the emperor who granted the right of Roman citizenship to all free people within the empire in 212 AD?             	Caracalla
 F750W10_Q23	term_location	               Write the name of the nation that was in conflict with Rome in the east of the empire at this time.            	Sasanian Empire
-F750W10_Q26	term_other	                   Under what kind of power was the region selected in 	Caliphate of Córdoba
+F750W10_Q26	term_other	                   Under what kind of power was the region selected in (A) controlled at the time?                	Caliphate of Córdoba
 F750W10_Q28	term_other	                What was the name of the nomads, regarded as Mongols, who were defeated by Charlemagne in the east of the empire and declined?            	Pannonian Avars
 F750W10_Q31	term_person	                    Write the name of this writer.                	Zola
 F750W10_Q33	term_person	                   This artistic movement extended to painting. Write the name of the painter who best represented this movement in France, who depicted the lives of poor peasants with a fixed frontal gaze, painting images of women farm workers, for example.                	Millet
@@ -175,8 +175,8 @@ K476W60_Q12	term_person	            What is the name of the Polish person who ac
 K476W60_Q13	term_person	            What is the name of the Austrian politician who chaired the Congress of Vienna, held at this time?        	Metternich
 K476W60_Q14	term_location	            At this time, Russia built the largest navy base in the Far East in leasehold land obtained from China. Write the name of this port, in kanjis, which went on to become one of the bloodiest battlefields in the Russo-Japanese War.        	Lüshun
 K476W60_Q27	term_person	            What geographer espoused the doctrine of the spherical earth and convinced Columbus that it would be possible to reach Asia via the west?        	Toscanelli
-K476W60_Q41	term_other	            Enter the most appropriate words in blanks 	Seoul
-K476W60_Q43	term_other	            Write the words that go in blanks 	Dong yu
+K476W60_Q41	term_other	            Enter the most appropriate words in blanks A and B. Enter kanji in blank B.        	Seoul
+K476W60_Q43	term_other	            Write the words that go in blanks a through c. Use kanji for blanks a and c, and katakana for blank b.        	Dong yu
 F476W40_Q2	term_other	            What was the name of this agreement?        	a
 F476W40_Q3	term_person	            Who was the first president of the Weimar Republic?        	o
 F476W40_Q15	term_person	            Which artist is praised, together with da Vinci and Michelangelo, for many of his paintings of the Madonna and Child?        	b
@@ -185,24 +185,24 @@ F476W40_Q17	term_other	            What famous work by Thomas More satirized the
 F476W40_Q29	term_location	            The capital of the Southern Song was in Lin'an. What is the modern name of that city?        	c
 F476W40_Q30	term_person	            Who, as one of the leaders of the hawks during the early Southern Song, advocated fighting against the Qin, was captured, and died in prison?        	d
 F476W40_Q31	term_person	            Who opposed Zhang Juzheng, was dismissed from duty, established the Donglin Academy, and became a leader of the Donglin movement?        	e
-F476W40_Q33	term_other	            Enter the most appropriate words for blanks 	Hangzhou
-F792W10_q07	term_other term_person	The fall of the Hittites, known for being the first civilization to have used iron weapons, triggered diffusion of iron-making technology to neighboring areas. 	David
-F792W10_q08	term_other	There is a close relationship between the types/fonts of characters and the tools/materials used for calligraphy. 	Hieratic
-F792W10_q09	term_location	In ancient China, with the development of wide-area trading networks, people started using metal coins like those shown in 	Qin
+F476W40_Q33	term_other	            Enter the most appropriate words for blanks A and B in the appropriate space on the answer sheet.        	Hangzhou
+F792W10_q07	term_other term_person	The fall of the Hittites, known for being the first civilization to have used iron weapons, triggered diffusion of iron-making technology to neighboring areas. (a) Write in the name of the ethnic group that belonged to the "Sea People" and brought iron-making technology into Palestine. Also,(b) write in the name of the historical figure who defeated this group and developed a kingdom around Palestine. Be sure to specify which of your answers is (a) and which is (b).	David
+F792W10_q08	term_other	There is a close relationship between the types/fonts of characters and the tools/materials used for calligraphy. Figure A is an Assyrian wall painting created in the 8th century BC. It depicts two clerks, each holding some (a) clay and (b) papyrus in the left hand and making a record using two of the official languages. Write in the name of the characters written on each of these materials. Be sure to specify which of your answers is (a) and which is (b).	Hieratic
+F792W10_q09	term_location	In ancient China, with the development of wide-area trading networks, people started using metal coins like those shown in Figure B for the first time in Chinese history. There were a number of nations using these kinds of coins and they struggled for supremacy. Choose any three of these nations, and write their names in kanji.	Qin
 F792W10_q10	term_person	In the West, from ancient times, papyrus and parchment had been used as materials for calligraphy. However, in China, a eunuch of the Han Dynasty is said to have created a relatively high-quality paper as an alternative to expensive silk, bulky bamboo, and wooden slips, by mixing tree bark, hemp waste, and fishing nets. Write down the name of that eunuch.	Cai Lun
-F792W10_q11	term_other term_person	In pre-modern societies, both animals and humans were treated as consumable goods in more than a few cases. In the case of South India, a military-use animal which was difficult to breed locally was continuously imported from Arabia and Iran by sea. Write in 	Marco Polo
-F792W10_q12	term_other		wool weaving
-F792W10_q13	term_other term_person	Through history, humans have developed a wide variety of farming implements in the course of their unique efforts to exploit nature and expand arable land areas. In ancient China, such activities were documented, resulting in a massive accumulation of such written records. 	Xu Guangqi
-F792W10_q14	term_location	Porcelain pottery exported from Asia to Europe was not only used as tableware but also gained major popularity as works of fine art, which generated a trade in the manufacture and sale of counterfeit items. 	Jingdezhen
+F792W10_q11	term_other term_person	In pre-modern societies, both animals and humans were treated as consumable goods in more than a few cases. In the case of South India, a military-use animal which was difficult to breed locally was continuously imported from Arabia and Iran by sea. Write in (a) the name of this animal, and (b) the name of the Italian merchant who kept records of these transactions in the 13th century. Be sure to specify which of your answers is (a) and which is (b).	Marco Polo
+F792W10_q12	term_other	Figure C is an oil painting created by the artist Jan van Eyck in 1434. It portrays the solemnizing of a marriage contract between an agent of the Medici family who had been dispatched to the city of Bruges (Brugge) in what is now Belgium, the Netherlands and his wife. During this era, the Netherlands flourished through manufacturing of a type of product (in a similar way with other Italian cities) that is also depicted in this painting. However, the center of production of this item eventually moved to Britain. Write in the name of that product.	wool weaving
+F792W10_q13	term_other term_person	Through history, humans have developed a wide variety of farming implements in the course of their unique efforts to exploit nature and expand arable land areas. In ancient China, such activities were documented, resulting in a massive accumulation of such written records. Figure D shows a farming tool of ancient origin listed in a book on agriculture published during the Ming Dynasty. (a) Write in the name of this book, which is a compilation of knowledge accumulated from ancient times together with international new research findings, and (b) give the name of the book’s editor. Be sure to specify which of your answers is (a) and which is (b).	Xu Guangqi
+F792W10_q14	term_location	Porcelain pottery exported from Asia to Europe was not only used as tableware but also gained major popularity as works of fine art, which generated a trade in the manufacture and sale of counterfeit items. Figure E is one such imitation. This is a Delftware dish produced during the second half of the 17th century, when imports from China declined sharply due to the collapse of the Ming Dynasty. Write in kanji the name of the city which was the production center for Chinese porcelain ware and served as a model for the production of Delftware.	Jingdezhen
 F792W10_q15	term_other	In cities such as London and Paris, foods and beverages sourced from overseas plantations became popular from around the 17th century, and social venues for enjoying them began to emerge. In the 18th century, these establishments attracted many scholars, writers, and merchants who would gather to discuss politics and the arts. This type of idea exchange, unconstrained by social or class distinctions, helped to form public opinion. Write in the name given to such venues for social interaction.	Coffeehouse
 H792W10_q11	term_location	Britain began colonizing the Malay Peninsula in the early 19th century and British Malaya was finally consolidated in the early 20th century. In this context, write in the name of two port cities within that area that were integrated to become the Straits Settlements.	Malacca
 H792W10_q13	term_person	The Indian Removal Act forced Native Americans to move onto reservations located to the west of the Mississippi River. Write in the name of the President of the United States who was in office at that time.	Jackson
 H792W10_q14	term_other	The European Americans of that time believed that their westward expansion was a God-given "mission." Write in the term that precisely describes that "mission."	Manifest Destiny
 H792W10_q15	term_location	As the slave trade came to an end, there were attempts to settle freed slaves from North America in undeveloped areas on the African continent. In the mid-19th century, a settlement for liberated slaves in West Africa, which had been developed by the American Colonization Society, became an independent republic. Write in the name of that country.	Liberia
 H792W10_q16	term_person	From the mid- to late 19th century, a series of expeditions were carried out prior to the construction of colonies in inland Africa. Among the explorers who engaged in these expeditions was a British missionary who is memorialized in the name of a present-day African city. Write in the name of that missionary.	Livingstone
-H792W10_q17	term_person	In the early 1880s, an armed uprising took place in Egypt but the British neutralized that rebellion and virtually took control of the country. Subsequently, the British invaded Sudan and, despite strong resistance, succeeded in conquering the country by 1899. Write in 	Muhammad Ahmad
+H792W10_q17	term_person	In the early 1880s, an armed uprising took place in Egypt but the British neutralized that rebellion and virtually took control of the country. Subsequently, the British invaded Sudan and, despite strong resistance, succeeded in conquering the country by 1899. Write in (a) the name of the figure who led the armed uprising in Egypt, and (b) the name of the figure who led the resistance in Sudan. Be sure to specify which of your answers is (a) and which is (b).	Muhammad Ahmad
 H792W10_q18	term_location	In Rwanda, in 1994, during an intense civil war between the minority Tutsi people and the majority Hutu ethnic group, a major episode of genocide occurred. Underlying that incident was a decision that had been taken during the colonization of that part of Africa by the great Western powers. Which European country colonized the current Rwanda, Burundi, and Tanzania at the end of the 19th century and gave the Tutsi people authority over the Hutu in Rwanda? Write in the name of the colonial power concerned.	Germany
-H792W10_q19	term_person term_other	In Iran during the Qajar Dynasty, under the influence of Pan-Islamism, a resistance movement against British privileges led to a heightening of nationalism and a constitutional revolution took place in 1905. Write in 	Nicotiana tabacum
+H792W10_q19	term_person term_other	In Iran during the Qajar Dynasty, under the influence of Pan-Islamism, a resistance movement against British privileges led to a heightening of nationalism and a constitutional revolution took place in 1905. Write in (a) the name of a philosopher who had an influence on that movement, and (b) the name of a major commercial crop which the British had a special concession. Be sure to specify which of your answers is (a) and which is (b).	Nicotiana tabacum
 H792W10_q20	term_location	Much of Africa was colonized by the great Western powers but, at the end of the 19th century, there was one country that succeeded in retaining its independence by defeating Italian military forces. Although that country was subsequently annexed by Italy under Mussolini’s administration in 1936, it soon regained its independence. Write in the name of that country.	Ethiopia
 H792W10_q22	term_location	Write in the name of the area within the then nation of Czechoslovakia which Nazi Germany demanded be ceded based on the presence in that area of a large number of Germans.	Sudetenland
 H792W10_q23	term_person	In response to that cession demand, the Munich Conference, involving the political leaders of Great Britain, France, Italy, and Germany, was convened in 1938. Write in the name of the British prime minister who, together with his French counterpart, pursued a policy of appeasement toward Germany.	Neville Chamberlain
@@ -213,9 +213,9 @@ H476W50_Q26	term_person	            Who depicted this war as a narrative of the 
 H476W50_Q27	term_other	            What were these professional instructors called?        	Sophist
 H476W50_Q39	term_other	            What is the name of the painting, said to be by Zhang Zeduan of the Song, depicting the bustle of Kaifeng?        	Along the River During the Qingming Festival
 H476W50_Q40	term_other	            Write the name of the industrial technology encyclopedia authored by Song Yingxing in the late Ming era.        	Tiangong Kaiwu
-H476W50_Q42	term_other	            Enter the most appropriate words for blanks 	Midhat Pasha
+H476W50_Q42	term_other	            Enter the most appropriate words for blanks A, B, and C in the appropriate spaces on the answer sheet.        	Midhat Pasha
 K750W10_Q4	term_location	                One of these maps was a military map created out of concern about a state that existed at the time to the south of the Han Dynasty's territory. What was the name of this state?              	Nanyue
-K750W10_Q5	term_location	              Su Qin explained that the Qin purposely did not attack the Zhao because there were two other states between the Qin and the Zhao. Write the names of these two states, 	Wei
+K750W10_Q5	term_location	              Su Qin explained that the Qin purposely did not attack the Zhao because there were two other states between the Qin and the Zhao. Write the names of these two states, (A) located to the east of the Qin and (B) to the south of the Zhao.            	Wei
 K750W10_Q6	term_location	                What does "eastern metropolis" of the "Eastern Metropolis Rhapsody" refer to? Write the name of the city.            	Luoyang
 K750W10_Q7	term_location	                Other items in this section included Wang Xuance's maps of India. In the 7th century, Wang Xuance was sent to India a number of times. On his second visit he got caught up in civil unrest in India, but ultimately he made use of the might of new emerging nations to the north of the Himalayan Mountain Range to take the ruler of India prisoner. Write the names of these new emerging nations in kanji.            	Tibetan Empire
 K750W10_Q8	term_person	                Who established the dynasty that took over from the Han Dynasty and implemented reactionary policies based on the "Rites of Zhou"? Write the name of this person.            	Wang Mang
@@ -243,44 +243,44 @@ K750W10_Q46	term_other	                After the First World War, in Germany too
 K750W10_Q47	term_location	                During the civil war that occurred at around this time in a certain country, the two countries each provided military aid to the forces they supported. Write the name of the country in question.            	Spain
 K750W10_Q49	term_other	                  In the year after construction of the "Berlin Wall" started, the Soviet Union ramped up its opposition to the United States, taking the world to the brink of full-scale nuclear war. Write the name of this incident.                 	Cuban Revolution
 K750W10_Q50	term_time	                    Write the year in which the "Berlin Wall" fell.                	1989
-H844W10_Q2	term_other	            Enter the appropriate words in blanks 	Almoravid
-H844W10_Q3	term_location term_person	            With regards to underlined section 	Octavius
-H844W10_Q5	term_location	            With regards to underlined section 	Ottoman Empire
-H844W10_Q6	term_person term_location	            With regards to underlined section 	Damask
-H844W10_Q7	term_location	            With regards to underlined section 	Nasrid dynasty
-H844W10_Q8	term_other	            With regards to underlined section 	Gold
-H844W10_Q11	term_other	            Enter the appropriate words in blanks 	Zwingli
-H844W10_Q14	term_person term_other	            With regards to underlined section 	Red Guards
-H844W10_Q15	term_time	            With regards to underlined section 	1979
-H844W10_Q16	term_location	            With regards to underlined section 	Zhenbao Island
-H844W10_Q22	term_other	            Enter the appropriate words in blanks 	San Francisco
-H844W10_Q23	term_other	            With regards to underlined section 	chemical weapon
-H844W10_Q26	term_person	            With regards to underlined section 	Franklin Roosevelt
-H844W10_Q27	term_location	            With regards to underlined section 	America
-H844W10_Q28	term_other	            With regards to underlined section 	Pugwash Conferences
-F844W10_Q3	term_person	            With regards to underlined section 	Harsha
-F844W10_Q6	term_person term_location	            With regards to underlined section 	Sarai
-F844W10_Q8	term_person	            With regards to underlined section 	Yermak
-F844W10_Q9	term_other	            With regards to underlined section 	Treaty of Nerchinsk
-F844W10_Q11	term_other	            With regards to underlined section 	Latin
-F844W10_Q12	term_person term_location	            With regards to underlined section 	Germany
-F844W10_Q13	term_other	            With regards to underlined section 	Treaty of Verdun
-F844W10_Q14	term_other	            With regards to underlined section 	Lombard League
+H844W10_Q2	term_other	            Enter the appropriate words in blanks A through D.        	Almoravid
+H844W10_Q3	term_location term_person	            With regards to underlined section (1), write the name of (A)the dynasty which controlled Egypt after the death of Alexander the Great, and (B) the Roman ruler that conquered that dynasty.        	Octavius
+H844W10_Q5	term_location	            With regards to underlined section (3), what was the name of the country that ultimately overthrew this empire?        	Ottoman Empire
+H844W10_Q6	term_person term_location	            With regards to underlined section (4), what was the name of (A) the founder of this dynasty, and (B) its capital?        	Damask
+H844W10_Q7	term_location	            With regards to underlined section (5), what is the name of (A)the kingdom conquered by the Muslims, and (B) the last Muslim dynasty conquered by the Reconquista?        	Nasrid dynasty
+H844W10_Q8	term_other	            With regards to underlined section (6), what were two typical products traded on these routes?        	Gold
+H844W10_Q11	term_other	            Enter the appropriate words in blanks A through J.        	Zwingli
+H844W10_Q14	term_person term_other	            With regards to underlined section (1), (A) what was the full name of the premier of the People's Republic of China who met President Nixon? A long-term power struggle had caused governmental and social disorder in China at this time. (B) What was the name of this power struggle, and (C) what youth-centered organization was active at the start of this struggle?        	Red Guards
+H844W10_Q15	term_time	            With regards to underlined section (2), what year, in Western calendar notation, were diplomatic relations established between the US and China?        	1979
+H844W10_Q16	term_location	            With regards to underlined section (3), what was the location of the largest border conflict between China and the USSR, which occurred in March 1969?        	Zhenbao Island
+H844W10_Q22	term_other	            Enter the appropriate words in blanks A through D.        	San Francisco
+H844W10_Q23	term_other	            With regards to underlined section (1), what are the names of three new weapons that saw full-fledged use during this war?        	chemical weapon
+H844W10_Q26	term_person	            With regards to underlined section (4), this charter was announced at a certain top level summit. What are the names of two heads of states that participated in this summit?        	Franklin Roosevelt
+H844W10_Q27	term_location	            With regards to underlined section (5), what are the names of the five countries that are current permanent council members?        	America
+H844W10_Q28	term_other	            With regards to underlined section (6), what was the name of the conference of scientists held in Canada in 1957 calling for the prohibition of nuclear weapons?        	Pugwash Conferences
+F844W10_Q3	term_person	            With regards to underlined section (2), one of these monks, Xuanzang, was welcomed by the king who governed northern India. What was the name of that king?        	Harsha
+F844W10_Q6	term_person term_location	            With regards to underlined section (5), (A)who founded the Kipchak Khanate? (B)Where was its capital?        	Sarai
+F844W10_Q8	term_person	            With regards to underlined section (7), who led the military campaign that spearheaded Russia's advance into Siberia?        	Yermak
+F844W10_Q9	term_other	            With regards to underlined section (8), what is the name of the treaty between Russia and the Qing Dynasty that defined the national boundary and opened commercial trade between the countries?        	Treaty of Nerchinsk
+F844W10_Q11	term_other	            With regards to underlined section (1), what was the name of this language?        	Latin
+F844W10_Q12	term_person term_location	            With regards to underlined section (2), write the names of the ancient Roman authors of (A) the Commentarii de Bello Gallico and (B) Germania. Write the modern names of the countries that comprised the majority of what were then called (C) Gaul and (D) Germania.        	Germany
+F844W10_Q13	term_other	            With regards to underlined section (3), the great nation of Charlemagne did not manage to remain unified for long, due to the division of the empire among his heirs. What are the names of the two treaties, signed after the death of Charlemagne, that divided the Frankish Kingdom?        	Treaty of Verdun
+F844W10_Q14	term_other	            With regards to underlined section (4), what was the name of the alliance among northern Italian cities in the 12th century formed in opposition to the southward policy of the empire?        	Lombard League
 F844W10_Q20	term_other	            In ancient China, words were written on bones, bronze ware, and cloth. What are the modern names of two other materials on which information was written before the invention of paper in order to record, store, and convey it?        	Bamboo slips
-F844W10_Q21	term_location	            It is said that the Battle of Talas was what brought paper to western Europe through the Islamic world. 	Baghdad
+F844W10_Q21	term_location	            It is said that the Battle of Talas was what brought paper to western Europe through the Islamic world. (A) What is the name of dynasty that defeated the Tang military in this battle, and (B) what was its capital?        	Baghdad
 F844W10_Q22	term_other	            Name three other technologies from China, or products based on technologies from China, that were conveyed to western Europe, in addition to paper.        	Gunpowder
-F844W10_Q23	term_other	            It is said that paper currency originated with remittance bills from the Tang era. 	exchange notes
-F844W10_Q24	term_other	            Major compilations were created as national projects during 	Siku Quanshu
-F844W10_Q25	term_other	            In addition to books, paper was also used in the creation of government documents and maps. What were the names of the 	Map of a Comprehensive View of Imperial Territory
+F844W10_Q23	term_other	            It is said that paper currency originated with remittance bills from the Tang era. (A) What were these Tang era bills called? (B) What was the collective name for Yuan era paper currency?        	exchange notes
+F844W10_Q24	term_other	            Major compilations were created as national projects during (A) the early Ming era and (B) the Qianlong period of the Qing era. There were so large that they were not printed during these periods. What are the names of these works?        	Siku Quanshu
+F844W10_Q25	term_other	            In addition to books, paper was also used in the creation of government documents and maps. What were the names of the (A) tax and household registers and the (B) land ledgers, both created during the Ming era? What were the names of the (C) world map created during the Ming era and the (D) map of all of China created during the Qing era under the direction of Jesuit priests?        	Map of a Comprehensive View of Imperial Territory
 F844W10_Q26	term_other	            Popular culture rose during the Ming and Qing eras, and many popular novels from this period are printed even today. What are the names of five of these works?        	Water Margin
 F844W10_Q27	term_other	            One aspect of national compilation publication projects and Imperial examination text specifications was state control of ideas. What are the names of two compilations in the early Ming which were highly influential in the Cheng-Zhu school (Song philosophy) becoming the dominant philosophy in the Ming era?        	Si Shu Da Quan
-F844W10_Q29	term_other	            Enter the appropriate words in blanks 	Mexico
-F844W10_Q30	sentence term_person	            With regards to underlined section 	Kosciusko
-F844W10_Q31	term_location	            With regards to underlined section 	Massachusetts
-F844W10_Q32	term_person	            With regards to underlined section 	Jefferson
-F844W10_Q33	term_location	            With regards to underlined section 	Haiti
-F844W10_Q36	term_location	            With regards to underlined section 	Alaska
-F844W10_Q37	term_location	            With regards to underlined section 	Puerto Rico
+F844W10_Q29	term_other	            Enter the appropriate words in blanks A through E.        	Mexico
+F844W10_Q30	sentence term_person	            With regards to underlined section (1), (A)concisely explain the points of contention between Britain and the North American Colonies that led to the Revolutionary War. Write the names of (B)a French person and (C)a Polish person who willingly joined the Revolutionary Army.        	Kosciusko
+F844W10_Q31	term_location	            With regards to underlined section (2), what is the name of the state built by the Puritans, whose capital is Boston?        	Massachusetts
+F844W10_Q32	term_person	            With regards to underlined section (3), what is the name of this person?        	Jefferson
+F844W10_Q33	term_location	            With regards to underlined section (4), this offer was related to a black slave rebellion in a Caribbean colony. (A) Which country offered to sell Louisiana, and (B) what was the name of the colony where the rebellion occurred?        	Haiti
+F844W10_Q36	term_location	            With regards to underlined section (7), the territory was acquired from a country.  Answer (A) the name of the country and (B)the name of the territory.        	Alaska
+F844W10_Q37	term_location	            With regards to underlined section (8), what were the names of three colonies acquired at this time?        	Puerto Rico
 K247W20_Q3	term_person	                Whose achievements were inscribed on the Behistun Inscription?            	Darius I
 K247W20_Q4	term_person	                The Akkadians, who recorded the Akkadian language, built a dynasty in Southern Mesopotamia in the second half of the 24th century BC. Who was the founder of that dynasty?            	Sargon I
 K247W20_Q5	term_person	                Which Assyrian king collected literature from around the world to create a library in Nineveh?            	Ashurbanipal

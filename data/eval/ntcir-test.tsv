@@ -1,6 +1,6 @@
-K844W10_Q8	term_other term_person	            With regards to underlined section 	Bonifatius VIII
-K844W10_Q13	term_person term_other	            With regards to underlined section 	French East India Company
-K844W10_Q26	sentence term_other	            With regards to underlined section 	White Lotus
+K844W10_Q8	term_other term_person	            With regards to underlined section (1), (A)what was this fought over? (B) What was the name of this pope?        	Bonifatius VIII
+K844W10_Q13	term_person term_other	            With regards to underlined section (6), (A)what was the name of this Controller-General of Finances, and (B) what was the name of the charter company reconstituted at this time?        	French East India Company
+K844W10_Q26	sentence term_other	            With regards to underlined section (2), (A)the 18th century was also one of explosive population growth in China. Concisely explain the food staple situation which supported this rapid population growth. (B)What is the name of the religion that played an important role in the rebellion which occurred after the abdication of the Qianlong Emperor at the end of the 18th century?        	White Lotus
 F247W20_Q5	term_other	                What was the name of the people who belonged to the dynasty which controlled the Babylonian Kingdom at that time?            	Kassites
 F247W20_Q11	term_location	                    Write in the current name of the country where the ruins of Carthage are located.                	Tunisia
 F247W20_Q17	term_other	                What was the name of the secret society that sought liberal reforms, and to which Mazzini belonged before organizing the Young Italy Party?            	Carbonari
@@ -23,8 +23,8 @@ H750W10_Q39	term_other	                Write the name of the publication that he
 H750W10_Q44	term_person	               The concepts incorporated in the Declaration of Independence were greatly influenced by the English Enlightenment. Write the name of one thinker that is representative of the English Enlightenment.            	Locke
 H750W10_Q50	term_other	               Write the name of the national political party formed in 1854.            	Republican Party
 H247W10_Q4	term_location	                What was the name of that kingdom?            	Kingdom of Israel
-H247W10_Q8	term_other term_location	                	Kushan
-H247W10_Q12	term_person term_other	                	Germania
+H247W10_Q8	term_other term_location	                (a) What was the name of the Buddhist art form that was strongly influenced by the Hellenistic culture? In addition, (b) what was the name of the dynasty that preserved it?            	Kushan
+H247W10_Q12	term_person term_other	                (a) Who wrote an ethnographic book on the Germanic peoples? In addition, (b) what was the name of that book?            	Germania
 H247W10_Q16	term_person	                Write in the name of that figure.            	Charles Martel
 H247W10_Q20	term_other	                What is the name of the famous Islamic architectural structure that still stands in Granada today?            	Alhambra
 H247W10_Q24	term_other	                What were those people typically called?            	Creole peoples
@@ -44,14 +44,14 @@ F750W10_Q47	term_person	                Write the name of the person who promote
 K476W60_Q14	term_location	            At this time, Russia built the largest navy base in the Far East in leasehold land obtained from China. Write the name of this port, in kanjis, which went on to become one of the bloodiest battlefields in the Russo-Japanese War.        	Lüshun
 F476W40_Q2	term_other	            What was the name of this agreement?        	a
 F476W40_Q17	term_other	            What famous work by Thomas More satirized the government and society of England?        	c
-F476W40_Q33	term_other	            Enter the most appropriate words for blanks 	Hangzhou
+F476W40_Q33	term_other	            Enter the most appropriate words for blanks A and B in the appropriate space on the answer sheet.        	Hangzhou
 F792W10_q10	term_person	In the West, from ancient times, papyrus and parchment had been used as materials for calligraphy. However, in China, a eunuch of the Han Dynasty is said to have created a relatively high-quality paper as an alternative to expensive silk, bulky bamboo, and wooden slips, by mixing tree bark, hemp waste, and fishing nets. Write down the name of that eunuch.	Cai Lun
-F792W10_q14	term_location	Porcelain pottery exported from Asia to Europe was not only used as tableware but also gained major popularity as works of fine art, which generated a trade in the manufacture and sale of counterfeit items. 	Jingdezhen
+F792W10_q14	term_location	Porcelain pottery exported from Asia to Europe was not only used as tableware but also gained major popularity as works of fine art, which generated a trade in the manufacture and sale of counterfeit items. Figure E is one such imitation. This is a Delftware dish produced during the second half of the 17th century, when imports from China declined sharply due to the collapse of the Ming Dynasty. Write in kanji the name of the city which was the production center for Chinese porcelain ware and served as a model for the production of Delftware.	Jingdezhen
 H792W10_q14	term_other	The European Americans of that time believed that their westward expansion was a God-given "mission." Write in the term that precisely describes that "mission."	Manifest Destiny
 H792W10_q18	term_location	In Rwanda, in 1994, during an intense civil war between the minority Tutsi people and the majority Hutu ethnic group, a major episode of genocide occurred. Underlying that incident was a decision that had been taken during the colonization of that part of Africa by the great Western powers. Which European country colonized the current Rwanda, Burundi, and Tanzania at the end of the 19th century and gave the Tutsi people authority over the Hutu in Rwanda? Write in the name of the colonial power concerned.	Germany
 H792W10_q23	term_person	In response to that cession demand, the Munich Conference, involving the political leaders of Great Britain, France, Italy, and Germany, was convened in 1938. Write in the name of the British prime minister who, together with his French counterpart, pursued a policy of appeasement toward Germany.	Neville Chamberlain
 H476W50_Q26	term_person	            Who depicted this war as a narrative of the collision between Eastern and Western civilizations?        	Herodotus
-H476W50_Q42	term_other	            Enter the most appropriate words for blanks 	Midhat Pasha
+H476W50_Q42	term_other	            Enter the most appropriate words for blanks A, B, and C in the appropriate spaces on the answer sheet.        	Midhat Pasha
 K750W10_Q7	term_location	                Other items in this section included Wang Xuance's maps of India. In the 7th century, Wang Xuance was sent to India a number of times. On his second visit he got caught up in civil unrest in India, but ultimately he made use of the might of new emerging nations to the north of the Himalayan Mountain Range to take the ruler of India prisoner. Write the names of these new emerging nations in kanji.            	Tibetan Empire
 K750W10_Q12	term_person	                    Also, based on the classification of "five Indias" derived from Buddhism, the book states that there were five Indias, of which the "fourth India" was said to be annexed by the Mughals. Who carried out this annexation in the latter half of the 16th century. Write the name of this person.                	Akbar
 K750W10_Q23	term_other	                Write the name of the war that occurred in the early 1st century BC concerning the granting of Roman citizenship to a city on the Italian peninsula.             	Social War
@@ -59,15 +59,15 @@ K750W10_Q30	term_other	                    Write the name of the people who were
 K750W10_Q35	term_location	             Write the name of the state of this region that came to prominence by fighting against the "nation of knights" in the 15th century.            	Polish–Lithuanian Commonwealth
 K750W10_Q42	term_location	                Russia's second biggest trading partner at the time concluded an entente with Russia in 1907, and the two countries became politically close. Write the name of this country.             	United Kingdom
 K750W10_Q49	term_other	                  In the year after construction of the "Berlin Wall" started, the Soviet Union ramped up its opposition to the United States, taking the world to the brink of full-scale nuclear war. Write the name of this incident.                 	Cuban Revolution
-H844W10_Q5	term_location	            With regards to underlined section 	Ottoman Empire
-H844W10_Q11	term_other	            Enter the appropriate words in blanks 	Zwingli
-H844W10_Q22	term_other	            Enter the appropriate words in blanks 	San Francisco
-H844W10_Q28	term_other	            With regards to underlined section 	Pugwash Conferences
-F844W10_Q9	term_other	            With regards to underlined section 	Treaty of Nerchinsk
-F844W10_Q14	term_other	            With regards to underlined section 	Lombard League
-F844W10_Q23	term_other	            It is said that paper currency originated with remittance bills from the Tang era. 	exchange notes
+H844W10_Q5	term_location	            With regards to underlined section (3), what was the name of the country that ultimately overthrew this empire?        	Ottoman Empire
+H844W10_Q11	term_other	            Enter the appropriate words in blanks A through J.        	Zwingli
+H844W10_Q22	term_other	            Enter the appropriate words in blanks A through D.        	San Francisco
+H844W10_Q28	term_other	            With regards to underlined section (6), what was the name of the conference of scientists held in Canada in 1957 calling for the prohibition of nuclear weapons?        	Pugwash Conferences
+F844W10_Q9	term_other	            With regards to underlined section (8), what is the name of the treaty between Russia and the Qing Dynasty that defined the national boundary and opened commercial trade between the countries?        	Treaty of Nerchinsk
+F844W10_Q14	term_other	            With regards to underlined section (4), what was the name of the alliance among northern Italian cities in the 12th century formed in opposition to the southward policy of the empire?        	Lombard League
+F844W10_Q23	term_other	            It is said that paper currency originated with remittance bills from the Tang era. (A) What were these Tang era bills called? (B) What was the collective name for Yuan era paper currency?        	exchange notes
 F844W10_Q27	term_other	            One aspect of national compilation publication projects and Imperial examination text specifications was state control of ideas. What are the names of two compilations in the early Ming which were highly influential in the Cheng-Zhu school (Song philosophy) becoming the dominant philosophy in the Ming era?        	Si Shu Da Quan
-F844W10_Q32	term_person	            With regards to underlined section 	Jefferson
+F844W10_Q32	term_person	            With regards to underlined section (3), what is the name of this person?        	Jefferson
 K247W20_Q3	term_person	                Whose achievements were inscribed on the Behistun Inscription?            	Darius I
 K247W20_Q7	term_location	                What was the name of the site where that new capital was excavated?            	Amarna
 K247W20_Q11	term_other	                Which language family did the people who recorded the Hittite language belong to?            	Indo-European languages
