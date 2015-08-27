@@ -13,6 +13,6 @@ for a in answers:
 root = ET.parse(sys.argv[1])
 questions = root.findall(".//question")
 for q in questions:
-    if (q.get("minimal") == "yes"):
+    if (q.get("minimal") == "yes" and q.get("answer_style") == "description_unlimited"):
     	s = q.get("id")[1:] + "\t" + q.get("answer_type") + "\t" + q.findall("instruction")[0].text.replace("\n","") + "\t" + str(answer_map[q.get("id")])
         print (s.encode('utf8'))
