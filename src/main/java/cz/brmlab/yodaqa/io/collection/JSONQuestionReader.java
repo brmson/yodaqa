@@ -6,6 +6,7 @@ import cz.brmlab.yodaqa.flow.dashboard.Question;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -19,7 +20,6 @@ import org.apache.uima.util.ProgressImpl;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -113,14 +113,7 @@ public class JSONQuestionReader extends CasCollectionReader_ImplBase {
 
 	protected void initCas(JCas jcas, String id, String type, String text, List<String> answers) {
 		jcas.setDocumentLanguage(language);
-		Iterator<String> answerIterator = answers.iterator();
-		String answerPattern = "";
-		while(answerIterator.hasNext()) {
-			answerPattern += answerIterator.next();
-			if (answerIterator.hasNext()) {
-				answerPattern += "|";
-			}
-		}
+		String answerPattern = StringUtils.join(answers, "|");
 		QuestionInfo qInfo = new QuestionInfo(jcas);
 		qInfo.setSource("interactive");
 		qInfo.setQuestionId(id);

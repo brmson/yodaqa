@@ -328,7 +328,8 @@ def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     global _g_cv_data
     _g_cv_data = (answersets, labels, cfier_factory)
 
-    processes = os.environ.get('YODAQA_N_THREADS', None)
+    processes = os.environ.get('ANSWERTRAIN_N_THREADS',
+                os.environ.get('YODAQA_N_THREADS', None))
     if processes is not None:  processes = int(processes)
     pool = Pool(processes=processes)
 

@@ -210,6 +210,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	}
 
 	protected void addConceptFeatures(JCas questionView, AnswerFV fv, String text) {
+		double bestRr = 0, bestScore = 0;
 		// XXX: Carry the clue reference in PropertyValue.
 		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
 			if (!concept.getCookedLabel().toLowerCase().equals(text.toLowerCase()))
@@ -222,7 +223,13 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 				fv.setFeature(AF.OriginConceptByLAT, 1.0);
 			if (concept.getByNE())
 				fv.setFeature(AF.OriginConceptByNE, 1.0);
+			if (concept.getRr() > bestRr)
+				bestRr = concept.getRr();
+			if (concept.getScore() > bestScore)
+				bestScore = concept.getScore();
 		}
+		fv.setFeature(AF.OriginConceptRR, bestRr);
+		fv.setFeature(AF.OriginConceptScore, bestScore);
 	}
 
 	/** Create a specific AnswerSource instance for the given concept. */
@@ -281,6 +288,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		if (clue instanceof ClueSubject) {
 			afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
 		} else if (clue instanceof ClueConcept ) {
+			double bestRr = 0, bestScore = 0;
 			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
 				if (concept.getBySubject())
 					afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
@@ -288,7 +296,13 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 					afv.setFeature(clueFeaturePrefix + "ClueLAT", 1.0);
 				if (concept.getByNE())
 					afv.setFeature(clueFeaturePrefix + "ClueNE", 1.0);
+				if (concept.getRr() > bestRr)
+					bestRr = concept.getRr();
+				if (concept.getScore() > bestScore)
+					bestScore = concept.getScore();
 			}
+			afv.setFeature(clueFeaturePrefix + AF._clueType_ConceptRR, bestRr);
+			afv.setFeature(clueFeaturePrefix + AF._clueType_ConceptScore, bestScore);
 		}
 	}
 
