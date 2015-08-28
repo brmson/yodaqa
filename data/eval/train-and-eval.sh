@@ -104,7 +104,7 @@ fi
 screen -m sh -c "
 	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 \"$basecid\" \"$system_property\";
 	if [ $wait_on_barriers = 0 ]; then rm _multistage-barrier*; else sleep 10; fi
-	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 \"$wait_on_barriers\" \"$basecid $system_property\"
+	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 \"$wait_on_barriers\" \"$basecid\" \"$system_property\"
 "
 
 popd
