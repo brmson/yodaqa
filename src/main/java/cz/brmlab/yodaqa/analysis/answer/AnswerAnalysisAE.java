@@ -4,6 +4,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import cz.brmlab.yodaqa.analysis.tycor.LATNormalize;
 
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
 
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 /**
@@ -102,6 +104,8 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));
+		/* Add features accordign to the question class*/
+		builder.add(AnalysisEngineFactory.createEngineDescription(QuestionClassFeatures.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */

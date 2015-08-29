@@ -12,6 +12,7 @@ from multiprocessing import Pool
 import numpy as np
 import numpy.random as random
 import os
+import re
 
 
 num_picked = 5  # Our aim is to get our to the top N here
@@ -95,7 +96,14 @@ class AnswerSet:
         return (any_picked, all_picked, mrr)
 
 
-def load_answers(f):
+def fi_by_label(labels, regex):
+    """ Return feature index by (whole-)label regex """
+    for i in range(len(labels)):
+        if re.match('^'+regex+'$', labels[i]):
+            yield i
+
+
+def load_answers(f, exclude=[]):
     answersets = []
 
     labels = None
@@ -119,6 +127,10 @@ def load_answers(f):
         if fv[0 * 2] < 1.0:
             continue
 
+        for labelre in exclude:
+            for i in fi_by_label(labels, labelre):
+                fv[i] = 0
+
         if qid != qid_last:
             if len(fv_set) > 0:
                 answersets.append(AnswerSet(fv_set, class_set))
@@ -131,6 +143,7 @@ def load_answers(f):
 
     if len(fv_set) > 0:
         answersets.append(AnswerSet(fv_set, class_set))
+
     return (answersets, labels)
 
 
@@ -328,7 +341,8 @@ def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     global _g_cv_data
     _g_cv_data = (answersets, labels, cfier_factory)
 
-    processes = os.environ.get('YODAQA_N_THREADS', None)
+    processes = os.environ.get('ANSWERTRAIN_N_THREADS',
+                os.environ.get('YODAQA_N_THREADS', None))
     if processes is not None:  processes = int(processes)
     pool = Pool(processes=processes)
 

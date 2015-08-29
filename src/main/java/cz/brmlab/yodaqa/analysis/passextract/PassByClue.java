@@ -199,6 +199,7 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 		if (clue instanceof ClueSubject) {
 			afv.setFeature(AF.OriginPsgBy_ClueType + "ClueSubject", 1.0);
 		} else if (clue instanceof ClueConcept ) {
+			double bestRr = 0, bestScore = 0;
 			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
 				if (concept.getBySubject())
 					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueSubject", 1.0);
@@ -206,7 +207,13 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueLAT", 1.0);
 				if (concept.getByNE())
 					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueNE", 1.0);
+				if (concept.getRr() > bestRr)
+					bestRr = concept.getRr();
+				if (concept.getScore() > bestScore)
+					bestScore = concept.getScore();
 			}
+			afv.setFeature(AF.OriginPsgBy_ClueType + AF._clueType_ConceptRR, bestRr);
+			afv.setFeature(AF.OriginPsgBy_ClueType + AF._clueType_ConceptScore, bestScore);
 		}
 	}
 }

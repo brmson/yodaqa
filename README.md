@@ -30,11 +30,11 @@ branch for day-to-day development.
   cz.brmlab.yodaqa.use_bing=yes to enabled it. 
   You can run yodaqa with this command:**
 
-  ./gradlew run -q -Dcz.brmlab.yodaqa.use_bing=yes  
+	./gradlew run -q -Dcz.brmlab.yodaqa.use_bing=yes  
 
 If you want to run data/eval/train-and-eval.py with Bing search you need to pass the parameter:
 
-  data/eval/train-and-eval.sh -Dcz.brmlab.yodaqa.use_bing=yes
+	data/eval/train-and-eval.sh -Dcz.brmlab.yodaqa.use_bing=yes
 
 ## Installation Instructions
 
