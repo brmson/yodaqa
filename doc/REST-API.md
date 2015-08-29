@@ -1,6 +1,16 @@
 YodaQA REST API
 ===============
 
+The main public YodaQA API endpoint, if you do not want to roll your own,
+is http://qa.ailao.eu/ (this web address also contains a bare-bones debugging
+web interface; http://live.ailao.eu/ is the canonical web interface).
+
+If you want to do anything with the public endpoint besides casual use
+and experiments, please talk to us at ailao@ailao.eu first.  As it is now,
+the endpoint can't handle more than 2-3 questions total per minute; it's
+meant just for demo purposes.
+
+
 Question asking
 ---------------
 

@@ -40,9 +40,9 @@ outfile2="$basedir/data/eval/tsv/${dataset}-ovt-${cid}.tsv"
 atrainfile0="$basedir/data/ml/tsv/${dataset}-answer-${cid}.tsv"
 atrainfile1="$basedir/data/ml/tsv/${dataset}-answer1-${cid}.tsv"
 atrainfile2="$basedir/data/ml/tsv/${dataset}-answer2-${cid}.tsv"
-modelfile0="$basedir/data/ml/models/logistic-${cid}.model"
-modelfile1="$basedir/data/ml/models/logistic1-${cid}.model"
-modelfile2="$basedir/data/ml/models/logistic2-${cid}.model"
+modelfile0="$basedir/data/ml/models/decision-forest-${cid}.model"
+modelfile1="$basedir/data/ml/models/decision-forest1-${cid}.model"
+modelfile2="$basedir/data/ml/models/decision-forest2-${cid}.model"
 xmidir="$basedir/data/eval/answer-xmi/${cid}-$dataset"
 barrierfile=_multistage-barrier
 mkdir -p $basedir/data/eval/tsv
@@ -73,8 +73,8 @@ train_and_sync() {
 	## Train the model
 	if [ "$retrain" = "1" ]; then
 		echo "Training ${i}..."
-		data/ml/answer-train-logistic.py <"$atrainfile" | tee "$modelfile"
-		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreLogistic${i}.model
+		data/ml/answer-train-gradboost.py <"$atrainfile" | tee "$modelfile"
+		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreDecisionForest${i}.model
 		echo "Rebuilding with new model..."
 		./gradlew check
 		touch "$barrierfile$i" # testing is go, too!

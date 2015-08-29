@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.Math;
 
-import cz.brmlab.yodaqa.model.Question.SV;
-import cz.brmlab.yodaqa.model.TyCor.LAT;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
@@ -23,7 +21,10 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.flow.dashboard.Question;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+import cz.brmlab.yodaqa.model.Question.SV;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 /**
  * A consumer that displays the questions with a LAT dump to json file
@@ -80,8 +81,9 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		}
 		SVtmp += "], ";
 		line += SVtmp;
-		line += "\"LAT\": [";
-		String LATtmp = "";
+
+		line += "\"LAT\": ";
+		String LATtmp = "[";
 		for (Iterator iterator = JCasUtil.select(jcas, LAT.class).iterator(); iterator.hasNext(); ) {
 			LAT l = (LAT) iterator.next();
 			/*{"synset" : "...", "text" : "...", "specificity" : "..." "type" : "..."}*/
@@ -96,10 +98,28 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			if (iterator.hasNext()) {
 				LATtmp += ", ";
 			}
-
 		}
-		LATtmp += "]}";
+		LATtmp += "], ";
 		line += LATtmp;
+
+		line += "\"Concept\": ";
+		String Concepttmp = "[";
+		for (Iterator iterator = JCasUtil.select(jcas, Concept.class).iterator(); iterator.hasNext(); ) {
+			Concept c = (Concept) iterator.next();
+			Concepttmp += "{";
+			Concepttmp += "\"fullLabel\": \"" + c.getFullLabel().replaceAll("\"", "\\\"") + "\", ";
+			Concepttmp += "\"cookedLabel\": \"" + c.getCookedLabel().replaceAll("\"", "\\\"") + "\", ";
+			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\"";
+			Concepttmp += "}";
+			//not last, add comma
+			if (iterator.hasNext()) {
+				Concepttmp += ", ";
+			}
+		}
+		Concepttmp += "], ";
+		line += Concepttmp;
+
+		line += "}";
 		output(line);
 		//Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
 		//QuestionDashboard.getInstance().finishQuestion(q);
