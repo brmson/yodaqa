@@ -20,6 +20,8 @@ import org.apache.uima.util.ProgressImpl;
 import cz.brmlab.yodaqa.flow.dashboard.Question;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -37,6 +39,8 @@ public class TSVQuestionReader extends CasCollectionReader_ImplBase {
 	public static final String PARAM_LANGUAGE = ComponentParameters.PARAM_LANGUAGE;
 	@ConfigurationParameter(name = PARAM_LANGUAGE, mandatory = true)
 	private String language;
+	final Logger logger = LoggerFactory.getLogger(TSVQuestionReader.class);
+
 
 	/**
 	 * Name of the TSV file.
@@ -94,6 +98,7 @@ public class TSVQuestionReader extends CasCollectionReader_ImplBase {
 
 	@Override
 	public void getNext(CAS aCAS) throws CollectionException {
+		logger.info("NTCIRNEXTQUESTION");
 		if (input == null)
 			acquireInput();
 		String[] fields = input.split("\t");
