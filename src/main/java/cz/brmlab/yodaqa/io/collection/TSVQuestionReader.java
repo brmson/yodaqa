@@ -94,11 +94,11 @@ public class TSVQuestionReader extends CasCollectionReader_ImplBase {
 		qInfo.setAnswerPattern(answer);
 		qInfo.setProcBeginTime(System.currentTimeMillis());
 		qInfo.addToIndexes(jcas);
+		logger.info("NTCIRNEXTQUESTION:"+id);
 	}
 
 	@Override
 	public void getNext(CAS aCAS) throws CollectionException {
-		logger.info("NTCIRNEXTQUESTION");
 		if (input == null)
 			acquireInput();
 		String[] fields = input.split("\t");
