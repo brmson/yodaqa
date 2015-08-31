@@ -4,8 +4,8 @@ import sys
 import json
 
 
-jfile=open("QuestionDump.json")
-xmlpath="QuestionDump.xml"
+jfile=open(sys.argv[1])
+xmlpath=sys.argv[2]
 
 
 TOPIC_SET=ET.Element("TOPIC_SET")
@@ -42,7 +42,7 @@ for line in jfile:
             score=1.0
         ET.SubElement(KEY_TERM_SET,"KEY_TERM",RANK=str(i+1),SCORE=str(1-1/score)).text=jclues[i]['label']
 xml=ET.ElementTree(TOPIC_SET)
-xml.write("QuestionDump.xml")
+xml.write(xmlpath)
 
 
 ANSWER_TYPE_SET_DEF=ET.Element("ANSWER_TYPE_SET_DEF")
@@ -50,7 +50,7 @@ ANSWER_TYPE_SET_DEF=ET.Element("ANSWER_TYPE_SET_DEF")
 for t in types:
     ET.SubElement(ANSWER_TYPE_SET_DEF,"ANSWER_TYPE_DEF",PARENT="ROOT",CHILDREN="$").text=t
 xmldef=ET.ElementTree(ANSWER_TYPE_SET_DEF)
-xmldef.write("typedef.xml")
+xmldef.write(sys.argv[3])
 
 
 #<ANSWER_TYPE_SET_DEF>

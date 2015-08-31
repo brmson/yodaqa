@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 showstats() {
 	tsvout="$1"
 
