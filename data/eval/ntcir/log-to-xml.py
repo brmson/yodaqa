@@ -1,8 +1,9 @@
 from __future__ import print_function 
 import xml.etree.cElementTree as ET
 import math
+import sys
 
-LOGFILE="ntcirlog.txt"
+LOGFILE=sys.argv[1]
 
 
 IR_RESULT_SET=ET.Element("IR_RESULT_SET")
@@ -11,6 +12,7 @@ IR_RESULT_SET=ET.Element("IR_RESULT_SET")
 qid=""
     
 for line in open(LOGFILE):
+    line = line.decode("utf-8")
     if "NTCIRNEXTQUESTION" in line:
         qid=line.split(":")[-1]
         IR_RESULT=ET.SubElement(IR_RESULT_SET,"IR_RESULT",TOPIC_ID=qid,
@@ -30,4 +32,4 @@ for line in open(LOGFILE):
         rank+=1
     
 xml=ET.ElementTree(IR_RESULT_SET)
-xml.write("IRres.xml")
+xml.write(sys.argv[2])
