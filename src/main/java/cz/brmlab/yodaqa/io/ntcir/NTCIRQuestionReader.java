@@ -44,32 +44,6 @@ import java.util.*;
  * */
 public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 
-	class NTCIRQuestion {
-		String qId;
-		String qText;
-		List<String> answers;
-		String author;
-
-		public String getqId() {
-			return qId;
-		}
-		public String getqText() {
-			return qText;
-		}
-		public List<String> getAnswers() {
-			return answers;
-		}
-		public String getAuthor() {
-			return author;
-		}
-
-		public NTCIRQuestion(String qId, String qText, List<String> answers, String author) {
-			this.qId = qId;
-			this.qText = qText;
-			this.answers = answers;
-			this.author = author;
-		}
-	}
 
 	private class OnlyNXML implements FilenameFilter {
 		String ext;
@@ -104,7 +78,6 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 	@ConfigurationParameter(name = PARAM_QUESTION_DIR, mandatory = true)
 	private String questionDir;
 
-	xmlReader xmlreader;
 	private int index;
 
 	File testFile[] = null;
@@ -180,7 +153,8 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 		}
 
 	}
-
+	private List<String> questions=new ArrayList<>();
+	private List<String> answers=new ArrayList<>();
 	private void parseGoldStandards(File goldFile) throws Exception {
 		DOMParser parser = new DOMParser();
 		try {
@@ -192,16 +166,19 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 
 		Document doc = parser.getDocument();
 
-		NodeList dataList = doc.getElementsByTagName("data");
+		NodeList dataList = doc.getElementsByTagName("answer_section");
 
 		for (int i = 0; i < dataList.getLength(); i++) {
 			Element dataEle = (Element) dataList.item(i);
-			String questionId = dataEle.getElementsByTagName("question_ID")
+			String questionId = dataEle.getElementsByTagName("question_id")
 					.item(0).getTextContent().trim();
 			String answer = dataEle.getElementsByTagName("answer").item(0)
 					.getTextContent().trim();
-			int answerId = Integer.parseInt(answer);
-
+//			int answerId = Integer.parseInt(answer);
+			int answerId =0;
+			this.ans=new ArrayList<>();
+			this.ans.add(answer);
+			System.out.println("ANSWER="+answer);
 			hshAnswers.put(questionId, answerId);
 		}
 	}
@@ -616,7 +593,6 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 		return annoMap;
 	}
 
-
 	private QuestionAnswerSet annotateQuestion(Element qElement, JCas jcas) {
 		String qid = qElement.getAttribute("id");// qElement.getElementsByTagName("id").item(0).getTextContent().trim();
 		this.qId = qid;
@@ -643,6 +619,7 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 					Element instrEle = (Element) questionChild;
 					String instText = instrEle.getTextContent().trim();
 					this.qText = instText;
+					this.questions.add("INSTR"+instText);
 					String instructionMarker = questionLabel + ": ";
 					documentText.append(instructionMarker);
 					annoOffset += instructionMarker.length();
@@ -680,6 +657,7 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 					String dataText = qDataEle.getTextContent().trim();
 					System.out.println("TEXT " + dataText);
 					this.qText = dataText;
+					this.questions.add("DATA"+dataText);
 					String qDataMarker = "[Question Data] \n";
 					documentText.append(qDataMarker);
 					annoOffset += qDataMarker.length();
@@ -800,7 +778,9 @@ public class NTCIRQuestionReader extends CasCollectionReader_ImplBase {
 					}
 				}
 			}
+
 		}
+		for(String q: questions) System.out.println("QUESTION:"+q);
 
 		// ////////////////////////////////////////////////
 

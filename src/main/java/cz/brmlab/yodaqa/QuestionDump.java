@@ -4,6 +4,7 @@ import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
 import cz.brmlab.yodaqa.io.collection.TSVQuestionReader;
+import cz.brmlab.yodaqa.io.debug.QuestionCluePrinter;
 import cz.brmlab.yodaqa.io.debug.QuestionPrinter;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
@@ -32,8 +33,8 @@ public class QuestionDump {
 
 
         AnalysisEngineDescription printer = createEngineDescription(
-                QuestionPrinter.class,
-                QuestionPrinter.PARAM_JSONFILE, args[1],
+				QuestionCluePrinter.class,
+                QuestionCluePrinter.PARAM_JSONFILE, args[1],
                 ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 
      //   ParallelEngineFactory.registerFactory(); // comment out for a linear single-thread flow
