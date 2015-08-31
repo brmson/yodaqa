@@ -108,10 +108,12 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 			Integer id = (Integer) doc.getFieldValue("id");
 			String title = (String) doc.getFieldValue("titleText");
 			double score = ((Float) doc.getFieldValue("score")).floatValue();
-			logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
+//			logger.info(" FOUND: " + id + " " + (title != null ? title : "") + " (" + score + ")");
+			logger.info("NTCIRPRINT:"+id + "+" + (title != null ? title : "") + "+" + score);
 			AnswerSourceEnwiki as = new AnswerSourceEnwiki(
 					searchFullText ? AnswerSourceEnwiki.ORIGIN_FULL : AnswerSourceEnwiki.ORIGIN_TITLE,
 					title, id);
+
 			sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
 		}
 	};
@@ -182,6 +184,7 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 		try {
 			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
 			Collection<SolrTerm> terms = SolrTerm.cluesToTerms(clues);
+
 			documents = solr.runQuery(terms, hitListSize, settings, logger);
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);

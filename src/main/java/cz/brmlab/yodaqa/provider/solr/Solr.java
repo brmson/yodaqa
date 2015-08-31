@@ -150,7 +150,7 @@ public class Solr implements Closeable {
 			for (String prefix : settings.getSearchPrefixes())
 				formulateProximityQuery(terms, settings, prefix, result, i);
 		String query = result.toString();
-		cLogger.info(" QUERY: " + query);
+		cLogger.info(" NTCIRQUERY: " + query);
 		return query;
 	}
 
