@@ -2,11 +2,14 @@ package cz.brmlab.yodaqa.analysis.passextract;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -104,5 +107,28 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 			int n_tokens = JCasUtil.selectCovered(Token.class, passage).size();
 			logger.debug(passage.getScore() + " | " + passage.getCoveredText() + " | " + n_tokens);
 		}
+
+		/* Record statistics on picked passages. */
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
+		recordStatistics(qi, pickedPassagesView);
+	}
+
+	protected void recordStatistics(QuestionInfo qi, JCas pickedPassagesView) {
+		Pattern apat = null;
+		if (qi.getAnswerPattern() != null)
+			apat = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+		int n_picked = 0, n_gspicked = 0;
+		for (Passage passage : JCasUtil.select(pickedPassagesView, Passage.class)) {
+			n_picked += 1;
+			if (apat != null && apat.matcher(passage.getCoveredText()).find())
+				n_gspicked += 1;
+		}
+
+		/* Store the statistics in QuestionInfo. */
+		qi.removeFromIndexes();
+		qi.setPassE_picked(qi.getPassE_picked() + n_picked);
+		qi.setPassE_gspicked(qi.getPassE_gspicked() + n_gspicked);
+		qi.addToIndexes();
 	}
 }

@@ -40,11 +40,10 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 	}
 
 	public synchronized void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, passagesView, pickedPassagesView;
+		JCas questionView, passagesView;
 		try {
 			questionView = jcas.getView("Question");
 			passagesView = jcas.getView("Passages");
-			pickedPassagesView = jcas.getView("PickedPassages");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
@@ -62,20 +61,10 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 				n_gsscored += 1;
 		}
 
-		/* Collect statistics on picked passages. */
-		int n_picked = 0, n_gspicked = 0;
-		for (Passage passage : JCasUtil.select(pickedPassagesView, Passage.class)) {
-			n_picked += 1;
-			if (ap.matcher(passage.getCoveredText()).find())
-				n_gspicked += 1;
-		}
-
 		/* Store the statistics in QuestionInfo. */
 		qi.removeFromIndexes();
 		qi.setPassE_scored(qi.getPassE_scored() + n_scored);
 		qi.setPassE_gsscored(qi.getPassE_gsscored() + n_gsscored);
-		qi.setPassE_picked(qi.getPassE_picked() + n_picked);
-		qi.setPassE_gspicked(qi.getPassE_gspicked() + n_gspicked);
 		qi.addToIndexes();
 
 		/* Possibly dump model training data. */
