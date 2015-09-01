@@ -1,6 +1,7 @@
 from __future__ import print_function 
 import xml.etree.ElementTree as ET
 import sys
+import re
 
 def itertext(self):
     tag = self.tag
@@ -35,5 +36,8 @@ for q in questions:
 			text = ''.join(q.findall("instruction")[0].itertext()).replace("\n","")
 		except IndexError:
 			text = ''.join(q.itertext()).replace("\n","")
+		text = re.sub("With regards to underlined section", "", text)
+		text = re.sub("\(\w\)", "", text)
+		# text = text.replace("With regards to underlined section","")
 		s = q.get("id") + "\t" + q.get("answer_type") + "\t" + text + "\t" + str(answer)
 		print (s.encode('utf8'))
