@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Usage: data/eval/train-and-eval.sh [-s N] [-m MAXHEAPSIZE] [-d DATASET] [COMMIT [BASECOMMIT]]
 #
@@ -53,7 +52,7 @@ fi
 if [ "$1" = "-d" ]; then
 	shift; dataset=$1; shift
 else
-	dataset=curated
+	dataset=moviesC
 fi
 
 cid=$(git rev-parse --short "${1:-HEAD}")
