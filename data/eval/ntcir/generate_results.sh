@@ -8,7 +8,7 @@ for dir in ${question_dir}/*; do
 			filename="${filename%.*}"
 			echo $filename
 			python data/eval/ntcir/make-tsv.py $f > tmp.tsv
-			./gradlew tsvgs -PexecArgs="tmp.tsv /dev/null" 2>&1 | tee data/eval/ntcir/log
+			./gradlew tsvgs -PexecArgs="tmp.tsv output-${filename}.tsv" 2>&1 | tee data/eval/ntcir/log
 			rm -f tmp.tsv
 			python data/eval/ntcir/log-to-xml.py data/eval/ntcir/log data/eval/ntcir/${filename}-results.xml
 			# rm -f data/eval/ntcir/log		
