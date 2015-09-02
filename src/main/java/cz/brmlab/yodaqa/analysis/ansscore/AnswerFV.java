@@ -32,7 +32,7 @@ public class AnswerFV {
 	/* XXX: This actually still prevents auto-generated features. */
 	public static String labels[] = {
 		"occurences", "resultRR", "resultLogScore", "passageLogScore",
-			"propertyScore",
+			"propertyScore", "propertyGloVeScore",
 		"originPsg", "originPsgFirst",
 		"originPsgByClueToken", "originPsgByCluePhrase", "originPsgByClueSV",
 			"originPsgByClueNE", "originPsgByClueLAT",

@@ -143,6 +143,7 @@ dependencies {
   compile 'com.google.guava:guava:18.0'
   compile 'com.github.jcrfsuite:jcrfsuite:0.5'
   compile 'org.codehaus.groovy:groovy-all:2.3.10'
+  compile 'org.jblas:jblas:1.2.3'
   compile 'org.xerial:sqlite-jdbc:3.8.10.1'
   testCompile 'junit:junit:[4,)'
 }
