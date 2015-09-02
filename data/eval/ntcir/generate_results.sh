@@ -2,6 +2,8 @@
 question_dir=$1
 answer_sheet_dir=$2
 
+mkdir -p data/eval/ntcir/output
+
 for dir in ${question_dir}/*; do
 	if [ -d "$dir" ]; then
 		echo ${dir##*/}

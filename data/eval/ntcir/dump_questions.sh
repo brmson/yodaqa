@@ -1,6 +1,8 @@
 #!/bin/bash
 question_dir=$1
 
+mkdir -p data/eval/ntcir/output
+
 for dir in ${question_dir}/*; do
 	if [ -d "$dir" ]; then
 	  	for f in ${dir}/*; do
