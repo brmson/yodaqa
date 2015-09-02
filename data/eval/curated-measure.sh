@@ -18,12 +18,12 @@ case $type in
 	*) echo "Usage: curated-measure.sh {test,train}" >&2; exit 1;;
 esac
 
-outfile="data/eval/tsv/curated-${type}-ovt-${cid}.tsv"
+outfile="data/eval/tsv/moviesC-${type}-ovt-${cid}.tsv"
 mkdir -p data/eval/tsv
 mkdir -p data/eval/answer-csv
 
 time ./gradlew check tsvgs \
-	-PexecArgs="data/eval/curated-${type}.tsv $outfile" \
+	-PexecArgs="data/eval/moviesC-${type}.tsv $outfile" \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa.analysis=debug \
-	$args 2>&1 | tee logs/curated-${type}-$(git rev-parse --short HEAD).log
+	$args 2>&1 | tee logs/moviesC-${type}-$(git rev-parse --short HEAD).log
 echo $outfile
