@@ -27,8 +27,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * at all. */
 
 @SofaCapability(
-	inputSofas = { "Question", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class GSAnsBioMention extends JCasAnnotator_ImplBase {
@@ -42,7 +42,7 @@ public class GSAnsBioMention extends JCasAnnotator_ImplBase {
 		JCas questionView, passagesView;
 		try {
 			questionView = jcas.getView("Question");
-			passagesView = jcas.getView("PickedPassages");
+			passagesView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}

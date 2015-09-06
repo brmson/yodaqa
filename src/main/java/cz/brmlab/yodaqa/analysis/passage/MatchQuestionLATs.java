@@ -25,8 +25,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * that Passage, nearby this annotation. */
 
 @SofaCapability(
-	inputSofas = { "Question", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class MatchQuestionLATs extends JCasAnnotator_ImplBase {
@@ -37,15 +37,15 @@ public class MatchQuestionLATs extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, passagesView;
+		JCas questionView, passageView;
 		try {
 			questionView = jcas.getView("Question");
-			passagesView = jcas.getView("PickedPassages");
+			passageView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		for (Passage p: JCasUtil.select(passagesView, Passage.class)) {
+		for (Passage p: JCasUtil.select(passageView, Passage.class)) {
 			Token bestT = null;
 			LAT bestQlat = null;
 
@@ -70,7 +70,7 @@ public class MatchQuestionLATs extends JCasAnnotator_ImplBase {
 			}
 
 			if (bestT != null) {
-				QuestionLATMatch qlm = new QuestionLATMatch(passagesView);
+				QuestionLATMatch qlm = new QuestionLATMatch(passageView);
 				qlm.setBegin(bestT.getBegin());
 				qlm.setEnd(bestT.getEnd());
 				qlm.setBaseToken(bestT);

@@ -28,7 +28,7 @@ import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 @SofaCapability(
 	inputSofas = { "Question", "Result" },
-	outputSofas = { "Passages", "PickedPassages" }
+	outputSofas = { "Passages" }
 )
 
 

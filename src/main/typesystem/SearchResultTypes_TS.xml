@@ -42,7 +42,7 @@
           </featureDescription>
           <featureDescription>
             <name>isLast</name>
-            <description>If non-zero, this is the last search result CAS and the value is #total generated CASes.</description>
+            <description>If non-zero, this is the last search result CAS and the value is #total generated CASes. Note that this is overloaded by PassageCAS to indicate the last produced passage.</description>
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
           <featureDescription>

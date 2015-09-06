@@ -15,7 +15,6 @@ import org.apache.uima.util.CasCopier;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
-import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceEnwiki;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
@@ -30,7 +29,7 @@ import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
  * each to-be-analyzed candidate answer. */
 
 public class AnswerGenerator extends JCasMultiplier_ImplBase {
-	JCas questionView, resultView, pickedPassagesView;
+	JCas questionView, passageView;
 	QuestionInfo qi;
 	ResultInfo ri;
 
@@ -45,16 +44,15 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		try {
 			questionView = jcas.getView("Question");
-			resultView = jcas.getView("Result");
-			pickedPassagesView = jcas.getView("PickedPassages");
+			passageView = jcas.getView("Passage");
 		} catch (Exception e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
 		qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
-		ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
+		ri = JCasUtil.selectSingle(passageView, ResultInfo.class);
 
-		answers = pickedPassagesView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
+		answers = passageView.getJFSIndexRepository().getAllIndexedFS(CandidateAnswer.type);
 		i = 0;
 	}
 
@@ -86,12 +84,12 @@ public class AnswerGenerator extends JCasMultiplier_ImplBase {
 				/* We will just generate a single dummy CAS
 				 * to avoid flow breakage. */
 				canAnswerView.setDocumentText("");
-				canAnswerView.setDocumentLanguage(resultView.getDocumentLanguage());
+				canAnswerView.setDocumentLanguage(passageView.getDocumentLanguage());
 				AnswerInfo ai = new AnswerInfo(canAnswerView);
 				ai.setIsLast(i);
 				ai.addToIndexes();
 			}
-			copyResultInfo(resultView, canAnswerView);
+			copyResultInfo(passageView, canAnswerView);
 
 		} catch (Exception e) {
 			jcas.release();

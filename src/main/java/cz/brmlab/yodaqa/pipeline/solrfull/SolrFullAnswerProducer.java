@@ -10,6 +10,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.analysis.passage.PassageAnalysisAE;
 import cz.brmlab.yodaqa.analysis.passextract.PassageExtractorAE;
 import cz.brmlab.yodaqa.flow.FixedParallelFlowController;
+import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
 
 /**
  * From the QuestionCAS, generate a bunch of CandidateAnswerCAS instances.
@@ -27,10 +28,16 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		AggregateBuilder builder = new AggregateBuilder();
 
+		/* Produce a bunch of PassageCASes. */
 		AnalysisEngineDescription passageProducer = createPassageProducerDescription();
 		builder.add(passageProducer);
+
+		/* Analyze each PassageCAS, extracting answers (in forms
+		 * of CandidateAnswer annotations). */
 		AnalysisEngineDescription passageAnalysis = PassageAnalysisAE.createEngineDescription();
 		builder.add(passageAnalysis);
+
+		/* Spin off the CandidateAnswer annotations each to a new CAS. */
 		AnalysisEngineDescription answerGenerator = AnalysisEngineFactory.createEngineDescription(
 				AnswerGenerator.class);
 		builder.add(answerGenerator);
@@ -85,6 +92,11 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription passageExtractor = PassageExtractorAE.createEngineDescription(
 				PassageExtractorAE.PARAM_PASS_SEL_BYCLUE);
 		builder.add(passageExtractor);
+		/* Collect passages from all the SearchResultCASes,
+		 * filter them only to the most interesting N sentences
+		 * and generate a PassageCAS for each picked one. */
+		builder.add(AnalysisEngineFactory.createEngineDescription(PassFilter.class,
+				ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1));
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
@@ -107,6 +119,11 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription passageExtractor = PassageExtractorAE.createEngineDescription(
 				PassageExtractorAE.PARAM_PASS_SEL_BYCLUE);
 		builder.add(passageExtractor);
+		/* Collect passages from all the SearchResultCASes,
+		 * filter them only to the most interesting N sentences
+		 * and generate a PassageCAS for each picked one. */
+		builder.add(AnalysisEngineFactory.createEngineDescription(PassFilter.class,
+				ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1));
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
@@ -136,6 +153,11 @@ public class SolrFullAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		AnalysisEngineDescription passageExtractor = PassageExtractorAE.createEngineDescription(
 				PassageExtractorAE.PARAM_PASS_SEL_FIRST);
 		builder.add(passageExtractor);
+		/* Collect passages from all the SearchResultCASes,
+		 * filter them only to the most interesting N sentences
+		 * and generate a PassageCAS for each picked one. */
+		builder.add(AnalysisEngineFactory.createEngineDescription(PassFilter.class,
+				ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1));
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(

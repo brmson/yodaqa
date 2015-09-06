@@ -74,8 +74,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
  * wrapper, or use jcrfsuite for training too. */
 
 @SofaCapability(
-	inputSofas = { "Question", "Result", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
@@ -150,7 +150,7 @@ public class BIOTaggerCRF extends CleartkSequenceAnnotator<String> {
 		JCas questionView, passagesView;
 		try {
 			questionView = jcas.getView("Question");
-			passagesView = jcas.getView("PickedPassages");
+			passagesView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
