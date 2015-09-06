@@ -173,6 +173,9 @@ public class PassFilter extends JCasMultiplier_ImplBase {
 		 * the same search result... */
 		Collections.sort(passages, new Comparator<PassageInfo>(){ @Override
 			public int compare(PassageInfo pi1, PassageInfo pi2){
+				if (pi1.getPsg() == null && pi2.getPsg() == null) return 0;
+				if (pi1.getPsg() == null) return 1;
+				if (pi2.getPsg() == null) return -1;
 				return Double.valueOf(pi2.getPsg().getScore()).compareTo(Double.valueOf(pi1.getPsg().getScore()));
 			} } );
 		if (passages.size() > numPicked)
