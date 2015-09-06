@@ -299,6 +299,8 @@ public class PassFilter extends JCasMultiplier_ImplBase {
 
 		int n_picked = 0, n_gspicked = 0;
 		for (PassageInfo pi : passages) {
+			if (pi.getPsg() == null)
+				continue;
 			n_picked += 1;
 			if (apat != null && apat.matcher(pi.getPsg().getCoveredText()).find())
 				n_gspicked += 1;
