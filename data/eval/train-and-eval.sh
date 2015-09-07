@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: data/eval/train-and-eval.sh [-s N] [-m MAXHEAPSIZE] [-d DATASET] [COMMIT [BASECOMMIT]]
+# Usage: data/eval/train-and-eval.sh [-s N] [-m MAXHEAPSIZE] [-d DATASET] [-DPROPERY] [COMMIT [BASECOMMIT]]
 #
 # Perform full model training and performance evaluation of the given
 # commit (may be also a branch name, or nothing to eval the HEAD).
@@ -37,6 +37,9 @@
 # -d DATASET allows "train and eval" on a different dataset than
 # "curated".  E.g. -d large2180 will test on the 2180-question
 # noisier dataset.
+# 
+# You can specify system property with -D. At this time there is only one
+# system property supported: -Dcz.brmlab.yodaqa.use_bing=yes
 
 set -e
 
@@ -55,6 +58,10 @@ if [ "$1" = "-d" ]; then
 else
 	dataset=curated
 fi
+if [ "${1:0:2}" = "-D" ]; then
+	system_property=$1; shift
+fi
+
 
 cid=$(git rev-parse --short "${1:-HEAD}")
 baserepo=$(pwd)
@@ -98,9 +105,9 @@ else
 fi
 
 screen -m sh -c "
-	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 $basecid;
+	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-train\" 1 0 \"$basecid\" \"$system_property\";
 	if [ $wait_on_barriers = 0 ]; then rm _multistage-barrier*; else sleep 10; fi
-	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 $wait_on_barriers $basecid
+	$run_split \"$baserepo\"/data/eval/_multistage_traineval.sh \"$baserepo\" \"${dataset}-test\" 0 \"$wait_on_barriers\" \"$basecid\" \"$system_property\"
 "
 
 popd
@@ -109,7 +116,7 @@ data/eval/tsvout-stats.sh "$cid"
 echo
 echo "Now, you may want to do and commit:"
 for i in "" 1 2; do
-	echo "cp data/ml/models/logistic${i}-${cid}.model src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreLogistic${i}.model"
+	echo "cp data/ml/models/decision-forest${i}-${cid}.model src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreDecisionForest${i}.model"
 done
 echo
 echo "Run finished. Press Enter to rm -rf \"$clonedir\"; Ctrl-C to preserve it for whatever reason (data and logs are not kept there)."

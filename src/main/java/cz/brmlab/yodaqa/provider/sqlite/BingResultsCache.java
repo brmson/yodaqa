@@ -32,7 +32,7 @@ public class BingResultsCache {
 		ResultSet set;
 		try {
 			set = connector.select("answer", "QUERY = '" + StringEscapeUtils.escapeSql(query) + "' LIMIT " + hitListSize);
-			if (set.isClosed()) {
+			if (!set.isBeforeFirst()) {
 				logger.info("No entry for query: " + query + " in cache.");
 				return res;
 			}
