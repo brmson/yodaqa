@@ -39,8 +39,6 @@ import cz.brmlab.yodaqa.model.TyCor.QuantityCDLAT;
 import cz.brmlab.yodaqa.model.TyCor.QuantityLAT;
 import cz.brmlab.yodaqa.model.TyCor.WnInstanceLAT;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
 
 /**
  * A GoldStandard hook in the process of answer extraction.  We scan all the
@@ -385,7 +383,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		"originFBOClueNE",
 		"originFBOClueSubjectNE",
 		"originFBOClueSubjectPhrase",
-		"AF_PsgDistClueSubjectNE",
+		"psgDistClueSubjectNE",
 		"tyCorPassageSp",
 		"tyCorPassageDist",
 		"tyCorPassageInside",

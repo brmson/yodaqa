@@ -21,16 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDBpProperty;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseOntology;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginFreebaseSpecific;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginMultiple;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgFirst;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNE;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNP;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginPsgNPByLATSubj;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -120,16 +111,16 @@ public class AnswerTextMerger extends JCasAnnotator_ImplBase {
 			/* At this point we can generate some features
 			 * to be aggregated over all individual answer
 			 * instances. */
-			if (fv.getFeatureValue(AF_OriginPsgFirst.class)
-			    + fv.getFeatureValue(AF_OriginPsgNP.class)
-			    + fv.getFeatureValue(AF_OriginPsgNE.class)
-			    + fv.getFeatureValue(AF_OriginPsgNPByLATSubj.class)
-			    + fv.getFeatureValue(AF_OriginDocTitle.class)
-			    + fv.getFeatureValue(AF_OriginDBpOntology.class)
-			    + fv.getFeatureValue(AF_OriginDBpProperty.class)
-			    + fv.getFeatureValue(AF_OriginFreebaseOntology.class)
-			    + fv.getFeatureValue(AF_OriginFreebaseSpecific.class) > 1.0)
-				fv.setFeature(AF_OriginMultiple.class, 1.0);
+			if (fv.getFeatureValue(AF.OriginPsgFirst)
+			    + fv.getFeatureValue(AF.OriginPsgNP)
+			    + fv.getFeatureValue(AF.OriginPsgNE)
+			    + fv.getFeatureValue(AF.OriginPsgNPByLATSubj)
+			    + fv.getFeatureValue(AF.OriginDocTitle)
+			    + fv.getFeatureValue(AF.OriginDBpOntology)
+			    + fv.getFeatureValue(AF.OriginDBpProperty)
+			    + fv.getFeatureValue(AF.OriginFreebaseOntology)
+			    + fv.getFeatureValue(AF.OriginFreebaseSpecific) > 1.0)
+				fv.setFeature(AF.OriginMultiple, 1.0);
 
 			bestAnswer.setFeatures(fv.toFSArray(jcas));
 			if (!resources.isEmpty())

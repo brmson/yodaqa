@@ -11,7 +11,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_LATDBpWNType;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.DBpLAT;
 import cz.brmlab.yodaqa.model.TyCor.DBpWNLAT;
@@ -40,7 +40,7 @@ public class LATByDBpediaWN extends LATByDBpedia {
 		List<String> types = dbt.query(label, logger);
 
 		for (String type : types) {
-			addLATFeature(jcas, AF_LATDBpWNType.class);
+			addLATFeature(jcas, AF.LATDBpWNType);
 			String[] typeE = type.split("/");
 			addTypeLAT(jcas, new DBpWNLAT(jcas), focus, typeE[0], Long.parseLong(typeE[1]), typelist);
 

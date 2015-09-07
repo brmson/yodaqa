@@ -70,15 +70,15 @@
 	/*          originConceptByLAT @,%,! */  0.565474, -0.757149, -1.193555, /*          originConceptByLAT d01:  1.001879 */
 	/*           originConceptByNE @,%,! */ -0.342122,  0.139307, -0.285959, /*           originConceptByNE d01:  0.083144 */
 	/*              originMultiple @,%,! */ -0.466117,  0.222132, -0.161964, /*              originMultiple d01: -0.082021 */
-	/*         AF_PsgDistClueToken @,%,! */  0.378494, -0.164524, -0.206015, /*         AF_PsgDistClueToken d01:  0.419986 */
-	/*        AF_PsgDistCluePhrase @,%,! */  0.372108, -0.129246, -0.278372, /*        AF_PsgDistCluePhrase d01:  0.521234 */
-	/*            AF_PsgDistClueSV @,%,! */ -0.273245,  0.025403,  0.293171, /*            AF_PsgDistClueSV d01: -0.541013 */
-	/*            AF_PsgDistClueNE @,%,! */  0.018827,  0.050242,  0.159043, /*            AF_PsgDistClueNE d01: -0.089974 */
-	/*           AF_PsgDistClueLAT @,%,! */  0.569981, -0.034584,  0.608459, /*           AF_PsgDistClueLAT d01: -0.073062 */
-	/*       AF_PsgDistClueSubject @,%,! */  0.006744, -0.003724,  0.061102, /*       AF_PsgDistClueSubject d01: -0.058082 */
-	/*  AF_PsgDistClueSubjectToken @,%,! */  0.062180,  0.130188,  0.021490, /*  AF_PsgDistClueSubjectToken d01:  0.170879 */
-	/* AF_PsgDistClueSubjectPhrase @,%,! */ -0.660104,  0.179156, -0.396888, /* AF_PsgDistClueSubjectPhrase d01: -0.084060 */
-	/*       AF_PsgDistClueConcept @,%,! */  0.002013, -0.015572, -0.428389, /*       AF_PsgDistClueConcept d01:  0.414830 */
+	/*            psgDistClueToken @,%,! */  0.378494, -0.164524, -0.206015, /*            psgDistClueToken d01:  0.419986 */
+	/*           psgDistCluePhrase @,%,! */  0.372108, -0.129246, -0.278372, /*           psgDistCluePhrase d01:  0.521234 */
+	/*               psgDistClueSV @,%,! */ -0.273245,  0.025403,  0.293171, /*               psgDistClueSV d01: -0.541013 */
+	/*               psgDistClueNE @,%,! */  0.018827,  0.050242,  0.159043, /*               psgDistClueNE d01: -0.089974 */
+	/*              psgDistClueLAT @,%,! */  0.569981, -0.034584,  0.608459, /*              psgDistClueLAT d01: -0.073062 */
+	/*          psgDistClueSubject @,%,! */  0.006744, -0.003724,  0.061102, /*          psgDistClueSubject d01: -0.058082 */
+	/*     psgDistClueSubjectToken @,%,! */  0.062180,  0.130188,  0.021490, /*     psgDistClueSubjectToken d01:  0.170879 */
+	/*    psgDistClueSubjectPhrase @,%,! */ -0.660104,  0.179156, -0.396888, /*    psgDistClueSubjectPhrase d01: -0.084060 */
+	/*          psgDistClueConcept @,%,! */  0.002013, -0.015572, -0.428389, /*          psgDistClueConcept d01:  0.414830 */
 	/*                    bioScore @,%,! */  2.152593,  0.142377,  0.364703, /*                    bioScore d01:  1.930266 */
 	/*                     noTyCor @,%,! */  0.772262, -0.505191,  0.144181, /*                     noTyCor d01:  0.122890 */
 	/*                    LATANone @,%,! */  0.750510, -0.264804,  0.122429, /*                    LATANone d01:  0.363277 */

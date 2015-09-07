@@ -23,8 +23,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase0Score;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Phase1Score;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 
 /**
  * Record the answer confidence in the feature vector.
@@ -60,9 +59,9 @@ public class AnswerScoreToFV extends JCasAnnotator_ImplBase {
 
 			AnswerFV fv = new AnswerFV(a);
 			if (scoringPhase.equals(""))
-				fv.setFeature(AF_Phase0Score.class, a.getConfidence());
+				fv.setFeature(AF.Phase0Score, a.getConfidence());
 			else if (scoringPhase.equals("1"))
-				fv.setFeature(AF_Phase1Score.class, a.getConfidence());
+				fv.setFeature(AF.Phase1Score, a.getConfidence());
 
 			for (FeatureStructure af : a.getFeatures().toArray())
 				((AnswerFeature) af).removeFromIndexes();

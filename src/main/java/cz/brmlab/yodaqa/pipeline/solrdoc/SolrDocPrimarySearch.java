@@ -30,10 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_Occurences;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_OriginDocTitle;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultLogScore;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AF_ResultRR;
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -181,10 +178,10 @@ public class SolrDocPrimarySearch extends JCasMultiplier_ImplBase {
 		ri.addToIndexes();
 
 		AnswerFV fv = new AnswerFV();
-		fv.setFeature(AF_Occurences.class, 1.0);
-		fv.setFeature(AF_ResultRR.class, 1 / ((float) i));
-		fv.setFeature(AF_ResultLogScore.class, Math.log(1 + ri.getRelevance()));
-		fv.setFeature(AF_OriginDocTitle.class, 1.0);
+		fv.setFeature(AF.Occurences, 1.0);
+		fv.setFeature(AF.ResultRR, 1 / ((float) i));
+		fv.setFeature(AF.ResultLogScore, Math.log(1 + ri.getRelevance()));
+		fv.setFeature(AF.OriginDocTitle, 1.0);
 
 		AnswerResource ar = new AnswerResource(jcas);
 		ar.setIri("http://en.wikipedia.org/wiki/" + title.replace(" ", "_"));
