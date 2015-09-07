@@ -25,8 +25,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
  * This is pretty naive but should generate some useful answers. */
 
 @SofaCapability(
-	inputSofas = { "Question", "Result", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class CanByNPSurprise extends CandidateGenerator {
@@ -39,18 +39,17 @@ public class CanByNPSurprise extends CandidateGenerator {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, resultView, passagesView;
+		JCas questionView, passageView;
 		try {
 			questionView = jcas.getView("Question");
-			resultView = jcas.getView("Result");
-			passagesView = jcas.getView("PickedPassages");
+			passageView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
+		ResultInfo ri = JCasUtil.selectSingle(passageView, ResultInfo.class);
 
-		for (NP np : JCasUtil.select(passagesView, NP.class)) {
+		for (NP np : JCasUtil.select(passageView, NP.class)) {
 			String text = np.getCoveredText();
 
 			/* TODO: This can be optimized a lot. */
@@ -71,7 +70,7 @@ public class CanByNPSurprise extends CandidateGenerator {
 				fv.setFeature(AF.OriginPsgSurprise, 1.0);
 			}
 
-			addCandidateAnswer(passagesView, p, np, fv);
+			addCandidateAnswer(passageView, p, np, fv);
 		}
 	}
 }

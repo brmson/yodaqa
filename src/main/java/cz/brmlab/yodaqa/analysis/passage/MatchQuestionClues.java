@@ -26,8 +26,8 @@ import cz.brmlab.yodaqa.model.Question.Clue;
  * This can be a helpful answer feature. */
 
 @SofaCapability(
-	inputSofas = { "Question", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class MatchQuestionClues extends JCasAnnotator_ImplBase {
@@ -38,22 +38,22 @@ public class MatchQuestionClues extends JCasAnnotator_ImplBase {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, passagesView;
+		JCas questionView, passageView;
 		try {
 			questionView = jcas.getView("Question");
-			passagesView = jcas.getView("PickedPassages");
+			passageView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
 		/* XXX: Do not generate for about-clues? */
 
-		for (Passage p: JCasUtil.select(passagesView, Passage.class)) {
+		for (Passage p: JCasUtil.select(passageView, Passage.class)) {
 			for (Clue qclue : JCasUtil.select(questionView, Clue.class)) {
 				Matcher m = Pattern.compile(PassByClue.getClueRegex(qclue, false)).matcher(p.getCoveredText());
 				while (m.find()) {
 					/* We have a match! */
-					QuestionClueMatch qlc = new QuestionClueMatch(passagesView);
+					QuestionClueMatch qlc = new QuestionClueMatch(passageView);
 					qlc.setBegin(p.getBegin() + m.start());
 					qlc.setEnd(p.getBegin() + m.end());
 					qlc.setBaseClue(qclue);

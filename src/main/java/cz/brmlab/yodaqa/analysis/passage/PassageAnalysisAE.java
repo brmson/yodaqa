@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.analysis.passage;
 
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
 import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
+import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordSegmenter;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
@@ -18,13 +19,13 @@ import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createPrimitiveDescription;
 
 /**
- * Annotate the PickedPassages view of SearchResultCAS with
- * deep NLP analysis and CandidateAnswer annotations.
+ * Annotate the PassageCAS with deep NLP analysis and CandidateAnswer
+ * annotations.
  *
  * This is an aggregate AE that will run a variety of annotators on the
- * SearchResultCAS already trimmed down within the PickedPassages view,
- * first preparing it for answer generation and then actually producing
- * some CandiateAnswer annotations. */
+ * PassageCAS representing a particular passage picked from some search
+ * result, first preparing it for answer generation and then actually
+ * producing some CandiateAnswer annotations. */
 
 public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 	final static Logger logger = LoggerFactory.getLogger(PassageAnalysisAE.class);
@@ -46,19 +47,19 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 				StanfordParser.class,
 				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
 				StanfordParser.PARAM_WRITE_POS, true),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+			CAS.NAME_DEFAULT_SOFA, "Passage");
 
 		/* Lemma features: */
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
 					PipelineLogger.PARAM_LOG_MESSAGE, "Lemmatization"));
 		builder.add(createPrimitiveDescription(LanguageToolLemmatizer.class),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+			CAS.NAME_DEFAULT_SOFA, "Passage");
 
 		/* Named Entities: */
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
 					PipelineLogger.PARAM_LOG_MESSAGE, "Named Entities"));
 		builder.add(OpenNlpNamedEntities.createEngineDescription(),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+			CAS.NAME_DEFAULT_SOFA, "Passage");
 
 
 		builder.add(createPrimitiveDescription(PipelineLogger.class,
@@ -87,14 +88,14 @@ public class PassageAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Blacklist some answers that are just linguistic artifacts */
 		builder.add(createPrimitiveDescription(CanBlacklist.class),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+			CAS.NAME_DEFAULT_SOFA, "Passage");
 
 
 		/* Finishing touches: */
 
 		/* Merge CandidateAnswer annotations with the same text. */
 		builder.add(createPrimitiveDescription(CanMergeByText.class),
-			CAS.NAME_DEFAULT_SOFA, "PickedPassages");
+			CAS.NAME_DEFAULT_SOFA, "Passage");
 
 
 		/* Some debug dumps of the intermediate CAS. */

@@ -16,16 +16,14 @@ import cz.brmlab.yodaqa.model.SearchResult.AnswerBioMention;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-
 /**
  * Create CandidateAnswer based on AnswerMention pre-annotations.
  * We split this to a separate annotator and use the AnswerMention
  * intermediate annotations to ease integration with ClearTK. */
 
 @SofaCapability(
-	inputSofas = { "Question", "Result", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class CanByAnsBioMention extends CandidateGenerator {
@@ -39,15 +37,14 @@ public class CanByAnsBioMention extends CandidateGenerator {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas resultView, passagesView;
+		JCas passagesView;
 		try {
-			resultView = jcas.getView("Result");
-			passagesView = jcas.getView("PickedPassages");
+			passagesView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
+		ResultInfo ri = JCasUtil.selectSingle(passagesView, ResultInfo.class);
 
 		for (AnswerBioMention abm : JCasUtil.select(passagesView, AnswerBioMention.class))
 			processMention(passagesView, ri, abm);

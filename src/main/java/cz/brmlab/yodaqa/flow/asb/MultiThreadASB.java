@@ -504,7 +504,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     /**
      * Returns whether there are any more CASes to be returned.
      */
-    public boolean hasNext() throws AnalysisEngineProcessException {
+    public synchronized boolean hasNext() throws AnalysisEngineProcessException {
       timer.startIt();
       try {
         if (nextCas == null)
@@ -517,7 +517,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
     }
 
     /** Gets the next output CAS. */
-    public CAS next() throws AnalysisEngineProcessException {
+    public synchronized CAS next() throws AnalysisEngineProcessException {
       timer.startIt();
       try {
         CAS toReturn = nextCas;

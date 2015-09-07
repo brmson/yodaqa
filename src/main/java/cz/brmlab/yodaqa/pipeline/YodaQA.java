@@ -69,6 +69,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		System.setProperty("dkpro.core.resourceprovider.sharable." + OpenNlpNameFinder.class.getName(), "true");
 	}
 
+	public static int nIsLasts = 0;
+
 	public static AnalysisEngineDescription createEngineDescription() throws ResourceInitializationException {
 		/* Our multi-phase logic is that
 		 *
@@ -137,7 +139,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 7,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, nIsLasts,
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -281,25 +283,30 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		 * CandidateAnswerCASes. */
 
 		/* Since each of these CAS multipliers will eventually produce
-		 * a single CAS marked as "isLast", if you add another one
-		 * here, you must also bump the AnswerCASMerger parameter
-		 * PARAM_ISLAST_BARRIER. */
+		 * a single CAS marked as "isLast", we must count them to
+		 * propagate them to CAS mergers' PARAM_ISLAST_BARRIER. */
+		nIsLasts = 0;
 
 		/* Structured search: */
 		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
 		builder.add(dbpOnt);
+		nIsLasts += 1;
 		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
 		builder.add(dbpProp);
+		nIsLasts += 1;
 		AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
 		builder.add(fbOnt);
+		nIsLasts += 1;
 
 		/* Full-text search: */
 		/* XXX: These aggregates have "Solr" in name but do not
 		 * necessarily use just Solr, e.g. Bing. */
 		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
-		builder.add(solrFull); /* This one is worth 3 isLasts. */
+		builder.add(solrFull);
+		nIsLasts += SolrFullAnswerProducer.nIsLasts; /* This one is worth multiple isLasts. */
 		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
 		builder.add(solrDoc);
+		nIsLasts += 1;
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(

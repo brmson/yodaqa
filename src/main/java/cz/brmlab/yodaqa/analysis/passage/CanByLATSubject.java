@@ -40,8 +40,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJPASS;
  * subduing those. */
 
 @SofaCapability(
-	inputSofas = { "Question", "Result", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class CanByLATSubject extends CandidateGenerator {
@@ -55,24 +55,23 @@ public class CanByLATSubject extends CandidateGenerator {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, resultView, passagesView;
+		JCas questionView, passageView;
 		try {
 			questionView = jcas.getView("Question");
-			resultView = jcas.getView("Result");
-			passagesView = jcas.getView("PickedPassages");
+			passageView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
+		ResultInfo ri = JCasUtil.selectSingle(passageView, ResultInfo.class);
 
-		for (NSUBJ nsubj : JCasUtil.select(passagesView, NSUBJ.class))
-			processSubject(questionView, passagesView, ri, nsubj);
-		for (NSUBJPASS nsubj : JCasUtil.select(passagesView, NSUBJPASS.class))
-			processSubject(questionView, passagesView, ri, nsubj);
+		for (NSUBJ nsubj : JCasUtil.select(passageView, NSUBJ.class))
+			processSubject(questionView, passageView, ri, nsubj);
+		for (NSUBJPASS nsubj : JCasUtil.select(passageView, NSUBJPASS.class))
+			processSubject(questionView, passageView, ri, nsubj);
 	}
 
-	protected void processSubject(JCas questionView, JCas passagesView, ResultInfo ri, Dependency nsubj)
+	protected void processSubject(JCas questionView, JCas passageView, ResultInfo ri, Dependency nsubj)
 			throws AnalysisEngineProcessException {
 		Passage p = JCasUtil.selectCovering(Passage.class, nsubj).get(0);
 		String subjlemma = nsubj.getDependent().getLemma().getValue().toLowerCase();
@@ -104,7 +103,7 @@ public class CanByLATSubject extends CandidateGenerator {
 				/* This is both origin and tycor feature, essentially. */
 				fv.setFeature(AF.OriginPsgNPByLATSubj, 1.0);
 
-				addCandidateAnswer(passagesView, p, base, fv);
+				addCandidateAnswer(passageView, p, base, fv);
 			}
 		}
 	}

@@ -25,8 +25,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
  * This is pretty naive but should generate some useful answers. */
 
 @SofaCapability(
-	inputSofas = { "Question", "Result", "PickedPassages" },
-	outputSofas = { "PickedPassages" }
+	inputSofas = { "Question", "Passage" },
+	outputSofas = { "Passage" }
 )
 
 public class CanByNESurprise extends CandidateGenerator {
@@ -39,18 +39,17 @@ public class CanByNESurprise extends CandidateGenerator {
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		JCas questionView, resultView, passagesView;
+		JCas questionView, passageView;
 		try {
 			questionView = jcas.getView("Question");
-			resultView = jcas.getView("Result");
-			passagesView = jcas.getView("PickedPassages");
+			passageView = jcas.getView("Passage");
 		} catch (CASException e) {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		ResultInfo ri = JCasUtil.selectSingle(resultView, ResultInfo.class);
+		ResultInfo ri = JCasUtil.selectSingle(passageView, ResultInfo.class);
 
-		for (Passage p: JCasUtil.select(passagesView, Passage.class)) {
+		for (Passage p: JCasUtil.select(passageView, Passage.class)) {
 			for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, p)) {
 				String text = ne.getCoveredText();
 
@@ -71,7 +70,7 @@ public class CanByNESurprise extends CandidateGenerator {
 					fv.setFeature(AF.OriginPsgSurprise, 1.0);
 				}
 
-				addCandidateAnswer(passagesView, p, ne, fv);
+				addCandidateAnswer(passageView, p, ne, fv);
 			}
 		}
 	}
