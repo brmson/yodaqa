@@ -17,8 +17,10 @@
 package cz.brmlab.yodaqa.provider.solr;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
@@ -36,6 +38,7 @@ public class Solr implements Closeable {
 	final Logger logger = LoggerFactory.getLogger(Solr.class);
 
 	protected final SolrServer server;
+	protected String url;
 
 	boolean embedded;
 
@@ -47,6 +50,7 @@ public class Solr implements Closeable {
 		if (embedded != null && embedded.booleanValue()) {
 			this.server = createEmbeddedSolrServer(core);
 			this.embedded = true;
+			this.url = "";
 		} else {
 			logger.info("Running Solr retrieval on remote mode");
 			this.server = createSolrServer(serverUrl);
@@ -56,6 +60,7 @@ public class Solr implements Closeable {
 	private SolrServer createSolrServer(String url) throws Exception {
 		SolrServer server = new HttpSolrServer(url);
 		// server.ping();
+		this.url = url;
 		return server;
 	}
 
@@ -72,13 +77,35 @@ public class Solr implements Closeable {
 		query.setQuery(escapeQuery(q));
 		query.setRows(results);
 		query.setFields("*", "score");
-		QueryResponse rsp = server.query(query, METHOD.POST);
+		QueryResponse rsp;
+		while (true) {
+			try {
+				rsp = server.query(query, METHOD.POST);
+				break; // Success!
+			} catch (SolrServerException e) {
+				if (e.getRootCause() instanceof IOException)
+					notifyRetry(e);
+				else
+					throw e;
+			}
+		}
 		return rsp.getResults();
 	}
 
 	public SolrDocumentList runQuery(SolrQuery query, int results)
 			throws SolrServerException {
-		QueryResponse rsp = server.query(query);
+		QueryResponse rsp;
+		while (true) {
+			try {
+				rsp = server.query(query);
+				break; // Success!
+			} catch (SolrServerException e) {
+				if (e.getRootCause() instanceof IOException)
+					notifyRetry(e);
+				else
+					throw e;
+			}
+		}
 		return rsp.getResults();
 	}
 
@@ -87,7 +114,18 @@ public class Solr implements Closeable {
 		SolrQuery query = new SolrQuery();
 		query.setQuery(q);
 		query.setFields("text");
-		QueryResponse rsp = server.query(query);
+		QueryResponse rsp;
+		while (true) {
+			try {
+				rsp = server.query(query);
+				break; // Success!
+			} catch (SolrServerException e) {
+				if (e.getRootCause() instanceof IOException)
+					notifyRetry(e);
+				else
+					throw e;
+			}
+		}
 
 		String docText = "";
 		if (rsp.getResults().getNumFound() > 0) {
@@ -191,5 +229,16 @@ public class Solr implements Closeable {
 		String query = result.toString();
 		cLogger.info(" QUERY: " + query);
 		return query;
+	}
+
+
+	protected void notifyRetry(Exception e) {
+		e.printStackTrace();
+		System.err.println("*** " + url + " Solr Query (temporarily?) failed, retrying in a moment...");
+		try {
+			TimeUnit.SECONDS.sleep(10);
+		} catch (InterruptedException e2) { // oof...
+			e2.printStackTrace();
+		}
 	}
 }
