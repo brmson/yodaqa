@@ -1,8 +1,7 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
-import cz.brmlab.yodaqa.provider.GloveDictionary;
 import org.jblas.DoubleMatrix;
-
+import eu.ailao.glove.GloveDictionary;
 import java.util.List;
 
 /**

@@ -45,7 +45,7 @@ public class PassFilter extends JCasMultiplier_ImplBase {
 	 * Keep in sync with the data/ml/passextract-train.py num_picked
 	 * variable. */
 	public static final String PARAM_NUM_PICKED = "num-picked";
-	@ConfigurationParameter(name = PARAM_NUM_PICKED, mandatory = false, defaultValue = "36")
+	@ConfigurationParameter(name = PARAM_NUM_PICKED, mandatory = false, defaultValue = "18")
 	private int numPicked;
 
 	/** Number of CASes marked as isLast required to encounter before

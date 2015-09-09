@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
 import org.apache.uima.UimaContext;
@@ -62,14 +63,6 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		if (sentence == null)
 			return;
 
-		int numClues = JCasUtil.select(questionView, Clue.class).size();
-
-//		for(Clue c:JCasUtil.select(questionView, Clue.class)){
-//			System.out.println("CLUE WEIGTH:"+c.getWeight());
-//		}
-//		System.exit(0);
-
-		double weight = numClues; // proportional to #clues since so is PassByClue
 
 		/* Generate features. */
 		AnswerFV afv = new AnswerFV();
@@ -86,15 +79,18 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		 * weights, and that we assume that 2 out of 6 selected
 		 * documents on average bear answer in the first passage. */
 
-		double w=0;
-
-		for(Clue c:JCasUtil.select(questionView, Clue.class)){
-			w+=c.getWeight();
-		}
+//		PassageFV fv = new PassageFV(passage);
+//
+//		int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
 		List<String> q=new ArrayList<>(Arrays.asList(questionView.getDocumentText().toLowerCase().split("\\W+")));
 		List<String> ans=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
+//
+		double score=Relatedness.getInstance().probability(q,ans);
+//
+//
+//		score = 3.32822695*score+0.40156513*fv.getValues()[clueWeight_i]-3.96791205;
 
-		passage.setScore(Relatedness.getInstance().probability(q,ans));
+		passage.setScore(score);
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
 
