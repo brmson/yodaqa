@@ -1,9 +1,7 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
-import org.jblas.DoubleMatrix;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,13 +16,11 @@ import java.util.Set;
  */
 public class Probability {
 	private static Probability p = new Probability();
-	private WWeights w;
 	private Relatedness r;
 	private Map<String,Double> idf;
 	private int N;
 
 	private Probability(){
-		this.w=WWeights.getInstance();
 		this.r=Relatedness.getInstance();
 	}
 

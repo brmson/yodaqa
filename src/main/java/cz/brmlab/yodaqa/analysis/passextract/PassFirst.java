@@ -1,6 +1,8 @@
 package cz.brmlab.yodaqa.analysis.passextract;
 
-import java.lang.Math;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 
@@ -89,7 +91,10 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		for(Clue c:JCasUtil.select(questionView, Clue.class)){
 			w+=c.getWeight();
 		}
-		passage.setScore(1.0 / (1.0 + Math.exp(-(3.3*2/6.0 + 0.4*w - 4.0))));
+		List<String> q=new ArrayList<>(Arrays.asList(questionView.getDocumentText().toLowerCase().split("\\W+")));
+		List<String> ans=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
+
+		passage.setScore(Relatedness.getInstance().probability(q,ans));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
 

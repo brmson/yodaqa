@@ -6,9 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.brmlab.yodaqa.model.Question.Clue;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -20,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.model.SearchResult.PF_ClueWeight;
-import cz.brmlab.yodaqa.model.SearchResult.PF_AboutClueWeight;
 import cz.brmlab.yodaqa.model.SearchResult.Passage;
 
 /**
