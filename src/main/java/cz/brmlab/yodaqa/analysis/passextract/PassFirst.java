@@ -76,21 +76,14 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		// Mimick WordEmbeddings sigmoid scoring procedure and coefficients.
 		/* XXX: These constants are kind of arbitrarily selected
 		 * to reflect that our weight is just #clues, not sum of their
-		 * weights, and that we assume that 2 out of 6 selected
+		 * weights, and that we assume that 2 out of 10 selected
 		 * documents on average bear answer in the first passage. */
+		double w=0;
 
-//		PassageFV fv = new PassageFV(passage);
-//
-//		int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
-		List<String> q=new ArrayList<>(Arrays.asList(questionView.getDocumentText().toLowerCase().split("\\W+")));
-		List<String> ans=new ArrayList<>(Arrays.asList(passage.getCoveredText().toLowerCase().split("\\W+")));
-//
-		double score=Relatedness.getInstance().probability(q,ans);
-//
-//
-//		score = 3.32822695*score+0.40156513*fv.getValues()[clueWeight_i]-3.96791205;
-
-		passage.setScore(score);
+		for(Clue c:JCasUtil.select(questionView, Clue.class)){
+			w+=c.getWeight();
+		}
+		passage.setScore(1.0 / (1.0 + Math.exp(-(3.3*2/10.0 + 0.4*w - 4.0))));
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
 
