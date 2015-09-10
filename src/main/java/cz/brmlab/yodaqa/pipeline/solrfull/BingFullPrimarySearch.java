@@ -165,7 +165,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			final URL url = new URL(bingUrl);
 			final URLConnection connection = url.openConnection();
 			connection.setRequestProperty("Authorization", "Basic " + accountKeyEnc);
-
+			connection.setConnectTimeout(60000);
 			GsonBuilder builder = new GsonBuilder();
 			Map<String, Map> json = builder.create()
 					.fromJson(new InputStreamReader(connection.getInputStream()), Map.class);
