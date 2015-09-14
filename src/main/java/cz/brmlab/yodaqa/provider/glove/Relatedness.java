@@ -1,7 +1,7 @@
 package cz.brmlab.yodaqa.provider.glove;
 
 import org.jblas.DoubleMatrix;
-
+import eu.ailao.glove.GloveDictionary;
 import java.util.List;
 
 /**
