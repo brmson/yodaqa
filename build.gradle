@@ -44,7 +44,7 @@ task(tsvgs, dependsOn: 'classes', type: JavaExec) {
   else
     args = ['data/eval/curated-test.tsv', 'curated-test.tsv']
   minHeapSize = "2048m"
-  maxHeapSize = "3100m"
+  maxHeapSize = "8000m"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
@@ -97,7 +97,7 @@ task(biocrftrain, dependsOn: 'classes', type: JavaExec) {
   else
     args = ['data/ml/biocrf']
   minHeapSize = "2048m"
-  maxHeapSize = "3100m"
+  maxHeapSize = "8000m"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
@@ -111,6 +111,7 @@ repositories {
 }
 
 dependencies {
+  compile 'eu.ailao:gloveDict:1.0-stanford'
   compile 'org.apache.uima:uimaj-core:2.6.0'
   compile 'org.apache.uima:uimafit-core:2.1.0'
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core-asl:$dkproVersion"
