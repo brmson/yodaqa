@@ -30,6 +30,7 @@ dataset="$2"
 retrain="$3"
 wait_for_train="$4"
 basecommit="$5"
+system_property="$6"
 args0=
 argsF=
 
@@ -39,9 +40,9 @@ outfile2="$basedir/data/eval/tsv/${dataset}-ovt-${cid}.tsv"
 atrainfile0="$basedir/data/ml/tsv/${dataset}-answer-${cid}.tsv"
 atrainfile1="$basedir/data/ml/tsv/${dataset}-answer1-${cid}.tsv"
 atrainfile2="$basedir/data/ml/tsv/${dataset}-answer2-${cid}.tsv"
-modelfile0="$basedir/data/ml/models/logistic-${cid}.model"
-modelfile1="$basedir/data/ml/models/logistic1-${cid}.model"
-modelfile2="$basedir/data/ml/models/logistic2-${cid}.model"
+modelfile0="$basedir/data/ml/models/decision-forest-${cid}.model"
+modelfile1="$basedir/data/ml/models/decision-forest1-${cid}.model"
+modelfile2="$basedir/data/ml/models/decision-forest2-${cid}.model"
 xmidir="$basedir/data/eval/answer-xmi/${cid}-$dataset"
 barrierfile=_multistage-barrier
 mkdir -p $basedir/data/eval/tsv
@@ -72,8 +73,8 @@ train_and_sync() {
 	## Train the model
 	if [ "$retrain" = "1" ]; then
 		echo "Training ${i}..."
-		data/ml/answer-train-logistic.py <"$atrainfile" | tee "$modelfile"
-		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreLogistic${i}.model
+		data/ml/answer-train-gradboost.py <"$atrainfile" | tee "$modelfile"
+		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreDecisionForest${i}.model
 		echo "Rebuilding with new model..."
 		./gradlew check
 		touch "$barrierfile$i" # testing is go, too!
@@ -101,6 +102,7 @@ if [ -z "$basecommit" ]; then
 		-PexecArgs="$basedir/data/eval/${dataset}.tsv $outfile0" \
 		-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 		-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
+		$system_property \
 		$args0
 	base_xmidir="$xmidir"
 	base_atrainfile0="$atrainfile0"
@@ -120,6 +122,7 @@ time ./gradlew tsvgs \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$base_xmidir" \
 	-Dcz.brmlab.yodaqa.save_answerfvs="$xmidir" \
+	$system_property \
 	$args0
 
 
@@ -128,6 +131,7 @@ time ./gradlew tsvgs \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answerfvs="$xmidir" \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
+	$system_property \
 	$args1
 
 train_and_sync "1" "$atrainfile1" "$modelfile1"
@@ -138,6 +142,7 @@ time ./gradlew tsvgs \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer1fvs="$xmidir"1 \
+	$system_property \
 	$args1
 
 
@@ -146,6 +151,7 @@ time ./gradlew tsvgs \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer1fvs="$xmidir"1 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
+	$system_property \
 	$args2
 
 train_and_sync "2" "$atrainfile2" "$modelfile2"
@@ -156,6 +162,7 @@ time ./gradlew tsvgs \
 	-Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug \
 	-Dcz.brmlab.yodaqa.load_answer2fvs="$xmidir"2 \
 	-Dcz.brmlab.yodaqa.save_answer2fvs="$xmidir"2 \
+	$system_property \
 	$args2
 
 

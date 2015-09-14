@@ -21,11 +21,13 @@ OpenQA project and the Taming Text book.
 
 The current version is a work-in-progress snapshot that already can answer
 some questions, even though it's embarrassingly often wrong; on the testing
-corpus, while about 79.3% of questions have the correct answer *suggested*
-in the process, it can currently choose the correct answer for about 32.6%
-of questions (but 47.6% of questions have the correct answer in top three
-and 52.7% in top five candidates).  More details on YodaQA plus links to
-some papers are available at:
+corpus, it can currently choose the correct answer for about 33%
+of questions (but 46% of questions have the correct answer in top three).
+Detailed performance info is available at:
+
+	https://github.com/brmson/yodaqa/wiki/Benchmarks
+
+More details on YodaQA plus links to some papers are available at:
 
 	http://ailao.eu/yodaqa/
 
@@ -34,6 +36,8 @@ and you can play with a live demo at
 	http://live.ailao.eu/
 
 (this demo corresponds to the ``d/live`` branch of this git repo).
+Also check out our movies QA demo at the ``d/movies`` branch and
+http://moveis.ailao.eu/ !
 
 ## Installation Instructions
 

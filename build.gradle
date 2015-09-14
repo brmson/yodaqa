@@ -25,7 +25,7 @@ run {
   if (project.hasProperty('execArgs'))
     args(execArgs.split(' '))
   minHeapSize = "2048m"
-  maxHeapSize = "4500m"
+  maxHeapSize = "3100m"
   systemProperties = System.getProperties()
 }
 
@@ -44,7 +44,7 @@ task(tsvgs, dependsOn: 'classes', type: JavaExec) {
   else
     args = ['data/eval/curated-test.tsv', 'curated-test.tsv']
   minHeapSize = "2048m"
-  maxHeapSize = "4500m"
+  maxHeapSize = "8000m"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
@@ -68,7 +68,7 @@ task(questionDump, dependsOn: 'classes', type: JavaExec) {
   else
     args = ['data/eval/curated-test.tsv', 'QuestionDump.json']
   minHeapSize = "2048m"
-  maxHeapSize = "4500m"
+  maxHeapSize = "3100m"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
@@ -77,7 +77,7 @@ task(machine, dependsOn: 'classes', type: JavaExec) {
   standardInput = System.in
   main = 'cz.brmlab.yodaqa.YodaQA_Machine'
   minHeapSize = "2048m"
-  maxHeapSize = "4500m"
+  maxHeapSize = "3100m"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
@@ -85,7 +85,7 @@ task(machine, dependsOn: 'classes', type: JavaExec) {
 task(web, dependsOn: 'classes', type: JavaExec) {
   main = 'cz.brmlab.yodaqa.YodaQA_Web'
   minHeapSize = "2048m"
-  maxHeapSize = "4500m"
+  maxHeapSize = "3100m"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }
@@ -97,7 +97,7 @@ task(biocrftrain, dependsOn: 'classes', type: JavaExec) {
   else
     args = ['data/ml/biocrf']
   minHeapSize = "2048m"
-  maxHeapSize = "4500m"
+  maxHeapSize = "8000m"
   classpath = sourceSets.main.runtimeClasspath
   systemProperties = System.getProperties()
 }

@@ -94,6 +94,7 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 		if (clue instanceof ClueSubject) {
 			afv.setFeature(AF.PsgDist_ClueType + "ClueSubject", value);
 		} else if (clue instanceof ClueConcept) {
+			double bestRr = 0, bestScore = 0;
 			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
 				if (concept.getBySubject())
 					afv.setFeature(AF.PsgDist_ClueType + "ClueSubject", value);
@@ -101,7 +102,13 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 					afv.setFeature(AF.PsgDist_ClueType + "ClueLAT", value);
 				if (concept.getByNE())
 					afv.setFeature(AF.PsgDist_ClueType + "ClueNE", value);
+				if (concept.getRr() > bestRr)
+					bestRr = concept.getRr();
+				if (concept.getScore() > bestScore)
+					bestScore = concept.getScore();
 			}
+			afv.setFeature(AF.PsgDist_ClueType + AF._clueType_ConceptRR, bestRr);
+			afv.setFeature(AF.PsgDist_ClueType + AF._clueType_ConceptScore, bestScore);
 		}
 	}
 }
