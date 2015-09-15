@@ -114,3 +114,12 @@ The tool `data/ml/answer-comparefv.py` can be used for comparing effect
 of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
 used for feature occurence statistics.  These analysis tools are further
 explained in data/eval/README.md.
+
+Property (sentence) selection
+-----------------------------
+
+One of the answer features currently used uses word embeddings to count probability of
+property (sentence) containing correct answer.  
+Word embeding dictionary is downloaded from our maven repository, while the weights used are located in
+src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbprop.txt
+* For more information check the readme file of https://github.com/brmson/Sentence-selection
