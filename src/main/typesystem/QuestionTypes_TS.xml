@@ -9,6 +9,18 @@
     </imports>
     <types>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.QuestionClass</name>
+        <description>Information about question class</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>questionClass</name>
+            <description>Class of question; "ABBR", "DESC", "ENTY", "HUM", "LOC", "NUM"</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.QuestionInfo</name>
         <description>Meta-information on the asked question</description>
         <supertypeName>uima.cas.TOP</supertypeName>
@@ -236,6 +248,16 @@
             <name>byNE</name>
             <description>Whether this concept has subdued a ClueNE.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>score</name>
+            <description>The score of the concept, expressing its prominence or relevance to question.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>rr</name>
+            <description>The reciprocial rank in the per-clue list of concepts sorted by score.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
         </features>
       </typeDescription>
