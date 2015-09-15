@@ -44,6 +44,9 @@ import org.apache.commons.codec.binary.Base64;
  * Details about the Bing search, an API key you need to get in order
  * for this to get used, etc., are in data/bing/README.md.
  *
+ * Bing search is disabled by default. You need to set system property
+ * cz.brmlab.yodaqa.use_bing=yes to enabled it.
+ *
  * XXX: The containing package shouldn't be called "solrfull" as this
  * search has nothing to do with Solr. */
 
@@ -94,16 +97,20 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		super.initialize(aContext);
 
 		skip = false;
-
-		cache = new BingResultsCache();
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileInputStream("conf/bingapi.properties"));
-			apikey = (String)prop.get("apikey");
-			if (apikey == null) throw new NullPointerException("Api key is null");
-		} catch (IOException | NullPointerException e) {
-			logger.info("No api key for bing api! " + e.getMessage());
-			skip = true;
+		String useBing = System.getProperty("cz.brmlab.yodaqa.use_bing");
+		if (useBing != null && useBing.equals("yes")) {
+			cache = new BingResultsCache();
+			Properties prop = new Properties();
+			try {
+				prop.load(new FileInputStream("conf/bingapi.properties"));
+				apikey = (String) prop.get("apikey");
+				if (apikey == null) throw new NullPointerException("Api key is null");
+			} catch (IOException | NullPointerException e) {
+				logger.info("No api key for bing api! " + e.getMessage());
+				skip = true;
+			}
+		} else {
+			logger.info("Bing search is disabled!");
 		}
 	}
 
@@ -120,12 +127,16 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 		i = 0;
 		/* Run a search for text clues. */
 
-		try {
-			Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
-			results = bingSearch(clues, hitListSize);
-		} catch (Exception e) {
-			throw new AnalysisEngineProcessException(e);
+		String useBing = System.getProperty("cz.brmlab.yodaqa.use_bing");
+		if (useBing != null && useBing.equals("yes")) {
+			try {
+				Collection<Clue> clues = JCasUtil.select(questionView, Clue.class);
+				results = bingSearch(clues, hitListSize);
+			} catch (Exception e) {
+				throw new AnalysisEngineProcessException(e);
+			}
 		}
+
 	}
 
 	private List<BingResult> bingSearch(Collection<Clue> clues, int hitListSize) {
