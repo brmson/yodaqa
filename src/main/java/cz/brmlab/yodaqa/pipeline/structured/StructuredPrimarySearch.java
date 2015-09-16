@@ -305,6 +305,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	 * the originating clue type.
 	 */
 	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
+		double bestRr = 0, bestScore = 0;
 		afv.setFeature(clueFeaturePrefix + clue.getType().getShortName(), 1.0);
 		if (clue instanceof ClueSubject) {
 			afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
