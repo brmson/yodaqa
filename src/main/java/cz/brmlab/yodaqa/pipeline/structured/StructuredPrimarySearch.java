@@ -305,11 +305,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	 * the originating clue type.
 	 */
 	protected void clueAnswerFeatures(AnswerFV afv, Clue clue) {
-		double bestRr = 0, bestScore = 0;
 		afv.setFeature(clueFeaturePrefix + clue.getType().getShortName(), 1.0);
 		if (clue instanceof ClueSubject) {
 			afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
 		} else if (clue instanceof ClueConcept) {
+			double bestRr = 0, bestScore = 0;
 			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
 				if (concept.getBySubject())
 					afv.setFeature(clueFeaturePrefix + "ClueSubject", 1.0);
