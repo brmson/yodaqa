@@ -34,7 +34,7 @@ public class Relatedness {
 	}
 
 	/**
-	 * Returns glove vectors from input sentence, dictionary. Uses box-of-words approach.
+	 * Returns glove vectors from input sentence, dictionary. Uses box-of-words(mean of all words) approach.
 	 */
 	private DoubleMatrix gloveBOW(List<String> words, GloveDictionary dict) {
 		DoubleMatrix bow = DoubleMatrix.zeros(50, 1);
@@ -52,7 +52,9 @@ public class Relatedness {
 	}
 
 	/**
-	 * qTMa+b.
+	 * inputs: word embedding vectors q(represents question),a(represents answer),
+	 * weight matrix M, intercept b
+	 * ouput=q^T*M*a+b
 	 */
 	private double z(DoubleMatrix q, DoubleMatrix M, DoubleMatrix a, double b) {
 		return q.transpose().mmul(M).mmul(a).get(0) + b;

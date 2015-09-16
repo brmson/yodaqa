@@ -26,6 +26,10 @@ public class MbWeights {
 		try {
 			for (int j = 0; j < 50; j++) {
 				line = br.readLine();
+				if(line.startsWith("\\\\")) {
+					j--;
+					continue;
+				}
 				String[] numbers = line.split(" ");
 				for (int i = 0; i < 50; i++) {
 					M.put(j, i, Double.parseDouble(numbers[i]));
