@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Usage: data/eval/train-and-eval.sh [-s N] [-m MAXHEAPSIZE] [-d DATASET] [-DPROPERY] [COMMIT [BASECOMMIT]]
 #
