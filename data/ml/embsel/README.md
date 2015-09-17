@@ -24,7 +24,8 @@ weights used are located in:
 
 To re-train the property selection model, first run:
 
-	./gradlew tsvgs -PexecArgs="data/eval/curated-train.tsv curated-train.tsv" -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug -Dcz.brmlab.yodaqa.dump_property_labels=data/ml/embsel 2>&1 | tee train_embsel.log
+	rm data/ml/embsel/propdata/*.txt
+	./gradlew tsvgs -PexecArgs="data/eval/curated-train.tsv curated-train.tsv" -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug -Dcz.brmlab.yodaqa.dump_property_labels=data/ml/embsel/propdata 2>&1 | tee train_embsel.log
 
 Then, take the data from data/ml/embsel and to re-train the weights,
 use the toolset in:
