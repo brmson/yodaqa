@@ -86,6 +86,13 @@ questions stored in JSON files:
 
 	data/eval/rest-eval.py ../dataset-factoid-webquestions/main/devtest.json http://localhost:4567/
 
+Using Bing
+----------
+
+If you want to run data/eval/train-and-eval.py with Bing search you need to pass the parameter:
+
+	data/eval/train-and-eval.sh -Dcz.brmlab.yodaqa.use_bing=yes
+
 Legacy Benchmarking
 -------------------
 

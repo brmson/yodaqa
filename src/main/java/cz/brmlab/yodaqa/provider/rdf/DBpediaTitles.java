@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.Gson;
@@ -25,6 +26,8 @@ import org.slf4j.Logger;
  * and disambiguation pages. */
 
 public class DBpediaTitles extends DBpediaLookup {
+	protected static final String labelLookupUrl = "http://dbp-labels.ailao.eu:5000";
+
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
 	public class Article {
@@ -67,8 +70,23 @@ public class DBpediaTitles extends DBpediaLookup {
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
+			List<Article> entities;
+			while (true) {
+				try {
+					entities = queryLabelLookup(titleForm, logger);
+					break; // Success!
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.err.println("*** " + labelLookupUrl + " label-lookup query (temporarily?) failed, retrying in a moment...");
+					try {
+						TimeUnit.SECONDS.sleep(10);
+					} catch (InterruptedException e2) { // oof...
+						e2.printStackTrace();
+					}
+				}
+			}
 			List<Article> results = new ArrayList<>();
-			for (Article a : queryLabelLookup(titleForm, logger)) {
+			for (Article a : entities) {
 				results.addAll(queryArticle(a, logger));
 			}
 			if (!results.isEmpty())
@@ -166,42 +184,36 @@ public class DBpediaTitles extends DBpediaLookup {
 	 *
 	 * XXX: This method should probably be in a different
 	 * provider subpackage altogether... */
-	public List<Article> queryLabelLookup(String label, Logger logger) {
+	public List<Article> queryLabelLookup(String label, Logger logger) throws IOException {
 		List<Article> results = new LinkedList<>();
 
-		try {
-			String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
-			String requestURL = "http://dbp-labels.ailao.eu:5000/search/" + encodedName + "?ver=1";
-			URL request = new URL(requestURL);
-			URLConnection connection = request.openConnection();
-			Gson gson = new Gson();
-			JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
-			jr.beginObject();
-				jr.nextName(); //results :
-				jr.beginArray();
-				while (jr.hasNext()) {
-					Article o = gson.fromJson(jr, Article.class);
-					// Record all exact-matching entities,
-					// or the single nearest fuzzy-matched
-					// one.
-					if (o.getDist() == 0) {
-						// Sometimes, we get duplicates
-						// like "U.S. Navy" and "U.S. navy".
-						if (results.isEmpty() || !results.get(results.size() - 1).getName().equals(o.getName()))
-							results.add(o);
-					} else if (results.isEmpty()) {
+		String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
+		String requestURL = labelLookupUrl + "/search/" + encodedName + "?ver=1";
+		URL request = new URL(requestURL);
+		URLConnection connection = request.openConnection();
+		Gson gson = new Gson();
+		JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
+		jr.beginObject();
+			jr.nextName(); //results :
+			jr.beginArray();
+			while (jr.hasNext()) {
+				Article o = gson.fromJson(jr, Article.class);
+				// Record all exact-matching entities,
+				// or the single nearest fuzzy-matched
+				// one.
+				if (o.getDist() == 0) {
+					// Sometimes, we get duplicates
+					// like "U.S. Navy" and "U.S. navy".
+					if (results.isEmpty() || !results.get(results.size() - 1).getName().equals(o.getName()))
 						results.add(o);
-					}
-					logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+				} else if (results.isEmpty()) {
+					results.add(o);
 				}
-				jr.endArray();
-			jr.endObject();
+				logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+			}
+			jr.endArray();
+		jr.endObject();
 
-		} catch (IOException e) {
-			// FIXME: Retry mechanism.
-			e.printStackTrace();
-			return results;
-		}
 		return results;
 	}
 }
