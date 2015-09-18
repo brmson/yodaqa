@@ -11,6 +11,7 @@ import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
 
+import cz.brmlab.yodaqa.model.Question.Concept;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
@@ -115,14 +116,14 @@ public class FreebaseOntology extends FreebaseLookup {
 	/** Query for a given title, returning a set of PropertyValue instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> query(String title, List<PathScore> paths, Logger logger) {
+	public List<PropertyValue> query(String title, List<PathScore> paths, List<Concept> concepts, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			Set<String> topics = queryTopicByTitleForm(titleForm, logger);
 			List<PropertyValue> results = new ArrayList<PropertyValue>();
 			for (String mid : topics) {
 				results.addAll(queryTopicGeneric(titleForm, mid, logger));
 				if (!paths.isEmpty())
-					results.addAll(queryTopicSpecific(titleForm, mid, paths, logger));
+					results.addAll(queryTopicSpecific(titleForm, mid, paths, concepts, logger));
 			}
 			if (!results.isEmpty())
 				return results;
@@ -144,13 +145,13 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, Logger logger) {
+	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, List<Concept> concepts, Logger logger) {
 		Set<TitledMid> topics = queryTopicByPageID(pageID, logger);
 		List<PropertyValue> results = new ArrayList<PropertyValue>();
 		for (TitledMid topic : topics) {
 			results.addAll(queryTopicGeneric(topic.title, topic.mid, logger));
 			if (!paths.isEmpty())
-				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, logger));
+				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, concepts, logger));
 		}
 		return results;
 	}
@@ -315,7 +316,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * that cover the specified property paths.  This generalizes poorly
 	 * to lightly covered topics, but has high precision+recall for some
 	 * common topics where it can reach through the meta-nodes. */
-	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, Logger logger) {
+	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, List<Concept> concepts, Logger logger) {
 		/* Test query:
 		   PREFIX ns: <http://rdf.freebase.com/ns/>
 		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -343,7 +344,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		List<String> pathQueries = new ArrayList<>();
 		for (PathScore ps : paths) {
 			PropertyPath path = ps.path;
-			assert(path.size() <= 2);  // longer paths don't occur in our dataset
+			assert(path.size() <= 3);  // longer paths don't occur in our dataset
 			logger.debug("specific path {} {}", path, path.size());
 			if (path.size() == 1) {
 				String pathQueryStr = "{" +
@@ -372,6 +373,28 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  }\n" +
 					"}";
 				pathQueries.add(pathQueryStr);
+			} else if (path.size() == 3) {
+				logger.info("Branched path");
+				for (Concept c: concepts) {
+					String pathQueryStr = "{" +
+							"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
+							"  ?med ns:" + path.get(1) + " ?val .\n" +
+							"  ?med ns:" + path.get(2) + " ?concept.\n" +
+							"  ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
+							"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
+							"  BIND(" + ps.proba + " AS ?score)\n" +
+							"  BIND(ns:" + mid + " AS ?res)\n" +
+							"  OPTIONAL {\n" +
+							"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
+							"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
+							"    FILTER(LANGMATCHES(LANG(?pl0), \"en\"))\n" +
+							"    FILTER(LANGMATCHES(LANG(?pl1), \"en\"))\n" +
+							"    BIND(CONCAT(?pl0, \": \", ?pl1) AS ?proplabel)\n" +
+							"  }\n" +
+							"}";
+					logger.info(pathQueryStr);
+					pathQueries.add(pathQueryStr);
+				}
 			}
 		}
 		String rawQueryStr =
