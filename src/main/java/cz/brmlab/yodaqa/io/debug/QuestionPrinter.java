@@ -107,8 +107,8 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		for (Iterator iterator = JCasUtil.select(jcas, Concept.class).iterator(); iterator.hasNext(); ) {
 			Concept c = (Concept) iterator.next();
 			Concepttmp += "{";
-			Concepttmp += "\"fullLabel\": \"" + c.getFullLabel().replaceAll("\"", "\\\"") + "\", ";
-			Concepttmp += "\"cookedLabel\": \"" + c.getCookedLabel().replaceAll("\"", "\\\"") + "\", ";
+			Concepttmp += "\"fullLabel\": \"" + c.getFullLabel().replaceAll("\"", "\\\\\"") + "\", ";
+			Concepttmp += "\"cookedLabel\": \"" + c.getCookedLabel().replaceAll("\"", "\\\\\"") + "\", ";
 			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\"";
 			Concepttmp += "}";
 			//not last, add comma
