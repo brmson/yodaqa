@@ -115,7 +115,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setEnd(clue.getEnd());
 				concept.setFullLabel(a.getCanonLabel());
 				concept.setCookedLabel(cookedLabel);
+				concept.setProbability(a.getProb());
 				concept.setPageID(a.getPageID());
+				concept.setEditDistance(a.getDist());
 				concept.setScore(a.getScore());
 				concept.setBySubject(c.isBySubject());
 				concept.setByLAT(c.isByLAT());
@@ -135,7 +137,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		 * new clues from them. */
 		List<ClueLabel> labelList = new ArrayList<>(labels.values());
 		Collections.sort(labelList, new ClueLabelScoreComparator());
-		addCluesForLabels(resultView, labelList);
+		List<ClueLabel> resList = labelList.subList(0, Math.min(5, labelList.size()));
+		addCluesForLabels(resultView, resList);
 	}
 
 	/** Get a set of clues to check for concept links. */

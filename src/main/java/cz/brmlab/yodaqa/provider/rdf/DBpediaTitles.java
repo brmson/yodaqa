@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 
 public class DBpediaTitles extends DBpediaLookup {
 	protected static final String labelLookupUrl = "http://dbp-labels.ailao.eu:5000";
-
+	protected static final String CrossWikiLookupURL = "http://localhost:5001/search/";
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
 	public class Article {
@@ -37,6 +37,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected String canonLabel;
 		protected double dist; // edit dist.
 		protected double score; // relevance/prominence of the concept (universally or wrt. the question)
+		protected double prob;
 
 		public Article(String label, int pageID) {
 			this.matchedLabel = label;
@@ -50,13 +51,20 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = dist;
 		}
 
-		public Article(Article baseA, String label, int pageID, String name, double score) {
+		public Article(String label, int pageID, String name, double dist, double prob) {
+			this(label, pageID);
+			this.name = name;
+			this.dist = dist;
+			this.prob = prob;
+		}
+		public Article(Article baseA, String label, int pageID, String name, double score, double prob) {
 			this.name = name;
 			this.pageID = pageID;
 			this.matchedLabel = baseA.matchedLabel;
 			this.canonLabel = label;
 			this.dist = baseA.dist;
 			this.score = score;
+			this.prob = prob;
 		}
 
 		public String getName() { return name; }
@@ -65,15 +73,20 @@ public class DBpediaTitles extends DBpediaLookup {
 		public String getCanonLabel() { return canonLabel; }
 		public double getDist() { return dist; }
 		public double getScore() { return score; }
+		public double getProb() { return prob; }
 	}
 
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			List<Article> entities;
+			List<Article> probs;
+			List<Article> result;
 			while (true) {
 				try {
 					entities = queryLabelLookup(titleForm, logger);
+					probs = queryProbLookup(titleForm, logger);
+					result = mergeResults(entities, probs);
 					break; // Success!
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -86,7 +99,7 @@ public class DBpediaTitles extends DBpediaLookup {
 				}
 			}
 			List<Article> results = new ArrayList<>();
-			for (Article a : entities) {
+			for (Article a : result) {
 				results.addAll(queryArticle(a, logger));
 			}
 			if (!results.isEmpty())
@@ -98,7 +111,8 @@ public class DBpediaTitles extends DBpediaLookup {
 	/** Query for a given Article in full DBpedia, returning a set of
 	 * articles (transversing redirects and disambiguations). */
 	public List<Article> queryArticle(Article baseA, Logger logger) {
-		String name = baseA.getName();
+		String name = baseA.getName().replaceAll("\"","\\\\\"");
+		double prob = baseA.getProb();
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with a given name
@@ -156,7 +170,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			double score = Math.log(queryCount(tgRes));
 
 			logger.debug("DBpedia {}: [[{}]] ({})", name, label, score);
-			results.add(new Article(baseA, label, pageID, tgName, score));
+			results.add(new Article(baseA, label, pageID, tgName, score, prob));
 		}
 
 		return results;
@@ -186,8 +200,8 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * provider subpackage altogether... */
 	public List<Article> queryLabelLookup(String label, Logger logger) throws IOException {
 		List<Article> results = new LinkedList<>();
-
-		String encodedName = URLEncoder.encode(label, "UTF-8").replace("+", "%20");
+		String capitalisedLabel = super.capitalizeTitle(label);
+		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
 		String requestURL = labelLookupUrl + "/search/" + encodedName + "?ver=1";
 		URL request = new URL(requestURL);
 		URLConnection connection = request.openConnection();
@@ -215,5 +229,57 @@ public class DBpediaTitles extends DBpediaLookup {
 		jr.endObject();
 
 		return results;
+	}
+	/**
+	 * Query a sqlite-lookup service for a concept label
+	 * and take only the first result with the highest probability
+	 * the probability is for the url, given the string
+	 * XXX: same as above, this method should be moved somewhere else*/
+	public List<Article> queryProbLookup(String label, Logger logger) throws IOException {
+		List<Article> results = new LinkedList<>();
+		String capitalisedLabel = super.capitalizeTitle(label);
+		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
+		String requestURL = CrossWikiLookupURL + encodedName + "?ver=1";
+		URL request = new URL(requestURL);
+		URLConnection connection = request.openConnection();
+		Gson gson = new Gson();
+		JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
+		jr.beginObject();
+		jr.nextName(); //results :
+		jr.beginArray();
+		while (jr.hasNext()) {
+			Article o = gson.fromJson(jr, Article.class);
+			if (results.isEmpty()) {
+				results.add(o);
+			}
+			logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+		}
+		jr.endArray();
+		jr.endObject();
+
+		return results;
+	}
+
+	/**
+	 * Merges the result for fuzzy search and sqlite database
+	 * In the future, it might be desirable to take more than the first
+	 * result from sqlite query
+	 * Priority is given to the results from label lookup, we add
+	 * the probability if the canon label matches
+	 */
+	public List<Article> mergeResults(List<Article> fuzzyResult, List<Article> sqliteResult) {
+		if (fuzzyResult.isEmpty()) {
+			return sqliteResult;
+		} else {
+			for (Article a : fuzzyResult) {
+				if(sqliteResult.isEmpty()) {
+					break;
+				}
+				if (sqliteResult.get(0).getCanonLabel().equals(a.getName())) {
+					a.prob = sqliteResult.get(0).getProb();
+				}
+			}
+		}
+		return fuzzyResult;
 	}
 }
