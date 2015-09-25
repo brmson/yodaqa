@@ -26,7 +26,7 @@ import org.slf4j.Logger;
  * and disambiguation pages. */
 
 public class DBpediaTitles extends DBpediaLookup {
-	protected static final String labelLookupUrl = "http://dbp-labels.ailao.eu:5000";
+	protected static final String fuzzyLookupUrl = "http://dbp-labels.ailao.eu:5000";
 	protected static final String crossWikiLookupUrl = "http://localhost:5001";
 
 	/** A container of enwiki article metadata.
@@ -80,18 +80,16 @@ public class DBpediaTitles extends DBpediaLookup {
 	/** Query for a given title, returning a set of articles. */
 	public List<Article> query(String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
-			List<Article> entities;
-			List<Article> probs;
-			List<Article> result;
+			List<Article> fuzzyLookupEntities;
+			List<Article> crossWikiEntities;
 			while (true) {
 				try {
-					entities = queryLabelLookup(titleForm, logger);
-					probs = queryProbLookup(titleForm, logger);
-					result = mergeResults(entities, probs);
+					fuzzyLookupEntities = queryFuzzyLookup(titleForm, logger);
+					crossWikiEntities = queryCrossWikiLookup(titleForm, logger);
 					break; // Success!
 				} catch (IOException e) {
 					e.printStackTrace();
-					System.err.println("*** " + labelLookupUrl + " or " + crossWikiLookupUrl + " label-lookup query (temporarily?) failed, retrying in a moment...");
+					System.err.println("*** " + fuzzyLookupUrl + " or " + crossWikiLookupUrl + " label lookup query (temporarily?) failed, retrying in a moment...");
 					try {
 						TimeUnit.SECONDS.sleep(10);
 					} catch (InterruptedException e2) { // oof...
@@ -99,8 +97,9 @@ public class DBpediaTitles extends DBpediaLookup {
 					}
 				}
 			}
+			List<Article> entities = mergeResults(fuzzyLookupEntities, crossWikiEntities);
 			List<Article> results = new ArrayList<>();
-			for (Article a : result) {
+			for (Article a : entities) {
 				results.addAll(queryArticle(a, logger));
 			}
 			if (!results.isEmpty())
@@ -193,18 +192,18 @@ public class DBpediaTitles extends DBpediaLookup {
 	}
 
 	/**
-	 * Query a label-lookup service (fuzzy search) for a concept label.
-	 * We use https://github.com/brmson/label-lookup/ as a fuzzy search
-	 * that's tolerant to wrong capitalization, omitted interpunction
-	 * and typos; we get the enwiki article metadata from here.
+	 * Query the fuzzy search label-lookup service for a concept label.
+	 * We use https://github.com/brmson/label-lookup/ (main label-lookup
+	 * script) as a fuzzy search that's tolerant to wrong capitalization,
+	 * omitted interpunction and typos.
 	 *
 	 * XXX: This method should probably be in a different
 	 * provider subpackage altogether... */
-	public List<Article> queryLabelLookup(String label, Logger logger) throws IOException {
+	public List<Article> queryFuzzyLookup(String label, Logger logger) throws IOException {
 		List<Article> results = new LinkedList<>();
 		String capitalisedLabel = super.capitalizeTitle(label);
 		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
-		String requestURL = labelLookupUrl + "/search/" + encodedName + "?ver=1";
+		String requestURL = fuzzyLookupUrl + "/search/" + encodedName + "?ver=1";
 
 		URL request = new URL(requestURL);
 		URLConnection connection = request.openConnection();
@@ -227,7 +226,7 @@ public class DBpediaTitles extends DBpediaLookup {
 				} else if (results.isEmpty()) {
 					results.add(o);
 				}
-				logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+				logger.debug("fuzzy-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 			}
 			jr.endArray();
 		jr.endObject();
@@ -236,12 +235,15 @@ public class DBpediaTitles extends DBpediaLookup {
 	}
 
 	/**
-	 * Query a sqlite-lookup service for a concept label.
+	 * Query the CrossWiki label-lookup service for a concept label.
+	 * We use https://github.com/brmson/label-lookup/ (-sqlite script)
+	 * which looks up the label in a large database of labels including
+	 * common mispellings etc.  P(entity | label) is also returned.
+	 *
 	 * Take only the first result with the highest probability;
-	 * the probability is for the url, given the string.
 	 *
 	 * XXX: same as above, this method should be moved somewhere else */
-	public List<Article> queryProbLookup(String label, Logger logger) throws IOException {
+	public List<Article> queryCrossWikiLookup(String label, Logger logger) throws IOException {
 		List<Article> results = new LinkedList<>();
 		String capitalisedLabel = super.capitalizeTitle(label);
 		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
@@ -269,21 +271,23 @@ public class DBpediaTitles extends DBpediaLookup {
 	}
 
 	/**
-	 * Merges the result for fuzzy search and sqlite database.
-	 * In the future, it might be desirable to take more than the first
-	 * result from sqlite query.
+	 * Merges the result for fuzzy and CrossWiki searches.
 	 * Priority is given to the results from label lookup, we add
 	 * the probability if the canon label matches.
+	 * May modify Article objects from the source lists.
+	 *
+	 * XXX: We rely that cwResult has only a single item.
 	 */
-	public List<Article> mergeResults(List<Article> fuzzyResult, List<Article> sqliteResult) {
+	public List<Article> mergeResults(List<Article> fuzzyResult, List<Article> cwResult) {
 		if (fuzzyResult.isEmpty())
-			return sqliteResult;
+			return cwResult;
+		if (cwResult.isEmpty())
+			return fuzzyResult;
+
 		for (Article a : fuzzyResult) {
-			if(sqliteResult.isEmpty()) {
-				break;
-			}
-			if (sqliteResult.get(0).getCanonLabel().equals(a.getName())) {
-				a.prob = sqliteResult.get(0).getProb();
+			/* XXX: Why do we compare name and canonLabel? */
+			if (cwResult.get(0).getCanonLabel().equals(a.getName())) {
+				a.prob = cwResult.get(0).getProb();
 			}
 		}
 		return fuzzyResult;
