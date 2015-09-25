@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 
 public class DBpediaTitles extends DBpediaLookup {
 	protected static final String labelLookupUrl = "http://dbp-labels.ailao.eu:5000";
-	protected static final String CrossWikiLookupURL = "http://localhost:5001/search/";
+	protected static final String crossWikiLookupUrl = "http://localhost:5001/search/";
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
 	public class Article {
@@ -90,7 +90,7 @@ public class DBpediaTitles extends DBpediaLookup {
 					break; // Success!
 				} catch (IOException e) {
 					e.printStackTrace();
-					System.err.println("*** " + labelLookupUrl + " label-lookup query (temporarily?) failed, retrying in a moment...");
+					System.err.println("*** " + labelLookupUrl + " or " + crossWikiLookupUrl + " label-lookup query (temporarily?) failed, retrying in a moment...");
 					try {
 						TimeUnit.SECONDS.sleep(10);
 					} catch (InterruptedException e2) { // oof...
@@ -239,7 +239,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		List<Article> results = new LinkedList<>();
 		String capitalisedLabel = super.capitalizeTitle(label);
 		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
-		String requestURL = CrossWikiLookupURL + encodedName + "?ver=1";
+		String requestURL = crossWikiLookupUrl + encodedName + "?ver=1";
 		URL request = new URL(requestURL);
 		URLConnection connection = request.openConnection();
 		Gson gson = new Gson();
