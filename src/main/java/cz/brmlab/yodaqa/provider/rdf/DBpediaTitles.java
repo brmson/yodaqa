@@ -27,7 +27,8 @@ import org.slf4j.Logger;
 
 public class DBpediaTitles extends DBpediaLookup {
 	protected static final String labelLookupUrl = "http://dbp-labels.ailao.eu:5000";
-	protected static final String crossWikiLookupUrl = "http://localhost:5001/search/";
+	protected static final String crossWikiLookupUrl = "http://localhost:5001";
+
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
 	public class Article {
@@ -175,6 +176,7 @@ public class DBpediaTitles extends DBpediaLookup {
 
 		return results;
 	}
+
 	/** Counts the number of matches in rdf triplets (outward and inward). */
 	public int queryCount(String name) {
 		String queryString = "SELECT (COUNT(*) AS ?c) \n" +
@@ -203,9 +205,11 @@ public class DBpediaTitles extends DBpediaLookup {
 		String capitalisedLabel = super.capitalizeTitle(label);
 		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
 		String requestURL = labelLookupUrl + "/search/" + encodedName + "?ver=1";
+
 		URL request = new URL(requestURL);
 		URLConnection connection = request.openConnection();
 		Gson gson = new Gson();
+
 		JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
 		jr.beginObject();
 			jr.nextName(); //results :
@@ -230,19 +234,23 @@ public class DBpediaTitles extends DBpediaLookup {
 
 		return results;
 	}
+
 	/**
-	 * Query a sqlite-lookup service for a concept label
-	 * and take only the first result with the highest probability
-	 * the probability is for the url, given the string
-	 * XXX: same as above, this method should be moved somewhere else*/
+	 * Query a sqlite-lookup service for a concept label.
+	 * Take only the first result with the highest probability;
+	 * the probability is for the url, given the string.
+	 *
+	 * XXX: same as above, this method should be moved somewhere else */
 	public List<Article> queryProbLookup(String label, Logger logger) throws IOException {
 		List<Article> results = new LinkedList<>();
 		String capitalisedLabel = super.capitalizeTitle(label);
 		String encodedName = URLEncoder.encode(capitalisedLabel, "UTF-8").replace("+", "%20");
-		String requestURL = crossWikiLookupUrl + encodedName + "?ver=1";
+		String requestURL = crossWikiLookupUrl + "/search/" + encodedName + "?ver=1";
+
 		URL request = new URL(requestURL);
 		URLConnection connection = request.openConnection();
 		Gson gson = new Gson();
+
 		JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
 		jr.beginObject();
 		jr.nextName(); //results :
@@ -252,7 +260,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			if (results.isEmpty()) {
 				results.add(o);
 			}
-			logger.debug("label-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+			logger.debug("sqlite-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 		}
 		jr.endArray();
 		jr.endObject();
@@ -261,23 +269,21 @@ public class DBpediaTitles extends DBpediaLookup {
 	}
 
 	/**
-	 * Merges the result for fuzzy search and sqlite database
+	 * Merges the result for fuzzy search and sqlite database.
 	 * In the future, it might be desirable to take more than the first
-	 * result from sqlite query
+	 * result from sqlite query.
 	 * Priority is given to the results from label lookup, we add
-	 * the probability if the canon label matches
+	 * the probability if the canon label matches.
 	 */
 	public List<Article> mergeResults(List<Article> fuzzyResult, List<Article> sqliteResult) {
-		if (fuzzyResult.isEmpty()) {
+		if (fuzzyResult.isEmpty())
 			return sqliteResult;
-		} else {
-			for (Article a : fuzzyResult) {
-				if(sqliteResult.isEmpty()) {
-					break;
-				}
-				if (sqliteResult.get(0).getCanonLabel().equals(a.getName())) {
-					a.prob = sqliteResult.get(0).getProb();
-				}
+		for (Article a : fuzzyResult) {
+			if(sqliteResult.isEmpty()) {
+				break;
+			}
+			if (sqliteResult.get(0).getCanonLabel().equals(a.getName())) {
+				a.prob = sqliteResult.get(0).getProb();
 			}
 		}
 		return fuzzyResult;
