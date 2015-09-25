@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa;
 import cz.brmlab.yodaqa.analysis.question.QuestionAnalysisAE;
 import cz.brmlab.yodaqa.flow.MultiCASPipeline;
 import cz.brmlab.yodaqa.flow.asb.ParallelEngineFactory;
+import cz.brmlab.yodaqa.io.collection.JSONQuestionReader;
 import cz.brmlab.yodaqa.io.collection.TSVQuestionReader;
 import cz.brmlab.yodaqa.io.debug.QuestionPrinter;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -22,12 +23,16 @@ public class QuestionDump {
             System.err.println("Outputs the result of QuestionAnalysis");
             System.exit(1);
         }
-
+/*
         CollectionReaderDescription reader = createReaderDescription(
                 TSVQuestionReader.class,
                 TSVQuestionReader.PARAM_TSVFILE, args[0],
                 TSVQuestionReader.PARAM_LANGUAGE, "en");
-
+*/
+		CollectionReaderDescription reader = createReaderDescription(
+				JSONQuestionReader.class,
+				JSONQuestionReader.PARAM_JSONFILE, args[0],
+				JSONQuestionReader.PARAM_LANGUAGE, "en");
         AnalysisEngineDescription pipeline = QuestionAnalysisAE.createEngineDescription();
 
 
