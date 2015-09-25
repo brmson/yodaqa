@@ -71,6 +71,37 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		/*{"qId": "...", "sv": "...", "LAT" : [ {...}, {...}, {...}]} */
 		String line = "{\"qId\": " + "\"" + qi.getQuestionId() + "\"" + ", ";
 		line += "\"qText\": " + "\"" +qi.getQuestionText() + "\"" +", ";
+		String SVtmp = "\"SV\":  [";
+		for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
+			SV sv = (SV) SVIterator.next();
+			SVtmp += "\"" + sv.getCoveredText() + "\"";
+			if(SVIterator.hasNext()){
+				SVtmp += ", ";
+			}
+		}
+		SVtmp += "], ";
+		line += SVtmp;
+
+		line += "\"LAT\": ";
+		String LATtmp = "[";
+		for (Iterator iterator = JCasUtil.select(jcas, LAT.class).iterator(); iterator.hasNext(); ) {
+			LAT l = (LAT) iterator.next();
+			/*{"synset" : "...", "text" : "...", "specificity" : "..." "type" : "..."}*/
+			LATtmp += "{";
+			if (l.getSynset() != 0) { //only add synset when it is not zero
+				LATtmp += "\"synset\": " + "\"" + l.getSynset() + "\", ";
+			}
+			//add the rest
+			LATtmp += "\"text\": \"" + l.getText() + "\"," + " \"specificity\": \"" + l.getSpecificity() + "\", " + "\"type\": " +
+				"\"" + l.getClass().getSimpleName() + "\"}";
+			//not last, add comma
+			if (iterator.hasNext()) {
+				LATtmp += ", ";
+			}
+		}
+		LATtmp += "], ";
+		line += LATtmp;
+
 		line += "\"Concept\": ";
 		String Concepttmp = "[";
 		for (Iterator iterator = JCasUtil.select(jcas, Concept.class).iterator(); iterator.hasNext(); ) {
