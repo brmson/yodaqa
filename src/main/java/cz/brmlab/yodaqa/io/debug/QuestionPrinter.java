@@ -69,39 +69,8 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		/*{"qId": "...", "sv": "...", "LAT" : [ {...}, {...}, {...}]} */
-		String line = "{\"qId\": " + "\"" + qi.getQuestionId() + "\"" + ", " + "\"SV\": ";
-
-		String SVtmp ="[";
-		for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
-			SV sv = (SV) SVIterator.next();
-			SVtmp += "\"" + sv.getCoveredText() + "\"";
-			if(SVIterator.hasNext()){
-				SVtmp += ", ";
-			}
-		}
-		SVtmp += "], ";
-		line += SVtmp;
-
-		line += "\"LAT\": ";
-		String LATtmp = "[";
-		for (Iterator iterator = JCasUtil.select(jcas, LAT.class).iterator(); iterator.hasNext(); ) {
-			LAT l = (LAT) iterator.next();
-			/*{"synset" : "...", "text" : "...", "specificity" : "..." "type" : "..."}*/
-			LATtmp += "{";
-			if (l.getSynset() != 0) { //only add synset when it is not zero
-				LATtmp += "\"synset\": " + "\"" + l.getSynset() + "\", ";
-			}
-			//add the rest
-			LATtmp += "\"text\": \"" + l.getText() + "\"," + " \"specificity\": \"" + l.getSpecificity() + "\", " + "\"type\": " +
-				"\"" + l.getClass().getSimpleName() + "\"}";
-			//not last, add comma
-			if (iterator.hasNext()) {
-				LATtmp += ", ";
-			}
-		}
-		LATtmp += "], ";
-		line += LATtmp;
-
+		String line = "{\"qId\": " + "\"" + qi.getQuestionId() + "\"" + ", ";
+		line += "\"qText\": " + "\"" +qi.getQuestionText() + "\"" +", ";
 		line += "\"Concept\": ";
 		String Concepttmp = "[";
 		for (Iterator iterator = JCasUtil.select(jcas, Concept.class).iterator(); iterator.hasNext(); ) {
@@ -109,14 +78,20 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "{";
 			Concepttmp += "\"fullLabel\": \"" + c.getFullLabel().replaceAll("\"", "\\\\\"") + "\", ";
 			Concepttmp += "\"cookedLabel\": \"" + c.getCookedLabel().replaceAll("\"", "\\\\\"") + "\", ";
-			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\"";
+			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\", ";
+			Concepttmp += "\"editDist\": \"" + c.getEditDistance() + "\", ";
+			Concepttmp += "\"probability\": \"" + c.getProbability() + "\", ";
+			Concepttmp += "\"score\": \"" + c.getScore() + "\", ";
+			Concepttmp += "\"getByLAT\": \"" + (c.getByLAT() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getByNE\": \"" + (c.getByNE() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getBySubject\": \"" + (c.getBySubject() ? 1 : 0) + "\"";
 			Concepttmp += "}";
 			//not last, add comma
 			if (iterator.hasNext()) {
 				Concepttmp += ", ";
 			}
 		}
-		Concepttmp += "], ";
+		Concepttmp += "] ";
 		line += Concepttmp;
 
 		line += "}";
