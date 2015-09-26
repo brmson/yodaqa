@@ -293,8 +293,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			return fuzzyResult;
 
 		for (Article a : fuzzyResult) {
-			/* XXX: Why do we compare name and canonLabel? */
-			if (cwResult.get(0).getCanonLabel().equals(a.getName())) {
+			if (cwResult.get(0).getName().equals(a.getName())) {
 				a.prob = cwResult.get(0).getProb();
 				a.getByCWLookup = true;
 			}
