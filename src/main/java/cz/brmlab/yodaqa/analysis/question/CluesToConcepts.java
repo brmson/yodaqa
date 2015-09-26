@@ -122,6 +122,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setBySubject(c.isBySubject());
 				concept.setByLAT(c.isByLAT());
 				concept.setByNE(c.isByNE());
+				concept.setByFuzzyLookup(a.isByFuzzyLookup());
+				concept.setByCWLookup(a.isByCWLookup());
 
 				if (!labels.containsKey(cookedLabel)) {
 					/* First time for this particular label. */

@@ -115,7 +115,10 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "\"score\": \"" + c.getScore() + "\", ";
 			Concepttmp += "\"getByLAT\": \"" + (c.getByLAT() ? 1 : 0) + "\", ";
 			Concepttmp += "\"getByNE\": \"" + (c.getByNE() ? 1 : 0) + "\", ";
-			Concepttmp += "\"getBySubject\": \"" + (c.getBySubject() ? 1 : 0) + "\"";
+			Concepttmp += "\"getBySubject\": \"" + (c.getBySubject() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getByFuzzyLookup\": \"" + (c.getByFuzzyLookup() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getByCWLookup\": \"" + (c.getByCWLookup() ? 1 : 0) + "\"";
+
 			Concepttmp += "}";
 			//not last, add comma
 			if (iterator.hasNext()) {

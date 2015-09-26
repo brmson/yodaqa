@@ -233,7 +233,7 @@
             <name>pageID</name>
             <description>The id of the wikipedia page (can be fed to solr as well as freebase or dbpedia).</description>
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
-          </featureDescription>
+          </featureDescription>concept
           <featureDescription>
             <name>bySubject</name>
             <description>Whether this concept has subdued a ClueSubject.</description>
@@ -245,10 +245,20 @@
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>byNE</name>
-            <description>Whether this concept has subdued a ClueNE.</description>
+            <name>byFuzzyLookup</name>
+            <description>Whether this concept was found in fuzzy label lookup.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
+            <featureDescription>
+                <name>byCWLookup</name>
+                <description>Whether this concept was found in CrossWikis label lookup.</description>
+                <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+                <name>byNE</name>
+                <description>Whether this concept has subdued a ClueNE.</description>
+                <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+            </featureDescription>
           <featureDescription>
             <name>score</name>
             <description>The score of the concept, expressing its prominence or relevance to question.</description>

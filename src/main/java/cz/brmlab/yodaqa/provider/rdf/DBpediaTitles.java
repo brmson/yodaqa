@@ -39,6 +39,8 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected double dist; // edit dist.
 		protected double score; // relevance/prominence of the concept (universally or wrt. the question)
 		protected double prob;
+		protected boolean getByFuzzyLookup = false;
+		protected boolean getByCWLookup = false;
 
 		public Article(String label, int pageID) {
 			this.matchedLabel = label;
@@ -66,6 +68,8 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = baseA.dist;
 			this.score = score;
 			this.prob = prob;
+			this.getByCWLookup = baseA.getByCWLookup;
+			this.getByFuzzyLookup = baseA.getByFuzzyLookup;
 		}
 
 		public String getName() { return name; }
@@ -75,6 +79,8 @@ public class DBpediaTitles extends DBpediaLookup {
 		public double getDist() { return dist; }
 		public double getScore() { return score; }
 		public double getProb() { return prob; }
+		public boolean isByFuzzyLookup() { return getByFuzzyLookup; }
+		public boolean isByCWLookup() { return getByCWLookup; }
 	}
 
 	/** Query for a given title, returning a set of articles. */
@@ -218,6 +224,7 @@ public class DBpediaTitles extends DBpediaLookup {
 				// Record all exact-matching entities,
 				// or the single nearest fuzzy-matched
 				// one.
+				o.getByFuzzyLookup = true;
 				if (o.getDist() == 0) {
 					// Sometimes, we get duplicates
 					// like "U.S. Navy" and "U.S. navy".
@@ -259,6 +266,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		jr.beginArray();
 		while (jr.hasNext()) {
 			Article o = gson.fromJson(jr, Article.class);
+			o.getByCWLookup = true;
 			if (results.isEmpty()) {
 				results.add(o);
 			}
@@ -288,6 +296,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			/* XXX: Why do we compare name and canonLabel? */
 			if (cwResult.get(0).getCanonLabel().equals(a.getName())) {
 				a.prob = cwResult.get(0).getProb();
+				a.getByCWLookup = true;
 			}
 		}
 		return fuzzyResult;
