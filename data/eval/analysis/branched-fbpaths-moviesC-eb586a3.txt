@@ -10,8 +10,11 @@ This is typical for question which look like: Who played character X in film Y.
 However not all question of this type was not answered correctly, here are some examples with 
 possible reason of wring answer.
 
-We make queries based on frebase-keys instead of mids. Unfortunately not all concepts have freebase-key, but it seems that there
-is always a mid.
+298 out of 2834 questions in wbquestion dataset have at least one concept with no freebase-key. It could be caused by following:
+-	the freebase-key for specified concept page ID was not found in freebase (5091 out of 15721)
+	- example concept: Inception
+-	the wikipedia topic for specified page ID (in specified language) was not found (655 out of 15721)
+	- example concept: List of films considered the best	
 
 * who does the author stephenie meyer play in the movie twilight? - given the relation path, the breebase did not returned any anwser
 * who did michael jackson play in the wiz?	- the classifier did not classify this question with three relations
