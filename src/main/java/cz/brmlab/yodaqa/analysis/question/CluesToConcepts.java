@@ -57,6 +57,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 	final DBpediaTitles dbp = new DBpediaTitles();
 
+	final ConceptClassifier classifier = new ConceptClassifier();
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
@@ -138,8 +140,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Sort ClueLabels by their score (editDist-based) and generate
 		 * new clues from them. */
 		List<ClueLabel> labelList = new ArrayList<>(labels.values());
-		Collections.sort(labelList, new ClueLabelScoreComparator());
+		Collections.sort(labelList, new ClueLabelClassifierComparator());
 		List<ClueLabel> resList = labelList.subList(0, Math.min(5, labelList.size()));
+
 		addCluesForLabels(resultView, resList);
 	}
 
@@ -400,5 +403,14 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 						t2.getConcepts().get(0).getScore()); // highest first
 		}
 	}
-
+	/* Compares ClueLabels using the classifier probability*/
+	private class ClueLabelClassifierComparator implements Comparator<ClueLabel> {
+		@Override
+		public int compare(ClueLabel t1, ClueLabel t2) {
+			double cl1 = classifier.calculateProbability(t1.getConcepts().get(0));
+			double cl2 = classifier.calculateProbability(t2.getConcepts().get(0));
+			return -Double.compare(cl1,
+					cl2); // highest first
+		}
+	}
 }
