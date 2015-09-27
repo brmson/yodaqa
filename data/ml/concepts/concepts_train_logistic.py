@@ -26,7 +26,7 @@ num_rounds = 10
 test_portion = 1.0 / 5
 
 
-def label(input_list, gold_standard):
+def load(input_list, gold_standard):
     concept = []
     labels = []
     correct_counter = 0
@@ -52,10 +52,30 @@ def label(input_list, gold_standard):
     return (concept, labels)
 
 
-def train(features, labels):
+def train_model(features, labels):
     clf = linear_model.LogisticRegression(C=1, penalty='l2', tol=1e-5)
     clf.fit(features, labels)
     return clf
+
+
+def test_model(desc, fv_test, label_test, cfier):
+    proba = cfier.predict_proba(fv_test)
+    corr = 0
+    incorr = 0
+    prediction = 0
+    total = len(fv_test)
+    for p, correct in zip(proba, label_test):
+        if p[0] > 0.5:
+            prediction = 0
+        else:
+            prediction = 1
+        if prediction == correct:
+            corr += 1
+        else:
+            incorr += 1
+    stat = corr / total * 100
+    print("/* %s precision %.3f%% (%d/%d) */" % (desc, stat, corr, total))
+    return (corr, incorr, total)
 
 
 def dump_model(clf):
@@ -86,7 +106,7 @@ def split_dataset(ll):
 
 def cross_validate(ll):
     (fv_train, label_train, fv_test, label_test) = split_dataset(ll)
-    classifier = train(fv_train, label_train)
+    classifier = train_model(fv_train, label_train)
     return test_model('CV fold', fv_test, label_test, classifier)
 
 
@@ -110,32 +130,12 @@ def cross_validate_all(ll):
     print("/* === CV average precision %.3f%% (+-SD %.3f%%) */" % (correct / (num_rounds * total) * 100, standard_deviation / total * 100))
 
 
-def test_model(desc, fv_test, label_test, cfier):
-    proba = cfier.predict_proba(fv_test)
-    corr = 0
-    incorr = 0
-    prediction = 0
-    total = len(fv_test)
-    for entry, correct in zip(proba, label_test):
-        if entry[0] > 0.5:
-            prediction = 0
-        else:
-            prediction = 1
-        if prediction == correct:
-            corr += 1
-        else:
-            incorr += 1
-    stat = corr / total * 100
-    print("/* %s precision %.3f%% (%d/%d) */" % (desc, stat, corr, total))
-    return (corr, incorr, total)
-
-
 if __name__ == "__main__":
     concepts_filename = sys.argv[1]
     gs_filename = sys.argv[2]
     gold_standard = json.load(open(gs_filename))
     input_list = json.load(open(concepts_filename))
-    ll = label(input_list, gold_standard)
+    ll = load(input_list, gold_standard)
     features = np.asarray(ll[0])
     labels = np.asarray(ll[1])
 
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     cross_validate_all(ll)
 
     print()
-    classifier = train(features, labels)
+    classifier = train_model(features, labels)
     test_model('Training set', features, labels, classifier)
     dump_model(classifier)
