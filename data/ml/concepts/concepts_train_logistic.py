@@ -1,4 +1,10 @@
-#!/usr/bin/pypy
+#!/usr/bin/python
+#
+# concepts_train_logistic - train a logistic regression classifier of concept
+# relevance
+#
+# Example: data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesC/entity-linking.json
+
 from __future__ import print_function
 from __future__ import division
 import numpy as np
@@ -7,7 +13,7 @@ import json
 import random
 from sklearn import linear_model
 
-#cross validation parameters
+# cross validation parameters
 num_rounds = 10
 test_portion = 1.0 / 5
 
@@ -18,6 +24,7 @@ def label(input_list, gold_standard):
     correct_counter = 0
     incorrect_counter = 0
     for q, q_gs in zip(input_list, gold_standard):
+        assert q['qId'] == q_gs['qId']
         for conc in q['Concept']:
             valid = False
             for corr in q_gs['Concept']:
@@ -39,26 +46,9 @@ def label(input_list, gold_standard):
                  float(conc['getBySubject']),
                  float(conc['getByFuzzyLookup']),
                  float(conc['getByCWLookup'])))
-    print("correct: " + str(correct_counter))
-    print("incorrect: " + str(incorrect_counter))
-    pr = correct_counter / incorrect_counter * 100
-    print("correct percent: " + str(pr))
+    print("correct: %d (%.3f%%)" % (correct_counter, correct_counter / len(concept) * 100))
+    print("incorrect: %d (%.3f%%)" % (incorrect_counter, incorrect_counter / len(concept) * 100))
     return (concept, labels)
-
-
-def main():
-    concepts_filename = sys.argv[1]
-    gs_filename = sys.argv[2]
-    gold_standard = json.load(open(gs_filename))
-    input_list = json.load(open(concepts_filename))
-    ll = label(input_list, gold_standard)
-    features = np.asarray(ll[0])
-    labels = np.asarray(ll[1])
-    classifier = train(features, labels)
-    print("coeficients: " + str(classifier.coef_))
-    print("intercept: " + str(classifier.intercept_))
-    print("starting cross validation")
-    cross_validate_all(ll)
 
 
 def train(features, labels):
@@ -108,8 +98,7 @@ def cross_validate_all(ll):
     variance = (x_sum / num_rounds)
     standard_deviation = variance ** 0.5
     print("---")
-    print("average: " + str(correct / (num_rounds * total) * 100))
-    print("standard_deviation: " + str(standard_deviation / total * 100))
+    print("average precision %.3f%% (+-SD %.3f%%)" % (correct / (num_rounds * total) * 100, standard_deviation / total * 100))
 
 
 def test_model(fv_test, label_test, cfier):
@@ -128,8 +117,25 @@ def test_model(fv_test, label_test, cfier):
         else:
             incorr += 1
     stat = corr / total * 100
-    print ("%d out of %d , precision  %f" % (corr, total, stat))
+    print ("precision %.3f%% (%d/%d)" % (stat, corr, total))
     return (corr, incorr, total)
 
+
 if __name__ == "__main__":
-    main()
+    concepts_filename = sys.argv[1]
+    gs_filename = sys.argv[2]
+    gold_standard = json.load(open(gs_filename))
+    input_list = json.load(open(concepts_filename))
+    ll = label(input_list, gold_standard)
+    features = np.asarray(ll[0])
+    labels = np.asarray(ll[1])
+    print()
+
+    classifier = train(features, labels)
+
+    print("coeficients: " + str(classifier.coef_))
+    print("intercept: " + str(classifier.intercept_))
+
+    print()
+    print("starting cross validation")
+    cross_validate_all(ll)
