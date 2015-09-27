@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 
 public class DBpediaTitles extends DBpediaLookup {
 	protected static final String fuzzyLookupUrl = "http://dbp-labels.ailao.eu:5000";
-	protected static final String crossWikiLookupUrl = "http://localhost:5001";
+	protected static final String crossWikiLookupUrl = "http://dbp-labels.ailao.eu:5001";
 
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
