@@ -20,6 +20,10 @@ To train the classifier:
 
 	python data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesC/entity-linking.json
 
+Put the full output in the class code of:
+
+	src/main/java/cz/brmlab/yodaqa/analysis/question/ConceptClassifier.java
+
 Experiments
 ===========
 We trained and tested the classifier on moviesC-train dataset (commit hash 93a974e), taking the top5 concepts sorted by dbpedia popularity.

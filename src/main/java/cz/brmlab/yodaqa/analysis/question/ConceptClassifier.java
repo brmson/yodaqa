@@ -8,6 +8,22 @@ import cz.brmlab.yodaqa.model.Question.Concept;
  * data/ml/concepts/concepts_train_logistic.py script.
  */
 public class ConceptClassifier {
+	/* Training data - correct: 585 (15.179%), incorrect: 3269 (84.821%) */
+
+	/* 10-fold cross-validation (with 0.20 test splits): */
+	/* CV fold precision 92.996% (717/771) */
+	/* CV fold precision 91.569% (706/771) */
+	/* CV fold precision 93.126% (718/771) */
+	/* CV fold precision 95.331% (735/771) */
+	/* CV fold precision 94.034% (725/771) */
+	/* CV fold precision 93.256% (719/771) */
+	/* CV fold precision 93.126% (718/771) */
+	/* CV fold precision 94.423% (728/771) */
+	/* CV fold precision 91.958% (709/771) */
+	/* CV fold precision 92.996% (717/771) */
+	/* === CV average precision 93.281% (+-SD 1.047%) */
+
+	/* Training set precision 93.228% (3593/3854) */
 	/* Model (trained on the whole training set): */
 	double[] weights = {
 		0.107533, // editDist

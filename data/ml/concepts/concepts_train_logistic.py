@@ -4,6 +4,10 @@
 # relevance
 #
 # Example: data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesC/entity-linking.json
+#
+# The output is to be pasted in
+# src/main/java/cz/brmlab/yodaqa/analysis/question/ConceptClassifier.java
+# (indented).
 
 from __future__ import print_function
 from __future__ import division
@@ -42,8 +46,9 @@ def label(input_list, gold_standard):
                 labels.append(0)
                 incorrect_counter += 1
             concept.append(tuple([float(conc[f]) for f in feats]))
-    print("correct: %d (%.3f%%)" % (correct_counter, correct_counter / len(concept) * 100))
-    print("incorrect: %d (%.3f%%)" % (incorrect_counter, incorrect_counter / len(concept) * 100))
+    print("/* Training data - correct: %d (%.3f%%), incorrect: %d (%.3f%%) */" % (
+        correct_counter, correct_counter / len(concept) * 100,
+        incorrect_counter, incorrect_counter / len(concept) * 100))
     return (concept, labels)
 
 
@@ -54,12 +59,12 @@ def train(features, labels):
 
 
 def dump_model(clf):
-    print("\t/* Model (trained on the whole training set): */")
-    print("\tdouble[] weights = {")
+    print("/* Model (trained on the whole training set): */")
+    print("double[] weights = {")
     for i in range(len(feats)):
-        print("\t\t%f, // %s" % (classifier.coef_[0][i], feats[i]))
-    print("\t};")
-    print("\tdouble intercept = %f;" % (classifier.intercept_,))
+        print("\t%f, // %s" % (classifier.coef_[0][i], feats[i]))
+    print("};")
+    print("double intercept = %f;" % (classifier.intercept_,))
 
 
 def split_dataset(ll):
@@ -82,7 +87,7 @@ def split_dataset(ll):
 def cross_validate(ll):
     (fv_train, label_train, fv_test, label_test) = split_dataset(ll)
     classifier = train(fv_train, label_train)
-    return test_model(fv_test, label_test, classifier)
+    return test_model('CV fold', fv_test, label_test, classifier)
 
 
 def cross_validate_all(ll):
@@ -102,11 +107,10 @@ def cross_validate_all(ll):
         x_sum += (triplet[0] - mean) ** 2
     variance = (x_sum / num_rounds)
     standard_deviation = variance ** 0.5
-    print("---")
-    print("average precision %.3f%% (+-SD %.3f%%)" % (correct / (num_rounds * total) * 100, standard_deviation / total * 100))
+    print("/* === CV average precision %.3f%% (+-SD %.3f%%) */" % (correct / (num_rounds * total) * 100, standard_deviation / total * 100))
 
 
-def test_model(fv_test, label_test, cfier):
+def test_model(desc, fv_test, label_test, cfier):
     proba = cfier.predict_proba(fv_test)
     corr = 0
     incorr = 0
@@ -122,7 +126,7 @@ def test_model(fv_test, label_test, cfier):
         else:
             incorr += 1
     stat = corr / total * 100
-    print ("precision %.3f%% (%d/%d)" % (stat, corr, total))
+    print("/* %s precision %.3f%% (%d/%d) */" % (desc, stat, corr, total))
     return (corr, incorr, total)
 
 
@@ -134,11 +138,12 @@ if __name__ == "__main__":
     ll = label(input_list, gold_standard)
     features = np.asarray(ll[0])
     labels = np.asarray(ll[1])
-    print()
-
-    classifier = train(features, labels)
-    dump_model(classifier)
 
     print()
-    print("starting cross validation")
+    print("/* %d-fold cross-validation (with %.2f test splits): */" % (num_rounds, test_portion))
     cross_validate_all(ll)
+
+    print()
+    classifier = train(features, labels)
+    test_model('Training set', features, labels, classifier)
+    dump_model(classifier)
