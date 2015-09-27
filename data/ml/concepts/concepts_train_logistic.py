@@ -26,9 +26,21 @@ num_rounds = 10
 test_portion = 1.0 / 5
 
 
+class Concept:
+    """ Concept with a name (the string), fv (feature vector)
+    and a label (1/0 relevance tag, don't confuse with name!) """
+    def __init__(self, name, fv, label):
+        self.name = name
+        self.fv = fv
+        self.label = label
+
+    @staticmethod
+    def from_q(qconc, is_valid):
+        return Concept(qconc['fullLabel'], [float(qconc[f]) for f in feats], int(is_valid))
+
+
 def load(input_list, gold_standard):
-    concept = []
-    labels = []
+    concepts = []
     correct_counter = 0
     incorrect_counter = 0
     for q, q_gs in zip(input_list, gold_standard):
@@ -40,36 +52,35 @@ def load(input_list, gold_standard):
                     valid = True
                     break
             if valid is True:
-                labels.append(1)
                 correct_counter += 1
             else:
-                labels.append(0)
                 incorrect_counter += 1
-            concept.append(tuple([float(conc[f]) for f in feats]))
+            concepts.append(Concept.from_q(conc, valid))
     print("/* Training data - correct: %d (%.3f%%), incorrect: %d (%.3f%%) */" % (
-        correct_counter, correct_counter / len(concept) * 100,
-        incorrect_counter, incorrect_counter / len(concept) * 100))
-    return (concept, labels)
+        correct_counter, correct_counter / len(concepts) * 100,
+        incorrect_counter, incorrect_counter / len(concepts) * 100))
+    return concepts
 
 
-def train_model(features, labels):
+def train_model(concepts):
     clf = linear_model.LogisticRegression(C=1, penalty='l2', tol=1e-5)
-    clf.fit(features, labels)
+    clf.fit([c.fv for c in concepts], [c.label for c in concepts])
     return clf
 
 
-def test_model(desc, fv_test, label_test, cfier):
-    proba = cfier.predict_proba(fv_test)
+def test_model(desc, concepts_test, cfier):
+    proba = cfier.predict_proba([c.fv for c in concepts_test])
     corr = 0
     incorr = 0
-    prediction = 0
-    total = len(fv_test)
-    for p, correct in zip(proba, label_test):
+    total = len(concepts_test)
+    for concept, p in zip(concepts_test, proba):
+        # if desc == 'Training set':
+        #     print("% -40s =%d %.3f :: %s" % (concept.name, concept.label, p[0], concept.fv))
         if p[0] > 0.5:
             prediction = 0
         else:
             prediction = 1
-        if prediction == correct:
+        if prediction == concept.label:
             corr += 1
         else:
             incorr += 1
@@ -87,37 +98,33 @@ def dump_model(clf):
     print("double intercept = %f;" % (classifier.intercept_,))
 
 
-def split_dataset(ll):
+def split_dataset(concepts):
     """
     Create a random split of (fv, labels) tuple list to training and test set
     """
-    numrows = len(ll[0])
-    newlist = list(zip(ll[0], ll[1]))
+    newlist = list(concepts)
     random.shuffle(newlist)
-    teststart = int((1.0 - test_portion) * numrows)
+
+    teststart = int((1.0 - test_portion) * len(newlist))
     train_list = newlist[0:teststart]
     test_list = newlist[teststart:]
-    fv_train = np.asarray(map(lambda x: x[0], train_list))
-    label_train = np.asarray(map(lambda x: x[1], train_list))
-    fv_test = np.asarray(map(lambda x: x[0], test_list))
-    label_test = np.asarray(map(lambda x: x[1], test_list))
-    return (fv_train, label_train, fv_test, label_test)
+    return (train_list, test_list)
 
 
-def cross_validate(ll):
-    (fv_train, label_train, fv_test, label_test) = split_dataset(ll)
-    classifier = train_model(fv_train, label_train)
-    return test_model('CV fold', fv_test, label_test, classifier)
+def cross_validate(concepts):
+    (concepts_train, concepts_test) = split_dataset(concepts)
+    classifier = train_model(concepts_train)
+    return test_model('CV fold', concepts_test, classifier)
 
 
-def cross_validate_all(ll):
+def cross_validate_all(concepts):
     random.seed(1234567)
     total = 0
     correct = 0
     mean = 0
     res = []
     for _ in range(num_rounds):
-        (c, i, t) = cross_validate(ll)
+        (c, i, t) = cross_validate(concepts)
         res.append((c, i, t))
         correct += c
     total = t
@@ -135,15 +142,13 @@ if __name__ == "__main__":
     gs_filename = sys.argv[2]
     gold_standard = json.load(open(gs_filename))
     input_list = json.load(open(concepts_filename))
-    ll = load(input_list, gold_standard)
-    features = np.asarray(ll[0])
-    labels = np.asarray(ll[1])
+    concepts = load(input_list, gold_standard)
 
     print()
     print("/* %d-fold cross-validation (with %.2f test splits): */" % (num_rounds, test_portion))
-    cross_validate_all(ll)
+    cross_validate_all(concepts)
 
     print()
-    classifier = train_model(features, labels)
-    test_model('Training set', features, labels, classifier)
+    classifier = train_model(concepts)
+    test_model('Training set', concepts, classifier)
     dump_model(classifier)
