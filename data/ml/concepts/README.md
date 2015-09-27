@@ -9,15 +9,16 @@ It requires two inputs:
 
 	dataset-factoid-movies/moviesC/entity-linking.json
 
-  * Question dump dataset with concept features.  See data/ml/fbpath/README.md
-    for a discussion on how to get the question dump, or run
-    ``./gradlew questionDump`` and post-process the output with:
+  * Question dump dataset with concept features.  First, disable the top-5
+    restriction in src/main/java/cz/brmlab/yodaqa/analysis/question/CluesToConcepts.java
+    (near the end of process(); XXX).  Then:
 
-	python data/ml/qclass/repair-json.py questionDump.py > questionDump_fixed.json
+	./gradlew questionDump -PexecArgs="data/eval/moviesC-train.tsv data/ml/concepts/questionDump-tofix.json"
+	python data/ml/qclass/repair-json.py data/ml/concepts/questionDump-tofix.json > data/ml/concepts/questionDump.json
 
 To train the classifier:
 
-	python data/ml/concepts/concepts_train_logistic.py questionDump_fixed.json entity-linking.json
+	python data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesC/entity-linking.json
 
 Experiments
 ===========
