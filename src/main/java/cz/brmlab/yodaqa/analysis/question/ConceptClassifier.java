@@ -3,13 +3,15 @@ package cz.brmlab.yodaqa.analysis.question;
 import cz.brmlab.yodaqa.model.Question.Concept;
 
 /**
- * Class for classifying concepts using logistic regression model created by
- * data/ml/concepts/concepts_train_logistic.py script
+ * Classify each concept as either relevant or non-relevant.
+ * We use the logistic regression model created by
+ * data/ml/concepts/concepts_train_logistic.py script.
  */
 public class ConceptClassifier {
 					   /*edit dist	probability  	score	 getByLat	 getByNE	 getBySubj	  getByFuzzy   getByCW */
 	double[] weights = {0.10753278, 7.08861734, 0.53732016, -1.40466615, 0.95174967, 0.77767372, -1.52172064, -2.45157362};
 	double intercept = -3.34765646;
+	
 	public double calculateProbability(Concept l) {
 		double[] features = new double[8];
 		features[0] = l.getEditDistance();

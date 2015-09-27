@@ -3,15 +3,21 @@ Concept classification using logistic regression
 
 This script is for training and evaluating a classifier of concepts using the edit distance, dbpedia popularity, CrossWiki probability and other features.
 
-It requires the gold standard dataset. For moviesC-train, it is located in dataset-factoid-movies/moviesC/entity-linking.json
+It requires two inputs:
 
-First start repair-json.py from data/ml/qclass
+  * The gold standard dataset. For moviesC-train, it is located in:
 
-    python ../qclass/repair-json.py questionDump.py > questionDump_fixed.json
+	dataset-factoid-movies/moviesC/entity-linking.json
 
-Then start the script:
+  * Question dump dataset with concept features.  See data/ml/fbpath/README.md
+    for a discussion on how to get the question dump, or run
+    ``./gradlew questionDump`` and post-process the output with:
 
-    python concepts_train_logistic.py questionDump_fixed.json entity-linking.json
+	python data/ml/qclass/repair-json.py questionDump.py > questionDump_fixed.json
+
+To train the classifier:
+
+	python data/ml/concepts/concepts_train_logistic.py questionDump_fixed.json entity-linking.json
 
 Experiments
 ===========

@@ -137,8 +137,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			}
 		}
 
-		/* Sort ClueLabels by their score (editDist-based) and generate
-		 * new clues from them. */
+		/* Sort ClueLabels by their score (editDist-based), pick top N
+		 * and generate new clues from them.
+		 * FIXME: Rather pick top N per label? */
 		List<ClueLabel> labelList = new ArrayList<>(labels.values());
 		Collections.sort(labelList, new ClueLabelClassifierComparator());
 		List<ClueLabel> resList = labelList.subList(0, Math.min(5, labelList.size()));

@@ -16,13 +16,12 @@ import static org.apache.uima.fit.factory.CollectionReaderFactory.createReaderDe
  * Simplified pipeline to print QuestionAnalysis results
  */
 public class QuestionDump {
-
-    public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            System.err.println("Usage: QuestionDump INPUT.tsv/json OUTPUT.json");
-            System.err.println("Outputs the result of QuestionAnalysis");
-            System.exit(1);
-        }
+	public static void main(String[] args) throws Exception {
+		if (args.length != 2) {
+			System.err.println("Usage: QuestionDump INPUT.{tsv,json} OUTPUT.json");
+			System.err.println("Outputs the result of QuestionAnalysis");
+			System.exit(1);
+		}
 
 		String extension = args[0].substring(args[0].lastIndexOf(".") + 1, args[0].length());
 		CollectionReaderDescription reader;
@@ -40,16 +39,15 @@ public class QuestionDump {
 		AnalysisEngineDescription pipeline = QuestionAnalysisAE.createEngineDescription();
 
 		AnalysisEngineDescription printer = createEngineDescription(
-                QuestionPrinter.class,
-                QuestionPrinter.PARAM_JSONFILE, args[1],
-                ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
+				QuestionPrinter.class,
+				QuestionPrinter.PARAM_JSONFILE, args[1],
+				ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 
-     //   ParallelEngineFactory.registerFactory(); // comment out for a linear single-thread flow
+		// ParallelEngineFactory.registerFactory(); // comment out for a linear single-thread flow
 		/* XXX: Later, we will want to create an actual flow
 		 * to support scaleout. */
-        MultiCASPipeline.runPipeline(reader,
-                pipeline,
-                printer);
-    }
-
+		MultiCASPipeline.runPipeline(reader,
+				pipeline,
+				printer);
+	}
 }
