@@ -8,9 +8,18 @@ import cz.brmlab.yodaqa.model.Question.Concept;
  * data/ml/concepts/concepts_train_logistic.py script.
  */
 public class ConceptClassifier {
-					   /*edit dist	probability  	score	 getByLat	 getByNE	 getBySubj	  getByFuzzy   getByCW */
-	double[] weights = {0.10753278, 7.08861734, 0.53732016, -1.40466615, 0.95174967, 0.77767372, -1.52172064, -2.45157362};
-	double intercept = -3.34765646;
+	/* Model (trained on the whole training set): */
+	double[] weights = {
+		0.107533, // editDist
+		7.088617, // probability
+		0.537320, // score
+		-1.404666, // getByLAT
+		0.951750, // getByNE
+		0.777674, // getBySubject
+		-1.521721, // getByFuzzyLookup
+		-2.451574, // getByCWLookup
+	};
+	double intercept = -3.347656;
 	
 	public double calculateProbability(Concept l) {
 		double[] features = new double[8];
