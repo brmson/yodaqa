@@ -6,8 +6,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.stream.JsonReader;
@@ -282,7 +284,8 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * Merges the result for fuzzy and CrossWiki searches.
 	 * Priority is given to the results from label lookup, we add
 	 * the probability if the canon label matches.
-	 * May modify Article objects from the source lists.
+	 * May modify Article objects from the source lists,
+	 * as well as lists themselves!
 	 *
 	 * XXX: We rely that cwResult has only a single item.
 	 */
@@ -292,11 +295,19 @@ public class DBpediaTitles extends DBpediaLookup {
 		if (cwResult.isEmpty())
 			return fuzzyResult;
 
+		Map<String, Article> cwArticles = new HashMap<>();
+		for (Article a : cwResult)
+			cwArticles.put(a.getName(), a);
 		for (Article a : fuzzyResult) {
-			if (cwResult.get(0).getName().equals(a.getName())) {
-				a.prob = cwResult.get(0).getProb();
-				a.getByCWLookup = true;
-			}
+			Article cwA = cwArticles.get(a.getName());
+			if (cwA == null)
+				continue;
+			cwArticles.remove(a.getName());
+			a.prob = cwA.getProb();
+			a.getByCWLookup = true;
+		}
+		for (Article a : cwArticles.values()) {
+			fuzzyResult.add(a);
 		}
 		return fuzzyResult;
 	}
