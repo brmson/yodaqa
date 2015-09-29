@@ -8,34 +8,34 @@ import cz.brmlab.yodaqa.model.Question.Concept;
  * data/ml/concepts/concepts_train_logistic.py script.
  */
 public class ConceptClassifier {
-	/* Training data - correct: 585 (15.179%), incorrect: 3269 (84.821%) */
+	/* Training data - correct: 708 (17.230%), incorrect: 3401 (82.770%) */
 
 	/* 10-fold cross-validation (with 0.20 test splits): */
-	/* CV fold precision 92.996% (717/771) */
-	/* CV fold precision 91.569% (706/771) */
-	/* CV fold precision 93.126% (718/771) */
-	/* CV fold precision 95.331% (735/771) */
-	/* CV fold precision 94.034% (725/771) */
-	/* CV fold precision 93.256% (719/771) */
-	/* CV fold precision 93.126% (718/771) */
-	/* CV fold precision 94.423% (728/771) */
-	/* CV fold precision 91.958% (709/771) */
-	/* CV fold precision 92.996% (717/771) */
-	/* === CV average precision 93.281% (+-SD 1.047%) */
+	/* CV fold precision 90.754% (746/822) */
+	/* CV fold precision 91.849% (755/822) */
+	/* CV fold precision 91.606% (753/822) */
+	/* CV fold precision 90.268% (742/822) */
+	/* CV fold precision 91.727% (754/822) */
+	/* CV fold precision 90.754% (746/822) */
+	/* CV fold precision 92.336% (759/822) */
+	/* CV fold precision 91.119% (749/822) */
+	/* CV fold precision 91.119% (749/822) */
+	/* CV fold precision 91.606% (753/822) */
+	/* === CV average precision 91.314% (+-SD 0.589%) */
 
-	/* Training set precision 93.228% (3593/3854) */
+	/* Training set precision 91.190% (3747/4109) */
 	/* Model (trained on the whole training set): */
 	double[] weights = {
-		0.107533, // editDist
-		7.088617, // probability
-		0.537320, // score
-		-1.404666, // getByLAT
-		0.951750, // getByNE
-		0.777674, // getBySubject
-		-1.521721, // getByFuzzyLookup
-		-2.451574, // getByCWLookup
+		0.109481, // editDist
+		5.898663, // probability
+		0.507325, // score
+		-1.419685, // getByLAT
+		0.813817, // getByNE
+		0.777757, // getBySubject
+		-0.652947, // getByFuzzyLookup
+		-1.630315, // getByCWLookup
 	};
-	double intercept = -3.347656;
+	double intercept = -4.075044;
 	
 	public double calculateProbability(Concept l) {
 		double[] features = new double[8];
@@ -52,7 +52,7 @@ public class ConceptClassifier {
 			sum += features[i]*weights[i];
 		}
 		double probability = sigmoid(sum);
-		return sigmoid(sum);
+		return probability;
 	}
 
 	public double sigmoid(double z) {
