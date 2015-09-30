@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
@@ -116,8 +117,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			for (DBpediaTitles.Article a : c.getArticles()) {
 				String cookedLabel = cookLabel(clue.getLabel(), a.getCanonLabel());
 
-				logger.debug("creating concept <<{}>>, cooked <<{}>>, d={}",
-						a.getCanonLabel(), cookedLabel, a.getDist());
 				Concept concept = new Concept(resultView);
 				concept.setBegin(clue.getBegin());
 				concept.setEnd(clue.getEnd());
@@ -136,6 +135,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				double score = classifier.calculateProbability(concept);
 				concept.setScore(score);
 
+				logger.debug("creating concept <<{}>> cooked <<{}>> --> {}, d={}, lprob={}, logpop={}",
+						concept.getFullLabel(), concept.getCookedLabel(),
+						String.format(Locale.ENGLISH, "%.3f", concept.getScore()),
+						String.format(Locale.ENGLISH, "%.2f", concept.getEditDistance()),
+						String.format(Locale.ENGLISH, "%.3f", concept.getLabelProbability()),
+						String.format(Locale.ENGLISH, "%.3f", concept.getLogPopularity()));
+
 				ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 				clueLabels.add(cl);
 			}
@@ -145,6 +151,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				String cookedLabel = cl.getCookedLabel();
 				if (!labels.containsKey(cookedLabel)) {
 					labels.put(cookedLabel, cl);
+					logger.debug("init. concepts labelled <<{}>>",
+							cl.getCookedLabel());
 				} else {
 					/* Join same-label concepts. */
 					ClueLabel cl2 = labels.get(cookedLabel);
