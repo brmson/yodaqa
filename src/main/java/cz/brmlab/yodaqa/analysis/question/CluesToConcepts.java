@@ -2,6 +2,7 @@ package cz.brmlab.yodaqa.analysis.question;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -101,12 +102,16 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Build Concept annotations out of the linked clues,
 		 * aggregated by their labels.  (For example, the clue
 		 * "Madonna" would generate many concepts labelled
-		 * "Madonna", then one concept "Madonna, Maryland", etc.) */
+		 * "Madonna", then one concept "Madonna, Maryland", etc.)
+		 *
+		 * Keep just the top N concepts for each label (sorted by
+		 * classifier score). */
 		/* XXX: We assume no two different (non-subdued) clues
 		 * ever produce the same label. */
 		Map<String, ClueLabel> labels = new TreeMap<>(); // stable ordering (?)
 		for (LinkedClue c : keptClues) {
 			Clue clue = c.getClue();
+			List<ClueLabel> clueLabels = new ArrayList<>();
 			for (DBpediaTitles.Article a : c.getArticles()) {
 				String cookedLabel = cookLabel(clue.getLabel(), a.getCanonLabel());
 
@@ -127,24 +132,30 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setByFuzzyLookup(a.isByFuzzyLookup());
 				concept.setByCWLookup(a.isByCWLookup());
 
+				ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+				clueLabels.add(cl);
+			}
+
+			Collections.sort(clueLabels, new ClueLabelClassifierComparator());
+			for (ClueLabel cl : clueLabels.subList(0, Math.min(5, clueLabels.size()))) {
+				String cookedLabel = cl.getCookedLabel();
 				if (!labels.containsKey(cookedLabel)) {
-					/* First time for this particular label. */
-					ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 					labels.put(cookedLabel, cl);
 				} else {
-					labels.get(cookedLabel).add(concept);
+					/* Join same-label concepts. */
+					ClueLabel cl2 = labels.get(cookedLabel);
+					cl2.addAll(cl.getConcepts());
+					logger.debug("{} concepts labelled <<{}>>",
+						cl2.getConcepts().size(), cookedLabel);
 				}
 			}
 		}
 
-		/* Sort ClueLabels by their score (editDist-based), pick top N
-		 * and generate new clues from them.
-		 * FIXME: Rather pick top N per label? */
+		/* Sort ClueLabels by their classifier score and generate
+		 * new clues from them (we add a rank feature to clues). */
 		List<ClueLabel> labelList = new ArrayList<>(labels.values());
 		Collections.sort(labelList, new ClueLabelClassifierComparator());
-		List<ClueLabel> resList = labelList.subList(0, Math.min(5, labelList.size()));
-
-		addCluesForLabels(resultView, resList);
+		addCluesForLabels(resultView, labelList);
 	}
 
 	/** Get a set of clues to check for concept links. */
@@ -387,6 +398,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		public String getCookedLabel() { return cookedLabel; }
 		public List<Concept> getConcepts() { return concepts; }
 		public void add(Concept concept) { concepts.add(concept); }
+		public void addAll(Collection<Concept> conceptCol) { concepts.addAll(conceptCol); }
 	}
 
 	/* Compares LinkedClues using the clue length */
@@ -408,6 +420,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	private class ClueLabelClassifierComparator implements Comparator<ClueLabel> {
 		@Override
 		public int compare(ClueLabel t1, ClueLabel t2) {
+			/* XXX: Check probability of all concepts with this label? */
 			double cl1 = classifier.calculateProbability(t1.getConcepts().get(0));
 			double cl2 = classifier.calculateProbability(t2.getConcepts().get(0));
 			return -Double.compare(cl1,
