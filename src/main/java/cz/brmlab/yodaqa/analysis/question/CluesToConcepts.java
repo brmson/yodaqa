@@ -411,6 +411,14 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		public List<Concept> getConcepts() { return concepts; }
 		public void add(Concept concept) { concepts.add(concept); }
 		public void addAll(Collection<Concept> conceptCol) { concepts.addAll(conceptCol); }
+
+		public double getScore() {
+			double maxScore = 0;
+			for (Concept c : concepts)
+				if (c.getScore() > maxScore)
+					maxScore = c.getScore();
+			return maxScore;
+		}
 	}
 
 	/* Compares LinkedClues using the clue length */
@@ -425,10 +433,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		@Override
 		public int compare(ClueLabel t1, ClueLabel t2) {
 			/* XXX: Check probability of all concepts with this label? */
-			double cl1 = t1.getConcepts().get(0).getScore();
-			double cl2 = t2.getConcepts().get(0).getScore();
-			return -Double.compare(cl1,
-					cl2); // highest first
+			double cl1 = t1.getScore();
+			double cl2 = t2.getScore();
+			return -Double.compare(cl1, cl2); // highest first
 		}
 	}
 }
