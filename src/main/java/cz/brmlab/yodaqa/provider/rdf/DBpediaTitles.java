@@ -39,7 +39,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected String matchedLabel;
 		protected String canonLabel;
 		protected double dist; // edit dist.
-		protected double score; // relevance/prominence of the concept (universally or wrt. the question)
+		protected double pop; // relevance/prominence of the concept (universally or wrt. the question)
 		protected double prob;
 		protected boolean getByFuzzyLookup = false;
 		protected boolean getByCWLookup = false;
@@ -62,13 +62,13 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = dist;
 			this.prob = prob;
 		}
-		public Article(Article baseA, String label, int pageID, String name, double score, double prob) {
+		public Article(Article baseA, String label, int pageID, String name, double pop, double prob) {
 			this.name = name;
 			this.pageID = pageID;
 			this.matchedLabel = baseA.matchedLabel;
 			this.canonLabel = label;
 			this.dist = baseA.dist;
-			this.score = score;
+			this.pop = pop;
 			this.prob = prob;
 			this.getByCWLookup = baseA.getByCWLookup;
 			this.getByFuzzyLookup = baseA.getByFuzzyLookup;
@@ -79,7 +79,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
 		public double getDist() { return dist; }
-		public double getScore() { return score; }
+		public double getPop() { return pop; }
 		public double getProb() { return prob; }
 		public boolean isByFuzzyLookup() { return getByFuzzyLookup; }
 		public boolean isByCWLookup() { return getByCWLookup; }
@@ -172,13 +172,13 @@ public class DBpediaTitles extends DBpediaLookup {
 
 			String tgName = tgRes.substring("http://dbpedia.org/resource/".length());
 
-			/* We approximate the concept score simply by how
+			/* We approximate the concept popularity simply by how
 			 * many relations it partakes in.  We take a log
 			 * though to keep it at least roughly normalized. */
-			double score = Math.log(queryCount(tgRes));
+			double pop = Math.log(queryCount(tgRes));
 
-			logger.debug("DBpedia {}: [[{}]] ({})", name, label, score);
-			results.add(new Article(baseA, label, pageID, tgName, score, prob));
+			logger.debug("DBpedia {}: [[{}]] ({})", name, label, pop);
+			results.add(new Article(baseA, label, pageID, tgName, pop, prob));
 		}
 
 		return results;

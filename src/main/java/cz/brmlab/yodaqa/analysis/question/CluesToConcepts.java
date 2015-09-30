@@ -47,7 +47,8 @@ import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
  * way and isn't further split to "Moby" and "Dick" too.
  *
  * (ii) The page corresponding to this concept bypasses full-text solr
- * search and is directly considered for passage extraction.
+ * search and is directly considered for passage extraction.  It is also
+ * used as a base for structured searches.
  *
  * To achieve (i), we will also delete all clues covered by ClueConcept,
  * and we will of course consider ClueConcept candidates from the longest
@@ -122,15 +123,18 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setEnd(clue.getEnd());
 				concept.setFullLabel(a.getCanonLabel());
 				concept.setCookedLabel(cookedLabel);
-				concept.setProbability(a.getProb());
+				concept.setLabelProbability(a.getProb());
 				concept.setPageID(a.getPageID());
 				concept.setEditDistance(a.getDist());
-				concept.setScore(a.getScore());
+				concept.setLogPopularity(a.getPop());
 				concept.setBySubject(c.isBySubject());
 				concept.setByLAT(c.isByLAT());
 				concept.setByNE(c.isByNE());
 				concept.setByFuzzyLookup(a.isByFuzzyLookup());
 				concept.setByCWLookup(a.isByCWLookup());
+
+				double score = classifier.calculateProbability(concept);
+				concept.setScore(score);
 
 				ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 				clueLabels.add(cl);
@@ -408,21 +412,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			return -Integer.compare(t1.getLen(), t2.getLen()); // longest first
 		}
 	}
-	/* Compares ClueLabels using the concept score */
-	private class ClueLabelScoreComparator implements Comparator<ClueLabel> {
-		@Override
-		public int compare(ClueLabel t1, ClueLabel t2) {
-			return -Double.compare(t1.getConcepts().get(0).getScore(),
-						t2.getConcepts().get(0).getScore()); // highest first
-		}
-	}
 	/* Compares ClueLabels using the classifier probability*/
 	private class ClueLabelClassifierComparator implements Comparator<ClueLabel> {
 		@Override
 		public int compare(ClueLabel t1, ClueLabel t2) {
 			/* XXX: Check probability of all concepts with this label? */
-			double cl1 = classifier.calculateProbability(t1.getConcepts().get(0));
-			double cl2 = classifier.calculateProbability(t2.getConcepts().get(0));
+			double cl1 = t1.getConcepts().get(0).getScore();
+			double cl2 = t2.getConcepts().get(0).getScore();
 			return -Double.compare(cl1,
 					cl2); // highest first
 		}

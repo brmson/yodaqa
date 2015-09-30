@@ -27,8 +27,8 @@ public class ConceptClassifier {
 	/* Model (trained on the whole training set): */
 	double[] weights = {
 		0.109481, // editDist
-		5.898663, // probability
-		0.507325, // score
+		5.898663, // labelProbability
+		0.507325, // logPopularity
 		-1.419685, // getByLAT
 		0.813817, // getByNE
 		0.777757, // getBySubject
@@ -40,8 +40,8 @@ public class ConceptClassifier {
 	public double calculateProbability(Concept l) {
 		double[] features = new double[8];
 		features[0] = l.getEditDistance();
-		features[1] = l.getProbability();
-		features[2] = l.getScore();
+		features[1] = l.getLabelProbability();
+		features[2] = l.getLogPopularity();
 		features[3] = l.getByLAT() ? 1 : 0;
 		features[4] = l.getByNE() ? 1 : 0;
 		features[5] = l.getBySubject() ? 1 : 0;

@@ -260,13 +260,13 @@
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>score</name>
-            <description>The score of the concept, expressing its prominence or relevance to question.</description>
+            <name>logPopularity</name>
+            <description>The log(popularity) of the concept, where popularity is the number of concept links in DBpedia.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>probability</name>
-            <description>Probability of the label expressing the concept (when from CrossWikis dataset)</description>
+            <name>labelProbability</name>
+            <description>Probability of the label generally expressing the concept (regardless of context; when from CrossWikis dataset)</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
@@ -275,8 +275,13 @@
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>score</name>
+            <description>Concept score in [0,1], classifier-determined probability estimate of this concept being a correctly linked entity</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>rr</name>
-            <description>The reciprocial rank in the per-clue list of concepts sorted by score.</description>
+            <description>The reciprocial rank in a score-sorted list of concepts.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
         </features>

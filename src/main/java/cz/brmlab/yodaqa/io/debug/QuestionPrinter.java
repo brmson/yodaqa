@@ -111,8 +111,8 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "\"cookedLabel\": \"" + c.getCookedLabel().replaceAll("\"", "\\\\\"") + "\", ";
 			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\", ";
 			Concepttmp += "\"editDist\": \"" + c.getEditDistance() + "\", ";
-			Concepttmp += "\"probability\": \"" + c.getProbability() + "\", ";
-			Concepttmp += "\"score\": \"" + c.getScore() + "\", ";
+			Concepttmp += "\"labelProbability\": \"" + c.getLabelProbability() + "\", ";
+			Concepttmp += "\"logPopularity\": \"" + c.getLogPopularity() + "\", ";
 			Concepttmp += "\"getByLAT\": \"" + (c.getByLAT() ? 1 : 0) + "\", ";
 			Concepttmp += "\"getByNE\": \"" + (c.getByNE() ? 1 : 0) + "\", ";
 			Concepttmp += "\"getBySubject\": \"" + (c.getBySubject() ? 1 : 0) + "\", ";

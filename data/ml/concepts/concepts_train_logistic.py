@@ -11,15 +11,13 @@
 
 from __future__ import print_function
 from __future__ import division
-import numpy as np
 import sys
 import json
 import random
 from sklearn import linear_model
 
 # the set of input features; the labels match Concept attributes in questionDump
-# 'score' is log(popularity) where popularity is number of DBpedia interlinks
-feats = ['editDist', 'probability', 'score', 'getByLAT', 'getByNE', 'getBySubject', 'getByFuzzyLookup', 'getByCWLookup']
+feats = ['editDist', 'labelProbability', 'logPopularity', 'getByLAT', 'getByNE', 'getBySubject', 'getByFuzzyLookup', 'getByCWLookup']
 
 # cross validation parameters
 num_rounds = 10
