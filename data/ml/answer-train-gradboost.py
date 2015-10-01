@@ -20,9 +20,13 @@ import json
 
 from answertrain import *
 
+
 def dump_model(cfier, labels):
-    data = {}
-    forest = []
+    print('{')
+    print('  "prior": %f,' % (cfier.init_.prior,))
+    print('  "learning_rate": %f,' % (cfier.learning_rate,))
+    print('  "labels": %s,' % (json.dumps(labels),))
+    print('  "forest": [')
     for tree in cfier.estimators_:
         line = dict()
         line["children_left"] = tree[0].tree_.children_left.tolist()
@@ -30,13 +34,10 @@ def dump_model(cfier, labels):
         line["features"] = tree[0].tree_.feature.tolist()
         line["thresholds"] = tree[0].tree_.threshold.tolist()
         line["values"] = [x[0][0] for x in tree[0].tree_.value]
-        forest.append(line)
+        print('    %s%s' % (json.dumps(line, sort_keys=True), ',' if tree != cfier.estimators_[-1] else ''))
 
-    data["prior"] = cfier.init_.prior
-    data["learning_rate"] = cfier.learning_rate
-    data["forest"] = forest
-    data["labels"] = labels
-    json.dump(data, sys.stdout)
+    print('  ]')
+    print('}')
 
 
 class GBFactory:
