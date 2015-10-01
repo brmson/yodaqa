@@ -134,6 +134,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 				double score = classifier.calculateProbability(concept);
 				concept.setScore(score);
+				c.addScore(score);
 
 				logger.debug("creating concept <<{}>> cooked <<{}>> --> {}, d={}, lprob={}, logpop={}",
 						concept.getFullLabel(), concept.getCookedLabel(),
@@ -142,7 +143,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 						String.format(Locale.ENGLISH, "%.3f", concept.getLabelProbability()),
 						String.format(Locale.ENGLISH, "%.3f", concept.getLogPopularity()));
 
-				ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+				ClueLabel cl = new ClueLabel(c, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 				clueLabels.add(cl);
 			}
 
@@ -155,12 +156,23 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 							cl.getCookedLabel());
 				} else {
 					/* Join same-label concepts. */
+					/* XXX: We do not properly merge
+					 * LinkedClue and related references. */
 					ClueLabel cl2 = labels.get(cookedLabel);
 					cl2.addAll(cl.getConcepts());
 					logger.debug("{} concepts labelled <<{}>>",
 						cl2.getConcepts().size(), cookedLabel);
 				}
 			}
+		}
+
+		/* Sort LinkedClues by the score of their best ClueLabels
+		 * and set their RRs; this will propagate to Concepts. */
+		Collections.sort(keptClues, new LinkedClueBestScoreComparator());
+		int rank = 1;
+		for (LinkedClue c : keptClues) {
+			c.setRr(1 / (double) rank);
+			rank++;
 		}
 
 		/* Sort ClueLabels by their classifier score and generate
@@ -265,7 +277,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		boolean originalClueNEd = false; // guard for single ClueNE generation
 		int rank = 1;
 		for (ClueLabel cl : labelList) {
-			Clue clue = cl.getClue();
+			Clue clue = cl.getLinkedClue().getClue();
 			String clueLabel = clue.getLabel();
 			String cookedLabel = cl.getCookedLabel();
 
@@ -274,7 +286,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			clue.removeFromIndexes();
 
 			for (Concept concept : cl.getConcepts()) {
-				concept.setRr(1 / ((double) rank));
+				concept.setSourceRr(cl.getLinkedClue().getRr());
+				concept.setLabelRr(1 / ((double) rank));
 				concept.addToIndexes();
 				rank++;
 			}
@@ -356,6 +369,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		 * of a certain kind. */
 		protected boolean bySubject, byLAT, byNE;
 
+		/** The score of the best-faring concept produced
+		 * by this clue. */
+		protected double bestScore;
+		/** The reciprocial rank in a list of LinkedClues
+		 * sorted by bestScore. */
+		protected double rr;
+
 		public LinkedClue(Clue clue, List<DBpediaTitles.Article> articles) {
 			this.clue = clue;
 			this.articles = articles;
@@ -375,6 +395,11 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		public void setByLAT(boolean byLAT) { this.byLAT = byLAT; }
 		public boolean isByNE() { return byNE; }
 		public void setByNE(boolean byNE) { this.byNE = byNE; }
+
+		public double getBestScore() { return bestScore; }
+		public void addScore(double score) { if (score > bestScore) bestScore = score; }
+		public double getRr() { return rr; }
+		public void setRr(double rr) { this.rr = rr; }
 
 		@Override
 		public boolean equals(Object o) {
@@ -396,18 +421,18 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	 *
 	 * The concepts are assumed to be sorted by edit distance. */
 	private class ClueLabel {
-		protected Clue clue;
+		protected LinkedClue linkedClue;
 		protected String cookedLabel;
 		protected List<Concept> concepts;
 
-		public ClueLabel(Clue clue, String cookedLabel, List<Concept> concepts) {
-			this.clue = clue;
+		public ClueLabel(LinkedClue linkedClue, String cookedLabel, List<Concept> concepts) {
+			this.linkedClue = linkedClue;
 			this.cookedLabel = cookedLabel;
 			this.concepts = concepts;
 		}
 
-		public Clue getClue() { return clue; }
 		public String getCookedLabel() { return cookedLabel; }
+		public LinkedClue getLinkedClue() { return linkedClue; }
 		public List<Concept> getConcepts() { return concepts; }
 		public void add(Concept concept) { concepts.add(concept); }
 		public void addAll(Collection<Concept> conceptCol) { concepts.addAll(conceptCol); }
@@ -426,6 +451,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		@Override
 		public int compare(LinkedClue t1, LinkedClue t2) {
 			return -Integer.compare(t1.getLen(), t2.getLen()); // longest first
+		}
+	}
+	/* Compares LinkedClues using the bestScore */
+	private class LinkedClueBestScoreComparator implements Comparator<LinkedClue> {
+		@Override
+		public int compare(LinkedClue t1, LinkedClue t2) {
+			return -Double.compare(t1.getBestScore(), t2.getBestScore()); // highest first
 		}
 	}
 	/* Compares ClueLabels using the classifier probability*/

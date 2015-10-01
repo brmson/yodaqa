@@ -280,8 +280,13 @@
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>rr</name>
-            <description>The reciprocial rank in a score-sorted list of concepts.</description>
+            <name>sourceRr</name>
+            <description>The reciprocial rank in a best-score-sorted list of originating clues.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>labelRr</name>
+            <description>The reciprocial rank in a score-sorted list of output labelled concepts.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
         </features>
