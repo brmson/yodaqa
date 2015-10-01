@@ -44,6 +44,9 @@ modelfile0="$basedir/data/ml/models/decision-forest-${cid}.model"
 modelfile1="$basedir/data/ml/models/decision-forest1-${cid}.model"
 modelfile2="$basedir/data/ml/models/decision-forest2-${cid}.model"
 xmidir="$basedir/data/eval/answer-xmi/${cid}-$dataset"
+csvdir="$basedir/data/eval/answer-csv/${cid}-$dataset"
+csv1dir="$basedir/data/eval/answer1-csv/${cid}-$dataset"
+csv2dir="$basedir/data/eval/answer2-csv/${cid}-$dataset"
 barrierfile=_multistage-barrier
 mkdir -p $basedir/data/eval/tsv
 mkdir -p $basedir/data/eval/answer-csv
@@ -54,9 +57,9 @@ mkdir -p "$xmidir" "$xmidir"1 "$xmidir"2
 
 if [ "$retrain" = 1 ]; then
 	args0="-Dcz.brmlab.yodaqa.train_passextract=$basedir/data/ml/tsv/${dataset}-passextract-${cid}.tsv
-	       -Dcz.brmlab.yodaqa.train_answer=$atrainfile0 -Dcz.brmlab.yodaqa.csv_answer=$basedir/data/eval/answer-csv/${cid}-$dataset"
-	args1="-Dcz.brmlab.yodaqa.train_answer1=$atrainfile1 -Dcz.brmlab.yodaqa.csv_answer1=$basedir/data/eval/answer1-csv/${cid}-$dataset"
-	args2="-Dcz.brmlab.yodaqa.train_answer2=$atrainfile2 -Dcz.brmlab.yodaqa.csv_answer2=$basedir/data/eval/answer2-csv/${cid}-$dataset"
+	       -Dcz.brmlab.yodaqa.train_answer=$atrainfile0 -Dcz.brmlab.yodaqa.csv_answer=$csvdir"
+	args1="-Dcz.brmlab.yodaqa.train_answer1=$atrainfile1 -Dcz.brmlab.yodaqa.csv_answer1=$csvdir1"
+	args2="-Dcz.brmlab.yodaqa.train_answer2=$atrainfile2 -Dcz.brmlab.yodaqa.csv_answer2=$csvdir2"
 fi
 
 if [ -e $barrierfile -o -e ${barrierfile}1 -o -e ${barrierfile}2 ]; then
@@ -111,6 +114,7 @@ else
 	## Reuse data files from $basecommit
 	echo "Reusing phase0 data from ${basecommit}"
 	base_xmidir="$basedir/data/eval/answer-xmi/${basecommit}-$dataset"
+	gunzip "$base_xmidir"/*.gz || :
 	base_atrainfile0="$basedir/data/ml/tsv/${dataset}-answer-${basecommit}.tsv"
 fi
 
@@ -134,6 +138,16 @@ time ./gradlew tsvgs \
 	$system_property \
 	$args1
 
+if [ -z "$basecommit" ]; then
+	# In case of "$basecommit", re-gzip could be racy with another
+	# train-and-eval running in parallel.
+	gzip -f "$base_xmidir"/*.xmi &
+	if [ "$retrain" = 1 ]; then
+		gzip -f "$base_atrainfile0" &
+		gzip -f "$csvdir"/*.csv &
+	fi
+fi
+
 train_and_sync "1" "$atrainfile1" "$modelfile1"
 
 # Re-score with new model
@@ -154,6 +168,12 @@ time ./gradlew tsvgs \
 	$system_property \
 	$args2
 
+gzip -f "$base_xmidir"1/*.xmi &
+if [ "$retrain" = 1 ]; then
+	gzip -f "$atrainfile1" &
+	gzip -f "$csvdir1"/*.csv &
+fi
+
 train_and_sync "2" "$atrainfile2" "$modelfile2"
 
 # Re-score with new model
@@ -165,7 +185,13 @@ time ./gradlew tsvgs \
 	$system_property \
 	$args2
 
+gzip -f "$base_xmidir"2/*.xmi &
+if [ "$retrain" = 1 ]; then
+	gzip -f "$atrainfile2" &
+	gzip -f "$csvdir2"/*.csv &
+fi
 
 echo "$outfile2"
 
 } 2>&1 | tee "$basedir/logs/${dataset}-${cid}.log"
+gzip -f "$basedir/logs/${dataset}-${cid}.log"
