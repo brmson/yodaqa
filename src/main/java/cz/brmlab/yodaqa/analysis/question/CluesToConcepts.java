@@ -289,7 +289,6 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setSourceRr(cl.getLinkedClue().getRr());
 				concept.setLabelRr(1 / ((double) rank));
 				concept.addToIndexes();
-				rank++;
 			}
 
 			/* Maybe the concept clue has a different label than
@@ -324,6 +323,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 							clue, clue.getLabel(), clue.getWeight());
 				originalClueNEd = true; // once is enough
 			}
+
+			rank++;
 		}
 	}
 
