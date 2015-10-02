@@ -105,7 +105,7 @@ public class DBpediaTitles extends DBpediaLookup {
 					}
 				}
 			}
-			List<Article> entities = mergeResults(fuzzyLookupEntities, crossWikiEntities);
+			List<Article> entities = mergeResults(fuzzyLookupEntities, crossWikiEntities, logger);
 			List<Article> results = new ArrayList<>();
 			for (Article a : entities) {
 				results.addAll(queryArticle(a, logger));
@@ -177,7 +177,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			 * though to keep it at least roughly normalized. */
 			double pop = Math.log(queryCount(tgRes));
 
-			logger.debug("DBpedia {}: [[{}]] ({})", name, label, pop);
+			logger.debug("DBpedia {}: [[{}]] (id={}; pop={})", name, label, pageID, pop);
 			results.add(new Article(baseA, label, pageID, tgName, pop, prob));
 		}
 
@@ -272,7 +272,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			if (results.isEmpty()) {
 				results.add(o);
 			}
-			logger.debug("sqlite-lookup({}) returned: d{} ~{} [{}] {} {}", label, o.getDist(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+			logger.debug("sqlite-lookup({}) returned: p{} ~{} [{}] {} {}", label, o.getProb(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 		}
 		jr.endArray();
 		jr.endObject();
@@ -286,27 +286,31 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * the probability if the canon label matches.
 	 * May modify Article objects from the source lists,
 	 * as well as lists themselves!
-	 *
-	 * XXX: We rely that cwResult has only a single item.
 	 */
-	public List<Article> mergeResults(List<Article> fuzzyResult, List<Article> cwResult) {
+	public List<Article> mergeResults(List<Article> fuzzyResult, List<Article> cwResult, Logger logger) {
 		if (fuzzyResult.isEmpty())
 			return cwResult;
 		if (cwResult.isEmpty())
 			return fuzzyResult;
 
 		Map<String, Article> cwArticles = new HashMap<>();
-		for (Article a : cwResult)
+		for (Article a : cwResult) {
 			cwArticles.put(a.getName(), a);
+		}
 		for (Article a : fuzzyResult) {
 			Article cwA = cwArticles.get(a.getName());
-			if (cwA == null)
+			if (cwA == null) {
+				logger.debug("merge: fuzzyResult {}", a.getName());
 				continue;
+			} else {
+				logger.debug("merge: fuzzyResult+cwResult {}", a.getName());
+			}
 			cwArticles.remove(a.getName());
 			a.prob = cwA.getProb();
 			a.getByCWLookup = true;
 		}
 		for (Article a : cwArticles.values()) {
+			logger.debug("merge: cwResult {}", a.getName());
 			fuzzyResult.add(a);
 		}
 		return fuzzyResult;
