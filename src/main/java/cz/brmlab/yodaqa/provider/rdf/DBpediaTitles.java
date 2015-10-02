@@ -7,9 +7,11 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.stream.JsonReader;
@@ -110,6 +112,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			for (Article a : entities) {
 				results.addAll(queryArticle(a, logger));
 			}
+			results = deduplicateResults(results);
 			if (!results.isEmpty())
 				return results;
 		}
@@ -314,5 +317,26 @@ public class DBpediaTitles extends DBpediaLookup {
 			fuzzyResult.add(a);
 		}
 		return fuzzyResult;
+	}
+
+	/** Eliminate duplicate Article objects from results.
+	 * This may happen e.g. by fuzzy-lookup linking to [[Top Gun]]
+	 * and sqlite-lookup linking to [[Top Gun (film)]], both of which
+	 * are the same pageID; so use pageID as the deduplication key.
+	 *
+	 * This not only creates query overhead, but in a parallel setting
+	 * due to slightly non-deterministic merging (XXX figure out why?)
+	 * it may include a quite wide variance in benchmark results,
+	 * apparently! */
+	protected List<Article> deduplicateResults(List<Article> results) {
+		List<Article> newResults = new ArrayList<>();
+		Set<Integer> visitedPageIDs = new HashSet<>();
+		for (Article r : results) {
+			if (visitedPageIDs.contains(r.getPageID()))
+				continue;
+			newResults.add(r);
+			visitedPageIDs.add(r.getPageID());
+		}
+		return newResults;
 	}
 }
