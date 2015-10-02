@@ -330,12 +330,20 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * apparently! */
 	protected List<Article> deduplicateResults(List<Article> results) {
 		List<Article> newResults = new ArrayList<>();
-		Set<Integer> visitedPageIDs = new HashSet<>();
+		Map<Integer, Article> byPageIDs = new HashMap<>();
 		for (Article r : results) {
-			if (visitedPageIDs.contains(r.getPageID()))
+			Article r2 = byPageIDs.get(r.getPageID());
+			if (r2 != null) {
+				// already have it, merge
+				if (r.prob > r2.prob)
+					r2.prob = r.prob;
+				// pop, dist is guaranteed to be the same
+				r2.getByCWLookup = r2.getByCWLookup || r.getByCWLookup;
+				r2.getByFuzzyLookup = r2.getByFuzzyLookup || r.getByFuzzyLookup;
 				continue;
+			}
 			newResults.add(r);
-			visitedPageIDs.add(r.getPageID());
+			byPageIDs.put(r.getPageID(), r);
 		}
 		return newResults;
 	}
