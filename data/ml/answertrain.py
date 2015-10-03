@@ -317,9 +317,9 @@ def dump_answers(cfier, fv_test, class_test):
 
 def cross_validate_one(idx):
     global _g_cv_data
-    (answersets, labels, cfier_factory) = _g_cv_data
+    (answersets, labels, cfier_factory, base_seed) = _g_cv_data
     # Make sure each worker has a different random seed
-    random.seed(random.randint(0,2**31) + idx)
+    random.seed(base_seed + idx)
     # Generate a random train/test set split
     (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
     # print np.size(fv_train, axis=0), np.size(class_train), np.size(fv_test, axis=0), np.size(class_test)
@@ -339,7 +339,7 @@ def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     # for each sub-process, dramatically increasing memory improvements;
     # 16GB RAM is not enough for 8-thread cross-validation on large2180.
     global _g_cv_data
-    _g_cv_data = (answersets, labels, cfier_factory)
+    _g_cv_data = (answersets, labels, cfier_factory, random.randint(0,2**31))
 
     processes = os.environ.get('ANSWERTRAIN_N_THREADS',
                 os.environ.get('YODAQA_N_THREADS', None))
