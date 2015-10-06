@@ -17,6 +17,7 @@ import joblib
 import numpy as np
 import numpy.random as random
 import json
+import random
 
 from answertrain import *
 
@@ -46,7 +47,8 @@ class GBFactory:
         self.base_class_ratio = self.cfier_params.pop('base_class_ratio', 0.5)
 
     def __call__(self, class_ratio, fv_train, class_train):
-        cfier = ensemble.GradientBoostingClassifier(**self.cfier_params)
+        rs = random.randint(0,2**31)
+        cfier = ensemble.GradientBoostingClassifier(random_state=rs, **self.cfier_params)
         sample_weight = compute_sample_weight({0: 1, 1: self.base_class_ratio/class_ratio}, class_train)
         cfier.fit(fv_train, class_train, sample_weight=sample_weight)
         return cfier
@@ -56,6 +58,7 @@ if __name__ == "__main__":
     # Seed always to the same number to get reproducible builds
     # TODO: Make this configurable on the command line or in the environment
     random.seed(17151713)
+    np.random.seed(random.randint(0,2**31))
 
     modelparams = sys.argv[1:]
     if (len(modelparams) == 0):

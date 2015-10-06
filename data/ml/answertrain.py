@@ -24,12 +24,22 @@ test_portion = 1.0/2
 
 class AnswerSet:
     """
-    A set of answers pertaining a single document, i.e. from which
+    A set of answers pertaining a single question, i.e. from which
     top num_picked answers are selected.
     """
     def __init__(self, fv_set, class_set):
-        self.fv_set = np.array(fv_set)
-        self.class_set = np.array(class_set)
+        # Sort the vectors (YodaQA output order is unstable),
+        # then shuffle (to randomize).  This ensures that
+        # vectors go in randomized, but reproducible across runs.
+        fv_set = np.array(fv_set)
+        class_set = np.array(class_set)
+
+        order = np.lexsort(np.hstack([fv_set, np.array(class_set, ndmin=2).T]).T)
+        z = zip(fv_set[order], class_set[order])
+        random.shuffle(z)
+
+        self.fv_set = np.array([i[0] for i in z])
+        self.class_set = np.array([i[1] for i in z])
 
     def measure(self, scorer):
         # Perform the selection of top N answers within this answerset
