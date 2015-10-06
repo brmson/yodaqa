@@ -14,6 +14,10 @@
             <featureName>confidence</featureName>
             <comparator>reverse</comparator>
           </fsIndexKey>
+          <fsIndexKey>
+            <featureName>text</featureName>
+            <comparator>standard</comparator>
+          </fsIndexKey>
         </keys>
       </fsIndexDescription>
     </fsIndexes>
