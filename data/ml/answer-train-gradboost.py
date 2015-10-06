@@ -32,8 +32,8 @@ def dump_model(cfier, labels):
         line["children_left"] = tree[0].tree_.children_left.tolist()
         line["children_right"] = tree[0].tree_.children_right.tolist()
         line["features"] = tree[0].tree_.feature.tolist()
-        line["thresholds"] = tree[0].tree_.threshold.tolist()
-        line["values"] = [x[0][0] for x in tree[0].tree_.value]
+        line["thresholds"] = [float('%.4f' % (x,)) for x in tree[0].tree_.threshold.tolist()]
+        line["values"] = [float('%.4f' % (x[0][0],)) for x in tree[0].tree_.value]
         print('    %s%s' % (json.dumps(line, sort_keys=True), ',' if tree != cfier.estimators_[-1] else ''))
 
     print('  ]')
