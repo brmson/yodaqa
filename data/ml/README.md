@@ -17,6 +17,9 @@ and are *not* covered in the rest of this document:
   * Question classification by logistic regression using question features.
     Its model data lives in ``data/ml/qclass``, refer to the README there.
 
+  * Entity linking classifier for selection of concepts to link.
+    Its model data lives in ``data/ml/concepts``, refer to the README there.
+
 Then, we have some generic infrastructure that we describe below and use for:
 
   * Passage scoring during the final step of passage extraction, where we
