@@ -69,9 +69,9 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		/*{"qId": "...", "sv": "...", "LAT" : [ {...}, {...}, {...}]} */
-		String line = "{\"qId\": " + "\"" + qi.getQuestionId() + "\"" + ", " + "\"SV\": ";
-
-		String SVtmp ="[";
+		String line = "{\"qId\": " + "\"" + qi.getQuestionId() + "\"" + ", ";
+		line += "\"qText\": " + "\"" +qi.getQuestionText() + "\"" +", ";
+		String SVtmp = "\"SV\":  [";
 		for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
 			SV sv = (SV) SVIterator.next();
 			SVtmp += "\"" + sv.getCoveredText() + "\"";
@@ -109,14 +109,23 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "{";
 			Concepttmp += "\"fullLabel\": \"" + c.getFullLabel().replaceAll("\"", "\\\\\"") + "\", ";
 			Concepttmp += "\"cookedLabel\": \"" + c.getCookedLabel().replaceAll("\"", "\\\\\"") + "\", ";
-			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\"";
+			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\", ";
+			Concepttmp += "\"editDist\": \"" + c.getEditDistance() + "\", ";
+			Concepttmp += "\"labelProbability\": \"" + c.getLabelProbability() + "\", ";
+			Concepttmp += "\"logPopularity\": \"" + c.getLogPopularity() + "\", ";
+			Concepttmp += "\"getByLAT\": \"" + (c.getByLAT() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getByNE\": \"" + (c.getByNE() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getBySubject\": \"" + (c.getBySubject() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getByFuzzyLookup\": \"" + (c.getByFuzzyLookup() ? 1 : 0) + "\", ";
+			Concepttmp += "\"getByCWLookup\": \"" + (c.getByCWLookup() ? 1 : 0) + "\"";
+
 			Concepttmp += "}";
 			//not last, add comma
 			if (iterator.hasNext()) {
 				Concepttmp += ", ";
 			}
 		}
-		Concepttmp += "], ";
+		Concepttmp += "] ";
 		line += Concepttmp;
 
 		line += "}";
