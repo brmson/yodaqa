@@ -24,16 +24,18 @@ the movies domain - movies, directors, actors, screenplays, academy awards...
 We aim to maximize performance on this specific set, gather specific
 datasets, etc.  We use specifically trained models, but attempt not
 to implement specifically tuned heuristics or hard-coded rules.
+We check this on the (i) moviesC, and (ii) WebQuestions datasets.
+Detailed performance info is available at:
 
-There is also a d/movies-dt branch, which is being continuously rebased
-on top of d/movies, merging in f/dectrees until we merge it in for good.
-The performance is notably better with decision forest answer classifier
-on this domain:
+	https://github.com/brmson/yodaqa/wiki/Benchmarks
 
-logistic regression:
-	moviesBE-tes u9186614 2015-07-20 Merge branch 'master... 55/115/168 32.7%/68.5% mrr 0.418 avgtime 1121.953
-f/dectrees:
-	moviesBE-tes u0af5e3d 2015-07-20 Merge remote-trackin... 63/115/168 37.5%/68.5% mrr 0.456 avgtime 650.212
+More details on YodaQA plus links to some papers are available at:
+
+	http://ailao.eu/yodaqa/
+
+and you can play with a live demo of d/movies at
+
+	http://movies.ailao.eu/
 
 ## Installation Instructions
 
