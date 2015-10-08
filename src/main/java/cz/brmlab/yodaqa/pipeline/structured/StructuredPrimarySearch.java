@@ -145,8 +145,6 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	 */
 	protected void propertyToAnswer(JCas jcas, PropertyValue property,
 									int isLast, JCas questionView) throws Exception {
-		logger.info(" FOUND: {} -- {}", property.getProperty(), property.getValue());
-
 		jcas.setDocumentText(property.getValue());
 		jcas.setDocumentLanguage("en"); // XXX
 
@@ -175,6 +173,10 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 			fv.setFeature(AF.PropertyScore, property.getScore());
 		double gloVeScore = PropertyGloVeScoring.getInstance().relatedness(questionView.getDocumentText(), property.getProperty());
 		fv.setFeature(AF.PropertyGloVeScore, gloVeScore);
+
+		logger.info(" FOUND: {} -- {}  :: prop score={}, GloVe score={}",
+				property.getProperty(), property.getValue(),
+				property.getScore(), gloVeScore);
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
