@@ -24,12 +24,22 @@ test_portion = 1.0/2
 
 class AnswerSet:
     """
-    A set of answers pertaining a single document, i.e. from which
+    A set of answers pertaining a single question, i.e. from which
     top num_picked answers are selected.
     """
     def __init__(self, fv_set, class_set):
-        self.fv_set = np.array(fv_set)
-        self.class_set = np.array(class_set)
+        # Sort the vectors (YodaQA output order is unstable),
+        # then shuffle (to randomize).  This ensures that
+        # vectors go in randomized, but reproducible across runs.
+        fv_set = np.array(fv_set)
+        class_set = np.array(class_set)
+
+        order = np.lexsort(np.hstack([fv_set, np.array(class_set, ndmin=2).T]).T)
+        z = zip(fv_set[order], class_set[order])
+        random.shuffle(z)
+
+        self.fv_set = np.array([i[0] for i in z])
+        self.class_set = np.array([i[1] for i in z])
 
     def measure(self, scorer):
         # Perform the selection of top N answers within this answerset
@@ -317,9 +327,9 @@ def dump_answers(cfier, fv_test, class_test):
 
 def cross_validate_one(idx):
     global _g_cv_data
-    (answersets, labels, cfier_factory) = _g_cv_data
+    (answersets, labels, cfier_factory, base_seed) = _g_cv_data
     # Make sure each worker has a different random seed
-    random.seed(random.randint(0,2**31) + idx)
+    random.seed(base_seed + idx)
     # Generate a random train/test set split
     (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
     # print np.size(fv_train, axis=0), np.size(class_train), np.size(fv_test, axis=0), np.size(class_test)
@@ -339,7 +349,7 @@ def cross_validate(answersets, labels, cfier_factory, num_rounds=num_rounds):
     # for each sub-process, dramatically increasing memory improvements;
     # 16GB RAM is not enough for 8-thread cross-validation on large2180.
     global _g_cv_data
-    _g_cv_data = (answersets, labels, cfier_factory)
+    _g_cv_data = (answersets, labels, cfier_factory, random.randint(0,2**31))
 
     processes = os.environ.get('ANSWERTRAIN_N_THREADS',
                 os.environ.get('YODAQA_N_THREADS', None))
