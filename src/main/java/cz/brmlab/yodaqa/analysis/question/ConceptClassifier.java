@@ -8,34 +8,34 @@ import cz.brmlab.yodaqa.model.Question.Concept;
  * data/ml/concepts/concepts_train_logistic.py script.
  */
 public class ConceptClassifier {
-	/* Training data - correct: 708 (17.230%), incorrect: 3401 (82.770%) */
+	/* Training data - correct: 602 (16.109%), incorrect: 3135 (83.891%) */
 
 	/* 10-fold cross-validation (with 0.20 test splits): */
-	/* CV fold precision 90.754% (746/822) */
-	/* CV fold precision 91.849% (755/822) */
-	/* CV fold precision 91.606% (753/822) */
-	/* CV fold precision 90.268% (742/822) */
-	/* CV fold precision 91.727% (754/822) */
-	/* CV fold precision 90.754% (746/822) */
-	/* CV fold precision 92.336% (759/822) */
-	/* CV fold precision 91.119% (749/822) */
-	/* CV fold precision 91.119% (749/822) */
-	/* CV fold precision 91.606% (753/822) */
-	/* === CV average precision 91.314% (+-SD 0.589%) */
+	/* CV fold precision 93.717% (701/748) */
+	/* CV fold precision 93.717% (701/748) */
+	/* CV fold precision 94.385% (706/748) */
+	/* CV fold precision 94.118% (704/748) */
+	/* CV fold precision 93.449% (699/748) */
+	/* CV fold precision 93.984% (703/748) */
+	/* CV fold precision 94.118% (704/748) */
+	/* CV fold precision 91.845% (687/748) */
+	/* CV fold precision 93.048% (696/748) */
+	/* CV fold precision 92.513% (692/748) */
+	/* === CV average precision 93.489% (+-SD 0.761%) */
 
-	/* Training set precision 91.190% (3747/4109) */
+	/* Training set precision 93.497% (3494/3737) */
 	/* Model (trained on the whole training set): */
 	double[] weights = {
-		0.109481, // editDist
-		5.898663, // labelProbability
-		0.507325, // logPopularity
-		-1.419685, // getByLAT
-		0.813817, // getByNE
-		0.777757, // getBySubject
-		-0.652947, // getByFuzzyLookup
-		-1.630315, // getByCWLookup
+		0.345124, // editDist
+		5.360875, // labelProbability
+		0.440630, // logPopularity
+		-1.085939, // getByLAT
+		0.411121, // getByNE
+		0.686013, // getBySubject
+		1.258005, // getByFuzzyLookup
+		-0.115068, // getByCWLookup
 	};
-	double intercept = -4.075044;
+	double intercept = -6.339254;
 	
 	public double calculateProbability(Concept l) {
 		double[] features = new double[8];
