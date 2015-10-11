@@ -18,6 +18,7 @@ import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.SnippetIDGenerator;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.AbstractCas;
@@ -36,7 +37,6 @@ import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.passextract.PassByClue;
 import cz.brmlab.yodaqa.flow.asb.MultiThreadASB;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
-import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerResource;
 import cz.brmlab.yodaqa.model.Question.Clue;
@@ -46,6 +46,7 @@ import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.SearchResult.ResultInfo;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
+
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 
@@ -348,21 +349,30 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		String dump_path = System.getProperty("cz.brmlab.yodaqa.dump_property_labels");
 		if (dump_path == null || dump_path.isEmpty())
 			return;
+
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
 		String proptext = p.getProperty();
+
 		int clues = 0;
 		for (Clue clue : JCasUtil.select(questionView, Clue.class)) {
 			if (!proptext.matches(PassByClue.getClueRegex(clue)))
 				continue;
 			clues++;
 		}
+
+		List<String> qtoks = PropertyGloVeScoring.tokenize(qi.getQuestionText());
+		String qtext_syn = StringUtils.join(qtoks, " ");
+		List<String> proptoks = PropertyGloVeScoring.tokenize(proptext);
+		String proptext_syn = StringUtils.join(proptoks, " ");
+
 		Writer w = Writer.getInstance();
-		w.write(dump_path + "/" + qi.getQuestionId() + "-prop.txt", "<Q> " + qi.getQuestionText());
+		w.write(dump_path + "/" + qi.getQuestionId() + "-prop.txt", "<Q> " + qtext_syn);
 		if (ap.matcher(jcas.getDocumentText()).find()) {
-			w.write(dump_path + "/" + qi.getQuestionId() + "-prop.txt", "1 " + clues + " " + proptext);
+			w.write(dump_path + "/" + qi.getQuestionId() + "-prop.txt", "1 " + clues + " " + proptext_syn);
 		} else {
-			w.write(dump_path + "/" + qi.getQuestionId() + "-prop.txt", "0 " + clues + " " + proptext);
+			w.write(dump_path + "/" + qi.getQuestionId() + "-prop.txt", "0 " + clues + " " + proptext_syn);
 		}
 	}
 }

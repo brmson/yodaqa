@@ -21,10 +21,18 @@ public class PropertyGloVeScoring {
 	private Relatedness r = new Relatedness(new MbWeights(PropertyGloVeScoring.class.getResourceAsStream("Mbprop.txt")));
 
 	public double relatedness(String q, String prop) {
-		List<String> ql = new ArrayList<>(Arrays.asList(q.toLowerCase().split("\\W+")));
-		List<String> a = new ArrayList<>(Arrays.asList(prop.toLowerCase().split("\\W+")));
+		List<String> ql = tokenize(q);
+		List<String> a = tokenize(prop);
 
 		double res = r.probability(ql, a);
 		return res;
+	}
+
+	/** For legacy reasons, we use our own tokenization.
+	 * We also lower-case while at it, and might do some other
+	 * normalization steps...
+	 * XXX: Rely on pipeline instead? */
+	public static List<String> tokenize(String str) {
+		return new ArrayList<>(Arrays.asList(str.toLowerCase().split("[\\p{Punct}\\s]+")));
 	}
 }
