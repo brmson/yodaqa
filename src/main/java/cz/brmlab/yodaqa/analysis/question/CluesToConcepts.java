@@ -2,10 +2,12 @@ package cz.brmlab.yodaqa.analysis.question;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
@@ -46,7 +48,8 @@ import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
  * way and isn't further split to "Moby" and "Dick" too.
  *
  * (ii) The page corresponding to this concept bypasses full-text solr
- * search and is directly considered for passage extraction.
+ * search and is directly considered for passage extraction.  It is also
+ * used as a base for structured searches.
  *
  * To achieve (i), we will also delete all clues covered by ClueConcept,
  * and we will of course consider ClueConcept candidates from the longest
@@ -57,9 +60,18 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 	final DBpediaTitles dbp = new DBpediaTitles();
 
+	final ConceptClassifier classifier = new ConceptClassifier();
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
+
+	/** A blacklist of clues that will never yield a useful concept.
+	 * We got this by inspecting set of extra-produced concepts for the
+	 * moviesC dataset, compared to the gold standard.
+	 * FIXME: Get extra-produced concepts for an arbitrary dataset
+	 * (without gold standard), and a precise methodology. */
+	protected static String labelBlacklist = "name|script|music|director|film|movie|voice";
 
 	public void process(JCas resultView) throws AnalysisEngineProcessException {
 		List<Clue> clues = cluesToCheck(resultView);
@@ -71,6 +83,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		PriorityQueue<LinkedClue> cluesByLen = new PriorityQueue<>(32, new LinkedClueLengthComparator());
 		for (Clue clue : clues) {
 			String clueLabel = clue.getLabel();
+			if (clueLabel.toLowerCase().matches(labelBlacklist))
+				continue; // explicit blacklist
 
 			/* Execute entity linking from clue text to
 			 * a corresponding enwiki article.  This internally
@@ -99,42 +113,81 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		/* Build Concept annotations out of the linked clues,
 		 * aggregated by their labels.  (For example, the clue
 		 * "Madonna" would generate many concepts labelled
-		 * "Madonna", then one concept "Madonna, Maryland", etc.) */
+		 * "Madonna", then one concept "Madonna, Maryland", etc.)
+		 *
+		 * Keep just the top N concepts for each label (sorted by
+		 * classifier score). */
 		/* XXX: We assume no two different (non-subdued) clues
 		 * ever produce the same label. */
 		Map<String, ClueLabel> labels = new TreeMap<>(); // stable ordering (?)
 		for (LinkedClue c : keptClues) {
 			Clue clue = c.getClue();
+			List<ClueLabel> clueLabels = new ArrayList<>();
 			for (DBpediaTitles.Article a : c.getArticles()) {
 				String cookedLabel = cookLabel(clue.getLabel(), a.getCanonLabel());
 
-				logger.debug("creating concept <<{}>>, cooked <<{}>>, d={}",
-						a.getCanonLabel(), cookedLabel, a.getDist());
 				Concept concept = new Concept(resultView);
 				concept.setBegin(clue.getBegin());
 				concept.setEnd(clue.getEnd());
 				concept.setFullLabel(a.getCanonLabel());
 				concept.setCookedLabel(cookedLabel);
+				concept.setLabelProbability(a.getProb());
 				concept.setPageID(a.getPageID());
-				concept.setScore(a.getScore());
+				concept.setEditDistance(a.getDist());
+				concept.setLogPopularity(a.getPop());
 				concept.setBySubject(c.isBySubject());
 				concept.setByLAT(c.isByLAT());
 				concept.setByNE(c.isByNE());
+				concept.setByFuzzyLookup(a.isByFuzzyLookup());
+				concept.setByCWLookup(a.isByCWLookup());
 
+				double score = classifier.calculateProbability(concept);
+				concept.setScore(score);
+				c.addScore(score);
+
+				logger.debug("creating concept <<{}>> cooked <<{}>> --> {}, d={}, lprob={}, logpop={}",
+						concept.getFullLabel(), concept.getCookedLabel(),
+						String.format(Locale.ENGLISH, "%.3f", concept.getScore()),
+						String.format(Locale.ENGLISH, "%.2f", concept.getEditDistance()),
+						String.format(Locale.ENGLISH, "%.3f", concept.getLabelProbability()),
+						String.format(Locale.ENGLISH, "%.3f", concept.getLogPopularity()));
+
+				ClueLabel cl = new ClueLabel(c, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
+				clueLabels.add(cl);
+			}
+
+			Collections.sort(clueLabels, new ClueLabelClassifierComparator());
+			for (ClueLabel cl : clueLabels.subList(0, Math.min(5, clueLabels.size()))) {
+				String cookedLabel = cl.getCookedLabel();
 				if (!labels.containsKey(cookedLabel)) {
-					/* First time for this particular label. */
-					ClueLabel cl = new ClueLabel(clue, cookedLabel, new ArrayList<>(Arrays.asList(concept)));
 					labels.put(cookedLabel, cl);
+					logger.debug("init. concepts labelled <<{}>>",
+							cl.getCookedLabel());
 				} else {
-					labels.get(cookedLabel).add(concept);
+					/* Join same-label concepts. */
+					/* XXX: We do not properly merge
+					 * LinkedClue and related references. */
+					ClueLabel cl2 = labels.get(cookedLabel);
+					cl2.addAll(cl.getConcepts());
+					logger.debug("{} concepts labelled <<{}>>",
+						cl2.getConcepts().size(), cookedLabel);
 				}
 			}
 		}
 
-		/* Sort ClueLabels by their score (editDist-based) and generate
-		 * new clues from them. */
+		/* Sort LinkedClues by the score of their best ClueLabels
+		 * and set their RRs; this will propagate to Concepts. */
+		Collections.sort(keptClues, new LinkedClueBestScoreComparator());
+		int rank = 1;
+		for (LinkedClue c : keptClues) {
+			c.setRr(1 / (double) rank);
+			rank++;
+		}
+
+		/* Sort ClueLabels by their classifier score and generate
+		 * new clues from them (we add a rank feature to clues). */
 		List<ClueLabel> labelList = new ArrayList<>(labels.values());
-		Collections.sort(labelList, new ClueLabelScoreComparator());
+		Collections.sort(labelList, new ClueLabelClassifierComparator());
 		addCluesForLabels(resultView, labelList);
 	}
 
@@ -233,7 +286,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		boolean originalClueNEd = false; // guard for single ClueNE generation
 		int rank = 1;
 		for (ClueLabel cl : labelList) {
-			Clue clue = cl.getClue();
+			Clue clue = cl.getLinkedClue().getClue();
 			String clueLabel = clue.getLabel();
 			String cookedLabel = cl.getCookedLabel();
 
@@ -242,9 +295,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			clue.removeFromIndexes();
 
 			for (Concept concept : cl.getConcepts()) {
-				concept.setRr(1 / ((double) rank));
+				concept.setSourceRr(cl.getLinkedClue().getRr());
+				concept.setLabelRr(1 / ((double) rank));
 				concept.addToIndexes();
-				rank++;
 			}
 
 			/* Maybe the concept clue has a different label than
@@ -279,6 +332,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 							clue, clue.getLabel(), clue.getWeight());
 				originalClueNEd = true; // once is enough
 			}
+
+			rank++;
 		}
 	}
 
@@ -324,6 +379,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		 * of a certain kind. */
 		protected boolean bySubject, byLAT, byNE;
 
+		/** The score of the best-faring concept produced
+		 * by this clue. */
+		protected double bestScore;
+		/** The reciprocial rank in a list of LinkedClues
+		 * sorted by bestScore. */
+		protected double rr;
+
 		public LinkedClue(Clue clue, List<DBpediaTitles.Article> articles) {
 			this.clue = clue;
 			this.articles = articles;
@@ -343,6 +405,11 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		public void setByLAT(boolean byLAT) { this.byLAT = byLAT; }
 		public boolean isByNE() { return byNE; }
 		public void setByNE(boolean byNE) { this.byNE = byNE; }
+
+		public double getBestScore() { return bestScore; }
+		public void addScore(double score) { if (score > bestScore) bestScore = score; }
+		public double getRr() { return rr; }
+		public void setRr(double rr) { this.rr = rr; }
 
 		@Override
 		public boolean equals(Object o) {
@@ -364,20 +431,29 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 	 *
 	 * The concepts are assumed to be sorted by edit distance. */
 	private class ClueLabel {
-		protected Clue clue;
+		protected LinkedClue linkedClue;
 		protected String cookedLabel;
 		protected List<Concept> concepts;
 
-		public ClueLabel(Clue clue, String cookedLabel, List<Concept> concepts) {
-			this.clue = clue;
+		public ClueLabel(LinkedClue linkedClue, String cookedLabel, List<Concept> concepts) {
+			this.linkedClue = linkedClue;
 			this.cookedLabel = cookedLabel;
 			this.concepts = concepts;
 		}
 
-		public Clue getClue() { return clue; }
 		public String getCookedLabel() { return cookedLabel; }
+		public LinkedClue getLinkedClue() { return linkedClue; }
 		public List<Concept> getConcepts() { return concepts; }
 		public void add(Concept concept) { concepts.add(concept); }
+		public void addAll(Collection<Concept> conceptCol) { concepts.addAll(conceptCol); }
+
+		public double getScore() {
+			double maxScore = 0;
+			for (Concept c : concepts)
+				if (c.getScore() > maxScore)
+					maxScore = c.getScore();
+			return maxScore;
+		}
 	}
 
 	/* Compares LinkedClues using the clue length */
@@ -387,13 +463,21 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			return -Integer.compare(t1.getLen(), t2.getLen()); // longest first
 		}
 	}
-	/* Compares ClueLabels using the concept score */
-	private class ClueLabelScoreComparator implements Comparator<ClueLabel> {
+	/* Compares LinkedClues using the bestScore */
+	private class LinkedClueBestScoreComparator implements Comparator<LinkedClue> {
 		@Override
-		public int compare(ClueLabel t1, ClueLabel t2) {
-			return -Double.compare(t1.getConcepts().get(0).getScore(),
-						t2.getConcepts().get(0).getScore()); // highest first
+		public int compare(LinkedClue t1, LinkedClue t2) {
+			return -Double.compare(t1.getBestScore(), t2.getBestScore()); // highest first
 		}
 	}
-
+	/* Compares ClueLabels using the classifier probability*/
+	private class ClueLabelClassifierComparator implements Comparator<ClueLabel> {
+		@Override
+		public int compare(ClueLabel t1, ClueLabel t2) {
+			/* XXX: Check probability of all concepts with this label? */
+			double cl1 = t1.getScore();
+			double cl2 = t2.getScore();
+			return -Double.compare(cl1, cl2); // highest first
+		}
+	}
 }

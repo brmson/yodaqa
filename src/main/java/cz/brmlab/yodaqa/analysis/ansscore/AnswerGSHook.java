@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
+import java.util.Locale;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -246,7 +247,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			i++;
 			if (featureBlacklisted(labels[i]))
 				continue;
-			sb.append(value);
+			sb.append(String.format(Locale.ENGLISH, "%.4f", value));
 			sb.append("\t");
 		}
 
@@ -333,7 +334,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		int i = 0;
 		for (double value : fv.getFV()) {
 			if (i % 3 == 0) {
-				sb.append(value);
+				sb.append(String.format(Locale.ENGLISH, "%.4f", value));
 				sb.append(",");
 			}
 			i++;

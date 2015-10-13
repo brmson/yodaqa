@@ -37,7 +37,7 @@ and you can play with a live demo at
 
 (this demo corresponds to the ``d/live`` branch of this git repo).
 Also check out our movies QA demo at the ``d/movies`` branch and
-http://moveis.ailao.eu/ !
+http://movies.ailao.eu/ !
 
 ## Installation Instructions
 

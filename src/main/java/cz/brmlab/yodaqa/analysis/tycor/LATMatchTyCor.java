@@ -283,14 +283,20 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 		int hits = 0;
 
 		/* FIXME: Allow matching LATs that have same text but
-		 * different senses. */
+		 * different senses.
+		 * XXX: For now, we just prefer the numerically lowest
+		 * synset, which doesn't make much sense but at least
+		 * keeps the results stable across runs (LAT select order
+		 * is very random). */
 
 		/* Load LATs from answerView. */
 		for (LAT la : JCasUtil.select(answerView, LAT.class)) {
 			if (la.getIsHierarchical() && !(la instanceof WordnetLAT))
 				continue;
 			LAT la0 = answerLats.get(la.getText());
-			if (la0 == null || la0.getSpecificity() < la.getSpecificity())
+			if (la0 == null
+			    || la.getSpecificity() > la0.getSpecificity()
+			    || (la.getSpecificity() == la0.getSpecificity() && la.getSynset() < la0.getSynset()))
 				answerLats.put(la.getText(), la);
 		}
 		if (answerLats.isEmpty())
@@ -298,13 +304,16 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 
 		/* Match LATs from questionView. */
 		for (LAT lq : JCasUtil.select(questionView, LAT.class)) {
-			if (lq.getIsHierarchical() && !(lq instanceof WordnetLAT))
+			if (lq.getIsHierarchical() && !(lq instanceof WordnetLAT)) {
 				continue;
+			}
 			LAT la = answerLats.get(lq.getText());
-			if (la == null)
+			if (la == null) {
 				continue;
-			if (lq.getSynset() != 0 && la.getSynset() != 0 && lq.getSynset() != la.getSynset())
+			}
+			if (lq.getSynset() != 0 && la.getSynset() != 0 && lq.getSynset() != la.getSynset()) {
 				continue;
+			}
 
 			/* We have a match! */
 			LATMatch match = new LATMatch(lq, la);
@@ -318,7 +327,14 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 				hits++;
 			}
 
-			if (bestMatch == null || match.getSpecificity() > bestMatch.getSpecificity()) {
+			/* N.B. Even with specificity equal, we sort by answer
+			 * specificity, because the order of LATs may be random
+			 * and these LAT specificities decide hit features;
+			 * this turns out to be important for experiment
+			 * reproducibility... */
+			if (bestMatch == null
+			    || match.getSpecificity() > bestMatch.getSpecificity()
+			    || (match.getSpecificity() == bestMatch.getSpecificity() && match.getLat2().getSpecificity() > bestMatch.getLat2().getSpecificity())) {
 				/* XXX: Technically, we should apply the
 				 * blacklist check for match.record() above
 				 * as well; in practice, we should never get
