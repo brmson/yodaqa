@@ -14,7 +14,7 @@ It requires two inputs:
     (near the end of process(); XXX).  Then:
 
 	./gradlew questionDump -PexecArgs="data/eval/moviesC-train.tsv data/ml/concepts/questionDump-tofix.json"
-	python data/ml/qclass/repair-json.py data/ml/concepts/questionDump-tofix.json > data/ml/concepts/questionDump.json
+	python data/ml/repair-json.py data/ml/concepts/questionDump-tofix.json > data/ml/concepts/questionDump.json
 
 To train the classifier:
 

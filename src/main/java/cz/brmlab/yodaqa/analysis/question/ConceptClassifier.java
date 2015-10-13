@@ -8,7 +8,9 @@ import cz.brmlab.yodaqa.model.Question.Concept;
  * data/ml/concepts/concepts_train_logistic.py script.
  */
 public class ConceptClassifier {
-	/* Training data - correct: 602 (16.109%), incorrect: 3135 (83.891%) */
+	/* N.B. This is trained on the moviesC-train dataset,
+	 * not on curated or anything! */
+	/* Training data - correct: 708 (17.230%), incorrect: 3401 (82.770%) */
 
 	/* 10-fold cross-validation (with 0.20 test splits): */
 	/* CV fold precision 93.717% (701/748) */
