@@ -351,6 +351,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(0 AS ?branched)\n" +
 					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?proplabel .\n" +
@@ -363,6 +364,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  ns:" + mid + " ns:" + path.get(0) + "/ns:" + path.get(1) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(0 AS ?branched)\n" +
 					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
@@ -374,7 +376,6 @@ public class FreebaseOntology extends FreebaseLookup {
 					"}";
 				pathQueries.add(pathQueryStr);
 			} else if (path.size() == 3) {
-				logger.info("Branched path");
 				for (Concept c: concepts) {
 					String pathQueryStr = "{" +
 							"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
@@ -383,6 +384,7 @@ public class FreebaseOntology extends FreebaseLookup {
 							"  ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
 							"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 							"  BIND(" + ps.proba + " AS ?score)\n" +
+							"  BIND(1 AS ?branched)\n" +
 							"  BIND(ns:" + mid + " AS ?res)\n" +
 							"  OPTIONAL {\n" +
 							"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
@@ -392,7 +394,6 @@ public class FreebaseOntology extends FreebaseLookup {
 							"    BIND(CONCAT(?pl0, \": \", ?pl1) AS ?proplabel)\n" +
 							"  }\n" +
 							"}";
-					logger.info(pathQueryStr);
 					pathQueries.add(pathQueryStr);
 				}
 			}
@@ -416,7 +417,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val", "/res", "score" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched" }, PROP_LIMIT);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -437,10 +438,14 @@ public class FreebaseOntology extends FreebaseLookup {
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
 			double score = rawResult[5].getDouble();
-			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {}", titleForm, mid, propLabel, prop, value, valRes, score);
+			boolean isBranched = rawResult[6].getInt() != 0;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {} {}",
+				titleForm, mid, propLabel, prop, value, valRes, score,
+				isBranched ? "branched" : "straight");
 			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF.OriginFreebaseSpecific, AnswerSourceStructured.ORIGIN_SPECIFIC);
 			pv.setPropRes(prop);
 			pv.setScore(score);
+			pv.setIsBranched(isBranched);
 			results.add(pv);
 		}
 

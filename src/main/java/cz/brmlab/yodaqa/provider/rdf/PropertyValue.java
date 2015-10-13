@@ -21,6 +21,7 @@ public class PropertyValue {
 	String origin;  /* AnswerSourceStructured origin field. */
 
 	protected Double score; // ok to be unset
+	protected boolean isBranched; // whether a multi-concept query yielded this property
 
 	PropertyValue(String object_,
 			String objRes_, String property_,
@@ -51,4 +52,7 @@ public class PropertyValue {
 
 	public Double getScore() { return score; }
 	public void setScore(double score) { this.score = score; }
+
+	public boolean getIsBranched() { return isBranched; }
+	public void setIsBranched(boolean isBranched) { this.isBranched = isBranched; }
 }

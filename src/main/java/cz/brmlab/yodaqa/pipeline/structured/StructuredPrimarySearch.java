@@ -161,6 +161,11 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(property.getOriginFeat(), 1.0);
 		if (property.getScore() != null)
 			fv.setFeature(AF.PropertyScore, property.getScore());
+		if (property.getIsBranched()) {
+			// XXX: Freebase-specific feature; but we don't have
+			// this in any other context now.
+			fv.setFeature(AF.OriginFreebaseBranched, 1.0);
+		}
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
