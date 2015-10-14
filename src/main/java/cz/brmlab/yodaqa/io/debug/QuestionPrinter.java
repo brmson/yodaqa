@@ -21,6 +21,10 @@ import org.apache.uima.resource.ResourceInitializationException;
 import cz.brmlab.yodaqa.flow.dashboard.Question;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
+import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueConcept;
+import cz.brmlab.yodaqa.model.Question.ClueLAT;
+import cz.brmlab.yodaqa.model.Question.ClueSV;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.Question.SV;
@@ -125,8 +129,29 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 				Concepttmp += ", ";
 			}
 		}
-		Concepttmp += "] ";
+		Concepttmp += "], ";
 		line += Concepttmp;
+
+		line += "\"Clue\": ";
+		String Cluetmp = "[";
+		boolean first = true;
+		for (Iterator iterator = JCasUtil.select(jcas, Clue.class).iterator(); iterator.hasNext(); ) {
+			Clue c = (Clue) iterator.next();
+			if (c instanceof ClueConcept || c instanceof ClueSV || c instanceof ClueLAT)
+				continue; // covered earlier
+			if (!first) {
+				Cluetmp += ", ";
+			} else {
+				first = false;
+			}
+			Cluetmp += "{";
+			Cluetmp += "\"label\": \"" + c.getLabel().replaceAll("\"", "\\\\\"") + "\", ";
+			Cluetmp += "\"type\": \"" + c.getClass().getSimpleName() + "\", ";
+			Cluetmp += "\"weight\": " + c.getWeight() + "";
+			Cluetmp += "}";
+		}
+		Cluetmp += "] ";
+		line += Cluetmp;
 
 		line += "}";
 		output(line);
