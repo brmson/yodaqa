@@ -421,7 +421,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched", "witnessAF" }, -1);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
