@@ -74,7 +74,7 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		String SVtmp = "\"SV\":  [";
 		for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
 			SV sv = (SV) SVIterator.next();
-			SVtmp += "\"" + sv.getCoveredText() + "\"";
+			SVtmp += "\"" + sv.getBase().getLemma().getValue() + "\"";
 			if(SVIterator.hasNext()){
 				SVtmp += ", ";
 			}
