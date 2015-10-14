@@ -10,8 +10,9 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
-
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.model.Question.Concept;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
@@ -306,7 +307,10 @@ public class FreebaseOntology extends FreebaseLookup {
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF.OriginFreebaseOntology, AnswerSourceStructured.ORIGIN_ONTOLOGY));
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
+			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes,
+							fv, AnswerSourceStructured.ORIGIN_ONTOLOGY));
 		}
 
 		return results;
@@ -442,10 +446,13 @@ public class FreebaseOntology extends FreebaseLookup {
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {} {}",
 				titleForm, mid, propLabel, prop, value, valRes, score,
 				isBranched ? "branched" : "straight");
-			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF.OriginFreebaseSpecific, AnswerSourceStructured.ORIGIN_SPECIFIC);
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF.OriginFreebaseSpecific, 1.0);
+			fv.setFeature(AF.OriginFreebaseBranched, 1.0);
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes,
+						fv, AnswerSourceStructured.ORIGIN_SPECIFIC);
 			pv.setPropRes(prop);
 			pv.setScore(score);
-			pv.setIsBranched(isBranched);
 			results.add(pv);
 		}
 
