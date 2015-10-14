@@ -111,7 +111,7 @@ public class FBPathLogistic {
 
 		boolean hasSV = false;
 		for (SV sv : JCasUtil.select(questionView, SV.class)) {
-			feats.add("sv=" + sv.getCoveredText());
+			feats.add("sv=" + sv.getBase().getLemma().getValue());
 			hasSV = true;
 		}
 		if (!hasSV)
