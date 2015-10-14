@@ -61,6 +61,7 @@ public class AnswerFV {
 			"originDBpPConceptSourceRR", "originDBpPConceptLabelRR", "originDBpPConceptScore",
 		"originFreebaseOntology",
 			"originFreebaseSpecific", "originFreebaseBranched",
+			"originFreebaseWitnessMid", "originFreebaseWitnessLabel",
 			"originFBONoClue",
 		"originFBOClueToken", "originFBOCluePhrase", "originFBOClueSV",
 			"originFBOClueNE", "originFBOClueLAT",

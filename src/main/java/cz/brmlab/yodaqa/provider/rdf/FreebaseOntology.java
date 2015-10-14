@@ -381,11 +381,35 @@ public class FreebaseOntology extends FreebaseLookup {
 				pathQueries.add(pathQueryStr);
 			} else if (path.size() == 3) {
 				for (Concept c: concepts) {
+					String witnessRel = path.get(2);
+					String witnessMatch;
+					if (witnessRel.endsWith("!")) {
+						witnessRel = witnessRel.substring(0, witnessRel.length() - 1);
+						witnessMatch =
+							"  ?med ns:" + witnessRel + " ?concept .\n" +
+							"  ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
+							"  BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n";
+					} else if (witnessRel.endsWith("~")) {
+						String quotedTitle = c.getFullLabel().replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
+						witnessRel = witnessRel.substring(0, witnessRel.length() - 1);
+						witnessMatch =
+							"  {\n" +
+							"    ?med ns:" + witnessRel + " ?wlabel .\n" +
+							"    FILTER(!ISURI(?wlabel))\n" +
+							"  } UNION {\n" +
+							"    ?med ns:" + witnessRel + " ?concept .\n" +
+							"    ?concept rdfs:label ?wlabel .\n" +
+							"  }\n" +
+							"  FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
+							"  FILTER(CONTAINS(LCASE(?wlabel), LCASE(\"" + quotedTitle + "\")))\n" +
+							"  BIND(\"" + AF.OriginFreebaseWitnessLabel + "\" AS ?witnessAF)\n";
+					} else {
+						witnessMatch = "RELSUFFIXMISSINGERROR";
+					}
 					String pathQueryStr = "{" +
 							"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
 							"  ?med ns:" + path.get(1) + " ?val .\n" +
-							"  ?med ns:" + path.get(2) + " ?concept.\n" +
-							"  ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
+							witnessMatch +
 							"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 							"  BIND(" + ps.proba + " AS ?score)\n" +
 							"  BIND(1 AS ?branched)\n" +
@@ -443,12 +467,15 @@ public class FreebaseOntology extends FreebaseLookup {
 			String objRes = rawResult[4].getString();
 			double score = rawResult[5].getDouble();
 			boolean isBranched = rawResult[6].getInt() != 0;
-			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {} {}",
+			String witnessAF = rawResult[7] != null ? rawResult[7].getString() : null;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {} {},{}",
 				titleForm, mid, propLabel, prop, value, valRes, score,
-				isBranched ? "branched" : "straight");
+				isBranched ? "branched" : "straight", witnessAF);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseSpecific, 1.0);
 			fv.setFeature(AF.OriginFreebaseBranched, 1.0);
+			if (witnessAF != null)
+				fv.setFeature(witnessAF, 1.0);
 			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes,
 						fv, AnswerSourceStructured.ORIGIN_SPECIFIC);
 			pv.setPropRes(prop);
