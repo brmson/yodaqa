@@ -26,20 +26,22 @@ a question analysis) and target labels (computed answer property paths):
 	mkdir -p data/ml/fbpath/wq-fbpath
 	cd ../dataset-factoid-webquestions
 	for i in trainmodel val devtest; do
-		scripts/fulldata.py $i ../yodaqa/data/ml/fbpath/wq-fbpath/ main/ d-dump/ d-freebase-rp/
+		scripts/fulldata.py $i ../yodaqa/data/ml/fbpath/wq-fbpath/ main/ d-dump/ d-freebase-brp/
 	done
 
 If you want to update the source features, rerun the questionDump
 as explained in d-dump/README.md; if entity linking (sets of concepts)
 has changed since the last dump, you will also need to regen (in order)
-d-freebase-mids, d-freebase-rp and d-freebase-brp.
+d-freebase-mids, d-freebase-brp and d-freebase-brp.
 
 ### Branched fbpaths
 
 If we want to generate dataset which contains branched fbpaths (Which means that it contains relations between
 two concepts and answer), we can use files from [WebQuestions dataset](https://github.com/brmson/dataset-factoid-webquestions)
-too, only using d-freebase-brp instead of d-freebase-rp in the command above.
-The classifier training procedure outlined below stays the same.
+too, using d-freebase-brp in the command above as written.
+The classifier training procedure outlined below is appropriate.
+
+To disable branched fbpaths, just replace d-freebase-brp with d-freebase-rp.
 
 Model
 -----
