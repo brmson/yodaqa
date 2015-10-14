@@ -108,9 +108,15 @@ public class FBPathLogistic {
 	 * This is then passed to our other public methods. */
 	public List<String> questionFeatures(JCas questionView) {
 		List<String> feats = new ArrayList<>();
+
+		boolean hasSV = false;
 		for (SV sv : JCasUtil.select(questionView, SV.class)) {
 			feats.add("sv=" + sv.getCoveredText());
+			hasSV = true;
 		}
+		if (!hasSV)
+			feats.add("sv=");
+
 		for (LAT lat : JCasUtil.select(questionView, LAT.class)) {
 			feats.add("lat/" + lat.getText() + "/" + lat.getClass().getSimpleName());
 		}
