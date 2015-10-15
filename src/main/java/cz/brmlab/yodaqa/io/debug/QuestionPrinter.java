@@ -31,7 +31,7 @@ import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 /**
- * A consumer that displays the questions with a LAT dump to json file
+ * A consumer that displays the questions with a LAT dump to json file.
  * The format is:
  * {"qId": "...", "SV": ["...", "..."], "LAT" : [ {"synset" : "...", "text" : "...", "specificity" : "..." "type" : "..."}, {...}, {...}]} \n
  * Pair this with TSVQuestionReader or JSONQuestionReader e.g. on data/eval/.
@@ -132,6 +132,7 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "\"getByLAT\": " + (c.getByLAT() ? 1 : 0) + ", ";
 			Concepttmp += "\"getByNE\": " + (c.getByNE() ? 1 : 0) + ", ";
 			Concepttmp += "\"getBySubject\": " + (c.getBySubject() ? 1 : 0) + ", ";
+			Concepttmp += "\"getByNgram\": " + (c.getByNgram() ? 1 : 0) + ", ";
 			Concepttmp += "\"getByFuzzyLookup\": " + (c.getByFuzzyLookup() ? 1 : 0) + ", ";
 			Concepttmp += "\"getByCWLookup\": " + (c.getByCWLookup() ? 1 : 0) + "";
 			Concepttmp += "}";
