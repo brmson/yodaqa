@@ -382,34 +382,31 @@ public class FreebaseOntology extends FreebaseLookup {
 			} else if (path.size() == 3) {
 				for (Concept c: concepts) {
 					String witnessRel = path.get(2);
-					String witnessMatch;
-					if (witnessRel.endsWith("!")) {
-						witnessRel = witnessRel.substring(0, witnessRel.length() - 1);
-						witnessMatch =
-							"  ?med ns:" + witnessRel + " ?concept .\n" +
-							"  ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
-							"  BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n";
-					} else if (witnessRel.endsWith("~")) {
-						String quotedTitle = c.getFullLabel().replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
-						witnessRel = witnessRel.substring(0, witnessRel.length() - 1);
-						witnessMatch =
-							"  {\n" +
-							"    ?med ns:" + witnessRel + " ?wlabel .\n" +
-							"    FILTER(!ISURI(?wlabel))\n" +
-							"  } UNION {\n" +
-							"    ?med ns:" + witnessRel + " ?concept .\n" +
-							"    ?concept rdfs:label ?wlabel .\n" +
-							"  }\n" +
-							"  FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
-							"  FILTER(CONTAINS(LCASE(?wlabel), LCASE(\"" + quotedTitle + "\")))\n" +
-							"  BIND(\"" + AF.OriginFreebaseWitnessLabel + "\" AS ?witnessAF)\n";
-					} else {
-						witnessMatch = "RELSUFFIXMISSINGERROR";
-					}
+					String quotedTitle = c.getFullLabel().replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 					String pathQueryStr = "{" +
 							"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
 							"  ?med ns:" + path.get(1) + " ?val .\n" +
-							witnessMatch +
+
+							/* MID witness match */
+							"  {\n" +
+							"    ?med ns:" + witnessRel + " ?concept .\n" +
+							"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
+							"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
+							"  } UNION {\n" +
+
+							/* Label witness match */
+							"    {\n" +
+							"      ?med ns:" + witnessRel + " ?wlabel .\n" +
+							"      FILTER(!ISURI(?wlabel))\n" +
+							"    } UNION {\n" +
+							"      ?med ns:" + witnessRel + " ?concept .\n" +
+							"      ?concept rdfs:label ?wlabel .\n" +
+							"    }\n" +
+							"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
+							"    FILTER(CONTAINS(LCASE(?wlabel), LCASE(\"" + quotedTitle + "\")))\n" +
+							"    BIND(\"" + AF.OriginFreebaseWitnessLabel + "\" AS ?witnessAF)\n" +
+							"  }\n" +
+
 							"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 							"  BIND(" + ps.proba + " AS ?score)\n" +
 							"  BIND(1 AS ?branched)\n" +
