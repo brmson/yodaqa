@@ -447,7 +447,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			 * as the interesting ones may be far down in the list,
 			 * but there is some super-spammy stuff like all locations
 			 * contained in Poland that we just need to avoid. */
-			PROP_LIMIT * PROP_LIMIT);
+			PROP_LIMIT * 10);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
