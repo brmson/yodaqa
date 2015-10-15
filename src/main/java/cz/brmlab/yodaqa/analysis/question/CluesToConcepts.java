@@ -126,6 +126,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 					logger.debug("{}-gram clue <<{}>> - MATCHED", n, clue.getLabel());
 				}
 
+				clue.addToIndexes();
 				LinkedClue lc = new LinkedClue(clue, results);
 				linkedClues.put(clue, lc);
 				cluesByLen.add(lc);
@@ -276,9 +277,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				clue.setLabel(clue.getCoveredText()); // no canonization!
 				clue.setIsReliable(false);
 				ngrams.add(clue);
-				// no add-to-indexes; we throw most away, the
-				// rest would be subdued by ClueConcept anyway
-				/* shift */
+				/* N.B. No add-to-indexes here; we need to decide
+				 * whether to keep it yet. */
 				nTokens.remove(0);
 			}
 		}
