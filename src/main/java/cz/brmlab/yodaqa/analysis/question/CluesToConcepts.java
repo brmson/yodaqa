@@ -6,12 +6,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 
+import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
 
@@ -31,10 +33,13 @@ import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.Question.ClueLAT;
 import cz.brmlab.yodaqa.model.Question.ClueNE;
+import cz.brmlab.yodaqa.model.Question.ClueNgram;
 import cz.brmlab.yodaqa.model.Question.CluePhrase;
 import cz.brmlab.yodaqa.model.Question.ClueSubject;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.provider.rdf.DBpediaTitles;
+
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /**
  * Potentially convert CluePhrase and ClueNE instances to ClueConcept
@@ -96,6 +101,35 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			LinkedClue lc = new LinkedClue(clue, results);
 			linkedClues.put(clue, lc);
 			cluesByLen.add(lc);
+		}
+
+		/* As a followup, try to generate plain n-gram clues and
+		 * add them for real if we can link them to something. */
+		for (int n = 2; n <= 4; n++) { // bigram, trigram, quadgram
+			for (ClueNgram clue : generateNgramClues(resultView, n)) {
+				String clueLabel = clue.getLabel();
+				if (SyntaxCanonization.getCanonText(clueLabel).toLowerCase().matches(labelBlacklist))
+					continue; // explicit blacklist
+
+				List<DBpediaTitles.Article> allResults = dbp.query(clueLabel, logger);
+				/* Require a sharp DBpedia match or we get
+				 * a massive amount of noise. */
+				List<DBpediaTitles.Article> results = new ArrayList<>();
+				for (DBpediaTitles.Article result : allResults)
+					if (result.isByFuzzyLookup() && result.getDist() == 0)
+						results.add(result);
+
+				if (results.size() == 0) {
+					logger.debug("{}-gram clue <<{}>> - no match", n, clue.getLabel());
+					continue; // no linkage
+				} else {
+					logger.debug("{}-gram clue <<{}>> - MATCHED", n, clue.getLabel());
+				}
+
+				LinkedClue lc = new LinkedClue(clue, results);
+				linkedClues.put(clue, lc);
+				cluesByLen.add(lc);
+			}
 		}
 
 		/* If our linked clues cover other shorter clues, drop these. */
@@ -222,6 +256,33 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		cookedLabel = cookedLabel.replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 
 		return cookedLabel;
+	}
+
+	/** Generate n-gram clues from the token sequence in questionView. */
+	protected List<ClueNgram> generateNgramClues(JCas questionView, int n) {
+		List<Token> nTokens = new LinkedList<>();
+		List<ClueNgram> ngrams = new ArrayList<>();
+
+		for (Token t : JCasUtil.select(questionView, Token.class)) {
+			/* XXX: Ignore stopwords? */
+			nTokens.add(t);
+			if (nTokens.size() == n) {
+				/* produce */
+				ClueNgram clue = new ClueNgram(questionView);
+				clue.setBegin(nTokens.get(0).getBegin());
+				clue.setEnd(nTokens.get(n-1).getEnd());
+				clue.setBase(nTokens.get(0));
+				clue.setWeight(1.01); /* slightly prefer over tokens */
+				clue.setLabel(clue.getCoveredText()); // no canonization!
+				clue.setIsReliable(false);
+				ngrams.add(clue);
+				// no add-to-indexes; we throw most away, the
+				// rest would be subdued by ClueConcept anyway
+				/* shift */
+				nTokens.remove(0);
+			}
+		}
+		return ngrams;
 	}
 
 	/** Check overlapping clues and subdue them.  Subduing means

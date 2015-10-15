@@ -299,6 +299,8 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 					afv.setFeature(clueFeaturePrefix + "ClueLAT", 1.0);
 				if (concept.getByNE())
 					afv.setFeature(clueFeaturePrefix + "ClueNE", 1.0);
+				if (concept.getByNgram())
+					afv.setFeature(clueFeaturePrefix + "ClueNgram", 1.0);
 				if (concept.getSourceRr() > bestSourceRr)
 					bestSourceRr = concept.getSourceRr();
 				if (concept.getLabelRr() > bestLabelRr)
