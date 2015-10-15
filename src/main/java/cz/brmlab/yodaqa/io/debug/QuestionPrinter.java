@@ -78,13 +78,24 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		String SVtmp = "\"SV\":  [";
 		for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
 			SV sv = (SV) SVIterator.next();
-			SVtmp += "\"" + sv.getBase().getLemma().getValue() + "\"";
+			SVtmp += "\"" + sv.getCoveredText() + "\"";
 			if(SVIterator.hasNext()){
 				SVtmp += ", ";
 			}
 		}
 		SVtmp += "], ";
 		line += SVtmp;
+
+		String lemmaSVtmp = "\"lemmaSV\":  [";
+		for (Iterator SVIterator = JCasUtil.select(jcas, SV.class).iterator(); SVIterator.hasNext(); ) {
+			SV sv = (SV) SVIterator.next();
+			lemmaSVtmp += "\"" + sv.getBase().getLemma().getValue() + "\"";
+			if(SVIterator.hasNext()){
+				lemmaSVtmp += ", ";
+			}
+		}
+		lemmaSVtmp += "], ";
+		line += lemmaSVtmp;
 
 		line += "\"LAT\": ";
 		String LATtmp = "[";

@@ -111,11 +111,19 @@ public class FBPathLogistic {
 
 		boolean hasSV = false;
 		for (SV sv : JCasUtil.select(questionView, SV.class)) {
-			feats.add("sv=" + sv.getBase().getLemma().getValue());
+			feats.add("sv=" + sv.getCoveredText());
 			hasSV = true;
 		}
 		if (!hasSV)
 			feats.add("sv=");
+
+		boolean hasLemmaSV = false;
+		for (SV sv : JCasUtil.select(questionView, SV.class)) {
+			feats.add("lsv=" + sv.getBase().getLemma().getValue());
+			hasLemmaSV = true;
+		}
+		if (!hasLemmaSV)
+			feats.add("lsv=");
 
 		for (LAT lat : JCasUtil.select(questionView, LAT.class)) {
 			feats.add("lat/" + lat.getText() + "/" + lat.getClass().getSimpleName());

@@ -16,6 +16,7 @@ def q_to_fdict(q):
     for lat in q['LAT']:
         fdict['lat/' + lat['text'] + '/' + lat['type']] = 1
     fdict['sv'] = q['SV'][0] if q['SV'] else ''
+    fdict['lsv'] = q['lemmaSV'][0] if q['lemmaSV'] else ''
     return fdict
 
 
