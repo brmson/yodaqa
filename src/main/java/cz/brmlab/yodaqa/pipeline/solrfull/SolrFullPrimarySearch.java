@@ -275,8 +275,9 @@ public class SolrFullPrimarySearch extends JCasMultiplier_ImplBase {
 				afv.setFeature(AF.OriginConceptByLAT, 1.0);
 			if (result.concept.getByNE())
 				afv.setFeature(AF.OriginConceptByNE, 1.0);
-			afv.setFeature(AF.OriginConceptRR, result.concept.getRr());
-			afv.setFeature(AF.OriginConceptScore, result.concept.getScore());
+			afv.setFeature(AF.OriginConcept_feat + AF._clueType_ConceptSourceRR, result.concept.getSourceRr());
+			afv.setFeature(AF.OriginConcept_feat + AF._clueType_ConceptLabelRR, result.concept.getLabelRr());
+			afv.setFeature(AF.OriginConcept_feat + AF._clueType_ConceptScore, result.concept.getScore());
 		}
 
 		ResultInfo ri = new ResultInfo(resultView);

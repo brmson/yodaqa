@@ -27,7 +27,8 @@ def dump_cfier(cfier, Xdict, Ydict):
         if not weights:
             continue
         weights['_'] = cfr.intercept_[0]
-        print('  "%s": %s,' % (Ydict.classes_[cls], json.dumps(weights)))
+        print('  "%s": %s%s' % (Ydict.classes_[cls], json.dumps(weights),
+              ',' if cls != cfier.classes_[-1] else ''))
 
     print('}')
 

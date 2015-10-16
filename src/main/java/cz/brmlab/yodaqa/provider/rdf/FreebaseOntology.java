@@ -10,6 +10,8 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.model.Question.Concept;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -115,14 +117,14 @@ public class FreebaseOntology extends FreebaseLookup {
 	/** Query for a given title, returning a set of PropertyValue instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> query(String title, List<PathScore> paths, Logger logger) {
+	public List<PropertyValue> query(String title, List<PathScore> paths, List<Concept> concepts, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			Set<String> topics = queryTopicByTitleForm(titleForm, logger);
 			List<PropertyValue> results = new ArrayList<PropertyValue>();
 			for (String mid : topics) {
 				results.addAll(queryTopicGeneric(titleForm, mid, logger));
 				if (!paths.isEmpty())
-					results.addAll(queryTopicSpecific(titleForm, mid, paths, logger));
+					results.addAll(queryTopicSpecific(titleForm, mid, paths, concepts, logger));
 			}
 			if (!results.isEmpty())
 				return results;
@@ -144,13 +146,13 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, Logger logger) {
+	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, List<Concept> concepts, Logger logger) {
 		Set<TitledMid> topics = queryTopicByPageID(pageID, logger);
 		List<PropertyValue> results = new ArrayList<PropertyValue>();
 		for (TitledMid topic : topics) {
 			results.addAll(queryTopicGeneric(topic.title, topic.mid, logger));
 			if (!paths.isEmpty())
-				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, logger));
+				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, concepts, logger));
 		}
 		return results;
 	}
@@ -305,7 +307,10 @@ public class FreebaseOntology extends FreebaseLookup {
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
-			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF.OriginFreebaseOntology, AnswerSourceStructured.ORIGIN_ONTOLOGY));
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
+			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes,
+							fv, AnswerSourceStructured.ORIGIN_ONTOLOGY));
 		}
 
 		return results;
@@ -315,7 +320,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * that cover the specified property paths.  This generalizes poorly
 	 * to lightly covered topics, but has high precision+recall for some
 	 * common topics where it can reach through the meta-nodes. */
-	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, Logger logger) {
+	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, List<Concept> concepts, Logger logger) {
 		/* Test query:
 		   PREFIX ns: <http://rdf.freebase.com/ns/>
 		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -343,13 +348,14 @@ public class FreebaseOntology extends FreebaseLookup {
 		List<String> pathQueries = new ArrayList<>();
 		for (PathScore ps : paths) {
 			PropertyPath path = ps.path;
-			assert(path.size() <= 2);  // longer paths don't occur in our dataset
+			assert(path.size() <= 3);  // longer paths don't occur in our dataset
 			logger.debug("specific path {} {}", path, path.size());
 			if (path.size() == 1) {
 				String pathQueryStr = "{" +
 					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(0 AS ?branched)\n" +
 					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?proplabel .\n" +
@@ -362,6 +368,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  ns:" + mid + " ns:" + path.get(0) + "/ns:" + path.get(1) + " ?val .\n" +
 					"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
 					"  BIND(" + ps.proba + " AS ?score)\n" +
+					"  BIND(0 AS ?branched)\n" +
 					"  BIND(ns:" + mid + " AS ?res)\n" +
 					"  OPTIONAL {\n" +
 					"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
@@ -372,6 +379,48 @@ public class FreebaseOntology extends FreebaseLookup {
 					"  }\n" +
 					"}";
 				pathQueries.add(pathQueryStr);
+			} else if (path.size() == 3) {
+				for (Concept c: concepts) {
+					String witnessRel = path.get(2);
+					String quotedTitle = c.getFullLabel().replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
+					String pathQueryStr = "{" +
+							"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
+							"  ?med ns:" + path.get(1) + " ?val .\n" +
+
+							/* MID witness match */
+							"  {\n" +
+							"    ?med ns:" + witnessRel + " ?concept .\n" +
+							"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
+							"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
+							"  } UNION {\n" +
+
+							/* Label witness match */
+							"    {\n" +
+							"      ?med ns:" + witnessRel + " ?wlabel .\n" +
+							"      FILTER(!ISURI(?wlabel))\n" +
+							"    } UNION {\n" +
+							"      ?med ns:" + witnessRel + " ?concept .\n" +
+							"      ?concept rdfs:label ?wlabel .\n" +
+							"    }\n" +
+							"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
+							"    FILTER(CONTAINS(LCASE(?wlabel), LCASE(\"" + quotedTitle + "\")))\n" +
+							"    BIND(\"" + AF.OriginFreebaseWitnessLabel + "\" AS ?witnessAF)\n" +
+							"  }\n" +
+
+							"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
+							"  BIND(" + ps.proba + " AS ?score)\n" +
+							"  BIND(1 AS ?branched)\n" +
+							"  BIND(ns:" + mid + " AS ?res)\n" +
+							"  OPTIONAL {\n" +
+							"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
+							"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
+							"    FILTER(LANGMATCHES(LANG(?pl0), \"en\"))\n" +
+							"    FILTER(LANGMATCHES(LANG(?pl1), \"en\"))\n" +
+							"    BIND(CONCAT(?pl0, \": \", ?pl1) AS ?proplabel)\n" +
+							"  }\n" +
+							"}";
+					pathQueries.add(pathQueryStr);
+				}
 			}
 		}
 		String rawQueryStr =
@@ -393,7 +442,12 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val", "/res", "score" }, PROP_LIMIT);
+			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched", "witnessAF" },
+			/* We want to be fairly liberal and look at all the properties
+			 * as the interesting ones may be far down in the list,
+			 * but there is some super-spammy stuff like all locations
+			 * contained in Poland that we just need to avoid. */
+			PROP_LIMIT * 10);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
@@ -414,8 +468,18 @@ public class FreebaseOntology extends FreebaseLookup {
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
 			double score = rawResult[5].getDouble();
-			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {}", titleForm, mid, propLabel, prop, value, valRes, score);
-			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes, AF.OriginFreebaseSpecific, AnswerSourceStructured.ORIGIN_SPECIFIC);
+			boolean isBranched = rawResult[6].getInt() != 0;
+			String witnessAF = rawResult[7] != null ? rawResult[7].getString() : null;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {} {},{}",
+				titleForm, mid, propLabel, prop, value, valRes, score,
+				isBranched ? "branched" : "straight", witnessAF);
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF.OriginFreebaseSpecific, 1.0);
+			fv.setFeature(AF.OriginFreebaseBranched, 1.0);
+			if (witnessAF != null)
+				fv.setFeature(witnessAF, 1.0);
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes,
+						fv, AnswerSourceStructured.ORIGIN_SPECIFIC);
 			pv.setPropRes(prop);
 			pv.setScore(score);
 			results.add(pv);
