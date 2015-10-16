@@ -23,6 +23,7 @@ public class PropertyPath {
 	public static PropertyPath fromFreebasePath(String fbPath) {
 		List<String> path = new ArrayList<>();
 		for (String prop : fbPath.split("\\|")) {
+			if (prop.length() == 0) continue;
 			String rdfProp = prop.substring(1).replaceAll("/", "."); /* /x/y -> x.y */
 			path.add(rdfProp);
 		}

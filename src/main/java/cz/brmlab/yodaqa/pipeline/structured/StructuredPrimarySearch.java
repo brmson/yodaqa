@@ -169,7 +169,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerFV fv = new AnswerFV();
 		fv.setFeature(AF.Occurences, 1.0);
 		fv.setFeature(AF.ResultLogScore, Math.log(1 + ri.getRelevance()));
-		fv.setFeature(property.getOriginFeat(), 1.0);
+		fv.merge(property.getAFV());
 		if (property.getScore() != null)
 			fv.setFeature(AF.PropertyScore, property.getScore());
 		double gloVeScore = PropertyGloVeScoring.getInstance().relatedness(questionView.getDocumentText(), property.getProperty());

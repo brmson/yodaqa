@@ -66,6 +66,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		super.initialize(aContext);
 	}
 
+	/** A blacklist of clues that will never yield a useful concept.
+	 * We got this by inspecting set of extra-produced concepts for the
+	 * moviesC dataset, compared to the gold standard.
+	 * FIXME: Get extra-produced concepts for an arbitrary dataset
+	 * (without gold standard), and a precise methodology. */
+	protected static String labelBlacklist = "name|script|music|director|film|movie|voice";
+
 	public void process(JCas resultView) throws AnalysisEngineProcessException {
 		List<Clue> clues = cluesToCheck(resultView);
 
@@ -76,6 +83,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		PriorityQueue<LinkedClue> cluesByLen = new PriorityQueue<>(32, new LinkedClueLengthComparator());
 		for (Clue clue : clues) {
 			String clueLabel = clue.getLabel();
+			if (clueLabel.toLowerCase().matches(labelBlacklist))
+				continue; // explicit blacklist
 
 			/* Execute entity linking from clue text to
 			 * a corresponding enwiki article.  This internally

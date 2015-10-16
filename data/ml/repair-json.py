@@ -1,7 +1,10 @@
-# Repairs dumped json with adding "[" to the beginning, "]" to the end and "," between lines 
-# 
-# usage: repair-json.py [-h] input_data
-
+#!/usr/bin/python
+#
+# Repairs questionDump json output to have a correct syntax.
+#
+# Adding "[" to the beginning, "]" to the end and "," between lines.
+#
+# Usage: repair-json.py [-h] input_data
 
 from argparse import ArgumentParser
 
@@ -14,7 +17,7 @@ if __name__ == '__main__':
 	with open(args.input_data, 'r') as f:
 		lines = f.readlines()
 		for i, line in enumerate(lines):
-			if (i != len(lines) - 1):
+			if i != len(lines) - 1:
 				print (line.replace("\n", "") + ",")
 			else:
 				print (line.replace("\n", ""))

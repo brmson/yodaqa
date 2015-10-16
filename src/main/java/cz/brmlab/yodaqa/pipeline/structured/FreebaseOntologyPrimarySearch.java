@@ -1,10 +1,12 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.LoggerFactory;
@@ -59,7 +61,8 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		/* Fetch concept properties from the Freebase ontology dataset,
 		 * looking for Freebase topics specifically linked to the enwiki
 		 * articles we have found. */
-		properties.addAll(fbo.queryPageID(concept.getPageID(), pathScs, logger));
+		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		properties.addAll(fbo.queryPageID(concept.getPageID(), pathScs, concepts, logger));
 
 		return properties;
 	}

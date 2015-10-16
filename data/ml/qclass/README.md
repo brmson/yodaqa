@@ -18,8 +18,8 @@ The we need to create json files with question features by following commands:
 	./gradlew questionDump -PexecArgs="data/ml/qclass/data/train-data.tsv data/ml/qclass/data/train-data-corrupted.json"
 	./gradlew questionDump -PexecArgs="data/ml/qclass/data/test-data.tsv data/ml/qclass/data/test-data-corrupted.json"
 	cd data/ml/qclass
-	python repair-json.py data/train-data-corrupted.json > data/train-data.json
-	python repair-json.py data/test-data-corrupted.json > data/test-data.json
+	python ../repair-json.py data/train-data-corrupted.json > data/train-data.json
+	python ../repair-json.py data/test-data-corrupted.json > data/test-data.json
 
 Now we can train the model and copy it into yodaqa:
 
