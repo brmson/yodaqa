@@ -17,7 +17,7 @@ import random
 from sklearn import linear_model
 
 # the set of input features; the labels match Concept attributes in questionDump
-feats = ['editDist', 'labelProbability', 'logPopularity', 'getByLAT', 'getByNE', 'getBySubject', 'getByFuzzyLookup', 'getByCWLookup']
+feats = ['editDist', 'labelProbability', 'logPopularity', 'getByLAT', 'getByNE', 'getBySubject', 'getByNgram', 'getByFuzzyLookup', 'getByCWLookup']
 
 # cross validation parameters
 num_rounds = 10
