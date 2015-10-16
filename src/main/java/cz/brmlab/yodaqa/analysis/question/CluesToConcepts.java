@@ -173,6 +173,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setBySubject(c.isBySubject());
 				concept.setByLAT(c.isByLAT());
 				concept.setByNE(c.isByNE());
+				concept.setByNgram(c.isByNgram());
 				concept.setByFuzzyLookup(a.isByFuzzyLookup());
 				concept.setByCWLookup(a.isByCWLookup());
 
@@ -314,6 +315,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 					lc.setByLAT(true);
 				else if (clueSub instanceof ClueNE)
 					lc.setByNE(true);
+				else if (clueSub instanceof ClueNgram)
+					lc.setByNgram(true);
 				if (clueSub.getWeight() > clue.getWeight()) {
 					clue.setWeight(clueSub.getWeight());
 				}
@@ -438,7 +441,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 		/** Whether this linked clue subdued another clue
 		 * of a certain kind. */
-		protected boolean bySubject, byLAT, byNE;
+		protected boolean bySubject, byLAT, byNE, byNgram;
 
 		/** The score of the best-faring concept produced
 		 * by this clue. */
@@ -466,6 +469,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		public void setByLAT(boolean byLAT) { this.byLAT = byLAT; }
 		public boolean isByNE() { return byNE; }
 		public void setByNE(boolean byNE) { this.byNE = byNE; }
+		public boolean isByNgram() { return byNgram; }
+		public void setByNgram(boolean byNgram) { this.byNE = byNgram; }
 
 		public double getBestScore() { return bestScore; }
 		public void addScore(double score) { if (score > bestScore) bestScore = score; }
