@@ -104,9 +104,20 @@ public class AF {
 	 * curated ontology. */
 	public static final String OriginFreebaseOntology = "originFreebaseOntology";
 	/** Answer Feature: 1 if the origin of this answer is a specifically
-	 * queries relation (based on the fbpath machine learned model) in the
+	 * queried relation (based on the fbpath machine learned model) in the
 	 * Freebase curated ontology. */
 	public static final String OriginFreebaseSpecific = "originFreebaseSpecific";
+	/** Answer Feature: 1 if the origin of this answer is a specifically
+	 * queried relation that is branched.  That is, aside of a 2-relation
+	 * path, an extra witness bound by a third relation to the intermediate
+	 * node has been matched to a question concept. */
+	public static final String OriginFreebaseBranched = "originFreebaseBranched";
+	/** Answer Feature: 1 if the origin of this answer is a specifically
+	 * queried branched relation that matched a witness concept by mid. */
+	public static final String OriginFreebaseWitnessMid = "originFreebaseWitnessMid";
+	/** Answer Feature: 1 if the origin of this answer is a specifically
+	 * queried branched relation that matched a witness concept by label. */
+	public static final String OriginFreebaseWitnessLabel = "originFreebaseWitnessLabel";
 	/** Answer Feature: Negative evidence set to -1 if the origin of this
 	 * answer is a DBpedia curated ontology property that does not match
 	 * any question clue in its label. */

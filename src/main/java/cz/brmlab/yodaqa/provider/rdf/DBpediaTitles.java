@@ -123,7 +123,7 @@ public class DBpediaTitles extends DBpediaLookup {
 	 * articles (transversing redirects and disambiguations). */
 	public List<Article> queryArticle(Article baseA, Logger logger) {
 		String name = baseA.getName();
-		if (name.contains("\"")) // generates syntax errors
+		if (name.contains("\"") || name.startsWith("-")) // generates syntax errors
 			return new ArrayList<Article>();
 		double prob = baseA.getProb();
 		String rawQueryStr =

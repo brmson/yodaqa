@@ -1,0 +1,27 @@
+Branched fbpaths try to cover question which have additional relation to concept 
+in addition to relation between question entity and answer. These paths have to have
+one common relation. 
+
+For example one path: tv/tv_character/appeared_in_tv_program", "/tv/regular_tv_appearance/actor"
+and second path: tv/tv_character/appeared_in_tv_program", "/tv/regular_tv_appearance/series
+
+This is typical for question which look like: Who played character X in film Y.
+
+However not all question of this type was not answered correctly, here are some examples with 
+possible reason of wring answer.
+
+298 out of 2834 questions in wbquestion dataset have at least one concept with no freebase-key. It could be caused by following:
+-	the freebase-key for specified concept page ID was not found in freebase (5091 out of 15721)
+	- example concept: Inception
+-	the wikipedia topic for specified page ID (in specified language) was not found (655 out of 15721)
+	- example concept: List of films considered the best	
+
+* who does the author stephenie meyer play in the movie twilight? - given the relation path, the breebase did not returned any anwser
+* who did michael jackson play in the wiz?	- the classifier did not classify this question with three relations
+* who does jamie campbell bower play in breaking dawn? - the right anwer was not listed in the freebase results
+* who played betty rizzo in grease?	- correct answer was in freebase results but not in the final results
+* who is playing hawkeye in the avengers movie?	- this question had no generated queries
+* who plays harold saxon in doctor who?	- the classifier did not classify this question with three relations
+* who plays stella in coronation street? - wring concept "Stella Club"
+
+TODO: more questions
