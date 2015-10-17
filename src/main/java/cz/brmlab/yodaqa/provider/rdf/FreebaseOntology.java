@@ -442,7 +442,12 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched", "witnessAF" }, -1);
+			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched", "witnessAF" },
+			/* We want to be fairly liberal and look at all the properties
+			 * as the interesting ones may be far down in the list,
+			 * but there is some super-spammy stuff like all locations
+			 * contained in Poland that we just need to avoid. */
+			PROP_LIMIT * 10);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
