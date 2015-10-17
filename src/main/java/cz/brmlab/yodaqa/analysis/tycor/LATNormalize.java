@@ -1,12 +1,12 @@
 package cz.brmlab.yodaqa.analysis.tycor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,7 +84,7 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 	};
 	static Map<String, LATCacheEntry> latCache;
 	{
-		latCache = new HashMap<>();
+		latCache = new ConcurrentHashMap<>();
 	}
 
 	public synchronized void initialize(UimaContext aContext) throws ResourceInitializationException {

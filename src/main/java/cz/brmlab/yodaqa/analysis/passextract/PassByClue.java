@@ -207,6 +207,8 @@ public class PassByClue extends JCasAnnotator_ImplBase {
 					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueLAT", 1.0);
 				if (concept.getByNE())
 					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueNE", 1.0);
+				if (concept.getByNgram())
+					afv.setFeature(AF.OriginPsgBy_ClueType + "ClueNgram", 1.0);
 				if (concept.getSourceRr() > bestSourceRr)
 					bestSourceRr = concept.getSourceRr();
 				if (concept.getLabelRr() > bestLabelRr)

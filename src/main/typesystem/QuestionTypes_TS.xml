@@ -215,6 +215,11 @@
         </features>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueNgram</name>
+        <description>Clue based on an arbitrary n-gram (sequence of n subsequent tokens).  We generate these only when we have a good reason to, e.g. this n-gram matches some well-known entity label.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.Concept</name>
 	<description>Concept is basically a Wikipedia article, labelled by its full title and the label somehow occurring in the question text.  This is a strong indicator of the question topic, which in turn helps choose appropriate information sources.</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -247,6 +252,11 @@
           <featureDescription>
             <name>byNE</name>
             <description>Whether this concept has subdued a ClueNE.</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>byNgram</name>
+            <description>Whether this concept has subdued a ClueNgram.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
           <featureDescription>

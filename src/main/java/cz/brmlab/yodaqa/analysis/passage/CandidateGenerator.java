@@ -102,6 +102,8 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 					afv.setFeature(AF.PsgDist_ClueType + "ClueLAT", value);
 				if (concept.getByNE())
 					afv.setFeature(AF.PsgDist_ClueType + "ClueNE", value);
+				if (concept.getByNgram())
+					afv.setFeature(AF.PsgDist_ClueType + "ClueNgram", value);
 				if (concept.getSourceRr() > bestSourceRr)
 					bestSourceRr = concept.getSourceRr();
 				if (concept.getLabelRr() > bestLabelRr)

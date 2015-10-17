@@ -122,7 +122,9 @@ public class DBpediaTitles extends DBpediaLookup {
 	/** Query for a given Article in full DBpedia, returning a set of
 	 * articles (transversing redirects and disambiguations). */
 	public List<Article> queryArticle(Article baseA, Logger logger) {
-		String name = baseA.getName().replaceAll("\"","\\\\\"");
+		String name = baseA.getName();
+		if (name.contains("\"") || name.startsWith("-")) // generates syntax errors
+			return new ArrayList<Article>();
 		double prob = baseA.getProb();
 		String rawQueryStr =
 			"{\n" +

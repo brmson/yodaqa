@@ -20,28 +20,28 @@ which should ideally have near-100% Freebase recall and already has
 most questions annotated by the answer property paths.  We use the
 train sub-splits (trainmodel, val, devtest) for training and development.
 
-To generate a JSON dump of question analysis of webquestions, use:
+Get a single combined dataset with both source features (dump of
+a question analysis) and target labels (computed answer property paths):
 
-	mkdir data/ml/fbpath/wq-qdump
-	for i in trainmodel val devtest; do
-		./gradlew questionDump -PexecArgs="../dataset-factoid-webquestions/tsv/$i.tsv data/ml/fbpath/wq-qdump/${i}.json"; done
-	done
-
-(You need to edit the generated files to make JSON arrays - add [ to
-the beginning, ] to the end, and a comma after each but the last record.)
-This is fast, just a few minutes for full training set.  Still, you
-can get it for YodaQA 0dc0c0f, dataset-factoid-webquestions 4cf3d15
-at: http://pasky.or.cz/dev/brmson/wq-qdump/
-
-Combine to a single dataset:
-
-	mkdir data/ml/fbpath/wq-fbpath
+	mkdir -p data/ml/fbpath/wq-fbpath
 	cd ../dataset-factoid-webquestions
 	for i in trainmodel val devtest; do
-		scripts/fulldata.py $i ../yodaqa/data/ml/fbpath/wq-fbpath/ main/ d-freebase-rp/ ../yodaqa/data/ml/fbpath/wq-qdump/
+		scripts/fulldata.py $i ../yodaqa/data/ml/fbpath/wq-fbpath/ main/ d-dump/ d-freebase-brp/
 	done
 
-To get the dataset at this stage: http://pasky.or.cz/dev/brmson/wq-fbpath/
+If you want to update the source features, rerun the questionDump
+as explained in d-dump/README.md; if entity linking (sets of concepts)
+has changed since the last dump, you will also need to regen (in order)
+d-freebase-mids, d-freebase-brp and d-freebase-brp.
+
+### Branched fbpaths
+
+If we want to generate dataset which contains branched fbpaths (Which means that it contains relations between
+two concepts and answer), we can use files from [WebQuestions dataset](https://github.com/brmson/dataset-factoid-webquestions)
+too, using d-freebase-brp in the command above as written.
+The classifier training procedure outlined below is appropriate.
+
+To disable branched fbpaths, just replace d-freebase-brp with d-freebase-rp.
 
 Model
 -----
@@ -57,7 +57,7 @@ of the dataset and models we have done.
 As a baseline model, we use **multi-label logistic regression** classifier
 to estimate the probabilities of specific fbpaths:
 
-	data/ml/fbpath/fbpath_train_logistic.py trainmodel.json val.json >src/main/resources/cz/brmlab/yodaqa/analysis/rdf/FBPathLogistic.model
+	data/ml/fbpath/fbpath_train_logistic.py data/ml/fbpath/wq-fbpath/trainmodel.json data/ml/fbpath/wq-fbpath/val.json >src/main/resources/cz/brmlab/yodaqa/analysis/rdf/FBPathLogistic.model
 
 (XXX: you need to manually delete the trailing comma on the second to last line.)
 This model is used within the YodaQA runtime in the class
