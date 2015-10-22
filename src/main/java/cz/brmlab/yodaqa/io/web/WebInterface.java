@@ -48,12 +48,21 @@ public class WebInterface implements Runnable {
 			public Object handle(Request request, Response response) {
 				String id = Integer.toString(idgen.nextInt(Integer.MAX_VALUE));
 				String text = request.queryParams("text");
+				String pageId = request.queryParams("pageID");
+				String fullLabel = request.queryParams("fullLabel");
 				if (text == null) {
 					response.status(422);
 					return "missing parameter: text";
 				}
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
-				Question q = new Question(id, text);
+				Question q;
+				if (!pageId.equals("") && !fullLabel.equals("")) {
+					List<ArtificialConcept> artificialConcepts = new ArrayList<>();
+					artificialConcepts.add(new ArtificialConcept(Integer.parseInt(pageId), fullLabel));
+					q = new Question(id, text, artificialConcepts);
+				} else {
+					q = new Question(id, text);
+				}
 				QuestionDashboard.getInstance().askQuestion(q);
 				response.header("Access-Control-Allow-Origin", "*");
 				response.status(201);

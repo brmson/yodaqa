@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.io.web;
 
+import cz.brmlab.yodaqa.model.Question.Concept;
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
 
 import org.apache.uima.UimaContext;
@@ -47,6 +48,16 @@ public class WebQuestionReader extends CasCollectionReader_ImplBase {
 		qInfo.setSource("web");
 		qInfo.setQuestionId(q.getId());
 		qInfo.addToIndexes(jcas);
+
+		if (q.getArtificialConcepts() != null) {
+			for (ArtificialConcept c : q.getArtificialConcepts()) {
+				Concept aConcept = new Concept(jcas);
+				aConcept.setPageID(c.getPageID());
+				aConcept.setFullLabel(c.getFullLabel());
+				aConcept.setCookedLabel(aConcept.getFullLabel());
+				aConcept.addToIndexes();
+			}
+		}
 	}
 
 	@Override
