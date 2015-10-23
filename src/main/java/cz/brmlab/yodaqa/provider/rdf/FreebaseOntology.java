@@ -471,6 +471,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				"  {\n" +
 				"    ?med ns:" + witnessRel + " ?concept .\n" +
 				"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
+				"    ?concept rdfs:label ?wlabel .\n" +
 				"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
 				"  } UNION";
 		}
