@@ -291,9 +291,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		while (jr.hasNext()) {
 			Article o = gson.fromJson(jr, Article.class);
 			o.getByCWLookup = true;
-			if (results.isEmpty()) {
-				results.add(o);
-			}
+			results.add(o);
 			logger.debug("sqlite-lookup({}) returned: p{} ~{} [{}] {} {}", label, o.getProb(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 		}
 		jr.endArray();
