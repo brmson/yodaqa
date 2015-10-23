@@ -117,14 +117,14 @@ public class FreebaseOntology extends FreebaseLookup {
 	/** Query for a given title, returning a set of PropertyValue instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> query(String title, List<PathScore> paths, List<Concept> concepts, Logger logger) {
+	public List<PropertyValue> query(String title, List<PathScore> paths, List<Concept> concepts, List<String> witnessLabels, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
 			Set<String> topics = queryTopicByTitleForm(titleForm, logger);
 			List<PropertyValue> results = new ArrayList<PropertyValue>();
 			for (String mid : topics) {
 				results.addAll(queryTopicGeneric(titleForm, mid, logger));
 				if (!paths.isEmpty())
-					results.addAll(queryTopicSpecific(titleForm, mid, paths, concepts, logger));
+					results.addAll(queryTopicSpecific(titleForm, mid, paths, concepts, witnessLabels, logger));
 			}
 			if (!results.isEmpty())
 				return results;
@@ -146,13 +146,13 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, List<Concept> concepts, Logger logger) {
+	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, List<Concept> concepts, List<String> witnessLabels, Logger logger) {
 		Set<TitledMid> topics = queryTopicByPageID(pageID, logger);
 		List<PropertyValue> results = new ArrayList<PropertyValue>();
 		for (TitledMid topic : topics) {
 			results.addAll(queryTopicGeneric(topic.title, topic.mid, logger));
 			if (!paths.isEmpty())
-				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, concepts, logger));
+				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, concepts, witnessLabels, logger));
 		}
 		return results;
 	}
@@ -229,7 +229,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * ns:award.award_winner.awards_won.
 	 * For these, we apply a fbpath label prediction machine learning
 	 * model and handle them in queryTopicSpecific(). */
-	public List<PropertyValue> queryTopicGeneric(String titleForm, String mid, Logger logger) {
+	protected List<PropertyValue> queryTopicGeneric(String titleForm, String mid, Logger logger) {
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
@@ -320,7 +320,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * that cover the specified property paths.  This generalizes poorly
 	 * to lightly covered topics, but has high precision+recall for some
 	 * common topics where it can reach through the meta-nodes. */
-	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, List<Concept> concepts, Logger logger) {
+	protected List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, List<Concept> concepts, List<String> witnessLabels, Logger logger) {
 		/* Test query:
 		   PREFIX ns: <http://rdf.freebase.com/ns/>
 		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -381,45 +381,10 @@ public class FreebaseOntology extends FreebaseLookup {
 				pathQueries.add(pathQueryStr);
 			} else if (path.size() == 3) {
 				for (Concept c: concepts) {
-					String witnessRel = path.get(2);
-					String quotedTitle = c.getFullLabel().replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
-					String pathQueryStr = "{" +
-							"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
-							"  ?med ns:" + path.get(1) + " ?val .\n" +
-
-							/* MID witness match */
-							"  {\n" +
-							"    ?med ns:" + witnessRel + " ?concept .\n" +
-							"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + c.getPageID() + "\" .\n" +
-							"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
-							"  } UNION {\n" +
-
-							/* Label witness match */
-							"    {\n" +
-							"      ?med ns:" + witnessRel + " ?wlabel .\n" +
-							"      FILTER(!ISURI(?wlabel))\n" +
-							"    } UNION {\n" +
-							"      ?med ns:" + witnessRel + " ?concept .\n" +
-							"      ?concept rdfs:label ?wlabel .\n" +
-							"    }\n" +
-							"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
-							"    FILTER(CONTAINS(LCASE(?wlabel), LCASE(\"" + quotedTitle + "\")))\n" +
-							"    BIND(\"" + AF.OriginFreebaseWitnessLabel + "\" AS ?witnessAF)\n" +
-							"  }\n" +
-
-							"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
-							"  BIND(" + ps.proba + " AS ?score)\n" +
-							"  BIND(1 AS ?branched)\n" +
-							"  BIND(ns:" + mid + " AS ?res)\n" +
-							"  OPTIONAL {\n" +
-							"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
-							"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
-							"    FILTER(LANGMATCHES(LANG(?pl0), \"en\"))\n" +
-							"    FILTER(LANGMATCHES(LANG(?pl1), \"en\"))\n" +
-							"    BIND(CONCAT(?pl0, \": \", ?pl1) AS ?proplabel)\n" +
-							"  }\n" +
-							"}";
-					pathQueries.add(pathQueryStr);
+					pathQueries.add(getWitnessQuery(mid, ps, c.getFullLabel(), c.getPageID()));
+				}
+				for (String w: witnessLabels) {
+					pathQueries.add(getWitnessQuery(mid, ps, w, null));
 				}
 			}
 		}
@@ -486,5 +451,55 @@ public class FreebaseOntology extends FreebaseLookup {
 		}
 
 		return results;
+	}
+
+	/** Return a SPARQL select fragment for matching 3-relation path with
+	 * a given witness (connected extra selector clue). */
+	protected String getWitnessQuery(String mid, PathScore ps, String fullLabel, Integer pageID) {
+		PropertyPath path = ps.path;
+		String witnessRel = path.get(2);
+		String quotedTitle = fullLabel.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
+		String pathQueryStr = "{" +
+			"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
+			"  ?med ns:" + path.get(1) + " ?val .\n";
+
+		if (pageID != null) {
+			/* MID witness match */
+			pathQueryStr +=
+				"  {\n" +
+				"    ?med ns:" + witnessRel + " ?concept .\n" +
+				"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
+				"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
+				"  } UNION";
+		}
+
+		/* Label witness match */
+		pathQueryStr +=
+			" {\n" +
+			"    {\n" +
+			"      ?med ns:" + witnessRel + " ?wlabel .\n" +
+			"      FILTER(!ISURI(?wlabel))\n" +
+			"    } UNION {\n" +
+			"      ?med ns:" + witnessRel + " ?concept .\n" +
+			"      ?concept rdfs:label ?wlabel .\n" +
+			"    }\n" +
+			"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
+			"    FILTER(CONTAINS(LCASE(?wlabel), LCASE(\"" + quotedTitle + "\")))\n" +
+			"    BIND(\"" + AF.OriginFreebaseWitnessLabel + "\" AS ?witnessAF)\n" +
+			"  }\n" +
+
+			"  BIND(\"ns:" + path.get(0) + "/ns:" + path.get(1) + "\" AS ?prop)\n" +
+			"  BIND(" + ps.proba + " AS ?score)\n" +
+			"  BIND(1 AS ?branched)\n" +
+			"  BIND(ns:" + mid + " AS ?res)\n" +
+			"  OPTIONAL {\n" +
+			"    ns:" + path.get(0) + " rdfs:label ?pl0 .\n" +
+			"    ns:" + path.get(1) + " rdfs:label ?pl1 .\n" +
+			"    FILTER(LANGMATCHES(LANG(?pl0), \"en\"))\n" +
+			"    FILTER(LANGMATCHES(LANG(?pl1), \"en\"))\n" +
+			"    BIND(CONCAT(?pl0, \": \", ?pl1) AS ?proplabel)\n" +
+			"  }\n" +
+			"}";
+		return pathQueryStr;
 	}
 }
