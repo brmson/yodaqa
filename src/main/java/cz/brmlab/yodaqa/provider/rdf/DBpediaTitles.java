@@ -150,6 +150,11 @@ public class DBpediaTitles extends DBpediaLookup {
 			   // (C) fetch also resources targetted by disambiguation
 			"  BIND(<" + resURI + "> AS ?disamb)\n" +
 			"  ?disamb dbo:wikiPageDisambiguates ?res .\n" +
+			"} UNION {\n" +
+			   // (B) + (C) (e.g. Aladdin_(film) -> Aladdin_(disambiguation)
+			"  BIND(<" + resURI + "> AS ?redir)\n" +
+			"  ?redir dbo:wikiPageRedirects ?disamb .\n" +
+			"  ?disamb dbo:wikiPageDisambiguates ?res .\n" +
 			"}\n" +
 			 // for (B) and (C), we are also getting a redundant (A) entry;
 			 // identify the redundant (A) entry by filling
