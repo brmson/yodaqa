@@ -407,7 +407,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched", "witnessAF" },
+			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched", "witnessAF", "wlabel" },
 			/* We want to be fairly liberal and look at all the properties
 			 * as the interesting ones may be far down in the list,
 			 * but there is some super-spammy stuff like all locations
@@ -435,9 +435,11 @@ public class FreebaseOntology extends FreebaseLookup {
 			double score = rawResult[5].getDouble();
 			boolean isBranched = rawResult[6].getInt() != 0;
 			String witnessAF = rawResult[7] != null ? rawResult[7].getString() : null;
-			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {} {},{}",
+			String wLabel = rawResult[8] != null ? rawResult[8].getString() : null;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) {} {},{},<<{}>>",
 				titleForm, mid, propLabel, prop, value, valRes, score,
-				isBranched ? "branched" : "straight", witnessAF);
+				isBranched ? "branched" : "straight", witnessAF,
+				wLabel);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseSpecific, 1.0);
 			fv.setFeature(AF.OriginFreebaseBranched, 1.0);
@@ -469,6 +471,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				"  {\n" +
 				"    ?med ns:" + witnessRel + " ?concept .\n" +
 				"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
+				"    ?concept rdfs:label ?wlabel .\n" +
 				"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
 				"  } UNION";
 		}
