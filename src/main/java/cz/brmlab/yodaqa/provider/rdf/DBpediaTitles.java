@@ -9,11 +9,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.stream.JsonReader;
@@ -37,7 +35,7 @@ public class DBpediaTitles extends DBpediaLookup {
 
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
-	public class Article {
+	public class Article implements Cloneable {
 		protected String name;
 		protected int pageID;
 		protected String matchedLabel;
@@ -87,6 +85,21 @@ public class DBpediaTitles extends DBpediaLookup {
 		public double getProb() { return prob; }
 		public boolean isByFuzzyLookup() { return getByFuzzyLookup; }
 		public boolean isByCWLookup() { return getByCWLookup; }
+
+		public Article clone() {
+			try { // much boilerplate
+				return (Article) super.clone();
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+				throw new RuntimeException();
+			}
+		}
+
+		public Article newRenamed(String newName) {
+			Article a2 = this.clone();
+			a2.name = newName;
+			return a2;
+		}
 	}
 
 	/** Query for a given title, returning a set of articles. */
@@ -113,6 +126,15 @@ public class DBpediaTitles extends DBpediaLookup {
 			List<Article> results = new ArrayList<>();
 			for (Article a : entities) {
 				results.addAll(queryArticle(a, logger));
+
+				/* **d/movies specific**: attempt forceful
+				 * topic-specific disambiguation */
+				// lord of the rings
+				Article a2 = a.newRenamed(a.getName() + "_(film_series)");
+				results.addAll(queryArticle(a2, logger));
+				// ender's game etc.
+				a2 = a.newRenamed(a.getName() + "_(film)");
+				results.addAll(queryArticle(a2, logger));
 			}
 			results = deduplicateResults(results);
 			if (!results.isEmpty())

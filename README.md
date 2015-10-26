@@ -24,6 +24,7 @@ the movies domain - movies, directors, actors, screenplays, academy awards...
 We aim to maximize performance on this specific set, gather specific
 datasets, etc.  We use specifically trained models, but attempt not
 to implement specifically tuned heuristics or hard-coded rules.
+(An exception is an additional entity linking rule in the DBpediaTitles class.)
 
 We check this on the (i) moviesC, and (ii) WebQuestions datasets.
 Detailed performance info is available at:
