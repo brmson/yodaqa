@@ -2,6 +2,8 @@ package cz.brmlab.yodaqa.provider.rdf;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -125,18 +127,33 @@ public class DBpediaTitles extends DBpediaLookup {
 		String name = baseA.getName();
 		if (name.contains("\"") || name.startsWith("-")) // generates syntax errors
 			return new ArrayList<Article>();
+		// This escapes unicode characters properly
+		String resURI;
+		try {
+			resURI = new URI("http://dbpedia.org/resource/" + name).toASCIIString();
+		} catch (URISyntaxException e) {
+			System.err.println("Bad name: " + name);
+			e.printStackTrace();
+			return new ArrayList<Article>();
+		}
+
 		double prob = baseA.getProb();
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with a given name
-			"  BIND(<http://dbpedia.org/resource/" + name + "> AS ?res)\n" +
+			"  BIND(<" + resURI + "> AS ?res)\n" +
 			"} UNION {\n" +
 			   // (B) fetch also resources targetted by redirect
-			"  BIND(<http://dbpedia.org/resource/" + name + "> AS ?redir)\n" +
+			"  BIND(<" + resURI + "> AS ?redir)\n" +
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
 			"} UNION {\n" +
 			   // (C) fetch also resources targetted by disambiguation
-			"  BIND(<http://dbpedia.org/resource/" + name + "> AS ?disamb)\n" +
+			"  BIND(<" + resURI + "> AS ?disamb)\n" +
+			"  ?disamb dbo:wikiPageDisambiguates ?res .\n" +
+			"} UNION {\n" +
+			   // (B) + (C) (e.g. Aladdin_(film) -> Aladdin_(disambiguation)
+			"  BIND(<" + resURI + "> AS ?redir)\n" +
+			"  ?redir dbo:wikiPageRedirects ?disamb .\n" +
 			"  ?disamb dbo:wikiPageDisambiguates ?res .\n" +
 			"}\n" +
 			 // for (B) and (C), we are also getting a redundant (A) entry;
@@ -274,9 +291,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		while (jr.hasNext()) {
 			Article o = gson.fromJson(jr, Article.class);
 			o.getByCWLookup = true;
-			if (results.isEmpty()) {
-				results.add(o);
-			}
+			results.add(o);
 			logger.debug("sqlite-lookup({}) returned: p{} ~{} [{}] {} {}", label, o.getProb(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
 		}
 		jr.endArray();

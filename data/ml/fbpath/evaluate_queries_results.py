@@ -1,17 +1,32 @@
 #!/usr/bin/python -u
 #
-# Evaluate queries results from predicted fbpaths againts the gold standard dataset
+# Evaluate fbpath-based query performance (on gold standard and as predicted)
 #
-# Usage: freebaseKey-from-concepts.py traindata.json full-dataset.json
+# Usage: evaluate_queries_results.py traindata.json valdata.json
 #
-# File full-dataset.json needs to contain array of objetcs for each question. Each object needs to have following fields:
-# Concept, freebaseMids, relPaths and answers.
-# For every question, the script prints its qId, whether all answers were found using gold standard fbpaths, whether any answer
-# was found using gold standard fbpaths, whether all answers were found using predicted fbpaths and whether any answer
-# was found using predicted fbpaths.
-# At the end of the script, it prints number of questions and percentual information about all/any answers obtained form freebase using
-# gold standard/predicted fbpaths plus it prints number of questions which could not be answered because SPARQLWrapper does not
-# support long queries.
+# A model is trained on traindata and then its performance is measured
+# on valdata.  (FIXME: Duplicate code with fbpath_train_logistic, instead
+# of reusing the already-trained model.)
+#
+# The json data can be generated using:
+#
+#	mkdir -p data/ml/fbpath/wq-fbpath
+#	cd ../dataset-factoid-webquestions
+#	for i in trainmodel val devtest; do
+#		scripts/fulldata.py $i ../yodaqa/data/ml/fbpath/wq-fbpath/ main/ d-dump/ d-freebase-mids/ d-freebase-brp/
+#	done
+#
+# Example: data/ml/fbpath/evaluate_queries_results.py data/ml/fbpath/wq-fbpath/trainmodel.json data/ml/fbpath/wq-fbpath/val.json
+#
+# For every question, the script prints its qId, whether all answers were found
+# using gold standard fbpaths, whether any answer was found using gold standard
+# fbpaths, whether all answers were found using predicted fbpaths and whether
+# any answer was found using predicted fbpaths.
+#
+# At the end of the script, it prints number of questions and percentual
+# information about all/any answers obtained form freebase using gold
+# standard/predicted fbpaths plus it prints number of questions which could not
+# be answered because SPARQLWrapper does not support long queries.
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 import json, sys
