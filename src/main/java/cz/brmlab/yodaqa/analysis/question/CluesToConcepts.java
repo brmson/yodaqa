@@ -267,6 +267,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 		for (Token t : JCasUtil.select(questionView, Token.class)) {
 			/* XXX: Ignore stopwords? */
+			if (t.getCoveredText().equals("?"))
+				continue;
 			nTokens.add(t);
 			if (nTokens.size() == n) {
 				/* produce */
