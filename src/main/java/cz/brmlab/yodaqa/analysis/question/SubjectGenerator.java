@@ -117,6 +117,14 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 				addSubject(jcas, ne);
 			}
 		}
+
+		/* Also generate subject for the shortest covering NP, which is
+		 * often just a very specific phrase like 'main character' or
+		 * 'middle name', useful as e.g. a property selector. */
+		NP npShort = TreeUtil.shortestCoveringNP(stok);
+		if (npShort != np && !npShort.getCoveredText().equals(genSubject)) {
+			addSubject(jcas, npShort);
+		}
 	}
 
 	protected void addSubject(JCas jcas, Annotation subj) throws AnalysisEngineProcessException {
