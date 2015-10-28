@@ -10,35 +10,35 @@ import cz.brmlab.yodaqa.model.Question.Concept;
 public class ConceptClassifier {
 	/* N.B. This is trained on the moviesC-train dataset,
 	 * not on curated or anything! */
-	/* Training data - correct: 643 (16.458%), incorrect: 3264 (83.542%) */
+	/* Training data - correct: 671 (11.571%), incorrect: 5128 (88.429%) */
 
 	/* 10-fold cross-validation (with 0.20 test splits): */
-	/* CV fold precision 91.816% (718/782) */
-	/* CV fold precision 92.967% (727/782) */
-	/* CV fold precision 92.711% (725/782) */
-	/* CV fold precision 91.560% (716/782) */
-	/* CV fold precision 93.223% (729/782) */
-	/* CV fold precision 93.862% (734/782) */
-	/* CV fold precision 93.223% (729/782) */
-	/* CV fold precision 92.455% (723/782) */
-	/* CV fold precision 94.118% (736/782) */
-	/* CV fold precision 91.944% (719/782) */
-	/* === CV average precision 92.788% (+-SD 0.813%) */
+	/* CV fold precision 93.276% (1082/1160) */
+	/* CV fold precision 94.052% (1091/1160) */
+	/* CV fold precision 93.362% (1083/1160) */
+	/* CV fold precision 93.707% (1087/1160) */
+	/* CV fold precision 93.534% (1085/1160) */
+	/* CV fold precision 94.655% (1098/1160) */
+	/* CV fold precision 93.362% (1083/1160) */
+	/* CV fold precision 94.397% (1095/1160) */
+	/* CV fold precision 93.707% (1087/1160) */
+	/* CV fold precision 92.155% (1069/1160) */
+	/* === CV average precision 93.621% (+-SD 0.654%) */
 
-	/* Training set precision 92.731% (3623/3907) */
+	/* Training set precision 93.844% (5442/5799) */
 	/* Model (trained on the whole training set): */
 	double[] weights = {
-		0.310978, // editDist
-		4.596500, // labelProbability
-		0.599989, // logPopularity
-		-1.430439, // getByLAT
-		0.334976, // getByNE
-		0.996069, // getBySubject
+		0.238905, // editDist
+		5.083306, // labelProbability
+		0.634009, // logPopularity
+		-1.379002, // getByLAT
+		0.754571, // getByNE
+		0.761837, // getBySubject
 		0.000000, // getByNgram
-		0.985908, // getByFuzzyLookup
-		0.025107, // getByCWLookup
+		1.413489, // getByFuzzyLookup
+		-1.549633, // getByCWLookup
 	};
-	double intercept = -6.666614;
+	double intercept = -7.072493;
 	
 	public double calculateProbability(Concept l) {
 		double[] features = new double[9];
