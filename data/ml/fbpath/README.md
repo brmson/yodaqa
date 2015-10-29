@@ -10,6 +10,10 @@ nodes).
 This work is loosely inspired by Yao, 2015: Lean Question Answering over
 Freebase from Scratch (http://www.cs.jhu.edu/~xuchen/paper/scratch-qa.pdf).
 
+TL;DR:
+
+	data/ml/fbpath/fbpath_retrain.sh ../dataset-factoid-webquestions $googleapikey
+
 Data
 ----
 

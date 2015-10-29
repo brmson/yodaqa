@@ -193,7 +193,17 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			}
 
 			Collections.sort(clueLabels, new ClueLabelClassifierComparator());
-			for (ClueLabel cl : clueLabels.subList(0, Math.min(5, clueLabels.size()))) {
+
+			/* By default, pick just top 5 concepts; use
+			 * -Dcz.brmlab.yodaqa.topLinkedConcepts=0
+			 * to pick all, e.g. for concept classifier retraining. */
+			String topLinkedConceptsStr = System.getProperty("cz.brmlab.yodaqa.topLinkedConcepts");
+			int topLinkedConcepts = 5;
+			if (topLinkedConceptsStr != null && !topLinkedConceptsStr.isEmpty())
+				topLinkedConcepts = Integer.parseInt(topLinkedConceptsStr);
+			List<ClueLabel> clueLabelsSubset = topLinkedConcepts > 0 ? clueLabels.subList(0, Math.min(5, clueLabels.size())) : clueLabels;
+
+			for (ClueLabel cl : clueLabelsSubset) {
 				String cookedLabel = cl.getCookedLabel();
 				if (!labels.containsKey(cookedLabel)) {
 					labels.put(cookedLabel, cl);
