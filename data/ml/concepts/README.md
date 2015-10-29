@@ -9,11 +9,9 @@ It requires two inputs:
 
 	dataset-factoid-movies/moviesC/entity-linking.json
 
-  * Question dump dataset with concept features.  First, disable the top-5
-    restriction in src/main/java/cz/brmlab/yodaqa/analysis/question/CluesToConcepts.java
-    (near the end of process(); XXX).  Then:
+  * Question dump dataset with concept features (*all*, not just top N as is usual).
 
-	./gradlew questionDump -PexecArgs="data/eval/moviesC-train.tsv data/ml/concepts/questionDump-tofix.json"
+	./gradlew questionDump -PexecArgs="data/eval/moviesC-train.tsv data/ml/concepts/questionDump-tofix.json" -Dcz.brmlab.yodaqa.topLinkedConcepts=0
 	python data/ml/repair-json.py data/ml/concepts/questionDump-tofix.json > data/ml/concepts/questionDump.json
 
 To train the classifier:
