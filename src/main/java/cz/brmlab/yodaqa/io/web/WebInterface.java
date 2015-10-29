@@ -48,17 +48,14 @@ public class WebInterface implements Runnable {
 			public Object handle(Request request, Response response) {
 				String id = Integer.toString(idgen.nextInt(Integer.MAX_VALUE));
 				String text = request.queryParams("text");
-				String pageId = request.queryParams("pageID");
-				String fullLabel = request.queryParams("fullLabel");
 				if (text == null) {
 					response.status(422);
 					return "missing parameter: text";
 				}
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
+				List<ArtificialConcept> artificialConcepts=retrieveArtificialConcepts(request);
 				Question q;
-				if (!pageId.equals("") && !fullLabel.equals("")) {
-					List<ArtificialConcept> artificialConcepts = new ArrayList<>();
-					artificialConcepts.add(new ArtificialConcept(Integer.parseInt(pageId), fullLabel));
+				if (!artificialConcepts.isEmpty()) {
 					q = new Question(id, text, artificialConcepts);
 				} else {
 					q = new Question(id, text);
@@ -133,5 +130,20 @@ public class WebInterface implements Runnable {
 				return "[" + StringUtils.join(qJson, ",\n") + "]";
 			}
 		});
+	}
+
+	private List<ArtificialConcept> retrieveArtificialConcepts(Request request){
+		List<ArtificialConcept> artificialConcepts=new ArrayList<>();
+		String numberOfArtificialConceptsString=request.queryParams("numberOfConcepts");
+		int numberOfArtificialConcepts=Integer.parseInt(numberOfArtificialConceptsString);
+		for (int i=1; i<=numberOfArtificialConcepts;i++){
+			String pageId = request.queryParams("pageID"+i);
+			String fullLabel = request.queryParams("fullLabel"+i);
+			if (pageId!=null && fullLabel!=null && !pageId.equals("") && !fullLabel.equals("")){
+				int pageIdInt= Integer.parseInt(pageId);
+				artificialConcepts.add(new ArtificialConcept(pageIdInt,fullLabel));
+			}
+		}
+		return artificialConcepts;
 	}
 }
