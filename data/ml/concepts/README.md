@@ -3,6 +3,13 @@ Concept classification using logistic regression
 
 This script is for training and evaluating a classifier of concepts using the edit distance, dbpedia popularity, CrossWiki probability and other features.
 
+TL;DR:
+
+	data/ml/concepts/concepts_retrain.sh ../dataset-factoid-movies/moviesC
+
+Retraining
+----------
+
 It requires two inputs:
 
   * The gold standard dataset. For moviesC-train, it is located in:
@@ -23,7 +30,8 @@ Put the full output in the class code of:
 	src/main/java/cz/brmlab/yodaqa/analysis/question/ConceptClassifier.java
 
 Experiments
-===========
+-----------
+
 We trained and tested the classifier on moviesC-train dataset (commit hash 93a974e), taking the top5 concepts sorted by dbpedia popularity.
 
 using the 6 features (edit distance, crosswiki prob, dbpedia popularity, isByLAT, isByNE, isBySubject), the mean precision using cross validation is 85.9% with the standard devation of 1.25%.
