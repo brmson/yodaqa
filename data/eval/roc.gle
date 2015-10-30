@@ -1,0 +1,20 @@
+include "shape.gle"
+include "graphutil.gle"
+
+size 10 7
+
+set texlabels 1
+
+begin graph
+   scale auto
+   title  "ROC"
+
+   xtitle "FP"
+   xaxis min 0 max 1
+
+   ytitle "TP"
+   yaxis min 0 max 1
+
+   data "roc.dat"
+   d1 line
+end graph
