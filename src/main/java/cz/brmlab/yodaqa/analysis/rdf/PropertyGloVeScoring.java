@@ -2,9 +2,12 @@ package cz.brmlab.yodaqa.analysis.rdf;
 
 import cz.brmlab.yodaqa.provider.glove.MbWeights;
 import cz.brmlab.yodaqa.provider.glove.Relatedness;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.uima.jcas.JCas;
 
 /**
  * Counts probability of property containing a correct answer to given question.
@@ -20,11 +23,8 @@ public class PropertyGloVeScoring {
 
 	private Relatedness r = new Relatedness(new MbWeights(PropertyGloVeScoring.class.getResourceAsStream("Mbprop.txt")));
 
-	public double relatedness(String q, String prop) {
-		List<String> ql = tokenize(q);
-		List<String> a = tokenize(prop);
-
-		double res = r.probability(ql, a);
+	public double relatedness(List<String> qtoks, List<String> ptoks) {
+		double res = r.probability(qtoks, ptoks);
 		return res;
 	}
 
@@ -34,5 +34,12 @@ public class PropertyGloVeScoring {
 	 * XXX: Rely on pipeline instead? */
 	public static List<String> tokenize(String str) {
 		return new ArrayList<>(Arrays.asList(str.toLowerCase().split("[\\p{Punct}\\s]+")));
+	}
+
+	/** Generate bag-of-words representation for the question.
+	 * We may not include *all* words in this representation
+	 * and use a more sophisticated strategy than tokenize(). */
+	public static List<String> questionRepr(JCas questionView) {
+		return tokenize(questionView.getDocumentText());
 	}
 }
