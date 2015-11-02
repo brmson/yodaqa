@@ -1,5 +1,8 @@
 package cz.brmlab.yodaqa.analysis.rdf;
 
+import cz.brmlab.yodaqa.model.Question.SV;
+import cz.brmlab.yodaqa.model.TyCor.LAT;
+import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 import cz.brmlab.yodaqa.provider.glove.MbWeights;
 import cz.brmlab.yodaqa.provider.glove.Relatedness;
 
@@ -7,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 
 /**
@@ -40,6 +44,15 @@ public class PropertyGloVeScoring {
 	 * We may not include *all* words in this representation
 	 * and use a more sophisticated strategy than tokenize(). */
 	public static List<String> questionRepr(JCas questionView) {
-		return tokenize(questionView.getDocumentText());
+		List<String> tokens = new ArrayList<>();
+		for (LAT lat : JCasUtil.select(questionView, LAT.class)) {
+			if (lat instanceof WordnetLAT)
+				continue; // junk
+			tokens.add(lat.getText());
+		}
+		for (SV sv : JCasUtil.select(questionView, SV.class)) {
+			tokens.add(sv.getCoveredText());
+		}
+		return tokens;
 	}
 }
