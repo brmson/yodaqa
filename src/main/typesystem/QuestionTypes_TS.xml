@@ -75,6 +75,11 @@
             <description>PassExtract statistics: Number of picked passages that match answerPattern</description>
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>onlyArtificialConcepts</name>
+            <description>Don't generate concept</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>

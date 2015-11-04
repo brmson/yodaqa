@@ -56,7 +56,7 @@ public class WebInterface implements Runnable {
 				List<ArtificialConcept> artificialConcepts=retrieveArtificialConcepts(request);
 				Question q;
 				if (!artificialConcepts.isEmpty()) {
-					q = new Question(id, text, artificialConcepts);
+					q = new Question(id, text, artificialConcepts, true);
 				} else {
 					q = new Question(id, text);
 				}

@@ -48,6 +48,7 @@ public class WebQuestionReader extends CasCollectionReader_ImplBase {
 		qInfo.setSource("web");
 		qInfo.setQuestionId(q.getId());
 		qInfo.addToIndexes(jcas);
+		qInfo.setOnlyArtificialConcepts(q.getHasOnlyArtificialConcept());
 
 		if (q.getArtificialConcepts() != null) {
 			for (ArtificialConcept c : q.getArtificialConcepts()) {
