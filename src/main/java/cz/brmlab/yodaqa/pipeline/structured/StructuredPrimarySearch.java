@@ -172,7 +172,10 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.merge(property.getAFV());
 		if (property.getScore() != null)
 			fv.setFeature(AF.PropertyScore, property.getScore());
-		double gloVeScore = PropertyGloVeScoring.getInstance().relatedness(questionView.getDocumentText(), property.getProperty());
+
+		List<String> qtoks = PropertyGloVeScoring.questionRepr(questionView);
+		List<String> proptoks = PropertyGloVeScoring.tokenize(property.getProperty());
+		double gloVeScore = PropertyGloVeScoring.getInstance().relatedness(qtoks, proptoks);
 		fv.setFeature(AF.PropertyGloVeScore, gloVeScore);
 
 		logger.info(" FOUND: {} -- {}  :: prop score={}, GloVe score={}",
@@ -364,9 +367,10 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 			clues++;
 		}
 
-		List<String> qtoks = PropertyGloVeScoring.tokenize(qi.getQuestionText());
-		String qtext_syn = StringUtils.join(qtoks, " ");
+		List<String> qtoks = PropertyGloVeScoring.questionRepr(questionView);
 		List<String> proptoks = PropertyGloVeScoring.tokenize(proptext);
+
+		String qtext_syn = StringUtils.join(qtoks, " ");
 		String proptext_syn = StringUtils.join(proptoks, " ");
 
 		Writer w = Writer.getInstance();
