@@ -4,8 +4,8 @@ package cz.brmlab.yodaqa.provider.rdf;
 
 public abstract class FreebaseLookup extends CachedJenaLookup {
 	public FreebaseLookup() {
-		super("http://freebase.ailao.eu:3030/freebase/query",
-			"PREFIX ns: <http://rdf.freebase.com/ns/>\n" +
+		super("http://freebase.ailao.eu:8890/sparql",
+			"PREFIX ns: <http://rdf.basekb.com/ns/>\n" +
 			"");
 	}
 }

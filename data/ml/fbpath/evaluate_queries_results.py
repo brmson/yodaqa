@@ -88,7 +88,7 @@ def generate_query(paths, mid, proba, concepts):
                 "  ?med ns:" + path[1] + " ?val .\n" \
                 "  {\n" \
                 "    ?med ns:" + witnessRel + " ?concept .\n" \
-                "    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + concept['pageID'] + "\" .\n" \
+                "    ?concept <http://rdf.basekb.com/key/wikipedia.en_id> \"" + concept['pageID'] + "\" .\n" \
                 "  } UNION {\n" \
                 "    {\n" \
                 "      ?med ns:" + witnessRel + " ?wlabel .\n" \
@@ -123,7 +123,7 @@ def generate_results(paths, mids, concepts):
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
     PREFIX dc: <http://purl.org/dc/elements/1.1/>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX ns: <http://rdf.freebase.com/ns/>
+    PREFIX ns: <http://rdf.basekb.com/ns/>
     SELECT ?property ?value ?prop ?val ?res ?score ?branched ?witnessAF WHERE {"""
     postfix = """BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )
     OPTIONAL {
@@ -134,7 +134,7 @@ def generate_results(paths, mids, concepts):
     FILTER( !ISURI(?value) )
     FILTER( LANG(?value) = "" || LANGMATCHES(LANG(?value), "en") )
      }LIMIT 400"""
-    url = 'http://freebase.ailao.eu:3030/freebase/query'
+    url = 'http://freebase.ailao.eu:8890/sparql'
     tmp = generate_query(paths, mids[0], "1", concepts)
     sparql = SPARQLWrapper(url)
     sparql.setReturnFormat(JSON)

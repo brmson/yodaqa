@@ -168,7 +168,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		/* If you want to paste this to SPARQL query interface,
 		 * just pass the block below through
-		 * 	echo 'PREFIX ns: <http://rdf.freebase.com/ns/>'; echo 'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>'; echo 'SELECT ?topic WHERE {'; perl -pe 'undef $_ unless /"/; s/\s*"//; s/\\n" \+$//;'; echo '}'
+		 * 	echo 'PREFIX ns: <http://rdf.basekb.com/ns/>'; echo 'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>'; echo 'SELECT ?topic WHERE {'; perl -pe 'undef $_ unless /"/; s/\s*"//; s/\\n" \+$//;'; echo '}'
 		 */
 		String rawQueryStr =
 			"?topic rdfs:label \"" + quotedTitle + "\"@en.\n" +
@@ -195,7 +195,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	/** Query for a given enwiki pageID, returning a set of topic MIDs. */
 	public Set<TitledMid> queryTopicByPageID(int pageID, Logger logger) {
 		String rawQueryStr =
-			"?topic <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
+			"?topic <http://rdf.basekb.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
 			"?topic rdfs:label ?label .\n" +
 			"FILTER( LANGMATCHES(LANG(?label), \"en\") )\n" +
 			"";
@@ -255,33 +255,33 @@ public class FreebaseOntology extends FreebaseLookup {
 			 * not target labels like the filter above. */
 			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"en\") )\n" +
 			/* Keep only ns: properties */
-			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
+			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/') )\n" +
 			/* ...but ignore some common junk which yields mostly
 			 * no relevant data... */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/type') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/common') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/freebase') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/media_common.quotation') )\n" +
 			/* ...stuff that's difficult to trust... */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/user') )\n" +
 			/* ...and some more junk - this one is already a bit
 			 * trickier as it might contain relevant data, but
 			 * often hidden in relationship objects (like Nobel
 			 * prize awards), and also a lot of junk (like the
 			 * kwebbase experts - though some might be useful
 			 * in a specific context). */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/base') )\n" +
 			/* topic_server has geolocation (not useful right now)
 			 * and population_number (which would be useful, but
 			 * needs special handling has a topic may have many
 			 * of these, e.g. White House). Also it has crappy
 			 * type labels. */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/topic_server') )\n" +
 			/* Eventually, a specific blacklist of *mostly*
 			 * useless data that flood out the useful results. */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/" +
 			StringUtils.join(propBlacklist,
-				"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/") +
+				"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.basekb.com/ns/") +
 				"') )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
@@ -322,7 +322,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * common topics where it can reach through the meta-nodes. */
 	protected List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, List<Concept> concepts, List<String> witnessLabels, Logger logger) {
 		/* Test query:
-		   PREFIX ns: <http://rdf.freebase.com/ns/>
+		   PREFIX ns: <http://rdf.basekb.com/ns/>
 		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 		   SELECT ?prop ?t0 ?value WHERE {
 		     {
@@ -470,7 +470,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			pathQueryStr +=
 				"  {\n" +
 				"    ?med ns:" + witnessRel + " ?concept .\n" +
-				"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
+				"    ?concept <http://rdf.basekb.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
 				"    ?concept rdfs:label ?wlabel .\n" +
 				"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
 				"  } UNION";
