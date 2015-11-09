@@ -201,7 +201,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			int topLinkedConcepts = 5;
 			if (topLinkedConceptsStr != null && !topLinkedConceptsStr.isEmpty())
 				topLinkedConcepts = Integer.parseInt(topLinkedConceptsStr);
-			List<ClueLabel> clueLabelsSubset = topLinkedConcepts > 0 ? clueLabels.subList(0, Math.min(5, clueLabels.size())) : clueLabels;
+			List<ClueLabel> clueLabelsSubset = topLinkedConcepts > 0 ? clueLabels.subList(0, Math.min(topLinkedConcepts, clueLabels.size())) : clueLabels;
 
 			for (ClueLabel cl : clueLabelsSubset) {
 				String cookedLabel = cl.getCookedLabel();
