@@ -198,7 +198,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 			 * -Dcz.brmlab.yodaqa.topLinkedConcepts=0
 			 * to pick all, e.g. for concept classifier retraining. */
 			String topLinkedConceptsStr = System.getProperty("cz.brmlab.yodaqa.topLinkedConcepts");
-			int topLinkedConcepts = 5;
+			int topLinkedConcepts = 4;
 			if (topLinkedConceptsStr != null && !topLinkedConceptsStr.isEmpty())
 				topLinkedConcepts = Integer.parseInt(topLinkedConceptsStr);
 			List<ClueLabel> clueLabelsSubset = topLinkedConcepts > 0 ? clueLabels.subList(0, Math.min(topLinkedConcepts, clueLabels.size())) : clueLabels;
