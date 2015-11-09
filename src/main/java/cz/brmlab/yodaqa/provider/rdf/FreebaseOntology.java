@@ -486,8 +486,9 @@ public class FreebaseOntology extends FreebaseLookup {
 			"      ?med ns:" + witnessRel + " ?concept .\n" +
 			"      ?concept rdfs:label ?wlabel .\n" +
 			"    }\n" +
+			"    FILTER(ISLITERAL(?wlabel))\n" +
 			"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
-			"    FILTER(CONTAINS(LCASE(?wlabel), LCASE(\"" + quotedTitle + "\")))\n" +
+			"    FILTER(CONTAINS(LCASE(?wlabel), \"" + quotedTitle.toLowerCase() + "\"))\n" +
 			"    BIND(\"" + AF.OriginFreebaseWitnessLabel + "\" AS ?witnessAF)\n" +
 			"  }\n" +
 
