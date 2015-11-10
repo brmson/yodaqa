@@ -83,7 +83,7 @@ on it. Notable types of final featuresets produced by the annotators:
     might (or might not) be used specially in answer selection.
 
   * **Focus.** This is the focus point of the sentence indicating the
-    main constraing of a subject of the answer.  In "What was the first book
+    main constraint of a subject of the answer.  In "What was the first book
     written by Terry Pratchett?", "book" is the focus.  In "The actor starring
     in Moon?", "actor" is the focus.  In "Who invented the transistor?",
     "who" will be the focus.  Typically, focus would be used by aligning

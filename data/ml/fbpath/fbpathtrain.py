@@ -13,10 +13,19 @@ import sys
 
 def q_to_fdict(q):
     fdict = {}
+
     for lat in q['LAT']:
         fdict['lat/' + lat['text'] + '/' + lat['type']] = 1
+
     fdict['sv'] = q['SV'][0] if q['SV'] else ''
     fdict['lsv'] = q['lemmaSV'][0] if q['lemmaSV'] else ''
+
+    # prefer shortest NP as feature
+    subjnp = sorted([s['text'] for s in q['Subject'] if s['type'] == 'NP'], key=lambda t: len(t))
+    subjtok = [s['text'] for s in q['Subject'] if s['type'] == 'Token']
+    fdict['subjnp'] = subjnp[0] if subjnp else ''
+    fdict['subjtok'] = subjtok[0] if subjtok else ''
+
     return fdict
 
 

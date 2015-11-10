@@ -42,4 +42,14 @@ public class TreeUtil {
 
 		return bestnp;
 	}
+
+	public static NP shortestCoveringNP(Token t) {
+		NP bestnp = null;
+
+		for (NP np : JCasUtil.selectCovering(NP.class, t))
+			if (bestnp == null || bestnp.getEnd() - bestnp.getBegin() > np.getEnd() - np.getBegin())
+				bestnp = np;
+
+		return bestnp;
+	}
 }

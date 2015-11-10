@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.TreeUtil;
+import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 import cz.brmlab.yodaqa.model.Question.Subject;
 
 /**
@@ -116,6 +117,18 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 			for (NamedEntity ne : JCasUtil.selectCovered(NamedEntity.class, np)) {
 				addSubject(jcas, ne);
 			}
+		}
+
+		/* Also generate subject for the shortest covering NP, which is
+		 * often just a very specific phrase like 'main character' or
+		 * 'middle name', useful as e.g. a property selector. */
+		NP npShort = TreeUtil.shortestCoveringNP(stok);
+		if (npShort != np && !npShort.getCoveredText().equals(genSubject)) {
+			/* XXX: Blacklisting "name" in "the name of XYZ".
+			 * We probably don't need a sophisticated name
+			 * proxy like for LATs. */
+			if (!SyntaxCanonization.getCanonText(npShort.getCoveredText().toLowerCase()).equals("name"))
+				addSubject(jcas, npShort);
 		}
 	}
 

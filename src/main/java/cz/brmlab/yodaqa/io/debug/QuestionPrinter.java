@@ -28,6 +28,7 @@ import cz.brmlab.yodaqa.model.Question.ClueSV;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.Question.SV;
+import cz.brmlab.yodaqa.model.Question.Subject;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 /**
@@ -116,6 +117,17 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		}
 		LATtmp += "], ";
 		line += LATtmp;
+
+		String Subjecttmp = "\"Subject\":  [";
+		for (Iterator SubjectIterator = JCasUtil.select(jcas, Subject.class).iterator(); SubjectIterator.hasNext(); ) {
+			Subject subj = (Subject) SubjectIterator.next();
+			Subjecttmp += "{\"text\": \"" + subj.getCoveredText() + "\", \"type\": \"" + subj.getBase().getClass().getSimpleName() + "\"}";
+			if (SubjectIterator.hasNext()){
+				Subjecttmp += ", ";
+			}
+		}
+		Subjecttmp += "], ";
+		line += Subjecttmp;
 
 		line += "\"Concept\": ";
 		String Concepttmp = "[";

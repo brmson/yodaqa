@@ -111,6 +111,7 @@ repositories {
 }
 
 dependencies {
+  compile 'eu.ailao:gloveDict:1.0-stanford'
   compile 'org.apache.uima:uimaj-core:2.6.0'
   compile 'org.apache.uima:uimafit-core:2.1.0'
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core-asl:$dkproVersion"
@@ -143,6 +144,7 @@ dependencies {
   compile 'com.google.guava:guava:18.0'
   compile 'com.github.jcrfsuite:jcrfsuite:0.5'
   compile 'org.codehaus.groovy:groovy-all:2.3.10'
+  compile 'org.jblas:jblas:1.2.3'
   compile 'org.xerial:sqlite-jdbc:3.8.10.1'
   testCompile 'junit:junit:[4,)'
 }
