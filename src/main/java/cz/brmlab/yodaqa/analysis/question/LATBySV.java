@@ -51,9 +51,10 @@ public class LATBySV extends JCasAnnotator_ImplBase {
 
 		/* Question word LAT is included, try to produce a LAT
 		 * based on the SV too. */
-		NSUBJ nsubj = JCasUtil.selectSingle(jcas, NSUBJ.class);
-		if (nsubj == null)
+		if (JCasUtil.select(jcas, NSUBJ.class).isEmpty())
 			return;
+		// we just grab the sv instead of NSUBJ dependent as the SV
+		// strategy may be more complex in case of tricky constructions
 
 		for (SV sv : JCasUtil.select(jcas, SV.class)) {
 			try {
