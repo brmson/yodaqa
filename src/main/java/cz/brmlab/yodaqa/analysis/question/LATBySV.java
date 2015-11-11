@@ -67,6 +67,8 @@ public class LATBySV extends JCasAnnotator_ImplBase {
 
 	public void deriveSVLAT(JCas jcas, SV sv) throws JWNLException {
 		IndexWord w = dictionary.getIndexWord(net.sf.extjwnl.data.POS.VERB, sv.getBase().getLemma().getValue());
+		if (w == null)
+			return;
 
 		/* Try to derive a noun. */
 		Set<Long> producedSynsets = new HashSet<>();
