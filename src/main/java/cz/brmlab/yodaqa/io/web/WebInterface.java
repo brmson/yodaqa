@@ -47,7 +47,7 @@ public class WebInterface implements Runnable {
 			@Override
 			public Object handle(Request request, Response response) {
 				String id = Integer.toString(idgen.nextInt(Integer.MAX_VALUE));
-				String text = request.queryParams("text");
+				String text=request.queryMap("question").value();
 				if (text == null) {
 					response.status(422);
 					return "missing parameter: text";
@@ -135,13 +135,15 @@ public class WebInterface implements Runnable {
 	private List<ArtificialConcept> retrieveArtificialConcepts(Request request){
 		List<ArtificialConcept> artificialConcepts=new ArrayList<>();
 		String numberOfArtificialConceptsString=request.queryParams("numberOfConcepts");
-		int numberOfArtificialConcepts=Integer.parseInt(numberOfArtificialConceptsString);
-		for (int i=1; i<=numberOfArtificialConcepts;i++){
-			String pageId = request.queryParams("pageID"+i);
-			String fullLabel = request.queryParams("fullLabel"+i);
-			if (pageId!=null && fullLabel!=null && !pageId.equals("") && !fullLabel.equals("")){
-				int pageIdInt= Integer.parseInt(pageId);
-				artificialConcepts.add(new ArtificialConcept(pageIdInt,fullLabel));
+		if (numberOfArtificialConceptsString!=null){
+			int numberOfArtificialConcepts=Integer.parseInt(numberOfArtificialConceptsString);
+			for (int i=1; i<=numberOfArtificialConcepts;i++){
+				String pageId = request.queryParams("pageID"+i);
+				String fullLabel = request.queryParams("fullLabel"+i);
+				if (pageId!=null && fullLabel!=null && !pageId.equals("") && !fullLabel.equals("")){
+					int pageIdInt= Integer.parseInt(pageId);
+					artificialConcepts.add(new ArtificialConcept(pageIdInt,fullLabel));
+				}
 			}
 		}
 		return artificialConcepts;
