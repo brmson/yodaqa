@@ -66,6 +66,11 @@
 	<description>LAT generated from a question word (e.g. when -> LAT time).</description>
         <supertypeName>cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT</supertypeName>
       </typeDescription>
+      <typeDescription>
+        <name>cz.brmlab.yodaqa.model.TyCor.SVLAT</name>
+	<description>LAT generated from the question SV (selection verb), e.g. SV directed -> LAT director.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT</supertypeName>
+      </typeDescription>
 
       <typeDescription>
         <name>cz.brmlab.yodaqa.model.TyCor.NELAT</name>
