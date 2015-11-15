@@ -18,33 +18,33 @@ public class ConceptClassifier {
 	/* Training data - correct: 671 (11.571%), incorrect: 5128 (88.429%) */
 
 	/* 10-fold cross-validation (with 0.20 test splits): */
-	/* CV fold precision 93.534% (1085/1160) */
+	/* CV fold precision 93.966% (1090/1160) */
+	/* CV fold precision 94.655% (1098/1160) */
+	/* CV fold precision 93.879% (1089/1160) */
+	/* CV fold precision 94.397% (1095/1160) */
 	/* CV fold precision 94.483% (1096/1160) */
-	/* CV fold precision 93.276% (1082/1160) */
-	/* CV fold precision 94.224% (1093/1160) */
-	/* CV fold precision 94.052% (1091/1160) */
-	/* CV fold precision 95.000% (1102/1160) */
-	/* CV fold precision 94.483% (1096/1160) */
-	/* CV fold precision 95.259% (1105/1160) */
-	/* CV fold precision 94.828% (1100/1160) */
-	/* CV fold precision 93.448% (1084/1160) */
-	/* === CV average precision 94.259% (+-SD 0.645%) */
+	/* CV fold precision 94.741% (1099/1160) */
+	/* CV fold precision 94.138% (1092/1160) */
+	/* CV fold precision 95.086% (1103/1160) */
+	/* CV fold precision 94.655% (1098/1160) */
+	/* CV fold precision 92.845% (1077/1160) */
+	/* === CV average precision 94.284% (+-SD 0.595%) */
 
-	/* Training set precision 94.378% (5473/5799) */
+	/* Training set precision 94.413% (5475/5799) */
 	/* Model (trained on the whole training set): */
 	double[] weights = {
-		0.248860, // editDist
-		4.457111, // labelProbability
-		0.577820, // logPopularity
-		4.231233, // relatedness
-		-1.064028, // getByLAT
-		0.683527, // getByNE
-		0.491508, // getBySubject
+		0.252353, // editDist
+		4.379324, // labelProbability
+		0.556761, // logPopularity
+		3.848883, // relatedness
+		-1.137121, // getByLAT
+		0.803509, // getByNE
+		0.482381, // getBySubject
 		0.000000, // getByNgram
-		1.178016, // getByFuzzyLookup
-		-1.393301, // getByCWLookup
+		1.259178, // getByFuzzyLookup
+		-1.368221, // getByCWLookup
 	};
-	double intercept = -7.214133;
+	double intercept = -7.157712;
 	
 	public double calculateProbability(JCas questionView, Concept l) {
 		List<String> qtoks = ConceptGloVeScoring.questionRepr(questionView);
