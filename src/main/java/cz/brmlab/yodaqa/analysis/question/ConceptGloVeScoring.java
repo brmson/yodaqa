@@ -1,4 +1,4 @@
-package cz.brmlab.yodaqa.analysis.rdf;
+package cz.brmlab.yodaqa.analysis.question;
 
 import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
@@ -14,23 +14,24 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 
 /**
- * Counts probability of property containing a correct answer to given question.
- * More info can be found at https://github.com/brmson/Sentence-selection
+ * Counts probability of concept being relevant to the given question.
+ * More info can be found at https://github.com/brmson/Sentence-selection,
+ * we use the "property" mode.
  *
  * XXX: Method duplication with PropertyGloVeScoring.
  */
-public class PropertyGloVeScoring {
+public class ConceptGloVeScoring {
 
-	private static PropertyGloVeScoring pgs = new PropertyGloVeScoring();
+	private static ConceptGloVeScoring cgs = new ConceptGloVeScoring();
 
-	public static PropertyGloVeScoring getInstance() {
-		return pgs;
+	public static ConceptGloVeScoring getInstance() {
+		return cgs;
 	}
 
-	private Relatedness r = new Relatedness(new MbWeights(PropertyGloVeScoring.class.getResourceAsStream("Mbprop.txt")));
+	private Relatedness r = new Relatedness(new MbWeights(ConceptGloVeScoring.class.getResourceAsStream("Mbdesc.txt")));
 
-	public double relatedness(List<String> qtoks, List<String> ptoks) {
-		double res = r.probability(qtoks, ptoks);
+	public double relatedness(List<String> qtoks, List<String> dtoks) {
+		double res = r.probability(qtoks, dtoks);
 		return res;
 	}
 
