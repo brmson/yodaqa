@@ -285,6 +285,16 @@
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>description</name>
+            <description>A brief description of the particular concept (about one sentence).</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>relatedness</name>
+            <description>Alignment of concept description and question representation using word embeddings.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>score</name>
             <description>Concept score in [0,1], classifier-determined probability estimate of this concept being a correctly linked entity</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>

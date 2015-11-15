@@ -176,8 +176,9 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setByNgram(c.isByNgram());
 				concept.setByFuzzyLookup(a.isByFuzzyLookup());
 				concept.setByCWLookup(a.isByCWLookup());
+				concept.setDescription(a.getDescription());
 
-				double score = classifier.calculateProbability(concept);
+				double score = classifier.calculateProbability(resultView, concept);
 				concept.setScore(score);
 				c.addScore(score);
 
