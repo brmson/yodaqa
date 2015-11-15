@@ -43,6 +43,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		protected double dist; // edit dist.
 		protected double pop; // relevance/prominence of the concept (universally or wrt. the question)
 		protected double prob;
+		protected String description; // long-ish text
 		protected boolean getByFuzzyLookup = false;
 		protected boolean getByCWLookup = false;
 
@@ -64,7 +65,8 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = dist;
 			this.prob = prob;
 		}
-		public Article(Article baseA, String label, int pageID, String name, double pop, double prob) {
+
+		public Article(Article baseA, String label, int pageID, String name, double pop, double prob, String descr) {
 			this.name = name;
 			this.pageID = pageID;
 			this.matchedLabel = baseA.matchedLabel;
@@ -72,6 +74,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			this.dist = baseA.dist;
 			this.pop = pop;
 			this.prob = prob;
+			this.description = descr;
 			this.getByCWLookup = baseA.getByCWLookup;
 			this.getByFuzzyLookup = baseA.getByFuzzyLookup;
 		}
@@ -83,6 +86,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		public double getDist() { return dist; }
 		public double getPop() { return pop; }
 		public double getProb() { return prob; }
+		public String getDescription() { return description; }
 		public boolean isByFuzzyLookup() { return getByFuzzyLookup; }
 		public boolean isByCWLookup() { return getByCWLookup; }
 
@@ -186,6 +190,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			 // set the output variables
 			"?res dbo:wikiPageID ?pageID .\n" +
 			"?res rdfs:label ?label .\n" +
+			"OPTIONAL { ?res rdfs:comment ?description . FILTER ( LANG(?description) = 'en' ) }\n" +
 
 			 // ignore the redundant (A) entries (redirects, disambs)
 			"FILTER ( !BOUND(?redirTarget) )\n" +
@@ -195,13 +200,14 @@ public class DBpediaTitles extends DBpediaLookup {
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-			new String[] { "pageID", "label", "/res" }, 0);
+			new String[] { "pageID", "label", "/res", "description" }, 0);
 
 		List<Article> results = new ArrayList<Article>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
 			int pageID = rawResult[0].getInt();
 			String label = rawResult[1].getString();
 			String tgRes = rawResult[2].getString();
+			String descr = rawResult[3] != null ? rawResult[3].getString() : null;
 
 			/* http://dbpedia.org/resource/-al is valid IRI, but
 			 * Jena bastardizes it automatically to :-al which is
@@ -221,8 +227,17 @@ public class DBpediaTitles extends DBpediaLookup {
 			 * though to keep it at least roughly normalized. */
 			double pop = Math.log(queryCount(tgRes));
 
-			logger.debug("DBpedia {}: [[{}]] (id={}; pop={})", name, label, pageID, pop);
-			results.add(new Article(baseA, label, pageID, tgName, pop, prob));
+			String descrText = "(null)";
+			if (descr != null) {
+				try {
+					descrText = "..." + descr.substring(10, 30) + "...";
+				} catch (StringIndexOutOfBoundsException e) {
+					descrText = descr;
+				}
+			}
+			logger.debug("DBpedia {}: [[{}]] (id={}; pop={}; descr=<<{}>>)",
+					name, label, pageID, pop, descrText);
+			results.add(new Article(baseA, label, pageID, tgName, pop, prob, descr));
 		}
 
 		return results;
