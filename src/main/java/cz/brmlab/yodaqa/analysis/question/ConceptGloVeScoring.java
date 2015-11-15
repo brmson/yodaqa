@@ -40,7 +40,9 @@ public class ConceptGloVeScoring {
 	 * normalization steps...
 	 * XXX: Rely on pipeline instead? */
 	public static List<String> tokenize(String str) {
-		return new ArrayList<>(Arrays.asList(str.toLowerCase().split("[\\p{Punct}\\s]+")));
+		String firstCrisp = str.replaceFirst("\\.\\W*[A-Z].*", ".").replaceAll("\\(.*\\)", "");
+		// System.err.println("___ " + firstCrisp);
+		return new ArrayList<>(Arrays.asList(firstCrisp.toLowerCase().split("[\\p{Punct}\\s]+")));
 	}
 
 	/** Generate bag-of-words representation for the question.

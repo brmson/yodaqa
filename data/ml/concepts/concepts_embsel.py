@@ -37,6 +37,8 @@ def qrepr(q):
 def crepr(c):
     """ return lits of tokens representing the concept; PropertyGloVeScoring.tokenize(description) """
     firstCrisp = c.get('description', '')
+    firstCrisp = re.sub(r"\.\W*[A-Z].*", ".", firstCrisp)
+    firstCrisp = re.sub(r"\(.*\)", "", firstCrisp)
     return re.findall(r"\w+|[^\w\s]", firstCrisp.lower(), re.UNICODE)
 
 
