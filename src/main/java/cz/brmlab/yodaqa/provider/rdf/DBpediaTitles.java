@@ -203,9 +203,16 @@ public class DBpediaTitles extends DBpediaLookup {
 			 * though to keep it at least roughly normalized. */
 			double pop = Math.log(queryCount(tgRes));
 
+			String descrText = "(null)";
+			if (descr != null) {
+				try {
+					descrText = "..." + descr.substring(10, 30) + "...";
+				} catch (StringIndexOutOfBoundsException e) {
+					descrText = descr;
+				}
+			}
 			logger.debug("DBpedia {}: [[{}]] (id={}; pop={}; descr=<<{}>>)",
-					name, label, pageID, pop,
-					descr == null ? "(null)" : ("..." + descr.substring(10, 30) + "..."));
+					name, label, pageID, pop, descrText);
 			results.add(new Article(baseA, label, pageID, tgName, pop, prob, descr));
 		}
 
