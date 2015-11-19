@@ -117,6 +117,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Prepare LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
+		builder.add(AnalysisEngineFactory.createEngineDescription(LATBySV.class));
 		/* Generalize imprecise LATs */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class,
 					LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));

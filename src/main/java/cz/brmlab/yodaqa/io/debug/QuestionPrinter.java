@@ -28,6 +28,7 @@ import cz.brmlab.yodaqa.model.Question.ClueSV;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.Question.SV;
+import cz.brmlab.yodaqa.model.Question.Subject;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 
 /**
@@ -117,6 +118,17 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		LATtmp += "], ";
 		line += LATtmp;
 
+		String Subjecttmp = "\"Subject\":  [";
+		for (Iterator SubjectIterator = JCasUtil.select(jcas, Subject.class).iterator(); SubjectIterator.hasNext(); ) {
+			Subject subj = (Subject) SubjectIterator.next();
+			Subjecttmp += "{\"text\": \"" + subj.getCoveredText() + "\", \"type\": \"" + subj.getBase().getClass().getSimpleName() + "\"}";
+			if (SubjectIterator.hasNext()){
+				Subjecttmp += ", ";
+			}
+		}
+		Subjecttmp += "], ";
+		line += Subjecttmp;
+
 		line += "\"Concept\": ";
 		String Concepttmp = "[";
 		for (Iterator iterator = JCasUtil.select(jcas, Concept.class).iterator(); iterator.hasNext(); ) {
@@ -129,6 +141,9 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "\"labelProbability\": " + c.getLabelProbability() + ", ";
 			Concepttmp += "\"logPopularity\": " + c.getLogPopularity() + ", ";
 			Concepttmp += "\"score\": " + c.getScore() + ", ";
+			if (c.getDescription() != null)
+				Concepttmp += "\"description\": \"" + c.getDescription().replaceAll("\"", "\\\\\"") + "\", ";
+			Concepttmp += "\"relatedness\": " + c.getRelatedness() + ", ";
 			Concepttmp += "\"getByLAT\": " + (c.getByLAT() ? 1 : 0) + ", ";
 			Concepttmp += "\"getByNE\": " + (c.getByNE() ? 1 : 0) + ", ";
 			Concepttmp += "\"getBySubject\": " + (c.getBySubject() ? 1 : 0) + ", ";

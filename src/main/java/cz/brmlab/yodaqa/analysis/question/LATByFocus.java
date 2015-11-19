@@ -12,6 +12,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.TreeUtil;
+import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT;
 import cz.brmlab.yodaqa.model.TyCor.QuestionWordLAT;
@@ -22,6 +24,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 
 /**
@@ -100,6 +103,18 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 
 			if (!text.equals(realText))
 				addFocusLAT(jcas, focus, text, pos, 0, 0.0, new ImplicitQLAT(jcas));
+
+			/* Also try to generate a "main character" LAT in
+			 * addition to "character", etc. */
+
+			NP np = TreeUtil.shortestCoveringNP(focus.getToken());
+			if (np != null) {
+				String npText = SyntaxCanonization.getCanonText(np.getCoveredText().toLowerCase());
+				if (!npText.equals(realText)) {
+					logger.debug("NP coverage: <<{}>>", npText);
+					addLAT(new LAT(jcas), np.getBegin(), np.getEnd(), np, npText, pos, 0, 1.0);
+				}
+			}
 		}
 	}
 
