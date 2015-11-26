@@ -24,7 +24,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	/** Maximum number of topics to take queries from. */
 	public static final int TOPIC_LIMIT = 5;
 	/** Maximum number of properties per topic to return. */
-	public static final int PROP_LIMIT = 40;
+	public static final int PROP_LIMIT = 400;
 
 	/** Specific blacklist of Freebase relations. These properties may
 	 * sometimes carry useful information but they flush out all other
@@ -214,6 +214,16 @@ public class FreebaseOntology extends FreebaseLookup {
 		return results;
 	}
 
+	public List<PropertyValue> queryAllRelations(int pageId, Logger logger) {
+		Set<TitledMid> mids = queryTopicByPageID(pageId, logger);
+		List<PropertyValue> result = new ArrayList<>();
+		for (TitledMid tmid: mids) {
+			result.addAll(queryTopicGeneric(tmid.title, tmid.mid, logger));
+		}
+		return result;
+
+	}
+
 	/** Query for a given MID, returning a set of PropertyValue instances
 	 * that cover all non-spammy, direct RDF properties.
 	 *
@@ -309,8 +319,10 @@ public class FreebaseOntology extends FreebaseLookup {
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
-			results.add(new PropertyValue(titleForm, objRes, propLabel, value, valRes,
-							fv, AnswerSourceStructured.ORIGIN_ONTOLOGY));
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes,
+				fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
+			pv.setPropRes(prop);
+			results.add(pv);
 		}
 
 		return results;
@@ -408,11 +420,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 			new String[] { "property", "value", "prop", "/val", "/res", "score", "branched", "witnessAF", "wlabel" },
-			/* We want to be fairly liberal and look at all the properties
-			 * as the interesting ones may be far down in the list,
-			 * but there is some super-spammy stuff like all locations
-			 * contained in Poland that we just need to avoid. */
-			PROP_LIMIT * 10);
+			PROP_LIMIT);
 
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {

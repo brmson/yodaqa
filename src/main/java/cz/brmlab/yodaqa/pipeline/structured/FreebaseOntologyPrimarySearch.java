@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import cz.brmlab.yodaqa.analysis.rdf.FBPathGloVeScoring;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.util.JCasUtil;
@@ -60,7 +61,14 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 
 		/* Get a list of specific properties to query. */
 		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
-
+//		for(PathScore ps: pathScs) {
+//			logger.info("PATH " + ps.path.get(0) + " prob: " + ps.proba);
+//		}
+		FBPathGloVeScoring fbglove = new FBPathGloVeScoring();
+		List<FBPathGloVeScoring.PathScore> pathTmp = fbglove.getPaths(questionView);
+//		for(FBPathGloVeScoring.PathScore ps: pathTmp) {
+//			logger.info("PATH EMB " + ps.path.get(0) + " prob: " + ps.proba);
+//		}
 		/* Get a list of witnesses (besides concepts), i.e. clues of
 		 * question that might select the relevant property path by
 		 * co-occurence in a composite node. */
