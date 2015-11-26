@@ -91,6 +91,8 @@ Structure of question JSON object is:
     * propertyLabel - Label of the property
     * witnessLabel - (optional) Label of an additional selector (in addition to the object that is the answer source)
 
+* answerSentence - a string that describes the top answer as a complete utterance
+
 * finished – if question has been finished already
 * gen_sources – number of generated sources
 * gen_answers – number of generated answers

@@ -122,6 +122,9 @@ function getQuestionJson() {
 
 		if (r.finished) {
 			$("#spinner").hide();
+			if (r.answerSentence) {
+			    $("#answersent").append(r.answerSentence);
+			}
 		} else {
 			// keep watching
 			setTimeout(getQuestionJson, 500);
@@ -153,6 +156,7 @@ function loadQuestion(q) {
 	$("#metadata_area").empty();
 	$("#answers_area").empty();
 	$("#spinner").show();
+	$("#answersent").empty();
 	qid = q;
 	gen_sources = 0;
 	gen_answers = 0;
