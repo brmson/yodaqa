@@ -78,15 +78,18 @@ Structure of question JSON object is:
 
 * answers – [Array] array of answers. Answer is represented by object with structure:
   * text - answer’s text
-  * confidence – answer’s confidence expressed by number from interval of <0, 1>
+  * confidence – answer’s confidence expressed by number from interval of [0, 1]
   * ID – answer’s id
-  * snippetIDs – [Array] IDs of snippets assigned to answer
+  * snippetIDs – [Array] IDs of snippets sourcing the answer
 
 * snippets - [Map] map of snippets. Snippets is object containing addition explanation of answer. It has structure:
-  * passageText - (optional) Text in which answer was founded
-  * propertyLabel - (optional) Label of snippet
   * snippetID - snippet's id
   * sourceID - snipet's source
+  * Furthermore, in case of a snippet corresponding to a piece of text (from fulltext answer source):
+    * passageText - Text in which answer was founded
+  * In case of a snippet corresponding to an object property from a structured database:
+    * propertyLabel - Label of the property
+    * witnessLabel - (optional) Label of an additional selector (in addition to the object that is the answer source)
 
 * finished – if question has been finished already
 * gen_sources – number of generated sources

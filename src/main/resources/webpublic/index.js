@@ -68,7 +68,11 @@ function showAnswers(container, answers, snippets, sources) {
                 str += snippets[a.snippetIDs[index]].passageText.replace(/"/g, "&#34;") + "\n";
             }
             else if (!(typeof (snippets[a.snippetIDs[index]].propertyLabel) ==="undefined")) {
-                str += snippets[a.snippetIDs[index]].propertyLabel + "\n";
+                str += snippets[a.snippetIDs[index]].propertyLabel;
+                if (!(typeof (snippets[a.snippetIDs[index]].witnessLabel) ==="undefined")) {
+		    str += " (" + snippets[a.snippetIDs[index]].witnessLabel + ")";
+		}
+		str += "\n";
             }
         }
 		container.append('<tr><td class="i">'+i+'.</td>'
