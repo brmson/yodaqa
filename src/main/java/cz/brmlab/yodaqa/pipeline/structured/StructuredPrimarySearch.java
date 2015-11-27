@@ -145,14 +145,14 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	 * especially AFs.
 	 */
 	protected void propertyToAnswer(JCas jcas, PropertyValue property,
-									int isLast, JCas questionView) throws Exception {
+			int isLast, JCas questionView) throws Exception {
 		jcas.setDocumentText(property.getValue());
 		jcas.setDocumentLanguage("en"); // XXX
 
 		String title = property.getObject() + " " + property.getProperty();
 		AnswerSourceStructured as = makeAnswerSource(property);
 		int sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
-		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property.getProperty());
+		AnsweringProperty ap = new AnsweringProperty(SnippetIDGenerator.getInstance().generateID(), sourceID, property);
 		QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
 		ResultInfo ri = new ResultInfo(jcas);
@@ -179,7 +179,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		fv.setFeature(AF.PropertyGloVeScore, gloVeScore);
 
 		logger.info(" FOUND: {} -- {}  :: prop score={}, GloVe score={}",
-				property.getProperty(), property.getValue(),
+				ap, property.getValue(),
 				property.getScore(), gloVeScore);
 
 		/* Mark by concept-clue-origin AFs. */

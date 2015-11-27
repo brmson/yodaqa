@@ -68,7 +68,11 @@ function showAnswers(container, answers, snippets, sources) {
                 str += snippets[a.snippetIDs[index]].passageText.replace(/"/g, "&#34;") + "\n";
             }
             else if (!(typeof (snippets[a.snippetIDs[index]].propertyLabel) ==="undefined")) {
-                str += snippets[a.snippetIDs[index]].propertyLabel + "\n";
+                str += snippets[a.snippetIDs[index]].propertyLabel;
+                if (!(typeof (snippets[a.snippetIDs[index]].witnessLabel) ==="undefined")) {
+		    str += " (" + snippets[a.snippetIDs[index]].witnessLabel + ")";
+		}
+		str += "\n";
             }
         }
 		container.append('<tr><td class="i">'+i+'.</td>'
@@ -118,6 +122,9 @@ function getQuestionJson() {
 
 		if (r.finished) {
 			$("#spinner").hide();
+			if (r.answerSentence) {
+			    $("#answersent").append(r.answerSentence);
+			}
 		} else {
 			// keep watching
 			setTimeout(getQuestionJson, 500);
@@ -149,6 +156,7 @@ function loadQuestion(q) {
 	$("#metadata_area").empty();
 	$("#answers_area").empty();
 	$("#spinner").show();
+	$("#answersent").empty();
 	qid = q;
 	gen_sources = 0;
 	gen_answers = 0;

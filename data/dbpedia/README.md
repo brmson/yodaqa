@@ -32,8 +32,14 @@ Download Data Files
 	wget http://downloads.dbpedia.org/2014/en/infobox_properties_en.nt.bz2
 	wget http://downloads.dbpedia.org/2014/en/infobox_property_definitions_en.nt.bz2
 	wget http://downloads.dbpedia.org/2014/en/disambiguations_en.nt.bz2
+	wget http://downloads.dbpedia.org/2014/en/short_abstracts_en.nt.bz2
 	bunzip2 -k *.bz2
 	cd ..
+
+The file short_abstracts_en.nt contains a syntax error on line 1263473,
+1947033, 2245904, 2305615, 4391674.  You can fix it e.g. by variations of
+
+	sed -i -e '4391674s/^/#/' short_abstracts_en.nt
 
 Set Up RDF Database
 ===================

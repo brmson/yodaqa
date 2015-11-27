@@ -5,7 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
 
 /** A stateful question.  This question has been asked, can be referred to
@@ -102,6 +106,65 @@ public class Question {
 	}
 
 	public synchronized String toJson() {
-		return gson.toJson(this);
+		JsonElement j = gson.toJsonTree(this);
+		String answerSentence = this.getAnswerSentence();
+		if (answerSentence != null)
+			j.getAsJsonObject().addProperty("answerSentence", answerSentence);
+		return gson.toJson(j);
+	}
+
+	/** Autogenerate a full sentence describing the answer.
+	 * This is designed mainly for answers coming from databases,
+	 * though a baseline version for fulltext answers shouldn't be
+	 * that difficult either. */
+	public synchronized String getAnswerSentence() {
+		try {
+			// top answer
+			QuestionAnswer a0 = this.answers.get(0);
+
+			// pick the bottom snippet (to skip awards; XXX,
+			// sort them by something tangible), but
+			// preferring a witness-carrying snippet
+			List<Integer> revSIDs = Lists.reverse(a0.getSnippetIDs());
+			AnsweringSnippet s0 = this.snippets.get(revSIDs.get(0));
+			for (Integer wsid : revSIDs) {
+				AnsweringSnippet sw = this.snippets.get(wsid);
+				if (sw instanceof AnsweringProperty
+				    && ((AnsweringProperty) sw).getWitnessLabel() != null) {
+					s0 = sw;
+					break;
+				}
+			}
+			AnswerSource src0 = this.sources.get(s0.getSourceID());
+
+			if (s0 instanceof AnsweringProperty) {
+				AnsweringProperty ap0 = (AnsweringProperty) s0;
+				boolean showIsBeforeProperty = ap0.getPropertyLabel().toLowerCase().endsWith(" by");
+
+				StringBuilder sb = new StringBuilder();
+				sb.append(src0.getTitle());
+				sb.append(" ");
+				if (showIsBeforeProperty)
+					sb.append("is ");
+				sb.append(ap0.getPropertyLabel().replaceAll(".*: ", "").toLowerCase());
+				sb.append(" ");
+				if (ap0.getWitnessLabel() != null) {
+					sb.append("(for ");
+					sb.append(ap0.getWitnessLabel());
+					sb.append(") ");
+				}
+				if (!showIsBeforeProperty)
+					sb.append("is ");
+				sb.append(a0.getText());
+				sb.append(".");
+				return sb.toString();
+			} else {
+				// TODO
+				return null;
+			}
+
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 }
