@@ -89,7 +89,8 @@ public class DBpediaOntology extends DBpediaLookup {
 			logger.debug("DBpedia {} property: {} -> {} ({})", title, propLabel, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginDBpOntology, 1.0);
-			results.add(new PropertyValue(title, objRes, propLabel, value, valRes,
+			results.add(new PropertyValue(title, objRes, propLabel,
+						value, valRes, null,
 						fv, AnswerSourceStructured.ORIGIN_ONTOLOGY));
 		}
 
