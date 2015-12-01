@@ -33,7 +33,10 @@ use the toolset in:
 
 	https://github.com/brmson/Sentence-selection
 
-For more information, check the README there.
+For more information, check the README there - but basically:
+
+	./std_run.sh -p ../yodaqa/data/ml/embsel/propdata-moviesD-train
+	mv data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/passextract/Mb.txt
 
 
 Sentence Selection
