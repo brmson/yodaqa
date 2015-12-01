@@ -84,6 +84,7 @@ public class AnswerFV {
                 "spWordNet", "LATQNoWordNet", "LATANoWordNet",
 		"tyCorPassageSp", "tyCorPassageDist", "tyCorPassageInside",
 		"simpleScore",
+		"answerFocusNone", "answerFocusWhole",
 		"LATNE", "LATDBpType", "LATDBpWNType", "LATQuantity", "LATQuantityCD",
 			"LATWnInstance", "LATDBpOntology", "LATDBpProperty", "LATFBOntology",
 		"tyCorSpQHit", "tyCorSpAHit", "tyCorSpNoHit", "tyCorSpQAHit", "tyCorSpMultiHit",
