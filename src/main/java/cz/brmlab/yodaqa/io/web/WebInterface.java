@@ -21,6 +21,7 @@ import spark.Response;
 import spark.Route;
 
 import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionConcept;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 
 
@@ -53,7 +54,7 @@ public class WebInterface implements Runnable {
 					return "missing parameter: text";
 				}
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
-				List<ArtificialConcept> artificialConcepts=retrieveArtificialConcepts(request);
+				List<QuestionConcept> artificialConcepts=retrieveArtificialConcepts(request);
 				Question q;
 				if (!artificialConcepts.isEmpty()) {
 					q = new Question(id, text, artificialConcepts, true);
@@ -132,8 +133,8 @@ public class WebInterface implements Runnable {
 		});
 	}
 
-	private List<ArtificialConcept> retrieveArtificialConcepts(Request request){
-		List<ArtificialConcept> artificialConcepts=new ArrayList<>();
+	private List<QuestionConcept> retrieveArtificialConcepts(Request request){
+		List<QuestionConcept> artificialConcepts=new ArrayList<>();
 		String numberOfArtificialConceptsString=request.queryParams("numberOfConcepts");
 		if (numberOfArtificialConceptsString!=null){
 			int numberOfArtificialConcepts=Integer.parseInt(numberOfArtificialConceptsString);
@@ -142,7 +143,7 @@ public class WebInterface implements Runnable {
 				String fullLabel = request.queryParams("fullLabel"+i);
 				if (pageId!=null && fullLabel!=null && !pageId.equals("") && !fullLabel.equals("")){
 					int pageIdInt= Integer.parseInt(pageId);
-					artificialConcepts.add(new ArtificialConcept(pageIdInt,fullLabel));
+					artificialConcepts.add(new QuestionConcept(fullLabel, pageIdInt));
 				}
 			}
 		}
