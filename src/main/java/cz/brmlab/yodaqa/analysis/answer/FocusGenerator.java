@@ -11,6 +11,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -19,6 +20,10 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.ansscore.AF;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerFeature;
+import cz.brmlab.yodaqa.model.CandidateAnswer.AnswerInfo;
 import cz.brmlab.yodaqa.model.Question.Focus;
 
 /**
@@ -71,9 +76,12 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			fp = fpByPos(jcas);
 
 		if (fp == null) {
+			addFocusFeature(jcas, AF.AnswerFocusNone);
 			logger.info("?. No focus in: " + jcas.getDocumentText());
 			return;
 		} else {
+			if (fp.getFocus().getCoveredText().equals(jcas.getDocumentText()))
+				addFocusFeature(jcas, AF.AnswerFocusWhole);
 			logger.debug(".. Focus '{}' in: {}", fp.getFocus().getCoveredText(), jcas.getDocumentText());
 		}
 
@@ -162,5 +170,18 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			return new FocusPair(focusTok, focus);
 		else
 			return null;
+	}
+
+	protected void addFocusFeature(JCas jcas, String f) throws AnalysisEngineProcessException {
+		AnswerInfo ai = JCasUtil.selectSingle(jcas, AnswerInfo.class);
+		AnswerFV fv = new AnswerFV(ai);
+		fv.setFeature(f, 1.0);
+
+		for (FeatureStructure af : ai.getFeatures().toArray())
+			((AnswerFeature) af).removeFromIndexes();
+		ai.removeFromIndexes();
+
+		ai.setFeatures(fv.toFSArray(jcas));
+		ai.addToIndexes();
 	}
 }
