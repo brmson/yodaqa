@@ -14,11 +14,18 @@ datadir=$1
 # First stage - training Mb concept matrix
 
 rm -rf data/ml/fbpath-emb/props-webquestions-train
-mkdir data/ml/fbpath-emb/props-webquestions-train
-data/ml/fbpath-emb/fbpath_emb.py "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train
+mkdir -p data/ml/fbpath-emb/props-webquestions-train/first
+mkdir -p data/ml/fbpath-emb/props-webquestions-train/second
+data/ml/fbpath-emb/fbpath_emb.py 1 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/first
+data/ml/fbpath-emb/fbpath_emb.py 2 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations2/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/second
 
 basedir=$(pwd)
 cd ../Sentence-selection/
-./std_run.sh -p "$basedir"/data/ml/fbpath-emb/props-webquestions-train
-cp data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/question/Mbrel1.txt
+./std_run.sh -p "$basedir"/data/ml/fbpath-emb/props-webquestions-train/first
+cp data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbrel1.txt
+cd "$basedir"
+
+cd ../Sentence-selection/
+./std_run.sh -p "$basedir"/data/ml/fbpath-emb/props-webquestions-train/second
+cp data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbrel2.txt
 cd "$basedir"
