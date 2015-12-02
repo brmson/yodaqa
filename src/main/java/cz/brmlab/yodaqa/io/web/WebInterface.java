@@ -11,11 +11,13 @@ import static spark.Spark.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -48,7 +50,7 @@ public class WebInterface implements Runnable {
 			@Override
 			public Object handle(Request request, Response response) {
 				String id = Integer.toString(idgen.nextInt(Integer.MAX_VALUE));
-				String text=request.queryMap("question").value();
+				String text=request.queryParams("text");
 				if (text == null) {
 					response.status(422);
 					return "missing parameter: text";
