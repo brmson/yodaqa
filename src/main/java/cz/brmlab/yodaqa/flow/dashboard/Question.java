@@ -36,19 +36,19 @@ public class Question {
 		this.text = text;
 	}
 
-    public Question(String id, String text, List<ArtificialConcept> artificialConcepts, boolean hasOnlyArtificialConcept) {
+	public Question(String id, String text, List<ArtificialConcept> artificialConcepts, boolean hasOnlyArtificialConcept) {
 		this.id = id;
 		this.text = text;
 		this.artificialConcepts = artificialConcepts;
 		this.hasOnlyArtificialConcept=hasOnlyArtificialConcept;
-    }
+	}
 
-    /** @return the id */
+	/** @return the id */
 	public synchronized String getId() { return id; }
 	/** @return the text */
 	public synchronized String getText() { return text; }
-    /** @return manually added concepts */
-    public synchronized List<ArtificialConcept> getArtificialConcepts(){ return artificialConcepts; }
+	/** @return manually added concepts */
+	public synchronized List<ArtificialConcept> getArtificialConcepts(){ return artificialConcepts; }
 	/** @return if question is using artificial Concepts only */
 	public synchronized boolean getHasOnlyArtificialConcept(){ return hasOnlyArtificialConcept; }
 
