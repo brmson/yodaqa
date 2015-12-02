@@ -25,6 +25,8 @@ public class Question {
 	protected List<QuestionAnswer> answers = new ArrayList<>();
 	protected Map<Integer, AnsweringSnippet> snippets = new HashMap<>(); //key = ID of snippet, value = the actual snippet
 	protected boolean finished = false;
+	protected List<QuestionConcept> artificialConcepts = new ArrayList<>();
+	protected boolean hasOnlyArtificialConcept=false;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
 	protected int gen_sources = 0;
@@ -37,10 +39,21 @@ public class Question {
 		this.text = text;
 	}
 
+	public Question(String id, String text, List<QuestionConcept> artificialConcepts, boolean hasOnlyArtificialConcept) {
+		this.id = id;
+		this.text = text;
+		this.artificialConcepts = artificialConcepts;
+		this.hasOnlyArtificialConcept=hasOnlyArtificialConcept;
+	}
+
 	/** @return the id */
 	public synchronized String getId() { return id; }
 	/** @return the text */
 	public synchronized String getText() { return text; }
+	/** @return manually added concepts */
+	public synchronized List<QuestionConcept> getArtificialConcepts(){ return artificialConcepts; }
+	/** @return if question is using artificial Concepts only */
+	public synchronized boolean getHasOnlyArtificialConcept(){ return hasOnlyArtificialConcept; }
 
 	/** @return the summary */
 	public synchronized QuestionSummary getSummary() { return summary; }
