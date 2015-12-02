@@ -77,7 +77,7 @@
           </featureDescription>
           <featureDescription>
             <name>onlyArtificialConcepts</name>
-            <description>Don't generate concept</description>
+            <description>Don't execute concept linking stage on the question; concepts already come pre-determined along with the question from the collection reader</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
         </features>
