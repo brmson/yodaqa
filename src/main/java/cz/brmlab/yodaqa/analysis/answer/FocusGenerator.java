@@ -177,8 +177,9 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		AnswerFV fv = new AnswerFV(ai);
 		fv.setFeature(f, 1.0);
 
-		for (FeatureStructure af : ai.getFeatures().toArray())
-			((AnswerFeature) af).removeFromIndexes();
+		if (ai.getFeatures() != null)
+			for (FeatureStructure af : ai.getFeatures().toArray())
+				((AnswerFeature) af).removeFromIndexes();
 		ai.removeFromIndexes();
 
 		ai.setFeatures(fv.toFSArray(jcas));
