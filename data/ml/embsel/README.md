@@ -22,17 +22,21 @@ weights used are located in:
 
 	src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbprop.txt
 
-To re-train the property selection model, first run:
+To re-train the property selection model, first run (we use the ``d/movies``
+branch for this):
 
-	mkdir data/ml/embsel/propdata-moviesC-train
-	./gradlew tsvgs -PexecArgs="data/eval/moviesC-train.tsv moviesC-train.tsv" -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug -Dcz.brmlab.yodaqa.dump_property_labels=data/ml/embsel/propdata-moviesC-train 2>&1 | tee train_embsel.log
+	mkdir data/ml/embsel/propdata-moviesD-train
+	./gradlew tsvgs -PexecArgs="data/eval/moviesD-train.tsv moviesD-train.tsv" -Dorg.slf4j.simpleLogger.log.cz.brmlab.yodaqa=debug -Dcz.brmlab.yodaqa.dump_property_labels=data/ml/embsel/propdata-moviesD-train 2>&1 | tee train_embsel.log
 
 Then, take the data from data/ml/embsel and to re-train the weights,
 use the toolset in:
 
 	https://github.com/brmson/Sentence-selection
 
-For more information, check the README there.
+For more information, check the README there - but basically:
+
+	./std_run.sh -p ../yodaqa/data/ml/embsel/propdata-moviesD-train
+	mv data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/passextract/Mb.txt
 
 
 Sentence Selection

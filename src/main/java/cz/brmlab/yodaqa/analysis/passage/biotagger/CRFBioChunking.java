@@ -89,6 +89,14 @@ public class CRFBioChunking<SUB_CHUNK_TYPE extends Annotation, CHUNK_TYPE extend
 				begin = subChunks.get(begin).getBegin();
 				end = subChunks.get(end).getEnd();
 
+				// chop off trailing interpunction
+				while (end > begin &&
+					(jCas.getDocumentText().charAt(end-1) == '.'
+					 || jCas.getDocumentText().charAt(end-1) == ',')) {
+					// System.err.println(begin + "," + end + " --- " + jCas.getDocumentText().substring(begin, end));
+					end--;
+				}
+
 				// construct the chunk annotation
 				Constructor<? extends CHUNK_TYPE> constructor;
 				try {

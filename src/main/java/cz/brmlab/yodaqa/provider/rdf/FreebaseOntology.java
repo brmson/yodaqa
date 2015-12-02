@@ -443,7 +443,8 @@ public class FreebaseOntology extends FreebaseLookup {
 				wLabel);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseSpecific, 1.0);
-			fv.setFeature(AF.OriginFreebaseBranched, 1.0);
+			if (isBranched)
+				fv.setFeature(AF.OriginFreebaseBranched, 1.0);
 			if (witnessAF != null)
 				fv.setFeature(witnessAF, 1.0);
 			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel,
@@ -474,6 +475,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				"    ?med ns:" + witnessRel + " ?concept .\n" +
 				"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
 				"    ?concept rdfs:label ?wlabel .\n" +
+				"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
 				"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
 				"  } UNION";
 		}
