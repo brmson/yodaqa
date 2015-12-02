@@ -145,6 +145,8 @@ for i, zipped_line in enumerate(zipped):
         concept_relations['allRelations'] = r
         out_file_c.write(json.dumps(concept_relations) + "\n")
         relations.extend(r)
+    s = set([tuple(rel.items()) for rel in relations])
+    relations = [dict(rel) for rel in s]
     res = {}
     res['qId'] = line['qId']
     res['allRelations'] = relations
