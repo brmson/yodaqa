@@ -54,7 +54,7 @@ public class WebInterface implements Runnable {
 					return "missing parameter: text";
 				}
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
-				List<QuestionConcept> artificialConcepts=retrieveArtificialConcepts(request);
+				List<QuestionConcept> artificialConcepts = retrieveArtificialConcepts(request);
 				Question q;
 				if (!artificialConcepts.isEmpty()) {
 					q = new Question(id, text, artificialConcepts, true);
@@ -134,19 +134,26 @@ public class WebInterface implements Runnable {
 	}
 
 	private List<QuestionConcept> retrieveArtificialConcepts(Request request){
-		List<QuestionConcept> artificialConcepts=new ArrayList<>();
-		String numberOfArtificialConceptsString=request.queryParams("numberOfConcepts");
-		if (numberOfArtificialConceptsString!=null){
-			int numberOfArtificialConcepts=Integer.parseInt(numberOfArtificialConceptsString);
-			for (int i=1; i<=numberOfArtificialConcepts;i++){
-				String pageId = request.queryParams("pageID"+i);
-				String fullLabel = request.queryParams("fullLabel"+i);
-				if (pageId!=null && fullLabel!=null && !pageId.equals("") && !fullLabel.equals("")){
-					int pageIdInt= Integer.parseInt(pageId);
-					artificialConcepts.add(new QuestionConcept(fullLabel, pageIdInt));
-				}
-			}
+		List<QuestionConcept> artificialConcepts = new ArrayList<>();
+
+		String numberOfArtificialConceptsS = request.queryParams("numberOfConcepts");
+		if (numberOfArtificialConceptsS == null)
+			return artificialConcepts;
+
+		int numberOfArtificialConcepts = Integer.parseInt(numberOfArtificialConceptsS);
+		for (int i = 1; i <= numberOfArtificialConcepts; i++) {
+			String fullLabel = request.queryParams("fullLabel" + i);
+			if (fullLabel == null || fullLabel.equals(""))
+				continue;
+
+			String pageIDS = request.queryParams("pageID" + i);
+			if (pageIDS == null || pageIDS.equals(""))
+				continue;
+			int pageID = Integer.parseInt(pageIDS);
+
+			artificialConcepts.add(new QuestionConcept(fullLabel, pageID));
 		}
+
 		return artificialConcepts;
 	}
 }
