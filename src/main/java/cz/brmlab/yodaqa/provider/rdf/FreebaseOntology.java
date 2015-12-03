@@ -218,7 +218,88 @@ public class FreebaseOntology extends FreebaseLookup {
 		Set<TitledMid> mids = queryTopicByPageID(pageId, logger);
 		List<PropertyValue> result = new ArrayList<>();
 		for (TitledMid tmid: mids) {
-			result.addAll(queryTopicGeneric(tmid.title, tmid.mid, logger));
+			result.addAll(queryAllRelations(tmid.mid, tmid.title, logger));
+		}
+		return result;
+	}
+
+	public List<PropertyValue> queryAllRelations(String mid, String title, Logger logger) {
+		//XXX A lot of duplicate code with queryTopicGeneric
+		List<PropertyValue> result = new ArrayList<>();
+		String rawQueryStr =
+			/* Grab all properties of the topic, for starters. */
+			"ns:" + mid + " ?prop ?val .\n" +
+			"BIND(ns:" + mid + " AS ?res)\n" +
+			/* Check if property is a labelled type, and use that
+			 * label as property name if so. */
+			"OPTIONAL {\n" +
+			"  ?prop ns:type.object.name ?proplabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
+			"} .\n" +
+			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
+			/* Check if value is not a pointer to another topic
+			 * we could resolve to a label. */
+			"OPTIONAL {\n" +
+			"  ?val rdfs:label ?vallabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
+			"}\n" +
+			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
+			/* Keep only ns: properties */
+			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
+			/* ...but ignore some common junk which yields mostly
+			 * no relevant data... */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )\n" +
+			/* ...stuff that's difficult to trust... */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
+			/* ...and some more junk - this one is already a bit
+			 * trickier as it might contain relevant data, but
+			 * often hidden in relationship objects (like Nobel
+			 * prize awards), and also a lot of junk (like the
+			 * kwebbase experts - though some might be useful
+			 * in a specific context). */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )\n" +
+			/* topic_server has geolocation (not useful right now)
+			 * and population_number (which would be useful, but
+			 * needs special handling has a topic may have many
+			 * of these, e.g. White House). Also it has crappy
+			 * type labels. */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/" +
+			StringUtils.join(propBlacklist,
+				"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/") +
+				"') )\n" +
+				"";
+		// logger.debug("executing sparql query: {}", rawQueryStr);
+		List<Literal[]> rawResults = rawQuery(rawQueryStr,
+				new String[] { "property", "vallabel", "prop", "/val", "/res" }, PROP_LIMIT);
+
+		for (Literal[] rawResult : rawResults) {
+			/* ns:astronomy.star.temperature_k -> "temperature"
+			 * ns:astronomy.star.planet_s -> "planet"
+			 * ns:astronomy.star.spectral_type -> "spectral type"
+			 * ns:chemistry.chemical_element.periodic_table_block -> "periodic table block"
+			 *
+			 * But typically we fetch the property name from
+			 * the RDF store too, so this should be irrelevant
+			 * in that case.*/
+			String propLabel = rawResult[0].getString().
+					replaceAll("^.*\\.([^\\. ]*)$", "\\1").
+					replaceAll("_.$", "").
+					replaceAll("_", " ");
+			String value = rawResult[1] != null ? rawResult[1].getString() : null;
+			String prop = rawResult[2].getString();
+			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
+			String objRes = rawResult[4].getString();
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", title, mid, propLabel, prop, value, valRes);
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
+			PropertyValue pv = new PropertyValue(title, objRes, propLabel, value, valRes,
+					fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
+			pv.setPropRes(prop);
+			result.add(pv);
 		}
 		return result;
 

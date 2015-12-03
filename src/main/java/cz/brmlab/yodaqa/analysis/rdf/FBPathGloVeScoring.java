@@ -22,7 +22,7 @@ import java.util.*;
  */
 public class FBPathGloVeScoring {
 
-	public class PathScore {
+	public class PathScore extends FBPathLogistic {
 		public PropertyPath path;
 		public double proba;
 
@@ -40,7 +40,8 @@ public class FBPathGloVeScoring {
 		return fbpgs;
 	}
 
-	private Relatedness r = new Relatedness(new MbWeights(FBPathGloVeScoring.class.getResourceAsStream("Mbrel1.txt")));
+	private Relatedness r1 = new Relatedness(new MbWeights(FBPathGloVeScoring.class.getResourceAsStream("Mbrel1.txt")));
+	private Relatedness r2 = new Relatedness(new MbWeights(FBPathGloVeScoring.class.getResourceAsStream("Mbrel2.txt")));
 
 	/** For legacy reasons, we use our own tokenization.
 	 * We also lower-case while at it, and might do some other
@@ -68,37 +69,72 @@ public class FBPathGloVeScoring {
 
 	public List<PathScore> getPaths(JCas questionView) {
 		List<PathScore> scores = new ArrayList<>();
-		Set<PropertyValue> set = new TreeSet<>(new Comparator<PropertyValue>() {
+		Set<List<PropertyValue>> set = new TreeSet<>(new Comparator<List<PropertyValue>>() {
 			@Override
-			public int compare(PropertyValue o1, PropertyValue o2) {
-				if(o1.getPropRes().equalsIgnoreCase(o2.getPropRes())){
-					return 0;
+			public int compare(List<PropertyValue> o1, List<PropertyValue> o2) {
+				if (o1.size() != o2.size()) return 1;
+				for (int i = 0; i < o1.size(); i++) {
+//					logger.info("COMPARE " + o1.get(i).getPropRes() + " " + o2.get(i).getPropRes() + " " + o1.get(i).getPropRes().equalsIgnoreCase(o2.get(i).getPropRes()));
+					if (!o1.get(i).getPropRes().equalsIgnoreCase(o2.get(i).getPropRes())) return 1;
 				}
-				return 1;
+				return 0;
 			}
 		});
 		for(Concept c:  JCasUtil.select(questionView, Concept.class)) {
-			//test number of returned relations, note the query filters!
 			List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), logger);
+			logger.info("LIST " + list.size());
 			for(PropertyValue pv: list) {
-				List<String> qtoks = PropertyGloVeScoring.questionRepr(questionView);
-				List<String> proptoks = PropertyGloVeScoring.tokenize(pv.getProperty());
-				pv.setScore(r.probability(qtoks, proptoks));
-				set.add(pv);
+				logger.info("PROPERTYY " + pv.getValue() + " " + pv.getValRes() + " " + pv.getProperty());
+				List<String> qtoks = questionRepr(questionView);
+				List<String> proptoks = tokenize(pv.getProperty());
+				pv.setScore(r1.probability(qtoks, proptoks));
+				if (pv.getValue() == null && pv.getValRes() == null) {
+					continue;
+				} else if (pv.getValue() == null) {
+					List<PropertyValue> secondRels = scoreSecondRelation(pv.getValRes().substring(27), questionView);
+					for(PropertyValue second: secondRels) {
+						List<PropertyValue> pvlist = new ArrayList<>();
+						pvlist.add(pv);
+						pvlist.add(second);
+						logger.info("Contains " + pv.getPropRes() + " " + second.getPropRes() + " " + set.contains(pvlist));
+						set.add(pvlist);
+					}
+				} else {
+					List<PropertyValue> pvlist = new ArrayList<>();
+					pvlist.add(pv);
+					set.add(pvlist);
+				}
 			}
 		}
-		for (PropertyValue pv: set) {
+		for (List<PropertyValue> pvlist: set) {
 			List<String> properties = new ArrayList<>();
-			properties.add(pv.getPropRes());
+			double score = 1;
+			String tmp = "";
+			for(PropertyValue pv: pvlist) {
+				properties.add(pv.getPropRes());
+				score *= pv.getScore();
+				tmp += pv.getPropRes() + "(" + pv.getScore() + ")|";
+			}
+			logger.info("PATH2 " + tmp);
 			PropertyPath path = new PropertyPath(properties);
-			scores.add(new PathScore(path, pv.getScore()));
+			scores.add(new PathScore(path, score));
 		}
-		Collections.sort(scores, new Comparator<PathScore>(){
+		Collections.sort(scores, new Comparator<PathScore>() {
 			@Override
-			public int compare(PathScore ps1, PathScore ps2){
-				return Double.valueOf(ps2.proba).compareTo(Double.valueOf(ps1.proba));
+			public int compare(PathScore ps1, PathScore ps2) {
+				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
 			}
 		});
 		return scores;
+	}
+
+	protected List<PropertyValue> scoreSecondRelation(String mid, JCas questionView) {
+		List<PropertyValue> list = fbo.queryAllRelations(mid, "", logger);
+		for(PropertyValue pv: list) {
+			List<String> qtoks = questionRepr(questionView);
+			List<String> proptoks = tokenize(pv.getProperty());
+			pv.setScore(r2.probability(qtoks, proptoks));
+		}
+		return list;
 	}
 }
