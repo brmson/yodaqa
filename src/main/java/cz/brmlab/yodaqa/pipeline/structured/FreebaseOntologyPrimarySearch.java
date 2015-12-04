@@ -60,19 +60,11 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		// if (true) return properties;
 
 		/* Get a list of specific properties to query. */
-		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
-//		for(PathScore ps: pathScs) {
-//			logger.info("PATH " + ps.path.get(0) + " prob: " + ps.proba);
-//		}
+//		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+
 		FBPathGloVeScoring fbglove = new FBPathGloVeScoring();
-		List<FBPathGloVeScoring.PathScore> pathTmp = fbglove.getPaths(questionView, N_TOP_PATHS);
-		for(FBPathGloVeScoring.PathScore ps: pathTmp) {
-			String path = "";
-			for (int i = 0; i < ps.path.size(); i++) {
-				path += ps.path.get(i) + "|";
-			}
-			logger.info("PATH EMB " + path + " prob: " + ps.proba);
-		}
+		List<PathScore> pathScs = fbglove.getPaths(questionView, N_TOP_PATHS);
+
 		/* Get a list of witnesses (besides concepts), i.e. clues of
 		 * question that might select the relevant property path by
 		 * co-occurence in a composite node. */

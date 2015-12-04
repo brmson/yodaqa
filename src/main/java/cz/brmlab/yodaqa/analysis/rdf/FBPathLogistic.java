@@ -166,8 +166,8 @@ public class FBPathLogistic {
 		return cfier.predictProba(feats);
 	}
 
-
-	public class PathScore {
+	//This class is also used in FBPathGloVeScoring!!
+	public static class PathScore {
 		public PropertyPath path;
 		public double proba;
 

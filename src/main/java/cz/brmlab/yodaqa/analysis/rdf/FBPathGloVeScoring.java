@@ -24,16 +24,6 @@ public class FBPathGloVeScoring {
 
 	private static final int midPrefixLen = 27;
 
-	public class PathScore extends FBPathLogistic {
-		public PropertyPath path;
-		public double proba;
-
-		public PathScore(PropertyPath path, double proba) {
-			this.path = path;
-			this.proba = proba;
-		}
-	}
-
 	private static FBPathGloVeScoring fbpgs = new FBPathGloVeScoring();
 	protected Logger logger = LoggerFactory.getLogger(FBPathGloVeScoring.class);
 	private static FreebaseOntology fbo = new FreebaseOntology();
@@ -69,30 +59,32 @@ public class FBPathGloVeScoring {
 		return tokens;
 	}
 
-	public List<PathScore> getPaths(JCas questionView, int pathLimitCnt) {
-		List<PathScore> scores = new ArrayList<>();
+	public List<FBPathLogistic.PathScore> getPaths(JCas questionView, int pathLimitCnt) {
+		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		Set<List<PropertyValue>> set = new TreeSet<>(new Comparator<List<PropertyValue>>() {
 			@Override
 			public int compare(List<PropertyValue> o1, List<PropertyValue> o2) {
-				if (o1.size() != o2.size()) return 1;
+				if (o1.size() != o2.size()) return o2.size() - o1.size();
 				for (int i = 0; i < o1.size(); i++) {
-					if (!o1.get(i).getPropRes().equalsIgnoreCase(o2.get(i).getPropRes())) return 1;
+					int c = o1.get(i).getPropRes().compareToIgnoreCase(o2.get(i).getPropRes());
+					if (c != 0) return c;
 				}
 				return 0;
 			}
 		});
+
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
 			List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), logger);
-			logger.info("LIST " + list.size());
 			for(PropertyValue pv: list) {
+				if (pv.getValue() == null && pv.getValRes() == null)
+					continue; // ???
 				List<String> qtoks = questionRepr(questionView);
 				List<String> proptoks = tokenize(pv.getProperty());
 				pv.setScore(r1.probability(qtoks, proptoks));
-				if (pv.getValue() != null || pv.getValRes() != null) {
-					List<PropertyValue> pvlist = new ArrayList<>();
-					pvlist.add(pv);
-					set.add(pvlist);
-				}
+
+				List<PropertyValue> pvlist = new ArrayList<>();
+				pvlist.add(pv);
+				set.add(pvlist);
 			}
 		}
 		List<List<PropertyValue>> lenOnePaths = new ArrayList<>(set);
@@ -102,40 +94,41 @@ public class FBPathGloVeScoring {
 				return list1.get(0).getScore().compareTo(list2.get(0).getScore());
 			}
 		});
-		if (lenOnePaths.size() > pathLimitCnt) lenOnePaths = lenOnePaths.subList(0, pathLimitCnt);
+		if (lenOnePaths.size() > pathLimitCnt)
+			lenOnePaths = lenOnePaths.subList(0, pathLimitCnt);
+
 		set.clear();
-		for (List<PropertyValue> pvlist: lenOnePaths) {
-			PropertyValue first = pvlist.get(0);
+		for (List<PropertyValue> path: lenOnePaths) {
+			PropertyValue first = path.get(0);
 			if (first.getValue() == null) {
+				// meta-node, crawl it too
 				List<PropertyValue> secondRels = scoreSecondRelation(first.getValRes().substring(midPrefixLen), questionView);
 				for(PropertyValue second: secondRels) {
-					List<PropertyValue> tmpList = new ArrayList<>(pvlist);
+					List<PropertyValue> tmpList = new ArrayList<>(path);
 					tmpList.add(second);
-					logger.info("Contains " + first.getPropRes() + " " + second.getPropRes() + " " + set.contains(pvlist) + " " + Thread.currentThread().getName());
 					set.add(tmpList);
 				}
 			} else {
-				set.add(pvlist);
+				set.add(path);
 			}
 		}
-		for (List<PropertyValue> pvlist: set) {
+		for (List<PropertyValue> path: set) {
 			List<String> properties = new ArrayList<>();
-			String tmp = "";
-			for(PropertyValue pv: pvlist) {
+
+			for(PropertyValue pv: path) {
 				properties.add(pv.getPropRes());
-				tmp += pv.getPropRes() + "(" + pv.getScore() + ")|";
 			}
-			logger.info("PATH2 " + tmp);
-			PropertyPath path = new PropertyPath(properties);
-			scores.add(new PathScore(path, pvlist.get(0).getScore()));
+
+			PropertyPath pp = new PropertyPath(properties);
+			scores.add(new FBPathLogistic.PathScore(pp, path.get(path.size() - 1).getScore()));//Score of last relation prefer larger relations significantly
 		}
-		Collections.sort(scores, new Comparator<PathScore>() {
+		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {
 			@Override
-			public int compare(PathScore ps1, PathScore ps2) {
+			public int compare(FBPathLogistic.PathScore ps1, FBPathLogistic.PathScore ps2) {
 				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
 			}
 		});
-		if (scores.size() > pathLimitCnt) scores = scores.subList(0, pathLimitCnt);
+		//if (scores.size() > pathLimitCnt) scores = scores.subList(0, pathLimitCnt);
 		return scores;
 	}
 
