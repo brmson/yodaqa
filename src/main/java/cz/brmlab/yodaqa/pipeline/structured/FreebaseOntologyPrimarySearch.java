@@ -65,7 +65,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 //			logger.info("PATH " + ps.path.get(0) + " prob: " + ps.proba);
 //		}
 		FBPathGloVeScoring fbglove = new FBPathGloVeScoring();
-		List<FBPathGloVeScoring.PathScore> pathTmp = fbglove.getPaths(questionView);
+		List<FBPathGloVeScoring.PathScore> pathTmp = fbglove.getPaths(questionView, N_TOP_PATHS);
 		for(FBPathGloVeScoring.PathScore ps: pathTmp) {
 			String path = "";
 			for (int i = 0; i < ps.path.size(); i++) {

@@ -22,6 +22,8 @@ import java.util.*;
  */
 public class FBPathGloVeScoring {
 
+	private static final int midPrefixLen = 27;
+
 	public class PathScore extends FBPathLogistic {
 		public PropertyPath path;
 		public double proba;
@@ -67,57 +69,65 @@ public class FBPathGloVeScoring {
 		return tokens;
 	}
 
-	public List<PathScore> getPaths(JCas questionView) {
+	public List<PathScore> getPaths(JCas questionView, int pathLimitCnt) {
 		List<PathScore> scores = new ArrayList<>();
 		Set<List<PropertyValue>> set = new TreeSet<>(new Comparator<List<PropertyValue>>() {
 			@Override
 			public int compare(List<PropertyValue> o1, List<PropertyValue> o2) {
 				if (o1.size() != o2.size()) return 1;
 				for (int i = 0; i < o1.size(); i++) {
-//					logger.info("COMPARE " + o1.get(i).getPropRes() + " " + o2.get(i).getPropRes() + " " + o1.get(i).getPropRes().equalsIgnoreCase(o2.get(i).getPropRes()));
 					if (!o1.get(i).getPropRes().equalsIgnoreCase(o2.get(i).getPropRes())) return 1;
 				}
 				return 0;
 			}
 		});
-		for(Concept c:  JCasUtil.select(questionView, Concept.class)) {
+		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
 			List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), logger);
 			logger.info("LIST " + list.size());
 			for(PropertyValue pv: list) {
-				logger.info("PROPERTYY " + pv.getValue() + " " + pv.getValRes() + " " + pv.getProperty());
 				List<String> qtoks = questionRepr(questionView);
 				List<String> proptoks = tokenize(pv.getProperty());
 				pv.setScore(r1.probability(qtoks, proptoks));
-				if (pv.getValue() == null && pv.getValRes() == null) {
-					continue;
-				} else if (pv.getValue() == null) {
-					List<PropertyValue> secondRels = scoreSecondRelation(pv.getValRes().substring(27), questionView);
-					for(PropertyValue second: secondRels) {
-						List<PropertyValue> pvlist = new ArrayList<>();
-						pvlist.add(pv);
-						pvlist.add(second);
-						logger.info("Contains " + pv.getPropRes() + " " + second.getPropRes() + " " + set.contains(pvlist));
-						set.add(pvlist);
-					}
-				} else {
+				if (pv.getValue() != null || pv.getValRes() != null) {
 					List<PropertyValue> pvlist = new ArrayList<>();
 					pvlist.add(pv);
 					set.add(pvlist);
 				}
 			}
 		}
+		List<List<PropertyValue>> lenOnePaths = new ArrayList<>(set);
+		Collections.sort(lenOnePaths, new Comparator<List<PropertyValue>>() {
+			@Override
+			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
+				return list1.get(0).getScore().compareTo(list2.get(0).getScore());
+			}
+		});
+		if (lenOnePaths.size() > pathLimitCnt) lenOnePaths = lenOnePaths.subList(0, pathLimitCnt);
+		set.clear();
+		for (List<PropertyValue> pvlist: lenOnePaths) {
+			PropertyValue first = pvlist.get(0);
+			if (first.getValue() == null) {
+				List<PropertyValue> secondRels = scoreSecondRelation(first.getValRes().substring(midPrefixLen), questionView);
+				for(PropertyValue second: secondRels) {
+					List<PropertyValue> tmpList = new ArrayList<>(pvlist);
+					tmpList.add(second);
+					logger.info("Contains " + first.getPropRes() + " " + second.getPropRes() + " " + set.contains(pvlist) + " " + Thread.currentThread().getName());
+					set.add(tmpList);
+				}
+			} else {
+				set.add(pvlist);
+			}
+		}
 		for (List<PropertyValue> pvlist: set) {
 			List<String> properties = new ArrayList<>();
-			double score = 1;
 			String tmp = "";
 			for(PropertyValue pv: pvlist) {
 				properties.add(pv.getPropRes());
-				score *= pv.getScore();
 				tmp += pv.getPropRes() + "(" + pv.getScore() + ")|";
 			}
 			logger.info("PATH2 " + tmp);
 			PropertyPath path = new PropertyPath(properties);
-			scores.add(new PathScore(path, score));
+			scores.add(new PathScore(path, pvlist.get(0).getScore()));
 		}
 		Collections.sort(scores, new Comparator<PathScore>() {
 			@Override
@@ -125,6 +135,7 @@ public class FBPathGloVeScoring {
 				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
 			}
 		});
+		if (scores.size() > pathLimitCnt) scores = scores.subList(0, pathLimitCnt);
 		return scores;
 	}
 
