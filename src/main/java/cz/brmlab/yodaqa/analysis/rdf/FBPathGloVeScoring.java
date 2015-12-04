@@ -21,7 +21,7 @@ import java.util.*;
  * Created by honza on 25.11.15.
  */
 public class FBPathGloVeScoring {
-	private static final int midPrefixLen = "http://rdf.freebase.com/ns/".length();
+	private static final String midPrefix = "http://rdf.freebase.com/ns/";
 
 	private static FBPathGloVeScoring fbpgs = new FBPathGloVeScoring();
 	protected Logger logger = LoggerFactory.getLogger(FBPathGloVeScoring.class);
@@ -77,6 +77,8 @@ public class FBPathGloVeScoring {
 			for(PropertyValue pv: list) {
 				if (pv.getValue() == null && pv.getValRes() == null)
 					continue; // ???
+				if (pv.getValue() == null && !pv.getValRes().startsWith(midPrefix))
+					continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
 				List<String> qtoks = questionRepr(questionView);
 				List<String> proptoks = tokenize(pv.getProperty());
 				pv.setScore(r1.probability(qtoks, proptoks));
@@ -101,7 +103,8 @@ public class FBPathGloVeScoring {
 			PropertyValue first = path.get(0);
 			if (first.getValue() == null) {
 				// meta-node, crawl it too
-				List<PropertyValue> secondRels = scoreSecondRelation(first.getValRes().substring(midPrefixLen), questionView);
+				String mid = first.getValRes().substring(midPrefix.length());
+				List<PropertyValue> secondRels = scoreSecondRelation(mid, questionView);
 				for(PropertyValue second: secondRels) {
 					List<PropertyValue> tmpList = new ArrayList<>(path);
 					tmpList.add(second);
