@@ -21,8 +21,7 @@ import java.util.*;
  * Created by honza on 25.11.15.
  */
 public class FBPathGloVeScoring {
-
-	private static final int midPrefixLen = 27;
+	private static final int midPrefixLen = "http://rdf.freebase.com/ns/".length();
 
 	private static FBPathGloVeScoring fbpgs = new FBPathGloVeScoring();
 	protected Logger logger = LoggerFactory.getLogger(FBPathGloVeScoring.class);
