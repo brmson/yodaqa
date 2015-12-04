@@ -3,6 +3,7 @@ package cz.brmlab.yodaqa.pipeline.structured;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import cz.brmlab.yodaqa.analysis.rdf.FBPathGloVeScoring;
 import org.apache.uima.UimaContext;
@@ -13,6 +14,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathGloVeScoring;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
@@ -77,7 +79,12 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		 * looking for Freebase topics specifically linked to the enwiki
 		 * articles we have found. */
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-		properties.addAll(fbo.queryPageID(concept.getPageID(), pathScs, concepts, witnessLabels, logger));
+		Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(concept.getPageID(), logger);
+		for (FreebaseOntology.TitledMid topic : topics) {
+			properties.addAll(fbo.queryTopicGeneric(topic.title, topic.mid, logger));
+			if (!pathScs.isEmpty())
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, pathScs, concepts, witnessLabels, logger));
+		}
 
 		return properties;
 	}

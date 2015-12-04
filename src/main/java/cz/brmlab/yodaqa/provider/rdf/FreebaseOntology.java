@@ -132,29 +132,14 @@ public class FreebaseOntology extends FreebaseLookup {
 		return new ArrayList<PropertyValue>();
 	}
 
-	class TitledMid {
-		String mid;
-		String title;
+	public static class TitledMid {
+		public String mid;
+		public String title;
 
 		public TitledMid(String mid, String title) {
 			this.mid = mid;
 			this.title = title;
 		}
-	}
-
-	/** Query for a given enwiki pageID, returning a set of PropertyValue
-	 * instances.
-	 * The paths set are extra properties to specifically query for:
-	 * they bypass the blacklist and can traverse multiple nodes. */
-	public List<PropertyValue> queryPageID(int pageID, List<PathScore> paths, List<Concept> concepts, List<String> witnessLabels, Logger logger) {
-		Set<TitledMid> topics = queryTopicByPageID(pageID, logger);
-		List<PropertyValue> results = new ArrayList<PropertyValue>();
-		for (TitledMid topic : topics) {
-			results.addAll(queryTopicGeneric(topic.title, topic.mid, logger));
-			if (!paths.isEmpty())
-				results.addAll(queryTopicSpecific(topic.title, topic.mid, paths, concepts, witnessLabels, logger));
-		}
-		return results;
 	}
 
 	/** Query for a given specific title form, returning a set of
@@ -321,7 +306,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * ns:award.award_winner.awards_won.
 	 * For these, we apply a fbpath label prediction machine learning
 	 * model and handle them in queryTopicSpecific(). */
-	protected List<PropertyValue> queryTopicGeneric(String titleForm, String mid, Logger logger) {
+	public List<PropertyValue> queryTopicGeneric(String titleForm, String mid, Logger logger) {
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
@@ -415,7 +400,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * that cover the specified property paths.  This generalizes poorly
 	 * to lightly covered topics, but has high precision+recall for some
 	 * common topics where it can reach through the meta-nodes. */
-	protected List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, List<Concept> concepts, List<String> witnessLabels, Logger logger) {
+	public List<PropertyValue> queryTopicSpecific(String titleForm, String mid, List<PathScore> paths, List<Concept> concepts, List<String> witnessLabels, Logger logger) {
 		/* Test query:
 		   PREFIX ns: <http://rdf.freebase.com/ns/>
 		   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
