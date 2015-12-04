@@ -296,7 +296,8 @@ public class FreebaseOntology extends FreebaseLookup {
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", title, mid, propLabel, prop, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
-			PropertyValue pv = new PropertyValue(title, objRes, propLabel, value, valRes,
+			PropertyValue pv = new PropertyValue(title, objRes, propLabel,
+					value, valRes, null,
 					fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
 			pv.setPropRes(prop);
 			result.add(pv);
