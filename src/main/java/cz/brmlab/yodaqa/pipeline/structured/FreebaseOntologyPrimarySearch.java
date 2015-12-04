@@ -56,16 +56,18 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		}
 	}
 
+	/* Fetch concept properties from the Freebase ontology dataset,
+	 * looking for Freebase topics specifically linked to the enwiki
+	 * articles we have linked to the question. */
 	protected synchronized List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* --- Uncomment the next line to disable Freebase lookups. --- */
 		// if (true) return properties;
 
-		/* Get a list of specific properties to query. */
-//		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
-
-		FBPathGloVeScoring fbglove = new FBPathGloVeScoring();
-		List<PathScore> pathScs = fbglove.getPaths(questionView, N_TOP_PATHS);
+		/* First, get the set of topics covering this concept. */
+		/* (This will be just a single-member set aside of a few
+		 * exceptional cases.) */
+		Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(concept.getPageID(), logger);
 
 		/* Get a list of witnesses (besides concepts), i.e. clues of
 		 * question that might select the relevant property path by
@@ -74,17 +76,26 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		for (Clue cl : JCasUtil.select(questionView, ClueNE.class)) {
 			witnessLabels.add(cl.getLabel());
 		}
-
-		/* Fetch concept properties from the Freebase ontology dataset,
-		 * looking for Freebase topics specifically linked to the enwiki
-		 * articles we have found. */
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-		Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(concept.getPageID(), logger);
-		for (FreebaseOntology.TitledMid topic : topics) {
-			properties.addAll(fbo.queryTopicGeneric(topic.title, topic.mid, logger));
-			if (!pathScs.isEmpty())
-				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, pathScs, concepts, witnessLabels, logger));
-		}
+
+		/* Method #1 (Explorative): Get a list of promising-looking property paths
+		 * (based on looking at their labels). */
+		/* FIXME: getPaths() should be called only once per question! */
+		/* FIXME: getPaths() actually already fetches all the
+		 * PropertyValues, but we throw them away... */
+		FBPathGloVeScoring fbglove = new FBPathGloVeScoring();
+		List<PathScore> fbgPaths = fbglove.getPaths(questionView, N_TOP_PATHS);
+		if (!fbgPaths.isEmpty())
+			for (FreebaseOntology.TitledMid topic : topics)
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, fbgPaths, concepts, witnessLabels, logger));
+
+		/* Method #2 (A Priori): Get a question-based list of specific properties
+		 * to query (predicting them based on the paths we've seen
+		 * for similar questions). */
+		List<PathScore> lPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		if (!lPaths.isEmpty())
+			for (FreebaseOntology.TitledMid topic : topics)
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, lPaths, concepts, witnessLabels, logger));
 
 		return properties;
 	}
