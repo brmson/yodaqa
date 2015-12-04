@@ -243,6 +243,13 @@ public class AF {
 	 * simple scoring routine that uses just a handful of naive features. */
 	public static final String SimpleScore = "simpleScore";
 
+	/** Answer Feature: Boolean value whether we did *not* generate an
+	 * answer focus (like in case of numerical-only answers). */
+	public static final String AnswerFocusNone = "answerFocusNone";
+	/** Answer Feature: Boolean value whether we generated a focus that
+	 * spans the whole answer (typically a single-token answer). */
+	public static final String AnswerFocusWhole = "answerFocusWhole";
+
 	/* TODO: Autogenerate. */
 	/** Answer Feature: Boolean value whether we generated a LAT that
 	 * is the kind of named entity recognized. */

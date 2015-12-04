@@ -400,8 +400,9 @@ public class FreebaseOntology extends FreebaseLookup {
 			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", titleForm, mid, propLabel, prop, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
-			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes,
-				fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel,
+					value, valRes, null,
+					fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
 			pv.setPropRes(prop);
 			results.add(pv);
 		}
@@ -531,11 +532,13 @@ public class FreebaseOntology extends FreebaseLookup {
 				wLabel);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseSpecific, 1.0);
-			fv.setFeature(AF.OriginFreebaseBranched, 1.0);
+			if (isBranched)
+				fv.setFeature(AF.OriginFreebaseBranched, 1.0);
 			if (witnessAF != null)
 				fv.setFeature(witnessAF, 1.0);
-			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel, value, valRes,
-						fv, AnswerSourceStructured.ORIGIN_SPECIFIC);
+			PropertyValue pv = new PropertyValue(titleForm, objRes, propLabel,
+					value, valRes, wLabel,
+					fv, AnswerSourceStructured.ORIGIN_SPECIFIC);
 			pv.setPropRes(prop);
 			pv.setScore(score);
 			results.add(pv);
@@ -561,6 +564,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				"    ?med ns:" + witnessRel + " ?concept .\n" +
 				"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
 				"    ?concept rdfs:label ?wlabel .\n" +
+				"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
 				"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +
 				"  } UNION";
 		}

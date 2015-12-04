@@ -30,9 +30,15 @@ header h1 {
 	margin-top: 6ex;
 	margin-bottom: 6ex;
 }
-#spinner {
+#spinner, #answersent {
 	text-align: center;
+	font-size: 24pt;
+}
+#spinner {
 	display: none;
+}
+#answersent {
+	margin: 2ex 0;
 }
 
 .twocolumn {
