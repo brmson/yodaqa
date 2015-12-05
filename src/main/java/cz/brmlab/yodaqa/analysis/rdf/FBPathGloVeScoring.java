@@ -89,7 +89,7 @@ public class FBPathGloVeScoring {
 			addExpandedPVPaths(pvPaths, path, qtoks);
 
 		/* Convert to a sorted list of PathScore objects. */
-		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths);
+		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths, pathLimitCnt);
 		return scores;
 	}
 
@@ -173,7 +173,7 @@ public class FBPathGloVeScoring {
 		return list;
 	}
 
-	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths) {
+	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		for (List<PropertyValue> path: pvPaths) {
 			List<String> properties = new ArrayList<>();
@@ -195,7 +195,8 @@ public class FBPathGloVeScoring {
 				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
 			}
 		});
-		//if (scores.size() > pathLimitCnt) scores = scores.subList(0, pathLimitCnt);
+		if (scores.size() > pathLimitCnt)
+			scores = scores.subList(0, pathLimitCnt);
 		return scores;
 	}
 }
