@@ -278,7 +278,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
-			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", title, mid, propLabel, prop, value, valRes);
+			// logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", title, mid, propLabel, prop, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 			PropertyValue pv = new PropertyValue(title, objRes, propLabel,
@@ -429,7 +429,7 @@ public class FreebaseOntology extends FreebaseLookup {
 		for (PathScore ps : paths) {
 			PropertyPath path = ps.path;
 			assert(path.size() <= 3);  // longer paths don't occur in our dataset
-			logger.debug("specific path {} {}", path, path.size());
+			logger.debug("specific path {} {}/{}", path, path.size(), ps.proba);
 			if (path.size() == 1) {
 				String pathQueryStr = "{" +
 					"  ns:" + mid + " ns:" + path.get(0) + " ?val .\n" +
