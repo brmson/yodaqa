@@ -1,11 +1,9 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import cz.brmlab.yodaqa.analysis.rdf.FBPathGloVeScoring;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.util.JCasUtil;
@@ -59,10 +57,36 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 	/* Fetch concept properties from the Freebase ontology dataset,
 	 * looking for Freebase topics specifically linked to the enwiki
 	 * articles we have linked to the question. */
-	protected synchronized List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
+	@Override
+	protected synchronized List<PropertyValue> getProperties(JCas questionView) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* --- Uncomment the next line to disable Freebase lookups. --- */
 		// if (true) return properties;
+
+		/* First, determine the Freebase property paths to query for. */
+
+		/* Method #1 (Explorative): Get a list of promising-looking property paths
+		 * (based on looking at their labels). */
+		/* FIXME: getPaths() actually already fetches all the
+		 * PropertyValues, but we throw them away... */
+		List<PathScore> exploringPaths = FBPathGloVeScoring.getInstance().getPaths(questionView, N_TOP_PATHS);
+
+		/* Method #2 (A Priori): Get a question-based list of specific properties
+		 * to query (predicting them based on the paths we've seen
+		 * for similar questions). */
+		List<PathScore> aPrioriPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+
+		/* Now, get the property values. */
+
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths));
+		}
+		return properties;
+	}
+
+	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept,
+			List<PathScore> exploringPaths, List<PathScore> aPrioriPaths) {
+		List<PropertyValue> properties = new ArrayList<>();
 
 		/* First, get the set of topics covering this concept. */
 		/* (This will be just a single-member set aside of a few
@@ -78,26 +102,19 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		}
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
 
-		/* Method #1 (Explorative): Get a list of promising-looking property paths
-		 * (based on looking at their labels). */
-		/* FIXME: getPaths() should be called only once per question! */
-		/* FIXME: getPaths() actually already fetches all the
-		 * PropertyValues, but we throw them away... */
-		FBPathGloVeScoring fbglove = new FBPathGloVeScoring();
-		List<PathScore> fbgPaths = fbglove.getPaths(questionView, N_TOP_PATHS);
-		if (!fbgPaths.isEmpty())
-			for (FreebaseOntology.TitledMid topic : topics)
-				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, fbgPaths, concepts, witnessLabels, logger));
-
-		/* Method #2 (A Priori): Get a question-based list of specific properties
-		 * to query (predicting them based on the paths we've seen
-		 * for similar questions). */
-		List<PathScore> lPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
-		if (!lPaths.isEmpty())
-			for (FreebaseOntology.TitledMid topic : topics)
-				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, lPaths, concepts, witnessLabels, logger));
+		for (FreebaseOntology.TitledMid topic : topics) {
+			if (!exploringPaths.isEmpty())
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, exploringPaths, concepts, witnessLabels, logger));
+			if (!aPrioriPaths.isEmpty())
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, aPrioriPaths, concepts, witnessLabels, logger));
+		}
 
 		return properties;
+	}
+
+	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
+		assert(false); // we override getProperties()
+		return null;
 	}
 
 	protected AnswerSourceStructured makeAnswerSource(PropertyValue property) {

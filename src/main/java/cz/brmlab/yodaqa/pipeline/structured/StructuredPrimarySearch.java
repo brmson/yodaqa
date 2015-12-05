@@ -84,23 +84,26 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		super.initialize(aContext);
 	}
 
+	@Override
+	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		questionView = jcas;
+		List<PropertyValue> properties = getProperties(questionView);
+		relIter = properties.iterator();
+		i = 0;
+	}
+
+	protected List<PropertyValue> getProperties(JCas questionView) {
+		List<PropertyValue> properties = new ArrayList<PropertyValue>();
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			properties.addAll(getConceptProperties(questionView, concept));
+		}
+		return properties;
+	}
+
 	/**
 	 * Retrieve properties associated with a given Concept.
 	 */
 	protected abstract List<PropertyValue> getConceptProperties(JCas questionView, Concept concept);
-
-	@Override
-	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		questionView = jcas;
-
-		List<PropertyValue> properties = new ArrayList<PropertyValue>();
-
-		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
-			properties.addAll(getConceptProperties(questionView, concept));
-		}
-		relIter = properties.iterator();
-		i = 0;
-	}
 
 
 	@Override
