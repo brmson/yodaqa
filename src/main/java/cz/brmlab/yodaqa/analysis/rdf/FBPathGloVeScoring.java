@@ -115,7 +115,8 @@ public class FBPathGloVeScoring {
 		Collections.sort(lenOnePaths, new Comparator<List<PropertyValue>>() {
 			@Override
 			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
-				return list1.get(0).getScore().compareTo(list2.get(0).getScore());
+				// descending
+				return list2.get(0).getScore().compareTo(list1.get(0).getScore());
 			}
 		});
 
@@ -190,6 +191,7 @@ public class FBPathGloVeScoring {
 		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {
 			@Override
 			public int compare(FBPathLogistic.PathScore ps1, FBPathLogistic.PathScore ps2) {
+				// descending
 				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
 			}
 		});
