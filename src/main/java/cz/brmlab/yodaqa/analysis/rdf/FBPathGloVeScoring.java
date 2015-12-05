@@ -183,8 +183,8 @@ public class FBPathGloVeScoring {
 			}
 
 			PropertyPath pp = new PropertyPath(properties);
-			// XXX: Score of last relation prefer larger relations significantly
-			double score = path.get(path.size() - 1).getScore();
+			// XXX: better way than averaging?
+			double score = (path.get(0).getScore() + path.get(path.size() - 1).getScore()) / 2;
 			FBPathLogistic.PathScore ps = new FBPathLogistic.PathScore(pp, score);
 			scores.add(ps);
 		}
