@@ -22,10 +22,10 @@ data/ml/fbpath-emb/fbpath_emb.py 2 "$datadir"/d-dump/trainmodel.json data/ml/fbp
 basedir=$(pwd)
 cd ../Sentence-selection/
 ./std_run.sh -p "$basedir"/data/ml/fbpath-emb/props-webquestions-train/first
-cp data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbrel1.txt
+cp data/Mbtemp.txt "$basedir"/src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbrel1.txt
 cd "$basedir"
 
 cd ../Sentence-selection/
 ./std_run.sh -p "$basedir"/data/ml/fbpath-emb/props-webquestions-train/second
-cp data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbrel2.txt
+cp data/Mbtemp.txt "$basedir"/src/main/resources/cz/brmlab/yodaqa/analysis/rdf/Mbrel2.txt
 cd "$basedir"
