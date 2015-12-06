@@ -124,7 +124,7 @@ public class FBPathGloVeScoring {
 		int i = 0;
 		for (List<PropertyValue> pvPath : lenOnePaths) {
 			PropertyValue pv = pvPath.get(0);
-			logger.debug("{} {} {}/<<{}>>/[<>] -> {}",
+			logger.debug("{} {} {}/<<{}>>/[{}] -> {}",
 				i < pathLimitCnt ? "*" : "-",
 				String.format(Locale.ENGLISH, "%.3f", pv.getScore()),
 				pv.getPropRes(), pv.getProperty(), tokenize(pv.getProperty()),
@@ -154,7 +154,7 @@ public class FBPathGloVeScoring {
 				pvPaths.add(tmpList);
 
 				PropertyValue pv = tmpList.get(1);
-				logger.debug("+ {} {}/<<{}>>/[<>] -> {}",
+				logger.debug("+ {} {}/<<{}>>/[{}] -> {}",
 					String.format(Locale.ENGLISH, "%.3f", pv.getScore()),
 					pv.getPropRes(), pv.getProperty(), tokenize(pv.getProperty()),
 					pv.getValue());
