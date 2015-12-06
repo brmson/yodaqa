@@ -55,7 +55,7 @@ def queryLabel(relation):
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ns: <http://rdf.freebase.com/ns/>
 SELECT DISTINCT ?label WHERE { 
-ns:''' + relation + ''' rdfs:label ?label
+<''' + relation + '''> rdfs:label ?label .
 FILTER( LANGMATCHES(LANG(?label), "en") )
 } '''
     sparql.setQuery(sparql_query)
@@ -69,20 +69,28 @@ FILTER( LANGMATCHES(LANG(?label), "en") )
 def queryAllRelations(mid):
     sparql = SPARQLWrapper(url)
     sparql.setReturnFormat(JSON)
+    # The filters come from FreebaseOntology.java
     sparql_query = '''
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ns: <http://rdf.freebase.com/ns/>
-SELECT DISTINCT ?relation WHERE { 
-ns:''' + mid + ''' ?relation ?mediator .
-FILTER( REGEX(STR(?mediator), '^http://rdf.freebase.com/ns/m\\\.') )
+SELECT DISTINCT ?prop WHERE { 
+ns:''' + mid + ''' ?prop ?value .
+FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )
+FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )
+FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )
+FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )
+FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )
+FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )
+FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )
+FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )
 } '''
     sparql.setQuery(sparql_query)
     res = sparql.query().convert()
     retVal = []
     for r in res['results']['bindings']:
-        relation = r['relation']['value']
-        label = queryLabel(relation[27:].replace('/','.'))
-        retVal.append({"relation": r['relation']['value'][27:], "label": label})
+        relation = r['prop']['value']
+        label = queryLabel(relation)
+        retVal.append({"relation": r['prop']['value'][27:], "label": label})
     return retVal
 
 def queryMetaNode(page_id, relation):    
@@ -93,7 +101,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ns: <http://rdf.freebase.com/ns/>
 SELECT DISTINCT ?meta WHERE { 
 ?topic <http://rdf.freebase.com/key/wikipedia.en_id> "''' + page_id + '''" .
-?topic ns:''' + relation + ''' ?meta
+?topic ns:''' + relation + ''' ?meta .
 FILTER( REGEX(STR(?meta), '^http://rdf.freebase.com/ns/m\\\.') )
 } '''
     sparql.setQuery(sparql_query)
