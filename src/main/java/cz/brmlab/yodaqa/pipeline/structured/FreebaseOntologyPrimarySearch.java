@@ -65,11 +65,20 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 
 		/* First, determine the Freebase property paths to query for. */
 
+		/* Get a list of witnesses (besides concepts), i.e. clues of
+		 * question that might select the relevant property path by
+		 * co-occurence in a composite node. */
+		List<String> witnessLabels = new ArrayList<>();
+		for (Clue cl : JCasUtil.select(questionView, ClueNE.class)) {
+			witnessLabels.add(cl.getLabel());
+		}
+		List<Concept> witnessConcepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+
 		/* Method #1 (Explorative): Get a list of promising-looking property paths
 		 * (based on looking at their labels). */
 		/* FIXME: getPaths() actually already fetches all the
 		 * PropertyValues, but we throw them away... */
-		List<PathScore> exploringPaths = FBPathGloVeScoring.getInstance().getPaths(questionView, N_TOP_PATHS);
+		List<PathScore> exploringPaths = FBPathGloVeScoring.getInstance().getPaths(questionView, N_TOP_PATHS, witnessConcepts, witnessLabels);
 
 		/* Method #2 (A Priori): Get a question-based list of specific properties
 		 * to query (predicting them based on the paths we've seen
@@ -79,13 +88,14 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		/* Now, get the property values. */
 
 		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
-			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths));
+			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
 		}
 		return properties;
 	}
 
 	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept,
-			List<PathScore> exploringPaths, List<PathScore> aPrioriPaths) {
+			List<PathScore> exploringPaths, List<PathScore> aPrioriPaths,
+			List<Concept> witnessConcepts, List<String> witnessLabels) {
 		List<PropertyValue> properties = new ArrayList<>();
 
 		/* First, get the set of topics covering this concept. */
@@ -93,20 +103,11 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		 * exceptional cases.) */
 		Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(concept.getPageID(), logger);
 
-		/* Get a list of witnesses (besides concepts), i.e. clues of
-		 * question that might select the relevant property path by
-		 * co-occurence in a composite node. */
-		List<String> witnessLabels = new ArrayList<>();
-		for (Clue cl : JCasUtil.select(questionView, ClueNE.class)) {
-			witnessLabels.add(cl.getLabel());
-		}
-		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-
 		for (FreebaseOntology.TitledMid topic : topics) {
 			if (!exploringPaths.isEmpty())
-				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, exploringPaths, concepts, witnessLabels, logger));
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, exploringPaths, witnessConcepts, witnessLabels, logger));
 			if (!aPrioriPaths.isEmpty())
-				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, aPrioriPaths, concepts, witnessLabels, logger));
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, aPrioriPaths, witnessConcepts, witnessLabels, logger));
 		}
 
 		return properties;

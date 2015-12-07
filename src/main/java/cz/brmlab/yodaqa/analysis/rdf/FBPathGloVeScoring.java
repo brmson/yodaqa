@@ -61,7 +61,8 @@ public class FBPathGloVeScoring {
 
 	/** Get top N estimated-most-promising paths based on exploration
 	 * across all linked concepts. */
-	public List<FBPathLogistic.PathScore> getPaths(JCas questionView, int pathLimitCnt) {
+	public List<FBPathLogistic.PathScore> getPaths(JCas questionView, int pathLimitCnt,
+			List<Concept> witnessConcepts, List<String> witnessLabels) {
 		/* Path-deduplicating set */
 		Set<List<PropertyValue>> pvPaths = new TreeSet<>(new Comparator<List<PropertyValue>>() {
 			@Override
@@ -86,7 +87,7 @@ public class FBPathGloVeScoring {
 		/* Expand pvPaths for the 2-level neighborhood. */
 		pvPaths.clear();
 		for (List<PropertyValue> path: lenOnePaths)
-			addExpandedPVPaths(pvPaths, path, qtoks);
+			addExpandedPVPaths(pvPaths, path, qtoks, witnessConcepts, witnessLabels);
 
 		/* Convert to a sorted list of PathScore objects. */
 		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths, pathLimitCnt);
@@ -121,10 +122,11 @@ public class FBPathGloVeScoring {
 		});
 
 		/* Debug print the considered properties */
+		// NB that in case of multiple values, only one is shown!
 		int i = 0;
 		for (List<PropertyValue> pvPath : lenOnePaths) {
 			PropertyValue pv = pvPath.get(0);
-			logger.debug("{} {} {}/<<{}>>/[{}] -> {}",
+			logger.debug("{} {} {}/<<{}>>/[{}] -> {} (etc.)",
 				i < pathLimitCnt ? "*" : "-",
 				String.format(Locale.ENGLISH, "%.3f", pv.getScore()),
 				pv.getPropRes(), pv.getProperty(), tokenize(pv.getProperty()),
@@ -142,21 +144,25 @@ public class FBPathGloVeScoring {
 	 * be ending up in CVT ("compound value type") which just binds
 	 * other topics together (e.g. actor playing character in movie)
 	 * and to get to the answer we need to crawl one more step. */
-	protected void addExpandedPVPaths(Set<List<PropertyValue>> pvPaths, List<PropertyValue> path, List<String> qtoks) {
+	protected void addExpandedPVPaths(Set<List<PropertyValue>> pvPaths,
+			List<PropertyValue> path, List<String> qtoks,
+			List<Concept> witnessConcepts, List<String> witnessLabels) {
 		PropertyValue first = path.get(0);
 		if (first.getValue() == null) {
 			// meta-node, crawl it too
 			String mid = first.getValRes().substring(midPrefix.length());
-			List<PropertyValue> secondRels = scoreSecondRelation(mid, qtoks);
-			for(PropertyValue second: secondRels) {
-				List<PropertyValue> tmpList = new ArrayList<>(path);
-				tmpList.add(second);
-				pvPaths.add(tmpList);
+			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, qtoks, witnessConcepts, witnessLabels);
+			for (List<PropertyValue> secondPath: secondPaths) {
+				List<PropertyValue> newpath = new ArrayList<>(path);
+				newpath.addAll(secondPath);
+				pvPaths.add(newpath);
 
-				PropertyValue pv = tmpList.get(1);
-				logger.debug("+ {} {}/<<{}>>/[{}] -> {}",
+				// NB that in case of multiple metanodes/values, only one is shown!
+				PropertyValue pv = newpath.get(1);
+				logger.debug("+ {} {}/<<{}>>/[{}]{} -> {} (etc.)",
 					String.format(Locale.ENGLISH, "%.3f", pv.getScore()),
 					pv.getPropRes(), pv.getProperty(), tokenize(pv.getProperty()),
+					newpath.size() == 3 ? " |" + newpath.get(2).getPropRes() : "",
 					pv.getValue());
 			}
 		} else {
@@ -164,13 +170,55 @@ public class FBPathGloVeScoring {
 		}
 	}
 
-	protected List<PropertyValue> scoreSecondRelation(String mid, List<String> qtoks) {
-		List<PropertyValue> list = fbo.queryAllRelations(mid, "", logger);
-		for(PropertyValue pv: list) {
+	protected List<List<PropertyValue>> scoreSecondRelation(String mid,
+			List<String> qtoks,
+			List<Concept> witnessConcepts, List<String> witnessLabels) {
+		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, "", logger);
+
+		/* First, scan for witnesses. */
+		List<PropertyValue> witnessPaths = new ArrayList<>();
+		for (PropertyValue pv: nextpvs) {
+			if (pvIsWitness(pv, witnessConcepts, witnessLabels))
+				witnessPaths.add(pv);
+		}
+		if (witnessPaths.size() > 1)
+			logger.warn("multiple witness paths matched, ignoring all but the first one: {}", witnessPaths);
+
+		/* Now, add the followup paths, possibly including a required
+		 * witness match. */
+		List<List<PropertyValue>> secondPaths = new ArrayList<>();
+		for (PropertyValue pv: nextpvs) {
+			if (pvIsWitness(pv, witnessConcepts, witnessLabels))
+				continue;
+
 			List<String> proptoks = tokenize(pv.getProperty());
 			pv.setScore(r2.probability(qtoks, proptoks));
+
+			List<PropertyValue> secondPath = new ArrayList<>();
+			secondPath.add(pv);
+			if (witnessPaths.size() >= 1) {
+				// XXX: Also allow non-witness match with lower score?
+				secondPath.add(witnessPaths.get(0));
+			}
+			secondPaths.add(secondPath);
 		}
-		return list;
+		return secondPaths;
+	}
+
+	protected boolean pvIsWitness(PropertyValue pv,
+			List<Concept> witnessConcepts, List<String> witnessLabels) {
+		if (pv.getValue() != null && witnessLabels.contains(pv.getValue())) {
+			return true;
+		} else if (pv.getValRes() != null && pv.getValue() != null) {
+			// XXX: We do label-based resource comparison...
+			for (Concept c : witnessConcepts) {
+				if (c.getCookedLabel().equals(pv.getValue())
+				    || c.getFullLabel().equals(pv.getValue())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
@@ -184,7 +232,8 @@ public class FBPathGloVeScoring {
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?
-			double score = (path.get(0).getScore() + path.get(path.size() - 1).getScore()) / 2;
+			// TODO: also score and factor in the witness relation
+			double score = path.size() == 1 ? path.get(0).getScore() : (path.get(0).getScore() + path.get(1).getScore()) / 2;
 			FBPathLogistic.PathScore ps = new FBPathLogistic.PathScore(pp, score);
 			scores.add(ps);
 		}
