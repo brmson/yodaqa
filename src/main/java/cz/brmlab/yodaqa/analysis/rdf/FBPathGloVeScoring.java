@@ -98,9 +98,7 @@ public class FBPathGloVeScoring {
 	protected void addConceptPVPaths(Set<List<PropertyValue>> pvPaths, List<String> qtoks, Concept c) {
 		List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), logger);
 		for(PropertyValue pv: list) {
-			if (pv.getValue() == null && pv.getValRes() == null)
-				continue; // ???
-			if (pv.getValue() == null && !pv.getValRes().startsWith(midPrefix))
+			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix))
 				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
 			List<String> proptoks = tokenize(pv.getProperty());
 			pv.setScore(r1.probability(qtoks, proptoks));
@@ -148,7 +146,7 @@ public class FBPathGloVeScoring {
 			List<PropertyValue> path, List<String> qtoks,
 			List<Concept> witnessConcepts, List<String> witnessLabels) {
 		PropertyValue first = path.get(0);
-		if (first.getValue() == null) {
+		if (first.getValRes() != null) {
 			// meta-node, crawl it too
 			String mid = first.getValRes().substring(midPrefix.length());
 			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, qtoks, witnessConcepts, witnessLabels);
@@ -207,9 +205,9 @@ public class FBPathGloVeScoring {
 
 	protected boolean pvIsWitness(PropertyValue pv,
 			List<Concept> witnessConcepts, List<String> witnessLabels) {
-		if (pv.getValue() != null && witnessLabels.contains(pv.getValue())) {
+		if (pv.getValRes() == null && witnessLabels.contains(pv.getValue())) {
 			return true;
-		} else if (pv.getValRes() != null && pv.getValue() != null) {
+		} else if (pv.getValRes() != null) {
 			// XXX: We do label-based resource comparison...
 			for (Concept c : witnessConcepts) {
 				if (c.getCookedLabel().equals(pv.getValue())

@@ -259,7 +259,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-				new String[] { "property", "vallabel", "prop", "/val", "/res" }, PROP_LIMIT);
+				new String[] { "property", "value", "prop", "/val", "/res" }, PROP_LIMIT);
 
 		for (Literal[] rawResult : rawResults) {
 			/* ns:astronomy.star.temperature_k -> "temperature"
@@ -274,7 +274,7 @@ public class FreebaseOntology extends FreebaseLookup {
 					replaceAll("^.*\\.([^\\. ]*)$", "\\1").
 					replaceAll("_.$", "").
 					replaceAll("_", " ");
-			String value = rawResult[1] != null ? rawResult[1].getString() : null;
+			String value = rawResult[1].getString();
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
