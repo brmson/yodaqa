@@ -83,7 +83,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			/* (15){00033914} <noun.Tops>[03] S: (n) measure#2 (measure%1:03:00::), quantity#1 (quantity%1:03:00::), amount#3 (amount%1:03:00::) (how much there is or how many there are of something that you can quantify) */
 			addFocusLAT(jcas, focus, "amount", null, 33914, 0.0, new QuestionWordLAT(jcas));
 
-		} else if (text.matches("^what|why|how|which|name$")) {
+		} else if (isAmbiguousQLemma(text)) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
 
 		} else {
@@ -155,5 +155,11 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		lat.setSynset(synset);
 		lat.addToIndexes();
 		logger.debug("new LAT by {}: <<{}>>/{}", base.getType().getShortName(), text, synset);
+	}
+
+	/** Decide whether the given question lemma has no derivable
+	 * semantic sense. */
+	public static boolean isAmbiguousQLemma(String text) {
+		return text.matches("^what|why|how|which|name$");
 	}
 }
