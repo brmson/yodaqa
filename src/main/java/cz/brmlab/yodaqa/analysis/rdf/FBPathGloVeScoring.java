@@ -146,7 +146,7 @@ public class FBPathGloVeScoring {
 			List<PropertyValue> path, List<String> qtoks,
 			List<Concept> witnessConcepts, List<String> witnessLabels) {
 		PropertyValue first = path.get(0);
-		if (first.getValRes() != null) {
+		if (first.getValRes() != null && /* no label */ first.getValRes().endsWith(first.getValue())) {
 			// meta-node, crawl it too
 			String mid = first.getValRes().substring(midPrefix.length());
 			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, qtoks, witnessConcepts, witnessLabels);
