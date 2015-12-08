@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import cz.brmlab.yodaqa.pipeline.esdoc.EsDocAnswerProducer;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -55,6 +56,9 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			//SolrNamedSource.register("guten", "data/guten", null);
 			SolrNamedSource.register("enwiki", "collection1", "http://enwiki.ailao.eu:8983/solr/");
+
+			// TODO EsNamedSource ?
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("*** Exception caught during SolrNamedSource initialization. ***");
@@ -137,7 +141,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 7,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 8, //7
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -296,8 +300,13 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		/* Full-text search: */
 		/* XXX: These aggregates have "Solr" in name but do not
 		 * necessarily use just Solr, e.g. Bing. */
+
+		AnalysisEngineDescription esDoc = EsDocAnswerProducer.createEngineDescription();
+		builder.add(esDoc);
+
 		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
 		builder.add(solrFull); /* This one is worth 3 isLasts. */
+
 		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
 		builder.add(solrDoc);
 
