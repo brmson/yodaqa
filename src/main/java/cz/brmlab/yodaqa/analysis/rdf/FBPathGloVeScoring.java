@@ -196,7 +196,19 @@ public class FBPathGloVeScoring {
 			secondPath.add(pv);
 			if (witnessPaths.size() >= 1) {
 				// XXX: Also allow non-witness match with lower score?
-				secondPath.add(witnessPaths.get(0));
+				/* XXX: We actually disable the witness
+				 * detection for now.  The reason is that
+				 * we determine the witness based on pv value
+				 * test, but the pv is a snapshot of many
+				 * possible potential pvs with the same
+				 * property.  The result is that e.g. for
+				 * movie actor-character query, the constant
+				 * link that'll get picked as witness is the
+				 * link back to the movie, never the actor as
+				 * we are super-unlikely to hit the actor we
+				 * look for here.  TODO: Train a specific
+				 * matrix for witness property identification. */
+				// secondPath.add(witnessPaths.get(0));
 			}
 			secondPaths.add(secondPath);
 		}
