@@ -16,6 +16,9 @@ apply plugin: 'com.dictanova.jcasgen'
 apply plugin: 'com.github.tkruse.groovysh'
 apply plugin: 'groovy'
 
+targetCompatibility = 1.7
+sourceCompatibility = 1.7
+
 mainClassName 		= 'cz.brmlab.yodaqa.YodaQA_Interactive'
 
 ext.dkproVersion	= '1.7.0'
@@ -104,10 +107,9 @@ task(biocrftrain, dependsOn: 'classes', type: JavaExec) {
 
 repositories {
   mavenCentral()
-  maven {
-    url 'http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/repo/'
-    url 'http://ailao.eu/maven/'
-  }
+  maven { url 'http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/repo/' }
+  maven { url 'http://ailao.eu/maven/' }
+  maven { url 'http://repo.spring.io/libs-release-remote/' }
 }
 
 dependencies {
@@ -127,8 +129,11 @@ dependencies {
     exclude group: "com.io7m.xom", module: "xom"  // this dependency breaks XMI serialization by using utf16, c.f. UIMA-3818
   }
   compile "de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.api.parameter-asl:$dkproVersion"
-  compile 'org.apache.solr:solr-solrj:3.6.0'
-  compile 'org.apache.solr:solr-core:3.6.0'
+//  compile 'org.apache.solr:solr-solrj:3.6.0'
+//  compile 'org.apache.solr:solr-core:3.6.0'
+  compile 'org.apache.solr:solr-solrj:4.3.0'
+  compile 'org.apache.solr:solr-core:4.3.0'
+  compile 'org.elasticsearch:elasticsearch:1.5.0'
   compile 'org.apache.httpcomponents:httpmime:4.2.1'
   compile 'org.apache.httpcomponents:httpclient:4.2.1'
   compile 'org.slf4j:slf4j-api:1.7.7'
