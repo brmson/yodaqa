@@ -11,7 +11,7 @@
 # This uses the https://github.com/brmson/Sentence-selection infrastructure
 # for training the classifier.
 #
-# RELATION_NUM            - 1 for concept relations, 2 for relations of connected concept
+# RELATION_NUM            - 1 for concept relations, 2 for relations of connected concept, 3 for witness relations
 # DUMP.JSON               - yodaqa question dump
 # RELATIONS_GS.JSON       - gold standard freebase-paths
 # OUTDIR                  - output directory
@@ -46,18 +46,18 @@ def rrepr(c):
     return re.findall(r"\w+|[^\w\s]", firstCrisp.lower(), re.UNICODE)
 
 
-def jacana_dump(q, f, rel_num, gs_first_rel):
+def jacana_dump(q, f, rel_num, gs):
     """ dump q concepts in jacana format (suitable for Sentence-selection) """
     print('<Q> ' + ' '.join(qrepr(q)), file=f)
     for r in q['allRelations']:
-        isCorrect = 1 if r['relation'] in gs_first_rel else 0
+        isCorrect = 1 if r['relation'] in gs else 0
         print('%d 1 %s' % (isCorrect, ' '.join(rrepr(r))), file=f)
 
 
 if __name__ == "__main__":
     relation_num = int(sys.argv[1])
-    if (relation_num != 1 and relation_num != 2):
-        exit("Wrong relation number. Must be 1 or 2")
+    if (relation_num not in [1, 2, 3]):
+        exit("Wrong relation number. Must be 1, 2 or 3")
     with open(sys.argv[2], 'r') as f:
         qdump = json.load(f)
     with open(sys.argv[3], 'r') as f:
@@ -69,8 +69,9 @@ if __name__ == "__main__":
     data = load(qdump, rel, gs)
 
     for q in data.to_list():
-        gs_first_rel = [p[0][relation_num - 1][1:].replace("/",".") for p in q['relPaths'] if len(p[0]) >= relation_num]
-        if (len(gs_first_rel) == 0):
+        gs = [p[0][relation_num - 1][1:].replace("/",".") for p in q['relPaths'] if len(p[0]) >= relation_num]
+        has_second_relation = len([1 for p in q['relPaths'] if len(p[0]) >= relation_num - 1]) > 0
+        if ((len(gs) == 0 and relation_num != 3) or (relation_num == 3 and not has_second_relation)):
             continue
         with open('%s/%s-prop.txt' % (outdir, q['qId']), 'w') as f:
-            jacana_dump(q, f, relation_num, gs_first_rel)
+            jacana_dump(q, f, relation_num, gs)
