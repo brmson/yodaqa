@@ -78,7 +78,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		 * (based on looking at their labels). */
 		/* FIXME: getPaths() actually already fetches all the
 		 * PropertyValues, but we throw them away... */
-		List<PathScore> exploringPaths = FBPathGloVeScoring.getInstance().getPaths(questionView, N_TOP_PATHS, witnessConcepts, witnessLabels);
+		List<PathScore> exploringPaths = FBPathGloVeScoring.getInstance().getPaths(questionView, N_TOP_PATHS);
 
 		/* Method #2 (A Priori): Get a question-based list of specific properties
 		 * to query (predicting them based on the paths we've seen
