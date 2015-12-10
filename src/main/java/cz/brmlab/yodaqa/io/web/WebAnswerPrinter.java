@@ -11,6 +11,8 @@ import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.flow.dashboard.Question;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionAnswer;
@@ -25,6 +27,8 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  */
 
 public class WebAnswerPrinter extends JCasConsumer_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(WebAnswerPrinter.class);
+
 	public void initialize(UimaContext context)
 			throws ResourceInitializationException {
 		super.initialize(context);
@@ -55,5 +59,6 @@ public class WebAnswerPrinter extends JCasConsumer_ImplBase {
 		Question q = QuestionDashboard.getInstance().get(qi.getQuestionId());
 		q.setAnswers(answers);
 		QuestionDashboard.getInstance().finishQuestion(q);
+		logger.debug("FINAL: {}", q.toJson());
 	}
 }
