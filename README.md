@@ -1,14 +1,18 @@
 YodaQA
 ======
 
-YodaQA is an open source Question Answering system using on-the-fly
-Information Extraction from various data sources (mainly enwiki).
-Its goals are practicality and extensible design - it is not a purely
-research project, even though we aim to develop YodaQA with appropriate
-scientific rigor.  Right now, it is focused on answering factoid
-questions and not optimized for speed at all; in the future, we hope
-to add some deductive capabilities and include "personal assistant"
-style conversation capabilities.
+YodaQA is an open source Factoid Question Answering system that can
+produce answer both from databases and text corpora using on-the-fly
+information extraction.
+By default, open domain question answering is performed on top of
+the Freebase and DBpedia knowledge bases as well as the texts of
+enwiki articles.
+
+YodaQA goals are practicality and extensible design, though it serves
+as a research project as well.
+Right now, we are still in early alpha regarding accuracy as well
+as speed; in the future, we hope to also add some deductive capabilities
+and include "personal assistant" style conversation capabilities.
 
 YodaQA stands for "Yet anOther Deep Answering pipeline" and the system is
 inspired by the DeepQA (IBM Watson) papers.  It is built on top of the Apache
@@ -20,8 +24,8 @@ for us.  For machine learning, we use a mix of scikit-learn and crfsuite
 OpenQA project and the Taming Text book.
 
 The current version is a work-in-progress snapshot that already can answer
-some questions, even though it's embarrassingly often wrong; on the testing
-corpus, it can currently choose the correct answer for about 33%
+some questions, even though it's embarrassingly often wrong; on our reference
+test set of questions, it can currently choose the correct answer for about 33%
 of questions (but 46% of questions have the correct answer in top three).
 Detailed performance info is available at:
 
@@ -36,8 +40,10 @@ and you can play with a live demo at
 	http://live.ailao.eu/
 
 (this demo corresponds to the ``d/live`` branch of this git repo).
+
 Also check out our movies QA demo at the ``d/movies`` branch and
-http://movies.ailao.eu/ !
+http://movies.ailao.eu/ !  (This is actually our primary testbed right now;
+it answers questions only using databases.)
 
 ## Installation Instructions
 
