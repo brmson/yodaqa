@@ -15,13 +15,11 @@ as speed; in the future, we hope to also add some deductive capabilities
 and include "personal assistant" style conversation capabilities.
 
 YodaQA stands for "Yet anOther Deep Answering pipeline" and the system is
-inspired by the DeepQA (IBM Watson) papers.  It is built on top of the Apache
-UIMA and developed as part of the Brmson platform.  For all the NLP logic
-(including the NLP type system), we lean heavily on the DKPro UIMA bindings;
-transitively, work like the StanfordParser and Princeton's Wordnet is crucial
-for us.  For machine learning, we use a mix of scikit-learn and crfsuite
-(wrapped by ClearTK, jcrfsuite).  We also draw some inspiration from the
-OpenQA project and the Taming Text book.
+built on top of the Apache UIMA and DKpro UIMA bindings and developed as
+part of the Brmson platform.
+The QA logic is mostly original work, but much of the designs and componets
+are inspired by the DeepQA (IBM Watson) and state-of-art papers.
+See the Acknowledgements section of LICENCE.md for more.
 
 The current version is a work-in-progress snapshot that already can answer
 some questions, even though it's embarrassingly often wrong; on our reference
