@@ -142,7 +142,7 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "\"logPopularity\": " + c.getLogPopularity() + ", ";
 			Concepttmp += "\"score\": " + c.getScore() + ", ";
 			if (c.getDescription() != null)
-				Concepttmp += "\"description\": \"" + c.getDescription().replaceAll("\"", "\\\\\"") + "\", ";
+				Concepttmp += "\"description\": \"" + c.getDescription().replaceAll("\\", "\\\\\\\\").replaceAll("\"", "\\\\\"") + "\", ";
 			Concepttmp += "\"relatedness\": " + c.getRelatedness() + ", ";
 			Concepttmp += "\"getByLAT\": " + (c.getByLAT() ? 1 : 0) + ", ";
 			Concepttmp += "\"getByNE\": " + (c.getByNE() ? 1 : 0) + ", ";
