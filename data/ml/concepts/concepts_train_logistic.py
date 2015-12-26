@@ -36,13 +36,24 @@ class Concept:
     def from_q(qconc, is_valid):
         return Concept(qconc['fullLabel'], [float(qconc[f]) for f in feats], int(is_valid))
 
+def list_to_dict(questions):
+    d= {}
+    for question in questions:
+        d[question["qId"]]=question
+    return d
 
 def load(input_list, gold_standard):
     concepts = []
     correct_counter = 0
     incorrect_counter = 0
-    for q, q_gs in zip(input_list, gold_standard):
-        assert q['qId'] == q_gs['qId']
+    input_dict = list_to_dict(input_list)
+    gold_standard_dict = list_to_dict(gold_standard)
+
+    common_concepts = set(input_dict.keys()).intersection(set(gold_standard_dict))
+
+    for qId in common_concepts:
+        q=input_dict[qId]
+        q_gs = gold_standard_dict[qId]
         for conc in q['Concept']:
             valid = False
             for corr in q_gs['Concept']:
