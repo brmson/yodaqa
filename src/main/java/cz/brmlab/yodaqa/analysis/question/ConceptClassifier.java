@@ -15,37 +15,39 @@ import cz.brmlab.yodaqa.model.Question.Concept;
 public class ConceptClassifier {
 	/* N.B. This is trained on the moviesC-train dataset,
 	 * not on curated or anything! */
-	/* Training data - correct: 671 (11.571%), incorrect: 5128 (88.429%) */
+
+	/* Training data - correct: 1163 (10.207%), incorrect: 10231 (89.793%) */
 
 	/* 10-fold cross-validation (with 0.20 test splits): */
-	/* CV fold precision 93.534% (1085/1160) */
-	/* CV fold precision 94.483% (1096/1160) */
-	/* CV fold precision 93.276% (1082/1160) */
-	/* CV fold precision 94.224% (1093/1160) */
-	/* CV fold precision 94.052% (1091/1160) */
-	/* CV fold precision 95.000% (1102/1160) */
-	/* CV fold precision 94.483% (1096/1160) */
-	/* CV fold precision 95.259% (1105/1160) */
-	/* CV fold precision 94.828% (1100/1160) */
-	/* CV fold precision 93.448% (1084/1160) */
-	/* === CV average precision 94.259% (+-SD 0.645%) */
+	/* CV fold precision 93.857% (2139/2279) */
+	/* CV fold precision 95.437% (2175/2279) */
+	/* CV fold precision 95.305% (2172/2279) */
+	/* CV fold precision 93.550% (2132/2279) */
+	/* CV fold precision 94.559% (2155/2279) */
+	/* CV fold precision 94.603% (2156/2279) */
+	/* CV fold precision 95.086% (2167/2279) */
+	/* CV fold precision 94.954% (2164/2279) */
+	/* CV fold precision 94.208% (2147/2279) */
+	/* CV fold precision 94.559% (2155/2279) */
+	/* === CV average precision 94.612% (+-SD 0.580%) */
 
-	/* Training set precision 94.378% (5473/5799) */
+	/* Training set precision 94.734% (10794/11394) */
 	/* Model (trained on the whole training set): */
 	double[] weights = {
-		0.248860, // editDist
-		4.457111, // labelProbability
-		0.577820, // logPopularity
-		4.231233, // relatedness
-		-1.064028, // getByLAT
-		0.683527, // getByNE
-		0.491508, // getBySubject
+		0.044246, // editDist
+		4.671980, // labelProbability
+		0.467709, // logPopularity
+		4.503668, // relatedness
+		-2.432906, // getByLAT
+		0.318891, // getByNE
+		0.059543, // getBySubject
 		0.000000, // getByNgram
-		1.178016, // getByFuzzyLookup
-		-1.393301, // getByCWLookup
+		0.941107, // getByFuzzyLookup
+		-1.713363, // getByCWLookup
 	};
-	double intercept = -7.214133;
-	
+	double intercept = -6.264199;
+
+
 	public double calculateProbability(JCas questionView, Concept l) {
 		List<String> qtoks = ConceptGloVeScoring.questionRepr(questionView);
 		List<String> desctoks;

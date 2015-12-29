@@ -49,7 +49,7 @@ def load(input_list, gold_standard):
     input_dict = list_to_dict(input_list)
     gold_standard_dict = list_to_dict(gold_standard)
 
-    common_concepts = set(input_dict.keys()).intersection(set(gold_standard_dict))
+    common_concepts = set(input_dict.keys()) & (set(gold_standard_dict))
 
     for qId in common_concepts:
         q=input_dict[qId]
