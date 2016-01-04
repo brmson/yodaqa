@@ -44,3 +44,25 @@ These components are GPLv2+:
     only for training a CRF model (only when YodaQA is invoked as shown
     in data/ml/biocrf/README.md in particular; *not* used for CRF-based
     biotagging during regular YodaQA usage)
+
+
+Acknowledgements
+----------------
+
+The software is copyrighted by its respective authors as denoted in the
+publicly recorded Git history.
+
+Work on YodaQA has been in part kindly sponsored by the Medialab
+foundation (http://medialab.cz/), a Czech Technical University incubator.
+The rest of contributions by Petr Baudiš is licenced as open source via
+Ailao (http://ailao.eu/).
+
+Ailao also provides commercial consulting, customization, deployment and
+support services.
+
+YodaQA uses many libraries to get things done.
+It is built on top of the Apache UIMA and DKpro UIMA bindings, used
+for most of the NLP logic (including the NLP type system);
+transitively, work like the StanfordParser and Princeton's Wordnet is crucial
+for us.  For machine learning, we use chiefly scikit-learn, but also a little
+of crfsuite (wrapped by ClearTK, jcrfsuite).
