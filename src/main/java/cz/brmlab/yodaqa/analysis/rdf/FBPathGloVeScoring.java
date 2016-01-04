@@ -87,8 +87,9 @@ public class FBPathGloVeScoring {
 
 		/* Expand pvPaths for the 2-level neighborhood. */
 		pvPaths.clear();
+		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
 		for (List<PropertyValue> path: lenOnePaths)
-			addExpandedPVPaths(pvPaths, path, qtoks);
+			addExpandedPVPaths(pvPaths, path, qtoks, concepts);
 
 		/* Convert to a sorted list of PathScore objects. */
 		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths, pathLimitCnt);
@@ -144,12 +145,12 @@ public class FBPathGloVeScoring {
 	 * be ending up in CVT ("compound value type") which just binds
 	 * other topics together (e.g. actor playing character in movie)
 	 * and to get to the answer we need to crawl one more step. */
-	protected void addExpandedPVPaths(Set<List<PropertyValue>> pvPaths,	List<PropertyValue> path, List<String> qtoks) {
+	protected void addExpandedPVPaths(Set<List<PropertyValue>> pvPaths,	List<PropertyValue> path, List<String> qtoks, List<Concept> concepts) {
 		PropertyValue first = path.get(0);
 		if (first.getValRes() != null && /* no label */ first.getValRes().endsWith(first.getValue())) {
 			// meta-node, crawl it too
 			String mid = first.getValRes().substring(midPrefix.length());
-			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, qtoks);
+			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, qtoks, concepts);
 			for (List<PropertyValue> secondPath: secondPaths) {
 				List<PropertyValue> newpath = new ArrayList<>(path);
 				newpath.addAll(secondPath);
@@ -168,10 +169,13 @@ public class FBPathGloVeScoring {
 		}
 	}
 
-	protected List<List<PropertyValue>> scoreSecondRelation(String mid, List<String> qtoks) {
-		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, "", logger);
+	protected List<List<PropertyValue>> scoreSecondRelation(String mid, List<String> qtoks, List<Concept> concepts) {
+		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, "", null, logger);
 
-		List<PropertyValue> witnessPvCandidates = new ArrayList<>(nextpvs);
+		List<PropertyValue> witnessPvCandidates = new ArrayList<>();
+		for(Concept c: concepts) {
+			witnessPvCandidates.addAll(fbo.queryAllRelations(mid, "", c.getPageID(), logger));
+		}
 		for(PropertyValue wpv: witnessPvCandidates) {
 			List<String> wproptoks = tokenize(wpv.getProperty());
 			wpv.setScore(r3.probability(qtoks, wproptoks));

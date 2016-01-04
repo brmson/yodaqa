@@ -203,18 +203,29 @@ public class FreebaseOntology extends FreebaseLookup {
 		Set<TitledMid> mids = queryTopicByPageID(pageId, logger);
 		List<PropertyValue> result = new ArrayList<>();
 		for (TitledMid tmid: mids) {
-			result.addAll(queryAllRelations(tmid.mid, tmid.title, logger));
+			result.addAll(queryAllRelations(tmid.mid, tmid.title, null, logger));
 		}
 		return result;
 	}
 
-	public List<PropertyValue> queryAllRelations(String mid, String title, Logger logger) {
+	public List<PropertyValue> queryAllRelations(String mid, String title, Integer witnessPageId, Logger logger) {
 		//XXX A lot of duplicate code with queryTopicGeneric
 		List<PropertyValue> result = new ArrayList<>();
+		String witnessQuery;
+		if (witnessPageId != null) {
+			witnessQuery =
+//				"?val ?witprop ?witness .\n" +
+				"?val <http://rdf.freebase.com/key/wikipedia.en_id> \"" + witnessPageId + "\".\n" +
+				"";
+		} else {
+			witnessQuery = "";
+		}
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
 			"BIND(ns:" + mid + " AS ?res)\n" +
+			/* For witness property, select only relevant properties corresponding to given concept */
+			witnessQuery +
 			/* Check if property is a labelled type, and use that
 			 * label as property name if so. */
 			"OPTIONAL {\n" +
@@ -257,7 +268,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/") +
 				"') )\n" +
 				"";
-		// logger.debug("executing sparql query: {}", rawQueryStr);
+//		 logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 				new String[] { "property", "value", "prop", "/val", "/res" }, PROP_LIMIT);
 
@@ -278,7 +289,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
-			// logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", title, mid, propLabel, prop, value, valRes);
+//			 logger.debug("WIT {} Freebase {}/{} property: {}/{} -> {} ({})", witnessPageId, title, mid, propLabel, prop, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 			PropertyValue pv = new PropertyValue(title, objRes, propLabel,
