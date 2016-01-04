@@ -37,7 +37,7 @@ def queryFreebasekey(page_id):
     sparql.setReturnFormat(JSON)
     sparql_query = '''
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ns: <http://rdf.breebase.com/ns/>
+PREFIX ns: <http://rdf.freebase.com/ns/>
 SELECT DISTINCT ?topic WHERE { 
 ?topic <http://rdf.freebase.com/key/wikipedia.en_id> "''' + page_id + '''" .
 } '''
