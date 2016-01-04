@@ -77,7 +77,8 @@ public class DBpediaProperties extends DBpediaOntology {
 			logger.debug("DBpedia {} rawproperty: {} -> {} ({})", title, propLabel, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginDBpProperty, 1.0);
-			results.add(new PropertyValue(title, objRes, propLabel, value, valRes,
+			results.add(new PropertyValue(title, objRes, propLabel,
+						value, valRes, null,
 						fv, AnswerSourceStructured.ORIGIN_RAW_PROPERTY));
 		}
 

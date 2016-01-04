@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.io.web;
 
+import cz.brmlab.yodaqa.model.Question.Concept;
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
 
 import org.apache.uima.UimaContext;
@@ -12,8 +13,11 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionConcept;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 
@@ -22,6 +26,8 @@ import cz.brmlab.yodaqa.model.Question.QuestionInfo;
  * A collection that reads the question from WebInterface. */
 
 public class WebQuestionReader extends CasCollectionReader_ImplBase {
+	final Logger logger = LoggerFactory.getLogger(WebQuestionReader.class);
+
 	/**
 	 * Name of optional configuration parameter that contains the language
 	 * of questions. This is mandatory as x-unspecified will break e.g. OpenNLP.
@@ -47,6 +53,19 @@ public class WebQuestionReader extends CasCollectionReader_ImplBase {
 		qInfo.setSource("web");
 		qInfo.setQuestionId(q.getId());
 		qInfo.addToIndexes(jcas);
+		qInfo.setOnlyArtificialConcepts(q.getHasOnlyArtificialConcept());
+		logger.debug("INPUT [{}]: {}", q.getId(), q.getText());
+
+		if (q.getArtificialConcepts() != null) {
+			for (QuestionConcept c : q.getArtificialConcepts()) {
+				Concept aConcept = new Concept(jcas);
+				aConcept.setPageID(c.getPageId());
+				aConcept.setFullLabel(c.getTitle());
+				aConcept.setCookedLabel(aConcept.getFullLabel());
+				aConcept.addToIndexes();
+				logger.debug("CONCEPT: {}/{}", c.getPageId(), c.getTitle());
+			}
+		}
 	}
 
 	@Override
