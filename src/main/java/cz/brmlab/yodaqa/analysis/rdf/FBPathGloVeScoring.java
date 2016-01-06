@@ -91,6 +91,13 @@ public class FBPathGloVeScoring {
 		for (List<PropertyValue> path: lenOnePaths)
 			addExpandedPVPaths(pvPaths, path, qtoks, concepts);
 
+		List<List<PropertyValue>> reducedPvPaths = new ArrayList<>();
+		for(List<PropertyValue> path: pvPaths) {
+			if (path.size() != 3) continue;
+			if (!path.get(0).getObjRes().equals(path.get(2).getObjRes()))
+				reducedPvPaths.add(path);
+		}
+
 		/* Convert to a sorted list of PathScore objects. */
 		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths, pathLimitCnt);
 
