@@ -99,7 +99,7 @@ public class FBPathGloVeScoring {
 		}
 
 		/* Convert to a sorted list of PathScore objects. */
-		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths, pathLimitCnt);
+		List<FBPathLogistic.PathScore> scores = pvPathsToScores(reducedPvPaths, pathLimitCnt);
 
 		return scores;
 	}
@@ -221,7 +221,7 @@ public class FBPathGloVeScoring {
 		return secondPaths;
 	}
 
-	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
+	protected List<FBPathLogistic.PathScore> pvPathsToScores(List<List<PropertyValue>> pvPaths, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		for (List<PropertyValue> path: pvPaths) {
 			List<String> properties = new ArrayList<>();
