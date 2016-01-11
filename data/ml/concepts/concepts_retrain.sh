@@ -26,7 +26,7 @@ data/ml/concepts/concepts_embsel.py data/ml/concepts/questionDump.json "$datadir
 basedir=$(pwd)
 cd ../Sentence-selection/
 ./std_run.sh -p "$basedir"/data/ml/embsel/concepts-moviesC-train
-cp data/Mbtemp.txt ../yodaqa/src/main/resources/cz/brmlab/yodaqa/analysis/question/Mbdesc.txt
+cp data/Mbtemp.txt "$basedir"/src/main/resources/cz/brmlab/yodaqa/analysis/question/Mbdesc.txt
 cd "$basedir"
 
 # Second stage - training final concept classifier
