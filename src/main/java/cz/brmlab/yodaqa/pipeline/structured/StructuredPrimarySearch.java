@@ -269,6 +269,12 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected abstract void addTypeLAT(JCas jcas, AnswerFV fv, String type) throws AnalysisEngineProcessException;
 
 	protected void addTypeLAT(JCas jcas, AnswerFV fv, String type, LAT lat) throws AnalysisEngineProcessException {
+		/* If the type contains :, it's likely a compound value type
+		 * traversing a metanode, like:
+		 *   <<Julie Kavner>> => Property LAT/0 programs in which this was a regular character: actor
+		 * In that case, the second property corresponds to the type
+		 * (actor). */
+		type = type.replaceFirst(".*: ", "");
 		String ntype = type.toLowerCase();
 
 		/* We have a synthetic noun(-ish), synthetize
