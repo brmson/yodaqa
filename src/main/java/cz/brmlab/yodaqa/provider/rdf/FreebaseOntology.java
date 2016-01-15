@@ -114,6 +114,52 @@ public class FreebaseOntology extends FreebaseLookup {
                 /* 4x Book editions published */ "book.author.book_editions_published",
 	};
 
+	private final String topicGenericFilters =
+			/* Check if property is a labelled type, and use that
+			 * label as property name if so. */
+			"OPTIONAL {\n" +
+			"  ?prop ns:type.object.name ?proplabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
+			"} .\n" +
+			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
+			/* Check if value is not a pointer to another topic
+			 * we could resolve to a label. */
+			"OPTIONAL {\n" +
+			"  ?val rdfs:label ?vallabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
+			"}\n" +
+			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
+			/* Keep only ns: properties */
+			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
+			/* ...but ignore some common junk which yields mostly
+			 * no relevant data... */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )\n" +
+			/* ...stuff that's difficult to trust... */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
+			/* ...and some more junk - this one is already a bit
+			 * trickier as it might contain relevant data, but
+			 * often hidden in relationship objects (like Nobel
+			 * prize awards), and also a lot of junk (like the
+			 * kwebbase experts - though some might be useful
+			 * in a specific context). */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )\n" +
+			/* topic_server has geolocation (not useful right now)
+			 * and population_number (which would be useful, but
+			 * needs special handling has a topic may have many
+			 * of these, e.g. White House). Also it has crappy
+			 * type labels. */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
+			/* Eventually, a specific blacklist of *mostly*
+			 * useless data that flood out the useful results. */
+			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/" +
+			StringUtils.join(propBlacklist,
+					"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/") +
+			"') )\n" +
+			"";
+
 	/** Query for a given title, returning a set of PropertyValue instances.
 	 * The paths set are extra properties to specifically query for:
 	 * they bypass the blacklist and can traverse multiple nodes. */
@@ -203,71 +249,21 @@ public class FreebaseOntology extends FreebaseLookup {
 		Set<TitledMid> mids = queryTopicByPageID(pageId, logger);
 		List<PropertyValue> result = new ArrayList<>();
 		for (TitledMid tmid: mids) {
-			result.addAll(queryAllRelations(tmid.mid, tmid.title, null, logger));
+			result.addAll(queryAllRelations(tmid.mid, tmid.title, logger));
 		}
 		return result;
 	}
 
-	public List<PropertyValue> queryAllRelations(String mid, String title, Integer witnessPageId, Logger logger) {
+	public List<PropertyValue> queryAllRelations(String mid, String title, Logger logger) {
 		//XXX A lot of duplicate code with queryTopicGeneric
 		List<PropertyValue> result = new ArrayList<>();
-		String witnessQuery;
-		if (witnessPageId != null) {
-			witnessQuery =
-//				"?val ?witprop ?witness .\n" +
-				"?val <http://rdf.freebase.com/key/wikipedia.en_id> \"" + witnessPageId + "\".\n" +
-				"";
-		} else {
-			witnessQuery = "";
-		}
+
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
 			"BIND(ns:" + mid + " AS ?res)\n" +
-			/* For witness property, select only relevant properties corresponding to given concept */
-			witnessQuery +
-			/* Check if property is a labelled type, and use that
-			 * label as property name if so. */
-			"OPTIONAL {\n" +
-			"  ?prop ns:type.object.name ?proplabel .\n" +
-			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
-			"} .\n" +
-			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
-			/* Check if value is not a pointer to another topic
-			 * we could resolve to a label. */
-			"OPTIONAL {\n" +
-			"  ?val rdfs:label ?vallabel .\n" +
-			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
-			"}\n" +
-			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
-			/* Keep only ns: properties */
-			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
-			/* ...but ignore some common junk which yields mostly
-			 * no relevant data... */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )\n" +
-			/* ...stuff that's difficult to trust... */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
-			/* ...and some more junk - this one is already a bit
-			 * trickier as it might contain relevant data, but
-			 * often hidden in relationship objects (like Nobel
-			 * prize awards), and also a lot of junk (like the
-			 * kwebbase experts - though some might be useful
-			 * in a specific context). */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )\n" +
-			/* topic_server has geolocation (not useful right now)
-			 * and population_number (which would be useful, but
-			 * needs special handling has a topic may have many
-			 * of these, e.g. White House). Also it has crappy
-			 * type labels. */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/" +
-			StringUtils.join(propBlacklist,
-				"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/") +
-				"') )\n" +
-				"";
+			topicGenericFilters +
+			"";
 //		 logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 				new String[] { "property", "value", "prop", "/val", "/res" }, PROP_LIMIT);
@@ -289,7 +285,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			String prop = rawResult[2].getString();
 			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
 			String objRes = rawResult[4].getString();
-//			 logger.debug("WIT {} Freebase {}/{} property: {}/{} -> {} ({})", witnessPageId, title, mid, propLabel, prop, value, valRes);
+			logger.info("Freebase {}/{} property: {}/{} -> {} ({})", title, mid, propLabel, prop, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 			PropertyValue pv = new PropertyValue(title, objRes, propLabel,
@@ -300,6 +296,73 @@ public class FreebaseOntology extends FreebaseLookup {
 		}
 		return result;
 
+	}
+
+	public List<List<PropertyValue>> queryWitnessRelations(int pageId, String title, int witnessPageId, Logger logger) {
+		List<List<PropertyValue>> result = new ArrayList<>();
+
+		String rawQueryStr =
+			/* Grab all properties of the topic, for starters. */
+			"?res <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageId + "\".\n" +
+			"?res ?prop ?val .\n" +
+			"?wit <http://rdf.freebase.com/key/wikipedia.en_id> \"" + witnessPageId + "\" .\n" +
+			"?val ?witprop ?wit .\n" +
+			"OPTIONAL {\n" +
+			"  ?witprop ns:type.object.name ?witproplabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?witproplabel), \"en\") )\n" +
+			"} .\n" +
+			"BIND( IF(BOUND(?witproplabel), ?witproplabel, ?witprop) AS ?witness_property )\n" +
+			"OPTIONAL {\n" +
+			"  ?wit rdfs:label ?witlabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?witlabel), \"en\") )\n" +
+			"}\n" +
+			"BIND( IF(BOUND(?witlabel), ?witlabel, ?wit) AS ?witness )\n" +
+			/* For witness property, select only relevant properties corresponding to given concept */
+			topicGenericFilters +
+			"";
+//		 logger.debug("executing sparql query: {}", rawQueryStr);
+		List<Literal[]> rawResults = rawQuery(rawQueryStr,
+				new String[] { "property", "value", "prop", "/val", "/res",
+						       "witness_property", "witness", "witprop", "/wit"}, PROP_LIMIT);
+
+		for (Literal[] rawResult : rawResults) {
+			List<PropertyValue> witnessPath = new ArrayList<>();
+			String propLabel = rawResult[0].getString().
+					replaceAll("^.*\\.([^\\. ]*)$", "\\1").
+					replaceAll("_.$", "").
+					replaceAll("_", " ");
+			String value = rawResult[1].getString();
+			String prop = rawResult[2].getString();
+			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
+			String objRes = rawResult[4].getString();
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({})", title, objRes, propLabel, prop, value, valRes);
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
+			PropertyValue pv = new PropertyValue(title, objRes, propLabel,
+					value, valRes, null,
+					fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
+			pv.setPropRes(prop);
+			witnessPath.add(pv);
+
+			String witPropLabel = rawResult[5].getString().
+					replaceAll("^.*\\.([^\\. ]*)$", "\\1").
+					replaceAll("_.$", "").
+					replaceAll("_", " ");
+			String witValue = rawResult[6].getString();
+			String witProp = rawResult[7].getString();
+			String witRes = rawResult[8] != null ? rawResult[3].getString() : null;
+			logger.debug("Freebase {}/{} property: {}/{} -> {} ({}) (Witness)", value, valRes, witPropLabel, witProp, witValue, witRes);
+			AnswerFV wfv = new AnswerFV();
+			wfv.setFeature(AF.OriginFreebaseOntology, 1.0);
+			PropertyValue wpv = new PropertyValue(value, valRes, witPropLabel,
+					witValue, witRes, null,
+					wfv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
+			wpv.setPropRes(witProp);
+			witnessPath.add(wpv);
+
+			result.add(witnessPath);
+		}
+		return result;
 	}
 
 	/** Query for a given MID, returning a set of PropertyValue instances
@@ -322,55 +385,13 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
 			"BIND(ns:" + mid + " AS ?res)\n" +
-			/* Check if property is a labelled type, and use that
-			 * label as property name if so. */
-			"OPTIONAL {\n" +
-			"  ?prop ns:type.object.name ?proplabel .\n" +
-			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
-			"} .\n" +
-			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
-			/* Check if value is not a pointer to another topic
-			 * we could resolve to a label. */
-			"OPTIONAL {\n" +
-			"  ?val rdfs:label ?vallabel .\n" +
-			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
-			"}\n" +
-			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
+			topicGenericFilters +
 			/* Ignore properties with values that are still URLs,
 			 * i.e. pointers to an unlabelled topic. */
 			"FILTER( !ISURI(?value) )\n" +
 			/* Ignore non-English values (this checks even literals,
 			 * not target labels like the filter above. */
 			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"en\") )\n" +
-			/* Keep only ns: properties */
-			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
-			/* ...but ignore some common junk which yields mostly
-			 * no relevant data... */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/type') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/common') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/freebase') )\n" +
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/media_common.quotation') )\n" +
-			/* ...stuff that's difficult to trust... */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/user') )\n" +
-			/* ...and some more junk - this one is already a bit
-			 * trickier as it might contain relevant data, but
-			 * often hidden in relationship objects (like Nobel
-			 * prize awards), and also a lot of junk (like the
-			 * kwebbase experts - though some might be useful
-			 * in a specific context). */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/base') )\n" +
-			/* topic_server has geolocation (not useful right now)
-			 * and population_number (which would be useful, but
-			 * needs special handling has a topic may have many
-			 * of these, e.g. White House). Also it has crappy
-			 * type labels. */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/topic_server') )\n" +
-			/* Eventually, a specific blacklist of *mostly*
-			 * useless data that flood out the useful results. */
-			"FILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/" +
-			StringUtils.join(propBlacklist,
-				"') )\nFILTER( !STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/") +
-				"') )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,

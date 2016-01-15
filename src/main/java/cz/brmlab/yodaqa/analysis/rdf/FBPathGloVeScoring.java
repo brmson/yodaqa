@@ -65,7 +65,7 @@ public class FBPathGloVeScoring {
 	 * across all linked concepts. */
 	public List<FBPathLogistic.PathScore> getPaths(JCas questionView, int pathLimitCnt) {
 		/* Path-deduplicating set */
-		Set<List<PropertyValue>> pvPaths = new TreeSet<>(new Comparator<List<PropertyValue>>() {
+		Set<List<PropertyValue>> pathSet = new TreeSet<>(new Comparator<List<PropertyValue>>() {
 			@Override
 			public int compare(List<PropertyValue> o1, List<PropertyValue> o2) {
 				if (o1.size() != o2.size()) return o2.size() - o1.size();
@@ -76,14 +76,20 @@ public class FBPathGloVeScoring {
 				return 0;
 			}
 		});
+		List<List<PropertyValue>> pvPaths = new ArrayList<>();
 
 		List<String> qtoks = questionRepr(questionView);
 		logger.debug("questionRepr: {}", qtoks);
 
 		/* Generate pvPaths for the 1-level neighborhood. */
-		for(Concept c: JCasUtil.select(questionView, Concept.class))
+		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
+//			logger.info("CONCEPTS " + c.getFullLabel() + " PAGE ID " + c.getPageID());
 			addConceptPVPaths(pvPaths, qtoks, c);
-		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, pathLimitCnt);
+		}
+		//XXX Select top N path counting only distincs ones
+		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, Integer.MAX_VALUE);
+		//For now, we take all paths length 1
+//		List<List<PropertyValue>> lenOnePaths = new ArrayList<>(pvPaths);
 
 		/* Expand pvPaths for the 2-level neighborhood. */
 		pvPaths.clear();
@@ -91,27 +97,60 @@ public class FBPathGloVeScoring {
 		for (List<PropertyValue> path: lenOnePaths)
 			addExpandedPVPaths(pvPaths, path, qtoks, concepts);
 
-		List<List<PropertyValue>> reducedPvPaths = new ArrayList<>();
-		for(List<PropertyValue> path: pvPaths) {
-			if (path.size() != 3) continue;
-			if (!path.get(0).getObjRes().equals(path.get(2).getObjRes()))
-				reducedPvPaths.add(path);
-		}
+		List<List<PropertyValue>> lenTwoPaths = new ArrayList<>(pvPaths);
 
+		/* Add witness relations to paths of length 2 if possible */
+		pvPaths.clear();
+		List<List<PropertyValue>> potentialWitnesses = getPotentialWitnesses(concepts, qtoks);
+		for (List<PropertyValue> path: lenTwoPaths)
+			addWitnessPVPaths(pvPaths, path, potentialWitnesses);
+
+//		for(List<PropertyValue> path: pvPaths) {
+//			String s = "MYDEBUG (" + path.get(0).getObject() + ") ";
+//			for(PropertyValue pv: path) s += pv.getPropRes() + " | ";
+//			s += path.get(path.size() - 1).getValue();
+//			logger.info(s);
+//		}
+
+//		List<List<PropertyValue>> reducedPvPaths = new ArrayList<>();
+//		for(List<PropertyValue> path: pvPaths) {
+//			String s = path.get(0).getObject() + " (" + path.get(0).getObjRes() + ")";
+//			for(PropertyValue pv: path) {
+//				s += pv.getPropRes() + " (" + pv.getScore() + ")| ";
+//			}
+//			s += path.get(path.size() - 1).getValue() + " " + path.get(path.size() - 1).getValRes();
+//			logger.info("ALLPATHS " + s);
+//			if (path.size() != 3) continue;
+//			if (!path.get(0).getObjRes().equals(path.get(2).getObjRes()))
+//				reducedPvPaths.add(path);
+//		}
+
+		// Deduplication
+		pathSet.addAll(pvPaths);
+//		for(List<PropertyValue> path: pathSet) {
+//			String s = path.get(0).getObject() + " (" + path.get(0).getObjRes() + ")";
+//			for(PropertyValue pv: path) {
+//				s += pv.getPropRes() + " (" + pv.getScore() + ")| ";
+//			}
+//			s += path.get(path.size() - 1).getValue() + " " + path.get(path.size() - 1).getValRes();
+//			logger.info("DISTINCT PATHS " + s);
+//		}
 		/* Convert to a sorted list of PathScore objects. */
-		List<FBPathLogistic.PathScore> scores = pvPathsToScores(reducedPvPaths, pathLimitCnt);
+		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pathSet, pathLimitCnt);
 
 		return scores;
 	}
 
 	/** Score and add all pvpaths of a concept to the pvPaths. */
-	protected void addConceptPVPaths(Set<List<PropertyValue>> pvPaths, List<String> qtoks, Concept c) {
+	protected void addConceptPVPaths(List<List<PropertyValue>> pvPaths, List<String> qtoks, Concept c) {
 		List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), logger);
 		for(PropertyValue pv: list) {
-			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix))
+			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix)) {
 				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
+			}
 			List<String> proptoks = tokenize(pv.getProperty());
 			pv.setScore(r1.probability(qtoks, proptoks));
+//			logger.info("FIRST " + pv.getValue() + " " + pv.getValRes() + " " + pv.getProperty() + " " + pv.getPropRes() + " " + pv.getScore());
 
 			List<PropertyValue> pvlist = new ArrayList<>();
 			pvlist.add(pv);
@@ -119,7 +158,7 @@ public class FBPathGloVeScoring {
 		}
 	}
 
-	protected List<List<PropertyValue>> getTopPVPaths(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
+	protected List<List<PropertyValue>> getTopPVPaths(List<List<PropertyValue>> pvPaths, int pathLimitCnt) {
 		List<List<PropertyValue>> lenOnePaths = new ArrayList<>(pvPaths);
 		Collections.sort(lenOnePaths, new Comparator<List<PropertyValue>>() {
 			@Override
@@ -152,12 +191,13 @@ public class FBPathGloVeScoring {
 	 * be ending up in CVT ("compound value type") which just binds
 	 * other topics together (e.g. actor playing character in movie)
 	 * and to get to the answer we need to crawl one more step. */
-	protected void addExpandedPVPaths(Set<List<PropertyValue>> pvPaths,	List<PropertyValue> path, List<String> qtoks, List<Concept> concepts) {
+	protected void addExpandedPVPaths(List<List<PropertyValue>> pvPaths, List<PropertyValue> path, List<String> qtoks, List<Concept> concepts) {
 		PropertyValue first = path.get(0);
 		if (first.getValRes() != null && /* no label */ first.getValRes().endsWith(first.getValue())) {
 			// meta-node, crawl it too
 			String mid = first.getValRes().substring(midPrefix.length());
-			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, qtoks, concepts);
+			String title = first.getValue();
+			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, title, qtoks, concepts);
 			for (List<PropertyValue> secondPath: secondPaths) {
 				List<PropertyValue> newpath = new ArrayList<>(path);
 				newpath.addAll(secondPath);
@@ -176,17 +216,18 @@ public class FBPathGloVeScoring {
 		}
 	}
 
-	protected List<List<PropertyValue>> scoreSecondRelation(String mid, List<String> qtoks, List<Concept> concepts) {
-		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, "", null, logger);
+	protected List<List<PropertyValue>> scoreSecondRelation(String mid, String title, List<String> qtoks, List<Concept> concepts) {
+		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, title, logger);
 
-		List<PropertyValue> witnessPvCandidates = new ArrayList<>();
-		for(Concept c: concepts) {
-			witnessPvCandidates.addAll(fbo.queryAllRelations(mid, "", c.getPageID(), logger));
-		}
-		for(PropertyValue wpv: witnessPvCandidates) {
-			List<String> wproptoks = tokenize(wpv.getProperty());
-			wpv.setScore(r3.probability(qtoks, wproptoks));
-		}
+//		List<PropertyValue> witnessPvCandidates = new ArrayList<>();
+//		for(Concept c: concepts) {
+//			logger.info("SEARCHING WITNESS CONCEPT " + c.getFullLabel() + " from " + mid + " (" + title + ")");
+//			witnessPvCandidates.addAll(fbo.queryAllRelations(mid, title, c.getPageID(), logger));
+//		}
+//		for(PropertyValue wpv: witnessPvCandidates) {
+//			List<String> wproptoks = tokenize(wpv.getProperty());
+//			wpv.setScore(r3.probability(qtoks, wproptoks));
+//		}
 
 		/* Now, add the followup paths, possibly including a required
 		 * witness match. */
@@ -200,28 +241,59 @@ public class FBPathGloVeScoring {
 			secondPath.add(pv);
 			secondPaths.add(secondPath);
 
-			List<List<PropertyValue>> witnessPaths = new ArrayList<>();
-			for(PropertyValue wpv: witnessPvCandidates) {
-				List<PropertyValue> newpath = new ArrayList<>(secondPath);
-				newpath.add(wpv);
-				witnessPaths.add(newpath);
-			}
+//			List<List<PropertyValue>> witnessPaths = new ArrayList<>();
+//			for(PropertyValue wpv: witnessPvCandidates) {
+//				List<PropertyValue> newpath = new ArrayList<>(secondPath);
+//				newpath.add(wpv);
+//				witnessPaths.add(newpath);
+//			}
 			
-			Collections.sort(witnessPaths, new Comparator<List<PropertyValue>>() {
-				@Override
-				public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
-					// descending
-					return list2.get(1).getScore().compareTo(list1.get(1).getScore());
-				}
-			});
-			if (witnessPaths.size() > TOP_N_WITNESSES)
-				witnessPaths = witnessPaths.subList(0, TOP_N_WITNESSES);
-			secondPaths.addAll(witnessPaths);
+//			Collections.sort(witnessPaths, new Comparator<List<PropertyValue>>() {
+//				@Override
+//				public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
+//					// descending
+//					return list2.get(1).getScore().compareTo(list1.get(1).getScore());
+//				}
+//			});
+//			if (witnessPaths.size() > TOP_N_WITNESSES)
+//				witnessPaths = witnessPaths.subList(0, TOP_N_WITNESSES);
+//			secondPaths.addAll(witnessPaths);
 		}
 		return secondPaths;
 	}
 
-	protected List<FBPathLogistic.PathScore> pvPathsToScores(List<List<PropertyValue>> pvPaths, int pathLimitCnt) {
+	protected List<List<PropertyValue>> getPotentialWitnesses(List<Concept> concepts, List<String> qtoks) {
+		List<List<PropertyValue>> res = new ArrayList<>();
+		for(Concept c: concepts) {
+			for (Concept w: concepts) {
+				if (c.getPageID() == w.getPageID()) continue;
+					res.addAll(fbo.queryWitnessRelations(c.getPageID(), c.getFullLabel(), w.getPageID(), logger));
+			}
+		}
+		// Scoring...
+		for(List<PropertyValue> witPath: res) {
+			PropertyValue wpv = witPath.get(1);
+			List<String> wproptoks = tokenize(wpv.getProperty());
+			wpv.setScore(r3.probability(qtoks, wproptoks));
+		}
+		return res;
+	}
+
+	protected void addWitnessPVPaths(List<List<PropertyValue>> pvPaths, List<PropertyValue> path,
+									 List<List<PropertyValue>> potentialWitnesses) {
+		pvPaths.add(path);
+		if (path.size() == 2) {
+			for(List<PropertyValue> witPath: potentialWitnesses) {
+				if (!path.get(0).getPropRes().equals(witPath.get(0).getPropRes()))
+					continue;
+				List<PropertyValue> newPath = new ArrayList<>(path);
+				newPath.add(witPath.get(1));
+				pvPaths.add(newPath);
+			}
+		}
+	}
+
+	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		for (List<PropertyValue> path: pvPaths) {
 			List<String> properties = new ArrayList<>();
@@ -246,6 +318,14 @@ public class FBPathGloVeScoring {
 				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
 			}
 		});
+		logger.debug("Limit of explorative paths" + pathLimitCnt);
+		for(FBPathLogistic.PathScore s: scores) {
+			String str = "";
+			for (int i = 0; i < s.path.size(); i++) {
+				str += s.path.get(i) + " | ";
+			}
+			logger.debug("Explorative paths: " + str + " " + s.proba);
+		}
 		if (scores.size() > pathLimitCnt)
 			scores = scores.subList(0, pathLimitCnt);
 		return scores;
