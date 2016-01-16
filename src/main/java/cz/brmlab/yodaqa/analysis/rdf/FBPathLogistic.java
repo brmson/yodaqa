@@ -16,8 +16,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import cz.brmlab.yodaqa.model.Question.SV;
+import cz.brmlab.yodaqa.model.Question.Subject;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.rdf.PropertyPath;
+
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,9 +112,42 @@ public class FBPathLogistic {
 	 * This is then passed to our other public methods. */
 	public List<String> questionFeatures(JCas questionView) {
 		List<String> feats = new ArrayList<>();
+
+		Subject subjNP = null, subjTok = null;
+		for (Subject subj : JCasUtil.select(questionView, Subject.class)) {
+			// prefer shortest
+			if (subj.getBase() instanceof NP
+			    && (subjNP == null || subjNP.getEnd()-subjNP.getBegin() > subj.getEnd()-subj.getBegin()))
+				subjNP = subj;
+
+			if (subj.getBase() instanceof Token && subjTok == null)
+				subjTok = subj;
+		}
+		if (subjNP != null)
+			feats.add("subjnp=" + subjNP.getCoveredText());
+		else
+			feats.add("subjnp=");
+		if (subjTok != null)
+			feats.add("subjtok=" + subjTok.getCoveredText());
+		else
+			feats.add("subjtok=");
+
+		boolean hasSV = false;
 		for (SV sv : JCasUtil.select(questionView, SV.class)) {
 			feats.add("sv=" + sv.getCoveredText());
+			hasSV = true;
 		}
+		if (!hasSV)
+			feats.add("sv=");
+
+		boolean hasLemmaSV = false;
+		for (SV sv : JCasUtil.select(questionView, SV.class)) {
+			feats.add("lsv=" + sv.getBase().getLemma().getValue());
+			hasLemmaSV = true;
+		}
+		if (!hasLemmaSV)
+			feats.add("lsv=");
+
 		for (LAT lat : JCasUtil.select(questionView, LAT.class)) {
 			feats.add("lat/" + lat.getText() + "/" + lat.getClass().getSimpleName());
 		}

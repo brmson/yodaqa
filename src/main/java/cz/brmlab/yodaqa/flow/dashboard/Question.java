@@ -5,7 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
+import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringProperty;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
 
 /** A stateful question.  This question has been asked, can be referred to
@@ -21,6 +25,8 @@ public class Question {
 	protected List<QuestionAnswer> answers = new ArrayList<>();
 	protected Map<Integer, AnsweringSnippet> snippets = new HashMap<>(); //key = ID of snippet, value = the actual snippet
 	protected boolean finished = false;
+	protected List<QuestionConcept> artificialConcepts = new ArrayList<>();
+	protected boolean hasOnlyArtificialConcept=false;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
 	protected int gen_sources = 0;
@@ -33,10 +39,21 @@ public class Question {
 		this.text = text;
 	}
 
+	public Question(String id, String text, List<QuestionConcept> artificialConcepts, boolean hasOnlyArtificialConcept) {
+		this.id = id;
+		this.text = text;
+		this.artificialConcepts = artificialConcepts;
+		this.hasOnlyArtificialConcept=hasOnlyArtificialConcept;
+	}
+
 	/** @return the id */
 	public synchronized String getId() { return id; }
 	/** @return the text */
 	public synchronized String getText() { return text; }
+	/** @return manually added concepts */
+	public synchronized List<QuestionConcept> getArtificialConcepts(){ return artificialConcepts; }
+	/** @return if question is using artificial Concepts only */
+	public synchronized boolean getHasOnlyArtificialConcept(){ return hasOnlyArtificialConcept; }
 
 	/** @return the summary */
 	public synchronized QuestionSummary getSummary() { return summary; }
@@ -102,7 +119,66 @@ public class Question {
 	}
 
 	public synchronized String toJson() {
-		return gson.toJson(this);
+		JsonElement j = gson.toJsonTree(this);
+		String answerSentence = this.getAnswerSentence();
+		if (answerSentence != null)
+			j.getAsJsonObject().addProperty("answerSentence", answerSentence);
+		return gson.toJson(j);
+	}
+
+	/** Autogenerate a full sentence describing the answer.
+	 * This is designed mainly for answers coming from databases,
+	 * though a baseline version for fulltext answers shouldn't be
+	 * that difficult either. */
+	public synchronized String getAnswerSentence() {
+		try {
+			// top answer
+			QuestionAnswer a0 = this.answers.get(0);
+
+			// pick the bottom snippet (to skip awards; XXX,
+			// sort them by something tangible), but
+			// preferring a witness-carrying snippet
+			List<Integer> revSIDs = Lists.reverse(a0.getSnippetIDs());
+			AnsweringSnippet s0 = this.snippets.get(revSIDs.get(0));
+			for (Integer wsid : revSIDs) {
+				AnsweringSnippet sw = this.snippets.get(wsid);
+				if (sw instanceof AnsweringProperty
+				    && ((AnsweringProperty) sw).getWitnessLabel() != null) {
+					s0 = sw;
+					break;
+				}
+			}
+			AnswerSource src0 = this.sources.get(s0.getSourceID());
+
+			if (s0 instanceof AnsweringProperty) {
+				AnsweringProperty ap0 = (AnsweringProperty) s0;
+				boolean showIsBeforeProperty = ap0.getPropertyLabel().toLowerCase().endsWith(" by");
+
+				StringBuilder sb = new StringBuilder();
+				sb.append(src0.getTitle());
+				sb.append(" ");
+				if (showIsBeforeProperty)
+					sb.append("is ");
+				sb.append(ap0.getPropertyLabel().replaceAll(".*: ", "").toLowerCase());
+				sb.append(" ");
+				if (ap0.getWitnessLabel() != null) {
+					sb.append("(for ");
+					sb.append(ap0.getWitnessLabel());
+					sb.append(") ");
+				}
+				if (!showIsBeforeProperty)
+					sb.append("is ");
+				sb.append(a0.getText());
+				sb.append(".");
+				return sb.toString();
+			} else {
+				// TODO
+				return null;
+			}
+
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 	public synchronized AnsweringSnippet getSnippet(int index) {

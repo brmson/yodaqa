@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.Locale;
 
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
@@ -256,7 +257,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			i++;
 			if (featureBlacklisted(labels[i]))
 				continue;
-			sb.append(value);
+			sb.append(String.format(Locale.ENGLISH, "%.4f", value));
 			sb.append("\t");
 		}
 
@@ -343,7 +344,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		int i = 0;
 		for (double value : fv.getFV()) {
 			if (i % 3 == 0) {
-				sb.append(value);
+				sb.append(String.format(Locale.ENGLISH, "%.4f", value));
 				sb.append(",");
 			}
 			i++;

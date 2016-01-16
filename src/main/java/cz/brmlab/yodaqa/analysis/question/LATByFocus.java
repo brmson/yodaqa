@@ -12,6 +12,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.TreeUtil;
+import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 import cz.brmlab.yodaqa.model.Question.Focus;
 import cz.brmlab.yodaqa.model.TyCor.ImplicitQLAT;
 import cz.brmlab.yodaqa.model.TyCor.QuestionWordLAT;
@@ -22,6 +24,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.NP;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 
 /**
@@ -80,7 +83,7 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			/* (15){00033914} <noun.Tops>[03] S: (n) measure#2 (measure%1:03:00::), quantity#1 (quantity%1:03:00::), amount#3 (amount%1:03:00::) (how much there is or how many there are of something that you can quantify) */
 			addFocusLAT(jcas, focus, "amount", null, 33914, 0.0, new QuestionWordLAT(jcas));
 
-		} else if (text.matches("^what|why|how|which|name$")) {
+		} else if (isAmbiguousQLemma(text)) {
 			logger.info("?! Skipping focus LAT for ambiguous qlemma {}", text);
 
 		} else {
@@ -100,6 +103,18 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 
 			if (!text.equals(realText))
 				addFocusLAT(jcas, focus, text, pos, 0, 0.0, new ImplicitQLAT(jcas));
+
+			/* Also try to generate a "main character" LAT in
+			 * addition to "character", etc. */
+
+			NP np = TreeUtil.shortestCoveringNP(focus.getToken());
+			if (np != null) {
+				String npText = SyntaxCanonization.getCanonText(np.getCoveredText().toLowerCase());
+				if (!npText.equals(realText)) {
+					logger.debug("NP coverage: <<{}>>", npText);
+					addLAT(new LAT(jcas), np.getBegin(), np.getEnd(), np, npText, pos, 0, 1.0);
+				}
+			}
 		}
 	}
 
@@ -140,5 +155,11 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 		lat.setSynset(synset);
 		lat.addToIndexes();
 		logger.debug("new LAT by {}: <<{}>>/{}", base.getType().getShortName(), text, synset);
+	}
+
+	/** Decide whether the given question lemma has no derivable
+	 * semantic sense. */
+	public static boolean isAmbiguousQLemma(String text) {
+		return text.matches("^what|why|how|which|name$");
 	}
 }

@@ -1,10 +1,12 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,8 @@ import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
+import cz.brmlab.yodaqa.model.Question.Clue;
+import cz.brmlab.yodaqa.model.Question.ClueNE;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.TyCor.FBOntologyLAT;
 import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
@@ -56,10 +60,20 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 
 		/* Get a list of specific properties to query. */
 		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+
+		/* Get a list of witnesses (besides concepts), i.e. clues of
+		 * question that might select the relevant property path by
+		 * co-occurence in a composite node. */
+		List<String> witnessLabels = new ArrayList<>();
+		for (Clue cl : JCasUtil.select(questionView, ClueNE.class)) {
+			witnessLabels.add(cl.getLabel());
+		}
+
 		/* Fetch concept properties from the Freebase ontology dataset,
 		 * looking for Freebase topics specifically linked to the enwiki
 		 * articles we have found. */
-		properties.addAll(fbo.queryPageID(concept.getPageID(), pathScs, logger));
+		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		properties.addAll(fbo.queryPageID(concept.getPageID(), pathScs, concepts, witnessLabels, logger));
 
 		return properties;
 	}

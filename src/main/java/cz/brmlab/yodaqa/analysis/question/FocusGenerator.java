@@ -118,6 +118,20 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			}
 		}
 
+		/* Wh- DOBJ is preferrable to NSUBJ, if available and not be-bound.
+		 * "Who did X Y play in Z?" -> DOBJ:who (and NSUBJ:X Y) */
+		if (focus == null) {
+			for (DOBJ dobj : JCasUtil.selectCovered(DOBJ.class, sentence)) {
+				if (dobj.getDependent().getPos().getPosValue().matches("^W.*")
+				    && !LATByFocus.isAmbiguousQLemma(dobj.getDependent().getLemma().getValue().toLowerCase())) {
+					focusTok = dobj.getDependent();
+					focus = focusTok;
+					logger.debug("DOBJ+W {}", focus.getCoveredText());
+					break;
+				}
+			}
+		}
+
 		/* Fall back on the NSUBJ.
 		 * "Who is the most famous Italian painter?" -> NSUBJ:painter
 		 * "Who invented the first transistor?" -> NSUBJ:who

@@ -2,14 +2,9 @@ package cz.brmlab.yodaqa.analysis;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.Type;
-import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
-import org.apache.uima.fit.descriptor.ConfigurationParameter;
-import org.apache.uima.fit.util.CasUtil;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
 /**
  * An annotator that will create sofa-wide annotation if parsing is required.
@@ -36,6 +32,8 @@ public class FindReqParse extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		for (POS pos : JCasUtil.select(jcas, POS.class))
 			return; // ok, already parser
+		if (JCasUtil.select(jcas, Token.class).isEmpty())
+			return; // XXX can happen with crf, bug
 		if (jcas.getDocumentText().length() == 0)
 			return; // nothing to parse either
 

@@ -95,7 +95,7 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 		if (clue instanceof ClueSubject) {
 			afv.setFeature(AF.PsgDist_ClueType + "ClueSubject", value);
 		} else if (clue instanceof ClueConcept) {
-			double bestRr = 0, bestScore = 0;
+			double bestSourceRr = 0, bestLabelRr = 0, bestScore = 0;
 			for (Concept concept : FSCollectionFactory.create(((ClueConcept) clue).getConcepts(), Concept.class)) {
 				if (concept.getBySubject())
 					afv.setFeature(AF.PsgDist_ClueType + "ClueSubject", value);
@@ -103,12 +103,17 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 					afv.setFeature(AF.PsgDist_ClueType + "ClueLAT", value);
 				if (concept.getByNE())
 					afv.setFeature(AF.PsgDist_ClueType + "ClueNE", value);
-				if (concept.getRr() > bestRr)
-					bestRr = concept.getRr();
+				if (concept.getByNgram())
+					afv.setFeature(AF.PsgDist_ClueType + "ClueNgram", value);
+				if (concept.getSourceRr() > bestSourceRr)
+					bestSourceRr = concept.getSourceRr();
+				if (concept.getLabelRr() > bestLabelRr)
+					bestLabelRr = concept.getLabelRr();
 				if (concept.getScore() > bestScore)
 					bestScore = concept.getScore();
 			}
-			afv.setFeature(AF.PsgDist_ClueType + AF._clueType_ConceptRR, bestRr);
+			afv.setFeature(AF.PsgDist_ClueType + AF._clueType_ConceptSourceRR, bestSourceRr);
+			afv.setFeature(AF.PsgDist_ClueType + AF._clueType_ConceptLabelRR, bestLabelRr);
 			afv.setFeature(AF.PsgDist_ClueType + AF._clueType_ConceptScore, bestScore);
 		}
 	}

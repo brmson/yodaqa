@@ -11,16 +11,19 @@ import static spark.Spark.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 import cz.brmlab.yodaqa.flow.dashboard.Question;
+import cz.brmlab.yodaqa.flow.dashboard.QuestionConcept;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
 
 
@@ -47,13 +50,19 @@ public class WebInterface implements Runnable {
 			@Override
 			public Object handle(Request request, Response response) {
 				String id = Integer.toString(idgen.nextInt(Integer.MAX_VALUE));
-				String text = request.queryParams("text");
+				String text=request.queryParams("text");
 				if (text == null) {
 					response.status(422);
 					return "missing parameter: text";
 				}
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
-				Question q = new Question(id, text);
+				List<QuestionConcept> artificialConcepts = retrieveArtificialConcepts(request);
+				Question q;
+				if (!artificialConcepts.isEmpty()) {
+					q = new Question(id, text, artificialConcepts, true);
+				} else {
+					q = new Question(id, text);
+				}
 				QuestionDashboard.getInstance().askQuestion(q);
 				response.header("Access-Control-Allow-Origin", "*");
 				response.status(201);
@@ -81,7 +90,7 @@ public class WebInterface implements Runnable {
 					return "{}";
 				}
 				String json = q.toJson();
-				logger.debug("{} :: /q <<{}>> -> <<{}>>", request.ip(), id, json);
+				// logger.debug("{} :: /q <<{}>> -> <<{}>>", request.ip(), id, json);
 				return json;
 			}
 		});
@@ -124,5 +133,29 @@ public class WebInterface implements Runnable {
 				return "[" + StringUtils.join(qJson, ",\n") + "]";
 			}
 		});
+	}
+
+	private List<QuestionConcept> retrieveArtificialConcepts(Request request){
+		List<QuestionConcept> artificialConcepts = new ArrayList<>();
+
+		String numberOfArtificialConceptsS = request.queryParams("numberOfConcepts");
+		if (numberOfArtificialConceptsS == null)
+			return artificialConcepts;
+
+		int numberOfArtificialConcepts = Integer.parseInt(numberOfArtificialConceptsS);
+		for (int i = 1; i <= numberOfArtificialConcepts; i++) {
+			String fullLabel = request.queryParams("fullLabel" + i);
+			if (fullLabel == null || fullLabel.equals(""))
+				continue;
+
+			String pageIDS = request.queryParams("pageID" + i);
+			if (pageIDS == null || pageIDS.equals(""))
+				continue;
+			int pageID = Integer.parseInt(pageIDS);
+
+			artificialConcepts.add(new QuestionConcept(fullLabel, pageID));
+		}
+
+		return artificialConcepts;
 	}
 }

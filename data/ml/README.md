@@ -17,6 +17,12 @@ and are *not* covered in the rest of this document:
   * Question classification by logistic regression using question features.
     Its model data lives in ``data/ml/qclass``, refer to the README there.
 
+  * Entity linking classifier for selection of concepts to link.
+    Its model data lives in ``data/ml/concepts``, refer to the README there.
+
+  * Embedding-based selection of properties and sentences, living in
+    ``data/ml/embsel``, refer to the README there.
+
 Then, we have some generic infrastructure that we describe below and use for:
 
   * Passage scoring during the final step of passage extraction, where we
@@ -121,6 +127,7 @@ of code changes on feacture vectors; `data/ml/answer-countfv.py` can be
 used for feature occurence statistics.  These analysis tools are further
 explained in data/eval/README.md.
 
+
 Analysis of Decision Forests
 ---------------------------
 
@@ -137,3 +144,4 @@ aspects of the forest.  See the pydoc in forest_analysis.py, or you can
 construct one-liners like:
 
 	python -c 'from forest_analysis import *; import joblib; cl = joblib.load("/tmp/GBC.pkl"); print "\n".join([str(c) for c in rulechains_by_significance(cl)]);'
+

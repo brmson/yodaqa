@@ -7,6 +7,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
+import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,7 +87,11 @@ public class DBpediaOntology extends DBpediaLookup {
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
 			String objRes = rawResult[3].getString();
 			logger.debug("DBpedia {} property: {} -> {} ({})", title, propLabel, value, valRes);
-			results.add(new PropertyValue(title, objRes, propLabel, value, valRes, AF.OriginDBpOntology, AnswerSourceStructured.ORIGIN_ONTOLOGY));
+			AnswerFV fv = new AnswerFV();
+			fv.setFeature(AF.OriginDBpOntology, 1.0);
+			results.add(new PropertyValue(title, objRes, propLabel,
+						value, valRes, null,
+						fv, AnswerSourceStructured.ORIGIN_ONTOLOGY));
 		}
 
 		return results;

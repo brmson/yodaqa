@@ -9,7 +9,7 @@ for d in logs/ data/ml/tsv/ data/eval/answer*-csv/ data/eval/answer-xmi/; do
 	n_files=$(($(ls -rtd $d/* | wc -l) - 20))
 	if [ $n_files -lt 1 ]; then
 		echo "$d: Too few files."
-		exit 1
+		continue
 	fi
 	ls -rtd $d/* | head -n $n_files | xargs rm -rv
 done

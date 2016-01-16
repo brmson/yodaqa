@@ -75,6 +75,11 @@
             <description>PassExtract statistics: Number of picked passages that match answerPattern</description>
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>onlyArtificialConcepts</name>
+            <description>Don't execute concept linking stage on the question; concepts already come pre-determined along with the question from the collection reader</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
       <typeDescription>
@@ -215,6 +220,11 @@
         </features>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.ClueNgram</name>
+        <description>Clue based on an arbitrary n-gram (sequence of n subsequent tokens).  We generate these only when we have a good reason to, e.g. this n-gram matches some well-known entity label.</description>
+        <supertypeName>cz.brmlab.yodaqa.model.Question.Clue</supertypeName>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.Concept</name>
 	<description>Concept is basically a Wikipedia article, labelled by its full title and the label somehow occurring in the question text.  This is a strong indicator of the question topic, which in turn helps choose appropriate information sources.</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -250,13 +260,58 @@
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>score</name>
-            <description>The score of the concept, expressing its prominence or relevance to question.</description>
+            <name>byNgram</name>
+            <description>Whether this concept has subdued a ClueNgram.</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>byFuzzyLookup</name>
+            <description>Whether this concept was found in fuzzy label lookup.</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>byCWLookup</name>
+            <description>Whether this concept was found in CrossWikis label lookup.</description>
+            <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>logPopularity</name>
+            <description>The log(popularity) of the concept, where popularity is the number of concept links in DBpedia.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
           <featureDescription>
-            <name>rr</name>
-            <description>The reciprocial rank in the per-clue list of concepts sorted by score.</description>
+            <name>labelProbability</name>
+            <description>Probability of the label generally expressing the concept (regardless of context; when from CrossWikis dataset)</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>editDistance</name>
+            <description>Edit distance of the cookedlabel from the canonlabel (when from fuzzy lookup)</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>description</name>
+            <description>A brief description of the particular concept (about one sentence).</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>relatedness</name>
+            <description>Alignment of concept description and question representation using word embeddings.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>score</name>
+            <description>Concept score in [0,1], classifier-determined probability estimate of this concept being a correctly linked entity</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>sourceRr</name>
+            <description>The reciprocial rank in a best-score-sorted list of originating clues.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>labelRr</name>
+            <description>The reciprocial rank in a score-sorted list of output labelled concepts.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
         </features>
