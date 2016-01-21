@@ -30,11 +30,8 @@ public class AnswerScoringAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Compute answer score (estimated probability of being right)
 		 * from the various features amassed so far. */
-//		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreDecisionForest.class,
-//					AnswerScoreDecisionForest.PARAM_SCORING_PHASE, scoringPhase),
-//				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
-		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreLogistic.class,
-						AnswerScoreLogistic.PARAM_SCORING_PHASE, scoringPhase),
+		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerScoreDecisionForest.class,
+					AnswerScoreDecisionForest.PARAM_SCORING_PHASE, scoringPhase),
 				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(AnswerGSHook.class,

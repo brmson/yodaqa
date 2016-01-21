@@ -1,21 +1,11 @@
 package cz.brmlab.yodaqa.analysis.ansscore;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.Locale;
 
-import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
-import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringPassage;
-import cz.brmlab.yodaqa.flow.dashboard.snippet.AnsweringSnippet;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
@@ -54,7 +44,6 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
  * for scoring in the second scoring phrase (after evidence gathering). */
 
 public class AnswerGSHook extends JCasAnnotator_ImplBase {
-
 	PrintWriter trainFile;
 
 	final Logger logger = LoggerFactory.getLogger(AnswerGSHook.class);
@@ -105,16 +94,16 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			logger.debug(a.getText() + ":" + a.getConfidence() + " -- " + Arrays.toString((new AnswerFV(a, astats)).getValues()));
 		}
 		*/
+
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		Pattern ap = null;
 		if (qi.getAnswerPattern() != null) {
 			ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
+
 		dumpQuestionCSV(answerHitlist, qi, ap, astats);
 		dumpQuestionFV(answerHitlist, qi, ap, astats);
 	}
-
-
 
 	/** Possibly dump CSV data on answers, one file per question. */
 	protected void dumpQuestionCSV(JCas answerHitlist, QuestionInfo qi, Pattern ap, AnswerStats astats)
@@ -122,6 +111,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String csvDirName = System.getProperty("cz.brmlab.yodaqa.csv_answer" + scoringPhase);
 		if (csvDirName == null || csvDirName.isEmpty())
 			return;
+
 		(new File(csvDirName)).mkdir();
 		String csvFileName = csvDirName + "/" + qi.getQuestionId() + ".csv";
 		PrintWriter csvFile = openAnswersCSV(csvFileName);
@@ -130,7 +120,6 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		}
 	}
 
-
 	/** Possibly dump model training data.  We also require gold
 	 * standard for this, otherwise there is no training to do. */
 	protected void dumpQuestionFV(JCas answerHitlist, QuestionInfo qi, Pattern ap, AnswerStats astats)
@@ -138,6 +127,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		String trainFileName = System.getProperty("cz.brmlab.yodaqa.train_answer" + scoringPhase);
 		if (ap == null || trainFileName == null || trainFileName.isEmpty())
 			return;
+
 		/* It turns out to make sense to include only a single best
 		 * correct answer in the training set.  We find and store this
 		 * in refAnswer and skip all correct (matching) answers that
@@ -368,17 +358,6 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	/* XXX: This is a gross hack the way this is done now.
 	 * TODO: Also, this should be automated. */
 	String featureBlacklist[] = {
-        "originPsgByCluePhrase", "originPsgByClueSubjectPhrase", "originPsgNPByLATSubj", "originBingSnippet",
-        "originDBpOClueLAT", "originDBpOClueSubject", "originDBpOClueSubjectToken", "originDBpOClueConcept",
-        "originDBpOConceptRR", "originDBpOConceptScore", "originDBpPClueToken", "originDBpPClueLAT",
-        "originDBpPClueSubject", "originDBpPClueSubjectToken", "originDBpPClueConcept", "originDBpPConceptRR",
-        "originDBpPConceptScore", "originFBOClueToken", "originFBOClueSV", "originFBOClueLAT", "originFBOClueSubject",
-        "originFBOClueSubjectToken", "originFBOClueConcept", "originFBOConceptRR", "originFBOConceptScore", "psgDistCluePhrase",
-        "psgDistClueSubjectPhrase",  "LATQuantity", "tyCorADBpOntology", "tyCorADBpProperty",
-        "tyCorAFBOntology", "clOCPrefixingScore", "clOCSuffixingScore", "clOCSubstringScore", "clOCMetaMatchScore", "clOMatchScore",
-        "clOPrefixingScore", "clOSuffixingScore", "clOSubstringScore", "clOMetaMatchScore", "evdPrefixedScore", "evdPrefixingScore",
-        "evdSuffixedScore", "evdSuffixingScore", "evdSubstredScore", "evdSubstringScore", "topAnswer", "solrHitsEv", "solrAHitsEv",
-        "solrHitsANormEv", "solrMaxScoreEv", "solrHitsMaxScoreEv", "phase0Score", "phase1Score",
 		"originPsgByClueSubjectNE",
 		"originDBpOClueToken",
 		"originDBpOCluePhrase",

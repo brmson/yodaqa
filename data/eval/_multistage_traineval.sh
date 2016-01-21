@@ -76,8 +76,8 @@ train_and_sync() {
 	## Train the model
 	if [ "$retrain" = "1" ]; then
 		echo "Training ${i}..."
-		data/ml/answer-train-logistic.py <"$atrainfile" | tee "$modelfile"
-		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreLogistic${i}.model
+		data/ml/answer-train-gradboost.py <"$atrainfile" | tee "$modelfile"
+		cp "$modelfile" src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreDecisionForest${i}.model
 		echo "Rebuilding with new model..."
 		./gradlew check
 		touch "$barrierfile$i" # testing is go, too!
