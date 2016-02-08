@@ -3,7 +3,7 @@
 # concepts_train_logistic - train a logistic regression classifier of concept
 # relevance
 #
-# Example: data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesC/entity-linking.json
+# Example: data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesF/entity-linking.json
 #
 # The output is to be pasted in
 # src/main/java/cz/brmlab/yodaqa/analysis/question/ConceptClassifier.java
