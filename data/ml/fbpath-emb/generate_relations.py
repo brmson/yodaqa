@@ -111,26 +111,25 @@ FILTER( REGEX(STR(?meta), '^http://rdf.freebase.com/ns/m\\\.') )
         retVal.append(r['meta']['value'][27:])
     return retVal
 
+def make_paths_map(paths):
+    res = {}
+    for line in paths:
+        res[line['qId']] = line['relPaths']
+    return res 
+
 with open(in_folder + "/" + split_name + ".json") as f:
     dump = json.load(f)
 
 if (relation_num == 2):
     with open(relations_folder + "/" + split_name + ".json") as f:
         paths = json.load(f)
-    zipped = zip(dump,paths)
-else:
-    zipped = dump
+    path_map = make_paths_map(paths) 
 
-    
 out_file = open(out_folder + "/" + split_name + ".json", 'w')    
 out_file_c = open(out_folder + "/concept-relations/" + split_name + ".json", 'w')    
 
 out_file.write("[\n")
-for i, zipped_line in enumerate(zipped):
-    if (relation_num == 1):
-        line = zipped_line
-    else:
-        line, rel_line = zipped_line
+for i, line in enumerate(dump):
     pageIds = [c['pageID'] for c in line['Concept']]
     labels = [c['fullLabel'] for c in line['Concept']]
     relations = []
@@ -139,7 +138,7 @@ for i, zipped_line in enumerate(zipped):
             mids = queryFreebasekey(p)
         else:
             mids = []
-            path_list = [rp[0][0] for rp in rel_line['relPaths']]
+            path_list = [rp[0][0] for rp in path_map[line['qId']]]
             path_list = [rp[1:].replace('/','.') for rp in path_list]
             for rel in path_list:
                 mids.extend(queryMetaNode(p, rel))

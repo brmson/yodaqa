@@ -69,6 +69,8 @@ if __name__ == "__main__":
     data = load(qdump, rel, gs)
 
     for q in data.to_list():
+        if (q['relPaths'] == [] or q['allRelations'] == []):
+            continue
         gs = [p[0][relation_num - 1][1:].replace("/",".") for p in q['relPaths'] if len(p[0]) >= relation_num]
         has_second_relation = len([1 for p in q['relPaths'] if len(p[0]) >= relation_num - 1]) > 0
         if ((len(gs) == 0 and relation_num != 3) or (relation_num == 3 and not has_second_relation)):
