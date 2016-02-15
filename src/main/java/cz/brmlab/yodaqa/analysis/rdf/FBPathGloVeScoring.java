@@ -258,7 +258,7 @@ public class FBPathGloVeScoring {
 				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
 			}
 		});
-		logger.debug("Limit of explorative paths" + pathLimitCnt);
+		logger.debug("Limit of explorative paths " + pathLimitCnt);
 		for(FBPathLogistic.PathScore s: scores) {
 			String str = "";
 			for (int i = 0; i < s.path.size(); i++) {
