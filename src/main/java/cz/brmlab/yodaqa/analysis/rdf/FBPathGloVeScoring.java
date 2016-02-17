@@ -207,6 +207,7 @@ public class FBPathGloVeScoring {
 		for(Concept c: concepts) {
 			for (Concept w: concepts) {
 				if (c.getPageID() == w.getPageID()) continue;
+					logger.debug("Witness path from " + c.getFullLabel() + " to " + w.getFullLabel());
 					res.addAll(fbo.queryWitnessRelations(c.getPageID(), c.getFullLabel(), w.getPageID(), logger));
 			}
 		}
@@ -229,13 +230,31 @@ public class FBPathGloVeScoring {
 				List<PropertyValue> newPath = new ArrayList<>(path);
 				newPath.add(witPath.get(1));
 				pvPaths.add(newPath);
+				PropertyValue pv = newPath.get(2);
+				logger.debug("++w {} {}/<<{}>>/[{}] -> {} (etc.)",
+						String.format(Locale.ENGLISH, "%.3f", pv.getScore()),
+						pv.getPropRes(), pv.getProperty(), tokenize(pv.getProperty()),
+						pv.getValue());
 			}
 		}
 	}
 
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
-		for (List<PropertyValue> path: pvPaths) {
+		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
+		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
+			@Override
+			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
+				// descending
+				int cmp;
+				for (int i = 0; i < Math.min(list1.size(), list2.size()); i++) {
+					cmp = list2.get(i).getScore().compareTo(list1.get(i).getScore());
+					if (cmp != 0 || Math.max(list1.size(), list2.size()) == i + 1) return cmp;
+				}
+				return Integer.valueOf(list2.size()).compareTo(Integer.valueOf(list1.size()));
+			}
+		});
+		for (List<PropertyValue> path: pathList) {
 			List<String> properties = new ArrayList<>();
 
 			double score = 0;
@@ -251,13 +270,13 @@ public class FBPathGloVeScoring {
 			FBPathLogistic.PathScore ps = new FBPathLogistic.PathScore(pp, score);
 			scores.add(ps);
 		}
-		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {
-			@Override
-			public int compare(FBPathLogistic.PathScore ps1, FBPathLogistic.PathScore ps2) {
-				// descending
-				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
-			}
-		});
+//		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {
+//			@Override
+//			public int compare(FBPathLogistic.PathScore ps1, FBPathLogistic.PathScore ps2) {
+//				// descending
+//				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
+//			}
+//		});
 		logger.debug("Limit of explorative paths " + pathLimitCnt);
 		for(FBPathLogistic.PathScore s: scores) {
 			String str = "";

@@ -320,7 +320,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* For witness property, select only relevant properties corresponding to given concept */
 			topicGenericFilters +
 			"";
-//		 logger.debug("executing sparql query: {}", rawQueryStr);
+		 logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 				new String[] { "property", "value", "prop", "/val", "/res",
 						       "witness_property", "witness", "witprop", "/wit"}, PROP_LIMIT);
