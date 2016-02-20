@@ -37,6 +37,8 @@ public class FBPathGloVeScoring {
 	private Relatedness r2 = new Relatedness(new MbWeights(FBPathGloVeScoring.class.getResourceAsStream("Mbrel2.txt")));
 	private Relatedness r3 = new Relatedness(new MbWeights(FBPathGloVeScoring.class.getResourceAsStream("Mbrel3.txt")));
 
+	private List<List<PropertyValue>> pathDump;
+
 	/** For legacy reasons, we use our own tokenization.
 	 * We also lower-case while at it, and might do some other
 	 * normalization steps...
@@ -104,6 +106,7 @@ public class FBPathGloVeScoring {
 
 		// Deduplication
 		pathSet.addAll(pvPaths);
+		pathDump = new ArrayList<>(pathSet);
 		/* Convert to a sorted list of PathScore objects. */
 		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pathSet, pathLimitCnt);
 
@@ -204,8 +207,10 @@ public class FBPathGloVeScoring {
 
 	protected List<List<PropertyValue>> getPotentialWitnesses(List<Concept> concepts, List<String> qtoks) {
 		List<List<PropertyValue>> res = new ArrayList<>();
+		logger.debug("Number of concepts: " + concepts.size());
 		for(Concept c: concepts) {
 			for (Concept w: concepts) {
+				logger.debug("Page ids " + c.getPageID() + " to " + w.getPageID());
 				if (c.getPageID() == w.getPageID()) continue;
 					logger.debug("Witness path from " + c.getFullLabel() + " to " + w.getFullLabel());
 					res.addAll(fbo.queryWitnessRelations(c.getPageID(), c.getFullLabel(), w.getPageID(), logger));
@@ -222,21 +227,29 @@ public class FBPathGloVeScoring {
 
 	protected void addWitnessPVPaths(List<List<PropertyValue>> pvPaths, List<PropertyValue> path,
 									 List<List<PropertyValue>> potentialWitnesses) {
-		pvPaths.add(path);
+		boolean added = false;
 		if (path.size() == 2) {
 			for(List<PropertyValue> witPath: potentialWitnesses) {
 				if (!path.get(0).getPropRes().equals(witPath.get(0).getPropRes()))
+					continue;
+				if (path.get(1).getPropRes().equals(witPath.get(1).getPropRes()))
 					continue;
 				List<PropertyValue> newPath = new ArrayList<>(path);
 				newPath.add(witPath.get(1));
 				pvPaths.add(newPath);
 				PropertyValue pv = newPath.get(2);
+				added = true;
 				logger.debug("++w {} {}/<<{}>>/[{}] -> {} (etc.)",
 						String.format(Locale.ENGLISH, "%.3f", pv.getScore()),
 						pv.getPropRes(), pv.getProperty(), tokenize(pv.getProperty()),
 						pv.getValue());
 			}
 		}
+		if (!added) pvPaths.add(path);
+	}
+
+	public List<List<PropertyValue>> dump() {
+		return pathDump;
 	}
 
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
@@ -254,7 +267,13 @@ public class FBPathGloVeScoring {
 				return Integer.valueOf(list2.size()).compareTo(Integer.valueOf(list1.size()));
 			}
 		});
+		List<List<PropertyValue>> reducedList = new ArrayList<>();
+		List<PropertyValue> prev = null;
 		for (List<PropertyValue> path: pathList) {
+			if (prev == null || !path.get(0).getPropRes().equals(prev.get(0).getPropRes())) reducedList.add(path);
+			prev = path;
+		}
+		for (List<PropertyValue> path: reducedList) {
 			List<String> properties = new ArrayList<>();
 
 			double score = 0;
@@ -285,6 +304,7 @@ public class FBPathGloVeScoring {
 			}
 			logger.debug("Explorative paths: " + str + " " + s.proba);
 		}
+
 		if (scores.size() > pathLimitCnt)
 			scores = scores.subList(0, pathLimitCnt);
 		return scores;
