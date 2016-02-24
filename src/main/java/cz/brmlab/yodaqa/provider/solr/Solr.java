@@ -212,7 +212,7 @@ public class Solr implements Closeable {
 		int finalDist = settings.getProximityBaseDist()
 			* ((int) Math.pow(settings.getProximityBaseFactor(), degree))
 			* n_terms;
-		double finalWeight = (sumWeight / Math.pow(2, degree));
+		double finalWeight = sumWeight / Math.pow(2, degree);
 		result.append("\"~" + finalDist + ")^" + finalWeight);
 	}
 

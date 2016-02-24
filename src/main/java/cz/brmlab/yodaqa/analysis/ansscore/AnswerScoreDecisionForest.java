@@ -137,7 +137,7 @@ public class AnswerScoreDecisionForest extends JCasAnnotator_ImplBase {
 			for(Tree t: model.forest) {
 				res += model.learning_rate*classifyWithOneTree(fvec, t, 0);
 			}
-			res = (1.0/(1.0 + Math.exp(-res)));
+			res = 1.0/(1.0 + Math.exp(-res));
 			answers.add(new AnswerScore(a, res));
 		}
 
