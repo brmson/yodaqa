@@ -682,7 +682,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
 	    long wait_start = System.currentTimeMillis();
 	    int timeout_s = 5*60;
 
-            finishedJobs.wait(timeout_s * 1000);
+            finishedJobs.wait((long)timeout_s * 1000);
 
 	    if (! (finishedJobs.get() == 0 && System.currentTimeMillis() - wait_start >= (timeout_s-1) * 1000))
               continue;
