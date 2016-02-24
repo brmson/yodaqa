@@ -38,6 +38,7 @@ public class FBPathGloVeScoring {
 	private Relatedness r3 = new Relatedness(new MbWeights(FBPathGloVeScoring.class.getResourceAsStream("Mbrel3.txt")));
 
 	private List<List<PropertyValue>> pathDump;
+	private LogisticRegressionFBPathRanking ranker = new LogisticRegressionFBPathRanking();
 
 	/** For legacy reasons, we use our own tokenization.
 	 * We also lower-case while at it, and might do some other
@@ -275,13 +276,17 @@ public class FBPathGloVeScoring {
 		}
 		for (List<PropertyValue> path: reducedList) {
 			List<String> properties = new ArrayList<>();
-
+//			logger.debug("Logistic regression score: " + ranker.getScore(path));
 			double score = 0;
+			String s = "";
 			for(PropertyValue pv: path) {
 				properties.add(pv.getPropRes());
 				score += pv.getScore();
+				s += pv.getPropRes() + " | ";
 			}
+//			logger.debug(s);
 			score /= path.size();
+			score = ranker.getScore(path);
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?
@@ -289,13 +294,13 @@ public class FBPathGloVeScoring {
 			FBPathLogistic.PathScore ps = new FBPathLogistic.PathScore(pp, score);
 			scores.add(ps);
 		}
-//		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {
-//			@Override
-//			public int compare(FBPathLogistic.PathScore ps1, FBPathLogistic.PathScore ps2) {
-//				// descending
-//				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
-//			}
-//		});
+		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {
+			@Override
+			public int compare(FBPathLogistic.PathScore ps1, FBPathLogistic.PathScore ps2) {
+				// descending
+				return Double.valueOf(ps2.proba).compareTo(ps1.proba);
+			}
+		});
 		logger.debug("Limit of explorative paths " + pathLimitCnt);
 		for(FBPathLogistic.PathScore s: scores) {
 			String str = "";
