@@ -228,7 +228,8 @@ public class FBPathGloVeScoring {
 
 	protected void addWitnessPVPaths(List<List<PropertyValue>> pvPaths, List<PropertyValue> path,
 									 List<List<PropertyValue>> potentialWitnesses) {
-		boolean added = false;
+//		boolean added = false;
+		pvPaths.add(path);
 		if (path.size() == 2) {
 			for(List<PropertyValue> witPath: potentialWitnesses) {
 				if (!path.get(0).getPropRes().equals(witPath.get(0).getPropRes()))
@@ -239,14 +240,14 @@ public class FBPathGloVeScoring {
 				newPath.add(witPath.get(1));
 				pvPaths.add(newPath);
 				PropertyValue pv = newPath.get(2);
-				added = true;
+//				added = true;
 				logger.debug("++w {} {}/<<{}>>/[{}] -> {} (etc.)",
 						String.format(Locale.ENGLISH, "%.3f", pv.getScore()),
 						pv.getPropRes(), pv.getProperty(), tokenize(pv.getProperty()),
 						pv.getValue());
 			}
 		}
-		if (!added) pvPaths.add(path);
+//		if (!added) pvPaths.add(path);
 	}
 
 	public List<List<PropertyValue>> dump() {
@@ -256,27 +257,28 @@ public class FBPathGloVeScoring {
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
-		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
-			@Override
-			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
-				// descending
-				int cmp;
-				for (int i = 0; i < Math.min(list1.size(), list2.size()); i++) {
-					cmp = list2.get(i).getScore().compareTo(list1.get(i).getScore());
-					if (cmp != 0 || Math.max(list1.size(), list2.size()) == i + 1) return cmp;
-				}
-				return Integer.valueOf(list2.size()).compareTo(Integer.valueOf(list1.size()));
-			}
-		});
-		List<List<PropertyValue>> reducedList = new ArrayList<>();
-		List<PropertyValue> prev = null;
+//		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
+//			@Override
+//			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
+//				// descending
+//				int cmp;
+//				for (int i = 0; i < Math.min(list1.size(), list2.size()); i++) {
+//					cmp = list2.get(i).getScore().compareTo(list1.get(i).getScore());
+//					if (cmp != 0 || Math.max(list1.size(), list2.size()) == i + 1) return cmp;
+//				}
+//				return Integer.valueOf(list2.size()).compareTo(Integer.valueOf(list1.size()));
+//			}
+//		});
+
+//		List<List<PropertyValue>> reducedList = new ArrayList<>();
+//		List<PropertyValue> prev = null;
+//		for (List<PropertyValue> path: pathList) {
+//			if (prev == null || !path.get(0).getPropRes().equals(prev.get(0).getPropRes())) reducedList.add(path);
+//			prev = path;
+//		}
 		for (List<PropertyValue> path: pathList) {
-			if (prev == null || !path.get(0).getPropRes().equals(prev.get(0).getPropRes())) reducedList.add(path);
-			prev = path;
-		}
-		for (List<PropertyValue> path: reducedList) {
 			List<String> properties = new ArrayList<>();
-//			logger.debug("Logistic regression score: " + ranker.getScore(path));
+			logger.debug("Logistic regression score: " + ranker.getScore(path));
 			double score = 0;
 			String s = "";
 			for(PropertyValue pv: path) {
@@ -284,7 +286,7 @@ public class FBPathGloVeScoring {
 				score += pv.getScore();
 				s += pv.getPropRes() + " | ";
 			}
-//			logger.debug(s);
+			logger.debug(s);
 			score /= path.size();
 			score = ranker.getScore(path);
 
