@@ -58,10 +58,10 @@ public class Solr implements Closeable {
 	}
 
 	private SolrServer createSolrServer(String url) throws Exception {
-		SolrServer server = new HttpSolrServer(url);
+		SolrServer serverLocal = new HttpSolrServer(url);
 		// server.ping();
 		this.url = url;
-		return server;
+		return serverLocal;
 	}
 
 	private SolrServer createEmbeddedSolrServer(String core) throws Exception {

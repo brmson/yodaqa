@@ -127,12 +127,12 @@ public class LblTree extends DefaultMutableTreeNode implements Comparable {
 	
 	public String toLatex() {
 		String res = "";
-		String label = FormatUtilities.escapeLatex(this.showNode());
+		String labelLocal = FormatUtilities.escapeLatex(this.showNode());
 		if (isLeaf() && !isRoot()) {
 			res += "\\Tr{" + label + "}";
 		} else {
 			int levelsep = 20 + (int)(0.3 * this.getNodeCount());
-			res += "\\pstree[linewidth=0.2pt,levelsep=" + levelsep + "pt,treefit=tight,treesep=4pt,nodesep=2pt]{\\Tr{" + label + "}}{";
+			res += "\\pstree[linewidth=0.2pt,levelsep=" + levelsep + "pt,treefit=tight,treesep=4pt,nodesep=2pt]{\\Tr{" + labelLocal + "}}{";
 			for (Enumeration e = children(); e.hasMoreElements();) {
 				res += ((LblTree)e.nextElement()).toLatex() + "\n";
 			}	   
