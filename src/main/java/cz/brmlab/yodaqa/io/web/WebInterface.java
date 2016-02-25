@@ -89,9 +89,8 @@ public class WebInterface implements Runnable {
 					response.status(404);
 					return "{}";
 				}
-				String json = q.toJson();
 				// logger.debug("{} :: /q <<{}>> -> <<{}>>", request.ip(), id, json);
-				return json;
+				return q.toJson();
 			}
 		});
 
