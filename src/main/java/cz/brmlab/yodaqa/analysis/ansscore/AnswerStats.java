@@ -15,7 +15,7 @@ import cz.brmlab.yodaqa.model.AnswerHitlist.Answer;
 
 
 public class AnswerStats {
-	public double mean[], sd[];
+	public double[] mean, sd;
 
 	public AnswerStats(JCas jcas) {
 		mean = new double[AnswerFV.labels.length];
@@ -32,7 +32,7 @@ public class AnswerStats {
 		}
 
 		/* Compute mean. */
-		for (double val[] : values)
+		for (double[] val : values)
 			for (int i = 0; i < mean.length; i++)
 				mean[i] += val[i];
 		for (int i = 0; i < mean.length; i++) {
@@ -41,7 +41,7 @@ public class AnswerStats {
 		}
 
 		/* Compute SD. */
-		for (double val[] : values)
+		for (double[] val : values)
 			for (int i = 0; i < sd.length; i++)
 				sd[i] += Math.pow(val[i] - mean[i], 2);
 		for (int i = 0; i < sd.length; i++) {

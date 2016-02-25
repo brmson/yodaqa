@@ -35,7 +35,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NUM;
 public class LATByQuantity extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(LATByQuantity.class);
 
-	protected static String texts[] = {
+	protected static String[] texts = {
 		// XXX: "quantity" is not the primary label for this wordnet sense
 		"measure",
 		// quantitative relation, e.g. speed:
@@ -43,7 +43,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		// positions and distances, e.g. altitude:
 		"magnitude",
 	};
-	protected static long synsets[] = {
+	protected static long[] synsets = {
 		33914,
 		13837364,
 		5097645,

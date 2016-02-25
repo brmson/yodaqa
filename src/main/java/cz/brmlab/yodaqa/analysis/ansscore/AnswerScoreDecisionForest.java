@@ -109,7 +109,7 @@ public class AnswerScoreDecisionForest extends JCasAnnotator_ImplBase {
 	}
 
 	private double[] reorderByLabels(double[] fvec) {
-		double res[] = new double [model.labels.size()];
+		double[] res = new double [model.labels.size()];
 		for (int i = 0; i < fvec.length; i++) {
 			char c;
 			if (i % 3 == 0) c = '@';
@@ -131,7 +131,7 @@ public class AnswerScoreDecisionForest extends JCasAnnotator_ImplBase {
 		for (Answer a : JCasUtil.select(jcas, Answer.class)) {
 			AnswerFV fv = new AnswerFV(a, astats);
 
-			double fvec[] = reorderByLabels(fv.getFV());
+			double[] fvec = reorderByLabels(fv.getFV());
 
 			double res = model.prior;
 			for(Tree t: model.forest) {

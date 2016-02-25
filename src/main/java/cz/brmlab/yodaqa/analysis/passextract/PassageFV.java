@@ -21,12 +21,12 @@ import cz.brmlab.yodaqa.model.SearchResult.PassageFeature;
 
 public class PassageFV {
 	public static ArrayList<Class<? extends PassageFeature>> features;
-	public static String labels[] = {
+	public static String[] labels = {
 		"clueMatch", "clueWeight",
 		"aboutClueMatch", "aboutClueWeight",
 	};
 
-	public double values[];
+	public double[] values;
 
 	public PassageFV(Passage passage) {
 		/* This is a huge mess - seems like static initializer of

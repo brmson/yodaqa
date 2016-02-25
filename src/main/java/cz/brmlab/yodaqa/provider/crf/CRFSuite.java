@@ -88,7 +88,7 @@ public class CRFSuite {
 
 			InputStream inputStream = new DataInputStream(modelStream);
 			OutputStream out = new FileOutputStream(modelFile);
-			byte buf[] = new byte[1024];
+			byte[] buf = new byte[1024];
 			int len;
 			while ((len = inputStream.read(buf)) > 0) {
 				out.write(buf, 0, len);

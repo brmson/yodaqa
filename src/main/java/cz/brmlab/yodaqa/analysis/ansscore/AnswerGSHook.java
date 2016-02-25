@@ -357,7 +357,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 	 */
 	/* XXX: This is a gross hack the way this is done now.
 	 * TODO: Also, this should be automated. */
-	String featureBlacklist[] = {
+	String[] featureBlacklist = {
 		"originPsgByClueSubjectNE",
 		"originDBpOClueToken",
 		"originDBpOCluePhrase",

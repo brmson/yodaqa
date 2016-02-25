@@ -64,7 +64,7 @@ public abstract class CachedJenaLookup {
 	 * be fetched (or null, failing that).
 	 *
 	 * Example: rawQuery("?lab rdfs:label \"Achilles\"@en", "lab", 0); */
-	public List<Literal[]> rawQuery(String selectWhere, String resources[], int limit) {
+	public List<Literal[]> rawQuery(String selectWhere, String[] resources, int limit) {
 		ArrayList<String> varNames = new ArrayList<>();
 		for (String r : resources)
 			varNames.add(r.replace("/", ""));
