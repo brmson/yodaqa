@@ -325,7 +325,7 @@ public class FormatUtilities {
 	public static String escapeLatex(String s) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < s.length(); i++) {
-			String c = s.charAt(i) + "";
+			String c = Character.toString(s.charAt(i));
 			if (c.equals("#")) {
 				c = "\\#";
 			}
