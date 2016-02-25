@@ -189,7 +189,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			needALasts.put(o, need);
 		}
 		// logger.debug("in: {} resultIsLast {}, alasts {} < {}", o, ri.getIsLast(), seen, need);
-		return (need > 0 && seen >= need);
+		return need > 0 && seen >= need;
 	}
 
 	/** Convert given AnswerCAS to an Answer FS in an AnswerHitlistCAS. */

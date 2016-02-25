@@ -509,7 +509,7 @@ public class MultiThreadASB extends Resource_ImplBase implements ASB {
       try {
         if (nextCas == null)
           nextCas = processUntilNextOutputCas();
-        return (nextCas != null);
+        return nextCas != null;
       } finally {
         timer.stopIt();
         getMBean().reportAnalysisTime(timer.getDuration());

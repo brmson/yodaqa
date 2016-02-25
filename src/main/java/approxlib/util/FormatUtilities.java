@@ -77,7 +77,7 @@ public class FormatUtilities {
 		for (int i = 0; i < parse.length; i++) {
 			parse[i] = stripQuotes(parse[i], quote);
 		}
-		return (parse);
+		return parse;
 	}
 	
 	public static String stripQuotes(String s, char quote) {

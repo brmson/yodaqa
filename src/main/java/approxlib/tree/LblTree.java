@@ -184,7 +184,7 @@ public class LblTree extends DefaultMutableTreeNode implements Comparable {
 		if (parents == 0) {
 			return 0.0;
 		} else {
-			return ((double)children / (double)parents);
+			return (double)children / (double)parents;
 		}
 	}
 	
@@ -392,7 +392,7 @@ public class LblTree extends DefaultMutableTreeNode implements Comparable {
 			return true;
 		} else if (cmp > 0) {
 			if (!isRoot()) {
-				LblTree parent = ((LblTree)this.getParent()); 
+				LblTree parent = (LblTree)this.getParent(); 
 				int i = parent.getIndex(this);     // slow, as getIndex() performs linear search in children array
 				parent.insert(p, i);
 				return true;

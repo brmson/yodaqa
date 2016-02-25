@@ -211,7 +211,7 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.createView("Result");
 			JCas resultView = jcas.getView("Result");
 			if (result != null) {
-				boolean isLast = (i == results.size());
+				boolean isLast = i == results.size();
 				ResultInfo ri = generateBingResult(questionView, resultView, result, isLast ? i : 0);
 				String title = ri.getDocumentTitle();
 				logger.info(" ** SearchResultCAS: " + ri.getDocumentId() + " " + (title != null ? title : ""));
