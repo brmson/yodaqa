@@ -170,9 +170,9 @@ public class BingFullPrimarySearch extends JCasMultiplier_ImplBase {
 			Map<String, Map> json = builder.create()
 					.fromJson(new InputStreamReader(connection.getInputStream()), Map.class);
 			Map<String, ArrayList> d = json.get("d");
-			ArrayList<Map> results = d.get("results");
+			ArrayList<Map> resultsLocal = d.get("results");
 			int rank = 1;
-			for (Map<String, String> m : results) {
+			for (Map<String, String> m : resultsLocal) {
 				BingResult br = new BingResult(m.get("Title"), m.get("Description"), m.get("Url"), rank);
 				AnswerSourceBingSnippet as = new AnswerSourceBingSnippet(br.title, br.url);
 				br.sourceID = QuestionDashboard.getInstance().get(questionView).storeAnswerSource(as);
