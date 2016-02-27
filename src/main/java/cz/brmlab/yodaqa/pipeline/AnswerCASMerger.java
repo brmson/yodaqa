@@ -204,7 +204,6 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		} else { //create new IntegerArray of size 0
 		answer.setSnippetIDs(new IntegerArray(hitlistCas, 0));
 		}
-		int i = 0;
 		/* Store the Focus. */
 		for (Focus focus : JCasUtil.select(canAnswer, Focus.class)) {
 			answer.setFocus(focus.getCoveredText());

@@ -116,16 +116,16 @@ public class ParallelAnalysisEngine extends AggregateAnalysisEngine_impl {
       trace.addEvent(procEvt);
 
       // now add subevents for each component
-      Iterator<AnalysisEngine> aeIter = _getASB().getComponentAnalysisEngines().values().iterator();
+      /*Iterator<AnalysisEngine> aeIter = _getASB().getComponentAnalysisEngines().values().iterator();
       while (aeIter.hasNext()) {
         AnalysisEngine ae = aeIter.next();
-        /*if (ae instanceof AnalysisEngineImplBase) {
+        if (ae instanceof AnalysisEngineImplBase) {
           ProcessTrace subPT = ((AnalysisEngineImplBase) ae).buildProcessTraceFromMBeanStats();
           if (subPT.getEvents().size() > 0) {
             procEvt.addSubEvent(subPT.getEvents().get(0));
           }
-        }*/
-      }
+        }
+      }*/
       // and also FlowController
       FlowControllerContainer fcc = ((MultiThreadASB) _getASB()).getFlowControllerContainer();
       int flowControllerTime = (int) fcc.getMBean().getAnalysisTimeSinceMark();
