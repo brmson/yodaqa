@@ -1695,3 +1695,10 @@ lfb000287	factoid	How many new words does a typical children learn each day?	2 n
 lfb000288	factoid	Where did Boko Haram attack?	Nigeria
 lfb000289	factoid	who directed pirates of the carribean	Gore Verbinski|Verbinski
 lfb000290	factoid	which language is spoken in france?	French
+1945	factoid	When was Adolf Hitler born?	1889|20 April
+1857	factoid	What is the length of Churchill Downs racetrack?	seven furlongs|1.* mile|2 k(ilo)?m(eters)?
+2217	factoid	What country does Greenland belong to?	Denmark
+1510	factoid	Where is Anne Frank's diary?	Amsterdam|Anne Frank House|the Netherlands
+1469	factoid	When did Alexandra Graham Bell invent the telephone?	1876
+10062	factoid	how many lines per page are in Gutenberg bible?	\b42\b
+10067	factoid	in which country was microsoft founded?	\bU(nited|\.)?\s*S(tates|\.)?\b
