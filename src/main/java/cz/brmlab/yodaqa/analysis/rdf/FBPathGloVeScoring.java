@@ -116,14 +116,14 @@ public class FBPathGloVeScoring {
 
 	/** Score and add all pvpaths of a concept to the pvPaths. */
 	protected void addConceptPVPaths(List<List<PropertyValue>> pvPaths, List<String> qtoks, Concept c) {
-		List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), logger);
+		List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), null, logger);
 		for(PropertyValue pv: list) {
-			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix)) {
-				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
-			}
+//			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix)) {
+//				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
+//			}
 			List<String> proptoks = tokenize(pv.getProperty());
 			pv.setScore(r1.probability(qtoks, proptoks));
-
+			logger.debug("FIRST " + pv.getPropRes());
 			List<PropertyValue> pvlist = new ArrayList<>();
 			pvlist.add(pv);
 			pvPaths.add(pvlist);
@@ -165,11 +165,11 @@ public class FBPathGloVeScoring {
 	 * and to get to the answer we need to crawl one more step. */
 	protected void addExpandedPVPaths(List<List<PropertyValue>> pvPaths, List<PropertyValue> path, List<String> qtoks, List<Concept> concepts) {
 		PropertyValue first = path.get(0);
-		if (first.getValRes() != null && /* no label */ first.getValRes().endsWith(first.getValue())) {
+//		if (first.getValRes() != null && /* no label */ first.getValRes().endsWith(first.getValue())) {
 			// meta-node, crawl it too
-			String mid = first.getValRes().substring(midPrefix.length());
-			String title = first.getValue();
-			List<List<PropertyValue>> secondPaths = scoreSecondRelation(mid, title, qtoks, concepts);
+//			String mid = first.getValRes().substring(midPrefix.length());
+//			String title = first.getValue();
+			List<List<PropertyValue>> secondPaths = scoreSecondRelation(first.getPropRes(), qtoks, concepts);
 			for (List<PropertyValue> secondPath: secondPaths) {
 				List<PropertyValue> newpath = new ArrayList<>(path);
 				newpath.addAll(secondPath);
@@ -183,19 +183,24 @@ public class FBPathGloVeScoring {
 						newpath.size() == 3 ? " |" + newpath.get(2).getPropRes() : "",
 						pv.getValue());
 			}
-		} else {
-			pvPaths.add(path);
-		}
+			if (secondPaths.size() == 0) pvPaths.add(path);
+//		} else {
+//			pvPaths.add(path);
+//		}
 	}
 
-	protected List<List<PropertyValue>> scoreSecondRelation(String mid, String title, List<String> qtoks, List<Concept> concepts) {
-		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, title, logger);
-
+	protected List<List<PropertyValue>> scoreSecondRelation(String prop, List<String> qtoks, List<Concept> concepts) {
+//		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, title, logger);
+		List<PropertyValue> nextpvs = new ArrayList<>();
+		for (Concept c: concepts) {
+//			fbo.isExpandable(c.getPageID(), prop);
+			if (fbo.isExpandable(c.getPageID(), prop)) nextpvs.addAll(fbo.queryAllRelations(c.getPageID(), prop, logger));
+		}
 		/* Now, add the followup paths, possibly including a required
 		 * witness match. */
 		List<List<PropertyValue>> secondPaths = new ArrayList<>();
 		for (PropertyValue pv: nextpvs) {
-
+			logger.debug("SECOND " + pv.getPropRes());
 			List<String> proptoks = tokenize(pv.getProperty());
 			pv.setScore(r2.probability(qtoks, proptoks));
 

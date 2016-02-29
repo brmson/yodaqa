@@ -245,28 +245,57 @@ public class FreebaseOntology extends FreebaseLookup {
 		return results;
 	}
 
-	public List<PropertyValue> queryAllRelations(int pageId, Logger logger) {
+	public List<PropertyValue> queryAllRelations(int pageId, String prop, Logger logger) {
 		Set<TitledMid> mids = queryTopicByPageID(pageId, logger);
 		List<PropertyValue> result = new ArrayList<>();
 		for (TitledMid tmid: mids) {
-			result.addAll(queryAllRelations(tmid.mid, tmid.title, logger));
+			result.addAll(queryAllRelations(tmid.mid, tmid.title, prop, logger));
 		}
 		return result;
 	}
 
-	public List<PropertyValue> queryAllRelations(String mid, String title, Logger logger) {
+	public boolean isExpandable(int pageId, String prop) {
+		String rawQueryStr =
+				"?res <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageId + "\" . \n" +
+				"?res ns:" + prop + " ?val .\n" +
+				"BIND(ns:" + prop + " AS ?prop) .\n" +
+				topicGenericFilters +
+				"";
+		List<Literal[]> rawResults = rawQueryDisctinct(rawQueryStr,
+				new String[] { "res", "val", "vallabel" }, 1);
+		logger.debug("EXP q " + rawQueryStr);
+		if (rawResults.size() == 0) return false;
+		logger.debug("EXPANDABLE " + rawResults.get(0)[2]);
+		return rawResults.get(0)[2] == null || rawResults.get(0)[2].getString().length() == 0;
+	}
+
+	public List<PropertyValue> queryAllRelations(String mid, String title, String prop_first, Logger logger) {
 		//XXX A lot of duplicate code with queryTopicGeneric
 		List<PropertyValue> result = new ArrayList<>();
 
-		String rawQueryStr =
+		String rawQueryStr;
+		int limit;
+		if (prop_first == null) {
+			rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
-			"BIND(ns:" + mid + " AS ?res)\n" +
+			"BIND(ns:" + mid + " AS ?res) .\n" +
 			topicGenericFilters +
 			"";
-//		 logger.debug("executing sparql query: {}", rawQueryStr);
-		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-				new String[] { "property", "value", "prop", "/val", "/res" }, PROP_LIMIT);
+			limit = PROP_LIMIT;
+		} else {
+			rawQueryStr =
+			/* Grab all properties of the topic, for starters. */
+			"ns:" + mid + " ns:" + prop_first + " ?meta .\n" +
+			"?meta ?prop ?val .\n"	+
+			"BIND(ns:" + mid + " AS ?res) .\n" +
+			topicGenericFilters +
+			"";
+			limit = 5;
+		}
+		 logger.debug("executing sparql query: {}", rawQueryStr);
+		List<Literal[]> rawResults = rawQueryDisctinct(rawQueryStr,
+				new String[] { "property", "prop", "/res" }, limit);
 
 		for (Literal[] rawResult : rawResults) {
 			/* ns:astronomy.star.temperature_k -> "temperature"
@@ -281,10 +310,10 @@ public class FreebaseOntology extends FreebaseLookup {
 					replaceAll("^.*\\.([^\\. ]*)$", "\\1").
 					replaceAll("_.$", "").
 					replaceAll("_", " ");
-			String value = rawResult[1].getString();
-			String prop = rawResult[2].getString();
-			String valRes = rawResult[3] != null ? rawResult[3].getString() : null;
-			String objRes = rawResult[4].getString();
+			String value = "";//rawResult[1].getString();
+			String prop = rawResult[1].getString();
+			String valRes = "";//rawResult[3] != null ? rawResult[3].getString() : null;
+			String objRes = rawResult[2].getString();
 			logger.info("Freebase {}/{} property: {}/{} -> {} ({})", title, mid, propLabel, prop, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
