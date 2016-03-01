@@ -19,8 +19,8 @@ public class MbWeights {
 	private final double b;
 
 	public MbWeights(InputStream path) {
-		DoubleMatrix M = DoubleMatrix.zeros(50, 50);
-		double b = 0;
+		DoubleMatrix mLocal = DoubleMatrix.zeros(50, 50);
+		double bLocal = 0;
 		BufferedReader br = new BufferedReader(new InputStreamReader(path));
 		String line;
 		try {
@@ -32,16 +32,16 @@ public class MbWeights {
 				}
 				String[] numbers = line.split(" ");
 				for (int i = 0; i < 50; i++) {
-					M.put(j, i, Double.parseDouble(numbers[i]));
+					mLocal.put(j, i, Double.parseDouble(numbers[i]));
 				}
 			}
 			line = br.readLine();
-			b = Double.parseDouble(line);
+			bLocal = Double.parseDouble(line);
 		} catch (IOException ex) {
 			Logger.getLogger(MbWeights.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		this.M = M;
-		this.b = b;
+		this.M = mLocal;
+		this.b = bLocal;
 	}
 
 	public DoubleMatrix getM() {

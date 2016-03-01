@@ -2,7 +2,7 @@
 #
 # Usage: data/ml/embsel/gen.sh DATASET SENTSELDIR
 #
-# Example: data/ml/embsel/gen.sh moviesE ../Sentence-selection/
+# Example: data/ml/embsel/gen.sh moviesF ../Sentence-selection/
 
 set -e
 

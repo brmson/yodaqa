@@ -30,8 +30,7 @@ public class PropertyGloVeScoring {
 	private Relatedness r = new Relatedness(new MbWeights(PropertyGloVeScoring.class.getResourceAsStream("Mbprop.txt")));
 
 	public double relatedness(List<String> qtoks, List<String> ptoks) {
-		double res = r.probability(qtoks, ptoks);
-		return res;
+		return r.probability(qtoks, ptoks);
 	}
 
 	/** For legacy reasons, we use our own tokenization.

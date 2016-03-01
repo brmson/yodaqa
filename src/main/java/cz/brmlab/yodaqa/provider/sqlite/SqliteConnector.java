@@ -60,8 +60,7 @@ public class SqliteConnector {
 	public ResultSet select(String table, String where) throws SQLException {
 		Statement stmt = connection.createStatement();
 		String sql = String.format("SELECT * from %s WHERE %s", table, where);
-		ResultSet res = stmt.executeQuery(sql);
-		return res;
+		return stmt.executeQuery(sql);
 	}
 
 	public void close() throws SQLException {

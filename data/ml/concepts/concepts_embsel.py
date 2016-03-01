@@ -3,8 +3,8 @@
 # concepts_embsel - generate dataset for training embedding-based question/description classifier
 #
 # Example:
-# mkdir data/ml/embsel/concepts-moviesC-train
-# data/ml/concepts/concepts_embsel.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesC/entity-linking.json data/ml/embsel/concepts-moviesC-train
+# mkdir data/ml/embsel/concepts-moviesF-train
+# data/ml/concepts/concepts_embsel.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesF/entity-linking.json data/ml/embsel/concepts-moviesF-train
 #
 # This uses the https://github.com/brmson/Sentence-selection infrastructure
 # for training the classifier.

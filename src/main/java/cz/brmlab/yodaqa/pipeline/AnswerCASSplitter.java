@@ -103,9 +103,8 @@ public class AnswerCASSplitter extends JCasMultiplier_ImplBase {
 
 		JCas jcas = getEmptyJCas();
 		try {
-			JCas questionView, hitlistView;
+			JCas questionView;
 			questionView = baseJcas.getView("Question");
-			hitlistView = baseJcas.getView("AnswerHitlist");
 
 			JCas canQuestionView = jcas.createView("Question");
 			copyQuestion(questionView, canQuestionView);

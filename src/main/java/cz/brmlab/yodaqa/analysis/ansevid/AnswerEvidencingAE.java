@@ -37,11 +37,11 @@ public class AnswerEvidencingAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Mark all answers that even *enter* this AE with
 		 * a special feature. */
-		// builder.add(createPrimitiveDescription(AnswerTopMarker.class));
+		builder.add(createPrimitiveDescription(AnswerTopMarker.class));
 
 		/* Run a fulltext search for each answer + question clues and
 		 * measure the number of hits. */
-		// builder.add(createPrimitiveDescription(SolrHitsCounter.class));
+		builder.add(createPrimitiveDescription(SolrHitsCounter.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */

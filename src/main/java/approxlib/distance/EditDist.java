@@ -702,10 +702,10 @@ public class EditDist extends EditBasedDist {
 	}
 	
 	public void NaiveFeatureExtractor(int[] feats) {
-		String editScript = printHumaneEditScript();
-		int cInt = editScript.split("ins\\(").length-1;
-		int cDel = editScript.split("del\\(").length-1;
-		int cRen = editScript.split("ren\\(").length-1;
+		String editScriptLocal = printHumaneEditScript();
+		int cInt = editScriptLocal.split("ins\\(").length-1;
+		int cDel = editScriptLocal.split("del\\(").length-1;
+		int cRen = editScriptLocal.split("ren\\(").length-1;
 		feats[0] = cInt;
 		feats[1] = cDel;
 		feats[2] = cRen;

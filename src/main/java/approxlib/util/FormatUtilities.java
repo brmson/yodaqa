@@ -77,7 +77,7 @@ public class FormatUtilities {
 		for (int i = 0; i < parse.length; i++) {
 			parse[i] = stripQuotes(parse[i], quote);
 		}
-		return (parse);
+		return parse;
 	}
 	
 	public static String stripQuotes(String s, char quote) {
@@ -325,7 +325,7 @@ public class FormatUtilities {
 	public static String escapeLatex(String s) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < s.length(); i++) {
-			String c = s.charAt(i) + "";
+			String c = Character.toString(s.charAt(i));
 			if (c.equals("#")) {
 				c = "\\#";
 			}
