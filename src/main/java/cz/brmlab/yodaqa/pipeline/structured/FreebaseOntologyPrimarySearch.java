@@ -83,7 +83,8 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		/* Method #2 (A Priori): Get a question-based list of specific properties
 		 * to query (predicting them based on the paths we've seen
 		 * for similar questions). */
-		List<PathScore> aPrioriPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+//		List<PathScore> aPrioriPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		List<PathScore> aPrioriPaths = new ArrayList<>();
 
 		/* Now, get the property values. */
 

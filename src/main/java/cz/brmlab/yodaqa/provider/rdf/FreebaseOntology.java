@@ -258,16 +258,19 @@ public class FreebaseOntology extends FreebaseLookup {
 				"OPTIONAL {\n" +
 				"  ?val rdfs:label ?vallabel .\n" +
 				"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
-				"}\n" +
+				"} .\n" +
 				"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
+				"FILTER( STRSTARTS(STR(?val), 'http://rdf.freebase.com/ns/m.') )\n" +
 				topicGenericFilters +
 				"";
+//		logger.debug("PROP " + prop);
 		List<Literal[]> rawResults = rawQueryDisctinct(rawQueryStr,
 				new String[] { "res", "val", "vallabel" }, 1);
 //		logger.debug("EXP q " + rawQueryStr);
-		if (rawResults.size() == 0 || rawResults.get(0)[2] == null || rawResults.get(0)[2].getString().isEmpty()) return null;
-		logger.debug("EXPANDABLE " + rawResults.get(0)[2]);
-		return rawResults.get(0)[1].getString();
+		if (rawResults.size() == 0) return null;
+//		logger.debug("EXPANDABLE " + rawResults.get(0)[2]);
+		if (rawResults.get(0)[2] == null || rawResults.get(0)[2].getString().isEmpty()) return rawResults.get(0)[1].getString();
+		else return null;
 	}
 
 	public List<PropertyValue> queryAllRelations(String mid, String title, String prop_first, Logger logger) {
