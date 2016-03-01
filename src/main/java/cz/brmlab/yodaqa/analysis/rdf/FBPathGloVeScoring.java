@@ -194,7 +194,9 @@ public class FBPathGloVeScoring {
 		List<PropertyValue> nextpvs = new ArrayList<>();
 		for (Concept c: concepts) {
 //			fbo.isExpandable(c.getPageID(), prop);
-			if (fbo.isExpandable(c.getPageID(), prop)) nextpvs.addAll(fbo.queryAllRelations(c.getPageID(), prop, logger));
+			String metaMid = fbo.preExpand(c.getPageID(), prop);
+			if (metaMid == null) continue;
+			nextpvs.addAll(fbo.queryAllRelations(metaMid, "", null, logger));
 		}
 		/* Now, add the followup paths, possibly including a required
 		 * witness match. */

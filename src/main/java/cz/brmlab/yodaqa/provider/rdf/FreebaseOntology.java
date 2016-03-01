@@ -115,20 +115,6 @@ public class FreebaseOntology extends FreebaseLookup {
 	};
 
 	private final String topicGenericFilters =
-			/* Check if property is a labelled type, and use that
-			 * label as property name if so. */
-			"OPTIONAL {\n" +
-			"  ?prop ns:type.object.name ?proplabel .\n" +
-			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
-			"} .\n" +
-			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
-			/* Check if value is not a pointer to another topic
-			 * we could resolve to a label. */
-			"OPTIONAL {\n" +
-			"  ?val rdfs:label ?vallabel .\n" +
-			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
-			"}\n" +
-			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
 			/* Keep only ns: properties */
 			"FILTER( STRSTARTS(STR(?prop), 'http://rdf.freebase.com/ns/') )\n" +
 			/* ...but ignore some common junk which yields mostly
@@ -254,19 +240,26 @@ public class FreebaseOntology extends FreebaseLookup {
 		return result;
 	}
 
-	public boolean isExpandable(int pageId, String prop) {
+	public String preExpand(int pageId, String prop) {
 		String rawQueryStr =
 				"?res <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageId + "\" . \n" +
 				"?res ns:" + prop + " ?val .\n" +
 				"BIND(ns:" + prop + " AS ?prop) .\n" +
+				/* Check if value is not a pointer to another topic
+			 	 * we could resolve to a label. */
+				"OPTIONAL {\n" +
+				"  ?val rdfs:label ?vallabel .\n" +
+				"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
+				"}\n" +
+				"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
 				topicGenericFilters +
 				"";
 		List<Literal[]> rawResults = rawQueryDisctinct(rawQueryStr,
 				new String[] { "res", "val", "vallabel" }, 1);
-		logger.debug("EXP q " + rawQueryStr);
-		if (rawResults.size() == 0) return false;
+//		logger.debug("EXP q " + rawQueryStr);
+		if (rawResults.size() == 0 || rawResults.get(0)[2] == null || rawResults.get(0)[2].getString().isEmpty()) return null;
 		logger.debug("EXPANDABLE " + rawResults.get(0)[2]);
-		return rawResults.get(0)[2] == null || rawResults.get(0)[2].getString().length() == 0;
+		return rawResults.get(0)[1].getString();
 	}
 
 	public List<PropertyValue> queryAllRelations(String mid, String title, String prop_first, Logger logger) {
@@ -279,8 +272,6 @@ public class FreebaseOntology extends FreebaseLookup {
 			rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
-			"BIND(ns:" + mid + " AS ?res) .\n" +
-			topicGenericFilters +
 			"";
 			limit = PROP_LIMIT;
 		} else {
@@ -288,12 +279,19 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ns:" + prop_first + " ?meta .\n" +
 			"?meta ?prop ?val .\n"	+
-			"BIND(ns:" + mid + " AS ?res) .\n" +
-			topicGenericFilters +
 			"";
 			limit = 5;
 		}
-		 logger.debug("executing sparql query: {}", rawQueryStr);
+		rawQueryStr +=
+		"BIND(ns:" + mid + " AS ?res) .\n" +
+		topicGenericFilters +
+//		"OPTIONAL {\n" +
+//		"  ?prop ns:type.object.name ?proplabel .\n" +
+//		"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
+//		"} .\n" +
+//		"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
+		"";
+//		 logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQueryDisctinct(rawQueryStr,
 				new String[] { "property", "prop", "/res" }, limit);
 
@@ -306,10 +304,11 @@ public class FreebaseOntology extends FreebaseLookup {
 			 * But typically we fetch the property name from
 			 * the RDF store too, so this should be irrelevant
 			 * in that case.*/
-			String propLabel = rawResult[0].getString().
-					replaceAll("^.*\\.([^\\. ]*)$", "\\1").
-					replaceAll("_.$", "").
-					replaceAll("_", " ");
+//			String propLabel = rawResult[0].getString().
+//					replaceAll("^.*\\.([^\\. ]*)$", "\\1").
+//					replaceAll("_.$", "").
+//					replaceAll("_", " ");
+			String propLabel = "";
 			String value = "";//rawResult[1].getString();
 			String prop = rawResult[1].getString();
 			String valRes = "";//rawResult[3] != null ? rawResult[3].getString() : null;
@@ -347,6 +346,20 @@ public class FreebaseOntology extends FreebaseLookup {
 			"}\n" +
 			"BIND( IF(BOUND(?witlabel), ?witlabel, ?wit) AS ?witness )\n" +
 			/* For witness property, select only relevant properties corresponding to given concept */
+			/* Check if property is a labelled type, and use that
+			 * label as property name if so. */
+			"OPTIONAL {\n" +
+			"  ?prop ns:type.object.name ?proplabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
+			"} .\n" +
+			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
+			/* Check if value is not a pointer to another topic
+			 * we could resolve to a label. */
+			"OPTIONAL {\n" +
+			"  ?val rdfs:label ?vallabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
+			"}\n" +
+			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
 			topicGenericFilters +
 			"";
 		 logger.debug("executing sparql query: {}", rawQueryStr);
@@ -414,6 +427,20 @@ public class FreebaseOntology extends FreebaseLookup {
 			/* Grab all properties of the topic, for starters. */
 			"ns:" + mid + " ?prop ?val .\n" +
 			"BIND(ns:" + mid + " AS ?res)\n" +
+			/* Check if property is a labelled type, and use that
+			 * label as property name if so. */
+			"OPTIONAL {\n" +
+			"  ?prop ns:type.object.name ?proplabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?proplabel), \"en\") )\n" +
+			"} .\n" +
+			"BIND( IF(BOUND(?proplabel), ?proplabel, ?prop) AS ?property )\n" +
+			/* Check if value is not a pointer to another topic
+			 * we could resolve to a label. */
+			"OPTIONAL {\n" +
+			"  ?val rdfs:label ?vallabel .\n" +
+			"  FILTER( LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
+			"}\n" +
+			"BIND( IF(BOUND(?vallabel), ?vallabel, ?val) AS ?value )\n" +
 			topicGenericFilters +
 			/* Ignore properties with values that are still URLs,
 			 * i.e. pointers to an unlabelled topic. */
