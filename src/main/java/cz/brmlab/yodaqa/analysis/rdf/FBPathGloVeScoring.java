@@ -89,7 +89,7 @@ public class FBPathGloVeScoring {
 			addConceptPVPaths(pvPaths, qtoks, c);
 		}
 		//XXX Select top N path counting only distincs ones
-		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, Integer.MAX_VALUE);
+		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, 30);
 
 		/* Expand pvPaths for the 2-level neighborhood. */
 		pvPaths.clear();
@@ -117,6 +117,9 @@ public class FBPathGloVeScoring {
 	/** Score and add all pvpaths of a concept to the pvPaths. */
 	protected void addConceptPVPaths(List<List<PropertyValue>> pvPaths, List<String> qtoks, Concept c) {
 		List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), null, logger);
+		for(PropertyValue pv: list) {
+			pv.setProperty(fbo.queryPropertyLabel(pv.getPropRes()));
+		}
 		for(PropertyValue pv: list) {
 //			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix)) {
 //				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
@@ -196,7 +199,11 @@ public class FBPathGloVeScoring {
 //			fbo.isExpandable(c.getPageID(), prop);
 			String metaMid = fbo.preExpand(c.getPageID(), prop);
 			if (metaMid == null) continue;
-			nextpvs.addAll(fbo.queryAllRelations(metaMid, "", null, logger));
+			List<PropertyValue> results = fbo.queryAllRelations(metaMid, "", null, logger);
+			for(PropertyValue res: results) {
+				res.setProperty(fbo.queryPropertyLabel(res.getPropRes()));
+			}
+			nextpvs.addAll(results);
 		}
 		/* Now, add the followup paths, possibly including a required
 		 * witness match. */
@@ -295,7 +302,7 @@ public class FBPathGloVeScoring {
 			}
 			logger.debug(s);
 			score /= path.size();
-			score = ranker.getScore(path);
+//			score = ranker.getScore(path);
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?

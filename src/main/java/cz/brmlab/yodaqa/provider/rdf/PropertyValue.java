@@ -57,6 +57,7 @@ public class PropertyValue {
 
 	public String getPropRes() { return propRes; }
 	public void setPropRes(String propRes) { this.propRes = propRes; }
+	public void setProperty(String prop) { this.property = prop; }
 
 	public Double getScore() { return score; }
 	public void setScore(double score) { this.score = score; }

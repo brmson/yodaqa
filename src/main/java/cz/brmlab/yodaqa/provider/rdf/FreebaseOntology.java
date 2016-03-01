@@ -240,6 +240,14 @@ public class FreebaseOntology extends FreebaseLookup {
 		return result;
 	}
 
+	public String queryPropertyLabel(String prop) {
+		String rawQueryStr = "ns:" + prop+ " ns:type.object.name ?proplabel . \n";
+		List<Literal[]> rawResults = rawQueryDisctinct(rawQueryStr,
+				new String[] { "proplabel" }, 1);
+		if (rawResults.get(0)[0] == null) return null;
+		return rawResults.get(0)[0].getString();
+	}
+
 	public String preExpand(int pageId, String prop) {
 		String rawQueryStr =
 				"?res <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageId + "\" . \n" +
