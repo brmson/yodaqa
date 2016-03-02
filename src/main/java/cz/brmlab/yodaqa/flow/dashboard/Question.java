@@ -27,6 +27,7 @@ public class Question {
 	protected boolean finished = false;
 	protected List<QuestionConcept> artificialConcepts = new ArrayList<>();
 	protected boolean hasOnlyArtificialConcept=false;
+	protected String clueText;
 	/* Generation counts for various fields above, incremented every
 	 * time they are modified. */
 	protected int gen_sources = 0;
@@ -39,13 +40,6 @@ public class Question {
 		this.text = text;
 	}
 
-	public Question(String id, String text, List<QuestionConcept> artificialConcepts, boolean hasOnlyArtificialConcept) {
-		this.id = id;
-		this.text = text;
-		this.artificialConcepts = artificialConcepts;
-		this.hasOnlyArtificialConcept=hasOnlyArtificialConcept;
-	}
-
 	/** @return the id */
 	public synchronized String getId() { return id; }
 	/** @return the text */
@@ -55,12 +49,20 @@ public class Question {
 	/** @return if question is using artificial Concepts only */
 	public synchronized boolean getHasOnlyArtificialConcept(){ return hasOnlyArtificialConcept; }
 
+	public synchronized String getClueText(){return clueText;}
+
 	/** @return the summary */
 	public synchronized QuestionSummary getSummary() { return summary; }
 	/** @param summary the summary to set */
 	public synchronized void setSummary(QuestionSummary summary) {
 		this.summary = summary;
 	}
+
+	public synchronized void setArtificialConcepts(List<QuestionConcept> artificialConcepts) { this.artificialConcepts = artificialConcepts; }
+
+	public synchronized void setHasOnlyArtificialConcept(boolean hasOnlyArtificialConcept) { this.hasOnlyArtificialConcept=hasOnlyArtificialConcept; }
+
+	public synchronized void setClueText(String clueText) {this.clueText=clueText;}
 
 	public synchronized void addSnippet(AnsweringSnippet snippet) {
 		snippets.put(snippet.getSnippetID(),snippet);
