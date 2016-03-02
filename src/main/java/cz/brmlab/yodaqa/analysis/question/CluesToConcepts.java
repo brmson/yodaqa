@@ -431,7 +431,10 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		clue.setLabel(label);
 		clue.setIsReliable(isReliable);
 		clue.addToIndexes();
-		logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
+		if (base != null)
+			logger.debug("new by {}: {} <| {}", base.getType().getShortName(), clue.getLabel(), clue.getCoveredText());
+		else
+			logger.debug("new by null: {} <| {}", clue.getLabel(), clue.getCoveredText());
 	}
 
 	protected void addNEClue(JCas jcas, int begin, int end, Annotation base,
