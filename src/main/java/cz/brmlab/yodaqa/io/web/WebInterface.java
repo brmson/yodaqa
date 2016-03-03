@@ -62,9 +62,9 @@ public class WebInterface implements Runnable {
 					q.setArtificialConcepts(artificialConcepts);
 					q.setHasOnlyArtificialConcept(true);
 				}
-				String clueText = request.queryParams("prewiousCorrectAnswer");
-				if (clueText != null){
-					q.setClueText(clueText);
+				String artificialClueText = request.queryParams("artificialClue");
+				if (artificialClueText != null){
+					q.setArtificialClueText(artificialClueText);
 				}
 				QuestionDashboard.getInstance().askQuestion(q);
 				response.header("Access-Control-Allow-Origin", "*");
