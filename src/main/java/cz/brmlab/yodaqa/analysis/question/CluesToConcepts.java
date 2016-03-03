@@ -17,6 +17,7 @@ import cz.brmlab.yodaqa.analysis.answer.SyntaxCanonization;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectNE;
 import cz.brmlab.yodaqa.model.Question.ClueSubjectPhrase;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
+import cz.brmlab.yodaqa.model.Question.ArtificialClue;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -81,11 +82,11 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 	public void process(JCas resultView) throws AnalysisEngineProcessException {
 		QuestionInfo qi = JCasUtil.selectSingle(resultView, QuestionInfo.class);
-		if (qi.getOnlyArtificialConcepts()){
-			return;
-		}
-
-		List<Clue> clues = cluesToCheck(resultView);
+		List<Clue> clues;
+		if (!qi.getOnlyArtificialConcepts())
+			clues = cluesToCheck(resultView);
+		else
+			clues = artificialCluesToCheck(resultView);
 
 		/* Try to generate more canonical labels for the clues
 		 * by linking them to enwiki articles and creating
@@ -254,6 +255,13 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 		for (Clue clue : JCasUtil.select(resultView, ClueSubjectPhrase.class))
 			clues.add(clue);
 		for (Clue clue : JCasUtil.select(resultView, ClueSubjectNE.class))
+			clues.add(clue);
+		return clues;
+	}
+
+	protected List<Clue> artificialCluesToCheck(JCas resultView){
+		List<Clue> clues = new ArrayList<>();
+		for (Clue clue : JCasUtil.select(resultView, ArtificialClue.class))
 			clues.add(clue);
 		return clues;
 	}
