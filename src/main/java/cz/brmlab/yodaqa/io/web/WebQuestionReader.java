@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.io.web;
 
+import cz.brmlab.yodaqa.model.Question.ArtificialClue;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
 
@@ -65,6 +66,12 @@ public class WebQuestionReader extends CasCollectionReader_ImplBase {
 				aConcept.addToIndexes();
 				logger.debug("CONCEPT: {}/{}", c.getPageId(), c.getTitle());
 			}
+		}
+
+		if (q.getArtificialClueText() != null) {
+			ArtificialClue clue = new ArtificialClue(jcas,0,0);
+			clue.setLabel(q.getArtificialClueText());
+			clue.addToIndexes();
 		}
 	}
 

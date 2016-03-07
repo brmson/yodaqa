@@ -57,11 +57,14 @@ public class WebInterface implements Runnable {
 				}
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
 				List<QuestionConcept> artificialConcepts = retrieveArtificialConcepts(request);
-				Question q;
+				Question q = new Question(id, text);
 				if (!artificialConcepts.isEmpty()) {
-					q = new Question(id, text, artificialConcepts, true);
-				} else {
-					q = new Question(id, text);
+					q.setArtificialConcepts(artificialConcepts);
+					q.setHasOnlyArtificialConcept(true);
+				}
+				String artificialClueText = request.queryParams("artificialClue");
+				if (artificialClueText != null){
+					q.setArtificialClueText(artificialClueText);
 				}
 				QuestionDashboard.getInstance().askQuestion(q);
 				response.header("Access-Control-Allow-Origin", "*");
