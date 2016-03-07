@@ -69,8 +69,7 @@ public class ConceptClassifier {
 		for(int i = 0; i < weights.length; i++) {
 			sum += features[i]*weights[i];
 		}
-		double probability = sigmoid(sum);
-		return probability;
+		return sigmoid(sum);
 	}
 
 	public double sigmoid(double z) {

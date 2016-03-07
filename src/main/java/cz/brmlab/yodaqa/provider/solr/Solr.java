@@ -58,10 +58,10 @@ public class Solr implements Closeable {
 	}
 
 	private SolrServer createSolrServer(String url) throws Exception {
-		SolrServer server = new HttpSolrServer(url);
+		SolrServer serverLocal = new HttpSolrServer(url);
 		// server.ping();
 		this.url = url;
-		return server;
+		return serverLocal;
 	}
 
 	private SolrServer createEmbeddedSolrServer(String core) throws Exception {
@@ -212,7 +212,7 @@ public class Solr implements Closeable {
 		int finalDist = settings.getProximityBaseDist()
 			* ((int) Math.pow(settings.getProximityBaseFactor(), degree))
 			* n_terms;
-		double finalWeight = (sumWeight / Math.pow(2, degree));
+		double finalWeight = sumWeight / Math.pow(2, degree);
 		result.append("\"~" + finalDist + ")^" + finalWeight);
 	}
 

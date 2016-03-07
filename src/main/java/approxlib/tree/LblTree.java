@@ -127,12 +127,12 @@ public class LblTree extends DefaultMutableTreeNode implements Comparable {
 	
 	public String toLatex() {
 		String res = "";
-		String label = FormatUtilities.escapeLatex(this.showNode());
+		String labelLocal = FormatUtilities.escapeLatex(this.showNode());
 		if (isLeaf() && !isRoot()) {
 			res += "\\Tr{" + label + "}";
 		} else {
 			int levelsep = 20 + (int)(0.3 * this.getNodeCount());
-			res += "\\pstree[linewidth=0.2pt,levelsep=" + levelsep + "pt,treefit=tight,treesep=4pt,nodesep=2pt]{\\Tr{" + label + "}}{";
+			res += "\\pstree[linewidth=0.2pt,levelsep=" + levelsep + "pt,treefit=tight,treesep=4pt,nodesep=2pt]{\\Tr{" + labelLocal + "}}{";
 			for (Enumeration e = children(); e.hasMoreElements();) {
 				res += ((LblTree)e.nextElement()).toLatex() + "\n";
 			}	   
@@ -184,7 +184,7 @@ public class LblTree extends DefaultMutableTreeNode implements Comparable {
 		if (parents == 0) {
 			return 0.0;
 		} else {
-			return ((double)children / (double)parents);
+			return (double)children / (double)parents;
 		}
 	}
 	
@@ -392,7 +392,7 @@ public class LblTree extends DefaultMutableTreeNode implements Comparable {
 			return true;
 		} else if (cmp > 0) {
 			if (!isRoot()) {
-				LblTree parent = ((LblTree)this.getParent()); 
+				LblTree parent = (LblTree)this.getParent(); 
 				int i = parent.getIndex(this);     // slow, as getIndex() performs linear search in children array
 				parent.insert(p, i);
 				return true;
