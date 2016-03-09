@@ -291,7 +291,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"ns:" + mid + " ns:" + prop_first + " ?meta .\n" +
 			"?meta ?prop ?val .\n"	+
 			"";
-			limit = 5;
+			limit = PROP_LIMIT;
 		}
 		rawQueryStr +=
 		"BIND(ns:" + mid + " AS ?res) .\n" +

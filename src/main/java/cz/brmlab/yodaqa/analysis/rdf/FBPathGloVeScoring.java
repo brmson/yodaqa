@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.analysis.rdf;
 
 import cz.brmlab.yodaqa.model.Question.Concept;
+import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
@@ -39,6 +40,7 @@ public class FBPathGloVeScoring {
 
 	private List<List<PropertyValue>> pathDump;
 	private LogisticRegressionFBPathRanking ranker = new LogisticRegressionFBPathRanking();
+	private String questionText;
 
 	/** For legacy reasons, we use our own tokenization.
 	 * We also lower-case while at it, and might do some other
@@ -84,12 +86,15 @@ public class FBPathGloVeScoring {
 		List<String> qtoks = questionRepr(questionView);
 		logger.debug("questionRepr: {}", qtoks);
 
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
+		questionText = qi.getCAS().getDocumentText();
+
 		/* Generate pvPaths for the 1-level neighborhood. */
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
 			addConceptPVPaths(pvPaths, qtoks, c);
 		}
 		//XXX Select top N path counting only distincs ones
-		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, 30);
+		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, Integer.MAX_VALUE);
 
 		/* Expand pvPaths for the 2-level neighborhood. */
 		pvPaths.clear();
@@ -114,22 +119,35 @@ public class FBPathGloVeScoring {
 		return scores;
 	}
 
+	protected List<Double> getRnnScores(List<PropertyValue> list, int propertyNum) {
+		List<String> propLabels = new ArrayList<>();
+		for(PropertyValue pv: list) {
+			propLabels.add(pv.getProperty());
+		}
+		return RNNScoring.getScores(questionText, propLabels, propertyNum - 1);
+	}
+
 	/** Score and add all pvpaths of a concept to the pvPaths. */
 	protected void addConceptPVPaths(List<List<PropertyValue>> pvPaths, List<String> qtoks, Concept c) {
 		List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), null, logger);
 		for(PropertyValue pv: list) {
 			pv.setProperty(fbo.queryPropertyLabel(pv.getPropRes()));
 		}
+		List<Double> scores = getRnnScores(list, 1);
+		int i = 0;
 		for(PropertyValue pv: list) {
 //			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix)) {
 //				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
 //			}
 			List<String> proptoks = tokenize(pv.getProperty());
-			pv.setScore(r1.probability(qtoks, proptoks));
+//			pv.setScore(r1.probability(qtoks, proptoks));
+			pv.setScore(scores.get(i));
+//			logger.debug("SCORESS " + r1.probability(qtoks, proptoks) + " " + scores.get(i));
 			logger.debug("FIRST " + pv.getPropRes());
 			List<PropertyValue> pvlist = new ArrayList<>();
 			pvlist.add(pv);
 			pvPaths.add(pvlist);
+			i++;
 		}
 	}
 
@@ -199,23 +217,27 @@ public class FBPathGloVeScoring {
 //			fbo.isExpandable(c.getPageID(), prop);
 			String metaMid = fbo.preExpand(c.getPageID(), prop);
 			if (metaMid == null) continue;
-			List<PropertyValue> results = fbo.queryAllRelations(metaMid, "", null, logger);
+//			List<PropertyValue> results = fbo.queryAllRelations(metaMid, "", null, logger);
+			List<PropertyValue> results = fbo.queryAllRelations(c.getPageID(), prop, logger);
 			for(PropertyValue res: results) {
 				res.setProperty(fbo.queryPropertyLabel(res.getPropRes()));
 			}
 			nextpvs.addAll(results);
 		}
+		List<Double> scores = getRnnScores(nextpvs, 2);
 		/* Now, add the followup paths, possibly including a required
 		 * witness match. */
+		int i = 0;
 		List<List<PropertyValue>> secondPaths = new ArrayList<>();
 		for (PropertyValue pv: nextpvs) {
 			logger.debug("SECOND " + pv.getPropRes());
 			List<String> proptoks = tokenize(pv.getProperty());
-			pv.setScore(r2.probability(qtoks, proptoks));
-
+//			pv.setScore(r2.probability(qtoks, proptoks));
+			pv.setScore(scores.get(i));
 			List<PropertyValue> secondPath = new ArrayList<>();
 			secondPath.add(pv);
 			secondPaths.add(secondPath);
+			i++;
 		}
 		return secondPaths;
 	}
@@ -232,10 +254,18 @@ public class FBPathGloVeScoring {
 			}
 		}
 		// Scoring...
+		List<PropertyValue> witProps = new ArrayList<>();
+		for(List<PropertyValue> list: res) {
+			witProps.add(list.get(1));
+		}
+		List<Double> scores = getRnnScores(witProps, 3);
+		int i = 0;
 		for(List<PropertyValue> witPath: res) {
 			PropertyValue wpv = witPath.get(1);
 			List<String> wproptoks = tokenize(wpv.getProperty());
-			wpv.setScore(r3.probability(qtoks, wproptoks));
+//			wpv.setScore(r3.probability(qtoks, wproptoks));
+			wpv.setScore(scores.get(i));
+			i++;
 		}
 		return res;
 	}
@@ -325,7 +355,6 @@ public class FBPathGloVeScoring {
 			}
 			logger.debug("Explorative paths: " + str + " " + s.proba);
 		}
-
 		if (scores.size() > pathLimitCnt)
 			scores = scores.subList(0, pathLimitCnt);
 		return scores;
