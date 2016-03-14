@@ -25,6 +25,7 @@ import java.util.*;
 public class FBPathGloVeScoring {
 	private static final String midPrefix = "http://rdf.freebase.com/ns/";
 	private static final int TOP_N_WITNESSES = 2;
+	private static final int TOP_N_ENTITIES_REPLACE = Integer.MAX_VALUE;
 
 	private static FBPathGloVeScoring fbpgs = new FBPathGloVeScoring();
 	protected Logger logger = LoggerFactory.getLogger(FBPathGloVeScoring.class);
@@ -66,6 +67,47 @@ public class FBPathGloVeScoring {
 		return tokens;
 	}
 
+	private static String fullQuestionRepr(JCas questionView, int entityLimit) {
+		String entityToken = "<e>";
+		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
+		String text = qi.getCAS().getDocumentText();
+		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		concepts.sort(new Comparator<Concept>() {
+			@Override
+			public int compare(Concept c1, Concept c2) {
+				return Double.valueOf(c2.getScore()).compareTo(c1.getScore());
+			}
+		});
+		List<List<Integer>> idxs = new ArrayList<>();
+		for(Concept concept: concepts) {
+			List<Integer> beginEnd = new ArrayList<>();
+			beginEnd.add(concept.getBegin());
+			beginEnd.add(concept.getEnd());
+			idxs.add(beginEnd);
+		}
+		idxs.sort(new Comparator<List<Integer>>() {
+			@Override
+			public int compare(List<Integer> l1, List<Integer> l2) {
+				if (l1.get(0).equals(l2.get(0))) return l2.get(1).compareTo(l1.get(1));
+				else return l2.get(0).compareTo(l1.get(0));
+			}
+		});
+		int prevb = -1, preve = -1;
+		for (int i = 0; i < idxs.size(); i++) {
+			if (i == entityLimit) break;
+			int size = text.length();
+			int b = idxs.get(i).get(0);
+			int e = idxs.get(i).get(1);
+			if (prevb == b && preve == e) continue;
+			if (b < size && e <= size) {
+				text = text.substring(0, b) + entityToken + text.substring(e, size);
+			}
+			prevb = b;
+			preve = e;
+		}
+		return text;
+	}
+
 	/** Get top N estimated-most-promising paths based on exploration
 	 * across all linked concepts. */
 	public List<FBPathLogistic.PathScore> getPaths(JCas questionView, int pathLimitCnt) {
@@ -86,8 +128,8 @@ public class FBPathGloVeScoring {
 		List<String> qtoks = questionRepr(questionView);
 		logger.debug("questionRepr: {}", qtoks);
 
-		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
-		questionText = qi.getCAS().getDocumentText();
+		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
+		logger.debug("REPRRR " + questionText);
 
 		/* Generate pvPaths for the 1-level neighborhood. */
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
@@ -99,6 +141,10 @@ public class FBPathGloVeScoring {
 		/* Expand pvPaths for the 2-level neighborhood. */
 		pvPaths.clear();
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		for(Concept c: concepts) {
+			logger.debug("CONCEPT " + c.getFullLabel() + " " + c.getPageID());
+			logger.debug(c.getBegin() + " " + c.getEnd());
+		}
 		for (List<PropertyValue> path: lenOnePaths)
 			addExpandedPVPaths(pvPaths, path, qtoks, concepts);
 
@@ -124,7 +170,19 @@ public class FBPathGloVeScoring {
 		for(PropertyValue pv: list) {
 			propLabels.add(pv.getProperty());
 		}
-		return RNNScoring.getScores(questionText, propLabels, propertyNum - 1);
+		return RNNScoring.getScores(questionText, propLabels, propertyNum);
+	}
+
+	protected List<Double> getFullPathRnnScores(List<List<PropertyValue>> list) {
+		List<List<String>> pathLabels = new ArrayList<>();
+		for(List<PropertyValue> path: list) {
+			List<String> propLabels = new ArrayList<>();
+			for(PropertyValue pv: path) {
+				propLabels.add(pv.getProperty());
+			}
+			pathLabels.add(propLabels);
+		}
+		return RNNScoring.getFullPathScores(questionText, pathLabels);
 	}
 
 	/** Score and add all pvpaths of a concept to the pvPaths. */
@@ -133,15 +191,15 @@ public class FBPathGloVeScoring {
 		for(PropertyValue pv: list) {
 			pv.setProperty(fbo.queryPropertyLabel(pv.getPropRes()));
 		}
-		List<Double> scores = getRnnScores(list, 1);
+//		List<Double> scores = getRnnScores(list, 1);
 		int i = 0;
 		for(PropertyValue pv: list) {
 //			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix)) {
 //				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
 //			}
 			List<String> proptoks = tokenize(pv.getProperty());
-//			pv.setScore(r1.probability(qtoks, proptoks));
-			pv.setScore(scores.get(i));
+			pv.setScore(r1.probability(qtoks, proptoks));
+//			pv.setScore(scores.get(i));
 //			logger.debug("SCORESS " + r1.probability(qtoks, proptoks) + " " + scores.get(i));
 			logger.debug("FIRST " + pv.getPropRes());
 			List<PropertyValue> pvlist = new ArrayList<>();
@@ -224,7 +282,7 @@ public class FBPathGloVeScoring {
 			}
 			nextpvs.addAll(results);
 		}
-		List<Double> scores = getRnnScores(nextpvs, 2);
+//		List<Double> scores = getRnnScores(nextpvs, 2);
 		/* Now, add the followup paths, possibly including a required
 		 * witness match. */
 		int i = 0;
@@ -232,8 +290,8 @@ public class FBPathGloVeScoring {
 		for (PropertyValue pv: nextpvs) {
 			logger.debug("SECOND " + pv.getPropRes());
 			List<String> proptoks = tokenize(pv.getProperty());
-//			pv.setScore(r2.probability(qtoks, proptoks));
-			pv.setScore(scores.get(i));
+			pv.setScore(r2.probability(qtoks, proptoks));
+//			pv.setScore(scores.get(i));
 			List<PropertyValue> secondPath = new ArrayList<>();
 			secondPath.add(pv);
 			secondPaths.add(secondPath);
@@ -258,13 +316,13 @@ public class FBPathGloVeScoring {
 		for(List<PropertyValue> list: res) {
 			witProps.add(list.get(1));
 		}
-		List<Double> scores = getRnnScores(witProps, 3);
+//		List<Double> scores = getRnnScores(witProps, 3);
 		int i = 0;
 		for(List<PropertyValue> witPath: res) {
 			PropertyValue wpv = witPath.get(1);
 			List<String> wproptoks = tokenize(wpv.getProperty());
-//			wpv.setScore(r3.probability(qtoks, wproptoks));
-			wpv.setScore(scores.get(i));
+			wpv.setScore(r3.probability(qtoks, wproptoks));
+//			wpv.setScore(scores.get(i));
 			i++;
 		}
 		return res;
@@ -301,6 +359,7 @@ public class FBPathGloVeScoring {
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
+		List<Double> rnnScores = getFullPathRnnScores(pathList);
 //		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
 //			@Override
 //			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
@@ -320,6 +379,7 @@ public class FBPathGloVeScoring {
 //			if (prev == null || !path.get(0).getPropRes().equals(prev.get(0).getPropRes())) reducedList.add(path);
 //			prev = path;
 //		}
+		int scoreIdx = 0;
 		for (List<PropertyValue> path: pathList) {
 			List<String> properties = new ArrayList<>();
 			logger.debug("Logistic regression score: " + ranker.getScore(path));
@@ -333,6 +393,7 @@ public class FBPathGloVeScoring {
 			logger.debug(s);
 			score /= path.size();
 //			score = ranker.getScore(path);
+			score = rnnScores.get(scoreIdx++);
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?

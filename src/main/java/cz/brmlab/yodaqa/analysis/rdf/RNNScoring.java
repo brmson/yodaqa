@@ -5,15 +5,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonReader;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class RNNScoring {
 
 	private static final String MODEL_URL = "http://pichl.ailao.eu:5000/score";
+	private static final String SEPARATOR = " ### ";
 
 	public static List<Double> getScores(String question, List<String> labels, int propertyNumber) {
 		List<Double> res = null;
@@ -31,20 +34,21 @@ public class RNNScoring {
 			os.flush();
 
 			res = processResponse(conn.getInputStream());
-//			BufferedReader br = new BufferedReader(new InputStreamReader(
-//					(conn.getInputStream())));
-
-//			String output;
-//			System.out.println("Output from Server .... \n");
-//			while ((output = br.readLine()) != null) {
-//				System.out.println(output);
-//			}
 			conn.disconnect();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return res;
+	}
+
+	public static List<Double> getFullPathScores(String question, List<List<String>> labels) {
+		List<String> fullLabelList = new ArrayList<>();
+		for (List<String> pathLabels: labels) {
+			String fullLabel = StringUtils.join(pathLabels, SEPARATOR);
+			fullLabelList.add(fullLabel);
+		}
+		return getScores(question, fullLabelList, 0);
 	}
 
 	private static String buildRequestBody(String question, List<String> labels, int propertyNumber) {
