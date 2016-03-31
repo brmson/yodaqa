@@ -23,11 +23,11 @@ import java.util.Map;
 public class STSScoring {
 	private static final String MODEL_URL = "http://pichl.ailao.eu:5000/score";
 
-	public static List<Double> getScores(String question, List<String> labels, int propertyNumber) {
+	public static List<Double> getScores(String question, List<String> labels) {
 		List<Double> res = null;
 		while (true) {
 			try {
-				res = getScoresDo(question, labels, propertyNumber);
+				res = getScoresDo(question, labels);
 				break; // Success!
 			} catch (IOException e) {
 				notifyRetry(e);
@@ -36,14 +36,14 @@ public class STSScoring {
 		return res;
 	}
 
-	protected static List<Double> getScoresDo(String question, List<String> labels, int propertyNumber) throws IOException {
+	protected static List<Double> getScoresDo(String question, List<String> labels) throws IOException {
 		URL url = new URL(MODEL_URL);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Content-Type", "application/json");
 
-		String input = buildRequestBody(question, labels, propertyNumber);
+		String input = buildRequestBody(question, labels);
 
 		OutputStream os = conn.getOutputStream();
 		os.write(input.getBytes());
@@ -64,7 +64,7 @@ public class STSScoring {
 		}
 	}
 
-	private static String buildRequestBody(String question, List<String> labels, int propertyNumber) {
+	private static String buildRequestBody(String question, List<String> labels) {
 		JsonObject jobject = new JsonObject();
 		jobject.addProperty("question", question);
 		JsonArray propLabels = new JsonArray();
@@ -72,7 +72,6 @@ public class STSScoring {
 			propLabels.add(new JsonPrimitive(lab));
 		}
 		jobject.add("prop_labels", propLabels);
-		jobject.addProperty("property_number", propertyNumber);
 		return jobject.toString();
 	}
 
