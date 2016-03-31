@@ -19,15 +19,16 @@ import java.util.Map;
  * proplabel).  dataset-sts implements a variety of models, from BM25 TFIDF
  * to advanced attention-based deep neural networks.
  *
- * TODO: Singleton rather than static? */
+ * TODO: Rather than a static class, the exact same mechanism as SolrNamedSource
+ * when we do both property and passage selection. */
 public class STSScoring {
 	private static final String MODEL_URL = "http://pichl.ailao.eu:5000/score";
 
-	public static List<Double> getScores(String question, List<String> labels) {
+	public static List<Double> getScores(String qtext, List<String> atexts) {
 		List<Double> res = null;
 		while (true) {
 			try {
-				res = getScoresDo(question, labels);
+				res = getScoresDo(qtext, atexts);
 				break; // Success!
 			} catch (IOException e) {
 				notifyRetry(e);
@@ -36,14 +37,14 @@ public class STSScoring {
 		return res;
 	}
 
-	protected static List<Double> getScoresDo(String question, List<String> labels) throws IOException {
+	protected static List<Double> getScoresDo(String qtext, List<String> atexts) throws IOException {
 		URL url = new URL(MODEL_URL);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Content-Type", "application/json");
 
-		String input = buildRequestBody(question, labels);
+		String input = buildRequestBody(qtext, atexts);
 
 		OutputStream os = conn.getOutputStream();
 		os.write(input.getBytes());
@@ -64,19 +65,19 @@ public class STSScoring {
 		}
 	}
 
-	private static String buildRequestBody(String question, List<String> labels) {
+	private static String buildRequestBody(String qtext, List<String> atexts) {
 		JsonObject jobject = new JsonObject();
-		jobject.addProperty("question", question);
-		JsonArray propLabels = new JsonArray();
-		for(String lab: labels) {
-			propLabels.add(new JsonPrimitive(lab));
+		jobject.addProperty("qtext", qtext);
+		JsonArray jatexts = new JsonArray();
+		for(String atext : atexts) {
+			jatexts.add(new JsonPrimitive(atext));
 		}
-		jobject.add("prop_labels", propLabels);
+		jobject.add("atext", jatexts);
 		return jobject.toString();
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<Double> processResponse (InputStream stream) {
+	private static List<Double> processResponse(InputStream stream) {
 		GsonBuilder builder = new GsonBuilder();
 		Map<String, List<Double>> json = builder.create().fromJson(new InputStreamReader(stream), Map.class);
 		return json.get("score");
