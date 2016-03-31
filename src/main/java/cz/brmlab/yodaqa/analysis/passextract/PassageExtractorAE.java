@@ -46,8 +46,9 @@ public class PassageExtractorAE /* XXX: extends AggregateBuilder ? */ {
 
 		case PARAM_PASS_SEL_BYCLUE:
 			builder.add(createPrimitiveDescription(PassByClue.class));
-			builder.add(createPrimitiveDescription(PassScoreSimple.class),
-				CAS.NAME_DEFAULT_SOFA, "Passages");
+			//builder.add(createPrimitiveDescription(PassScoreSimple.class),
+			//	CAS.NAME_DEFAULT_SOFA, "Passages");
+			builder.add(createPrimitiveDescription(PassScoreSTS.class));
 			break;
 
 		case PARAM_PASS_SEL_FIRST:
