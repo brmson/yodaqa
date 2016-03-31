@@ -22,7 +22,7 @@ import java.util.Map;
  * TODO: Rather than a static class, the exact same mechanism as SolrNamedSource
  * when we do both property and passage selection. */
 public class STSScoring {
-	private static final String MODEL_URL = "http://pichl.ailao.eu:5000/score";
+	private static final String MODEL_URL = "http://sts.ailao.eu:5050/score";
 
 	public static List<Double> getScores(String qtext, List<String> atexts) {
 		List<Double> res = null;
@@ -45,7 +45,6 @@ public class STSScoring {
 		conn.setRequestProperty("Content-Type", "application/json");
 
 		String input = buildRequestBody(qtext, atexts);
-
 		OutputStream os = conn.getOutputStream();
 		os.write(input.getBytes());
 		os.flush();
