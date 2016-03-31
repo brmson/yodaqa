@@ -60,9 +60,6 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		if (sentence == null)
 			return;
 
-		int numClues = JCasUtil.select(questionView, Clue.class).size();
-		double weight = numClues; // proportional to #clues since so is PassByClue
-
 		/* Generate features. */
 		AnswerFV afv = new AnswerFV();
 		afv.setFeature(AF.OriginPsg, 1.0);
@@ -72,7 +69,7 @@ public class PassFirst extends JCasAnnotator_ImplBase {
 		Passage passage = new Passage(passagesView);
 		passage.setBegin(sentence.getBegin());
 		passage.setEnd(sentence.getEnd());
-		passage.setScore(Math.sqrt(weight));
+		passage.setScore(0);
 		passage.setAnsfeatures(afv.toFSArray(passagesView));
 		passage.addToIndexes();
 
