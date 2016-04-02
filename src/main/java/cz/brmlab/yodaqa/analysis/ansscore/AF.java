@@ -31,6 +31,8 @@ public class AF {
 	public static final String ResultLogScore = "resultLogScore";
 	/** Answer Feature: Score of the passage that produced this answer */
 	public static final String PassageScore = "passageScore";
+	/** Answer Feature: Reciprocial rank of the passage that produced this answer */
+	public static final String PassageRR = "passageRr";
 	/** Answer Feature: [0,1] score of originating property within
 	 * structured database search. As determined e.g. by the fbpath model
 	 * (estimated probability of it holding the correct answer). */

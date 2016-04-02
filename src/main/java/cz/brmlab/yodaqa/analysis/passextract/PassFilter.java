@@ -85,6 +85,7 @@ public class PassFilter extends JCasAnnotator_ImplBase {
 			QuestionDashboard.getInstance().get(questionView).addSnippet(ap);
 
 			Passage p2 = (Passage) copier.copyFs(passage);
+			p2.setRr(1. / (double) i);
 			p2.setSnippetID(ap.getSnippetID());
 			p2.addToIndexes();
 

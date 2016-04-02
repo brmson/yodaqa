@@ -31,7 +31,7 @@ import cz.brmlab.yodaqa.model.SearchResult.CandidateAnswer;
 public class AnswerFV {
 	/* XXX: This actually still prevents auto-generated features. */
 	public static String labels[] = {
-		"occurences", "resultRR", "resultLogScore", "passageScore",
+		"occurences", "resultRR", "resultLogScore", "passageScore", "passageRr",
 			"propertyScore", "propertyGloVeScore",
 		"originPsg", "originPsgFirst",
 		"originPsgByClueToken", "originPsgByCluePhrase", "originPsgByClueSV",

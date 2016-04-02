@@ -75,6 +75,11 @@
             <description>Score of the passage regarding relevance likelihood.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>rr</name>
+            <description>The reciprocial rank of the pasage in the sorted list of scored passages.</description>
+            <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
             <featureDescription>
                 <name>snippetID</name>
                 <description>ID of corresponding snippet.</description>
