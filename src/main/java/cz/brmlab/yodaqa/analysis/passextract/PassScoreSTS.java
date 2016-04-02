@@ -61,6 +61,7 @@ public class PassScoreSTS extends JCasAnnotator_ImplBase {
 		while (scoreIt.hasNext() && psgIt.hasNext()) {
 			double score = scoreIt.next();
 			Passage passage = psgIt.next();
+			score = 1. / (1. + Math.exp(-score)); // sigmoid
 			passages.add(new PassScore(passage, score));
 		}
 
