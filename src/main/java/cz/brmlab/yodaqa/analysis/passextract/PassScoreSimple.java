@@ -51,6 +51,7 @@ public class PassScoreSimple extends JCasAnnotator_ImplBase {
 
 			double score = fv.getValues()[clueWeight_i] + 0.25 * fv.getValues()[aboutClueWeight_i];
 			// logger.debug(fv.getValues()[clueWeight_i] + " + 0.25 * " + fv.getValues()[aboutClueWeight_i] + " = " + score);
+			score = Math.log(1 + score);
 			passages.add(new PassScore(passage, score));
 		}
 

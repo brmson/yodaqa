@@ -29,8 +29,8 @@ public class AF {
 	/** Answer Feature: Log-score (by solr) of the result that produced
 	 * the supporting passage */
 	public static final String ResultLogScore = "resultLogScore";
-	/** Answer Feature: Log-score of the passage that produced this answer */
-	public static final String PassageLogScore = "passageLogScore";
+	/** Answer Feature: Score of the passage that produced this answer */
+	public static final String PassageScore = "passageScore";
 	/** Answer Feature: [0,1] score of originating property within
 	 * structured database search. As determined e.g. by the fbpath model
 	 * (estimated probability of it holding the correct answer). */

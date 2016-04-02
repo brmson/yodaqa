@@ -51,8 +51,8 @@ public class AnswerScoreSimple extends JCasAnnotator_ImplBase {
 			specificity = Math.exp(-4);
 
 		double passageLogScore = 0;
-		if (fv.isFeatureSet(AF.PassageLogScore))
-			passageLogScore = fv.getFeatureValue(AF.PassageLogScore);
+		if (fv.isFeatureSet(AF.PassageScore))
+			passageLogScore = fv.getFeatureValue(AF.PassageScore);
 		else if (fv.getFeatureValue(AF.OriginDocTitle) > 0.0)
 			passageLogScore = (double)Math.log(1 + 2);
 

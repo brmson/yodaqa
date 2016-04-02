@@ -35,8 +35,7 @@ public abstract class CandidateGenerator extends JCasAnnotator_ImplBase {
 
 		fv.setFeature(AF.Occurences, 1.0);
 		if (p.getScore() != 0)
-			//fv.setFeature(AF.PassageLogScore, Math.log(1 + p.getScore()));
-			fv.setFeature(AF.PassageLogScore, p.getScore()); // XXX rename feature
+			fv.setFeature(AF.PassageScore, p.getScore());
 
 		for (QuestionLATMatch qlm : JCasUtil.selectCovered(QuestionLATMatch.class, p)) {
 			double distance = 1000;
