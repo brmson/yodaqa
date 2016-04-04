@@ -88,24 +88,25 @@ public class PassGSHook extends JCasAnnotator_ImplBase {
 
 	/** Possibly create files for python training, one file per question. */
 	protected synchronized void createJacanaFiles(JCas passagesView, QuestionInfo qi, Pattern ap){
-//		System.setProperty("cz.brmlab.yodaqa.jacana","data/jacana-test");
 		String jacana = System.getProperty("cz.brmlab.yodaqa.jacana");
 		if (jacana == null || jacana.isEmpty())
 			return;
-		Writer w=Writer.getInstance();
-		w.write(jacana + "/" + qi.getQuestionId() + ".txt", "<Q> "+qi.getQuestionText());
+
+		Writer w = Writer.getInstance();
+		w.write(jacana + "/" + qi.getQuestionId() + ".txt", "<Q> " + qi.getQuestionText());
+
 		for (Passage p : JCasUtil.select(passagesView, Passage.class)) {
 			PassageFV fv = new PassageFV(p);
 			int clueWeight_i = PassageFV.featureIndex(PF_ClueWeight.class);
 			int aboutClueWeight_i = PassageFV.featureIndex(PF_AboutClueWeight.class);
-			String clues=fv.getValues()[clueWeight_i]+" "+fv.getValues()[aboutClueWeight_i];
-			String anspassage=p.getCoveredText();
-				if(ap.matcher(anspassage).find()){
-					w.write(jacana + "/" + qi.getQuestionId() + ".txt", "1 " +clues+" "+ anspassage);
-				} else {
-					w.write(jacana+"/"+qi.getQuestionId()+".txt","0 "+clues+" "+anspassage);
-				}
-			}
+			String n_clues = fv.getValues()[clueWeight_i] + " " + fv.getValues()[aboutClueWeight_i];
+
+			String anspassage = p.getCoveredText();
+
+			boolean isMatch = ap.matcher(anspassage).find();
+			w.write(jacana + "/" + qi.getQuestionId() + ".txt",
+				(isMatch ? "1" : "0") + " " + n_clues + " " + anspassage);
+		}
 	}
 
 	protected void dumpPassageFV(String trainFileName, Passage passage, boolean isMatch) {
