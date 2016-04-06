@@ -82,7 +82,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 
 		String input = buildRequestBody(tokens);
 		OutputStream os = conn.getOutputStream();
-		os.write(input.getBytes("UTF-8"));
+		os.write(input.getBytes("ascii"));
 		os.flush();
 
 		ArrayList<StepnickaResult> stepnickaResult = (ArrayList<StepnickaResult>) processResponse(conn.getInputStream());
