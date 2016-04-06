@@ -94,7 +94,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		*/
 
 		/* Named Entities: */
-		builder.add(OpenNlpNamedEntities.createEngineDescription());
+		//builder.add(OpenNlpNamedEntities.createEngineDescription());
 
 		/*
 		// too weak, we need very rich NE set
@@ -136,7 +136,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(DashboardHook.class));
 		/* Classify question into classes*/
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClassClassifier.class));
+		//builder.add(AnalysisEngineFactory.createEngineDescription(ClassClassifier.class));
 		/* Some debug dumps of the intermediate CAS. */
 		if (logger.isDebugEnabled()) {
 			builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));
