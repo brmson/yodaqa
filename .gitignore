@@ -28,3 +28,5 @@ build
 #bing api key
 bingapi.properties
 bingresults.db
+
+*addresses.property
