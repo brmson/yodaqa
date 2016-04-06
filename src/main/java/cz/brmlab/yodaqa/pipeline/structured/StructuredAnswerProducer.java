@@ -50,11 +50,8 @@ public class StructuredAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		 * here (esp. wrt. named entities). */
 
 		/* POS, constituents, dependencies: */
-		/* Lemma features: */
-		builder.add(AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
-
 		builder.add(AnalysisEngineFactory.createEngineDescription(CzechPOSTagger.class));
+
 		/* Named Entities: */
 		/* XXX: Do we really want to do this? */
 		builder.add(OpenNlpNamedEntities.createEngineDescription(),

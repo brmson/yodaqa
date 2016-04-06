@@ -71,7 +71,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Lemma features: */
 
 		// fastest and handling numbers correctly:
-		builder.add(AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class));
+		//builder.add(AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class));
 		/*
 		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordLemmatizer.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpLemmatizer.class));
@@ -90,6 +90,8 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpDependencyParser.class));
 		*/
 
+		builder.add(AnalysisEngineFactory.createEngineDescription(CzechPOSTagger.class));
+
 		/* Named Entities: */
 		//builder.add(OpenNlpNamedEntities.createEngineDescription());
 
@@ -98,8 +100,6 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordNamedEntityRecognizer.class));
 		*/
 
-		/* ...and misc extras: */
-		builder.add(AnalysisEngineFactory.createEngineDescription(CzechPOSTagger.class));
 		/*
 		// too sparse to be useful
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpSemanticRoleLabeler.class));

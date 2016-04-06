@@ -28,13 +28,12 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.analysis.question.CzechPOSTagger;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.Wordnet;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 /**
  * Normalize various low quality LAT forms.  This annotator goes through
@@ -93,8 +92,7 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 		dictionary = Wordnet.getDictionary();
 
 		AnalysisEngineDescription pipelineDesc = AnalysisEngineFactory.createEngineDescription(
-				AnalysisEngineFactory.createEngineDescription(StanfordPosTagger.class),
-				AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class)
+				AnalysisEngineFactory.createEngineDescription(CzechPOSTagger.class)
 			);
 		/* XXX: We cannot create sub-pipelines using generic mechanisms
 		 * in the vein of
