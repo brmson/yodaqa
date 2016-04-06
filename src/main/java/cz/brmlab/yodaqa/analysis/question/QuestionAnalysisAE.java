@@ -5,18 +5,9 @@ package cz.brmlab.yodaqa.analysis.question;
 //import de.tudarmstadt.ukp.dkpro.core.clearnlp.ClearNlpLemmatizer;
 //import de.tudarmstadt.ukp.dkpro.core.clearnlp.ClearNlpPosTagger;
 //import de.tudarmstadt.ukp.dkpro.core.clearnlp.ClearNlpSemanticRoleLabeler;
+import cz.brmlab.yodaqa.io.debug.DumpConstituents;
 import de.tudarmstadt.ukp.dkpro.core.languagetool.LanguageToolLemmatizer;
-//import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
-//import de.tudarmstadt.ukp.dkpro.core.matetools.MateLemmatizer;
-//import de.tudarmstadt.ukp.dkpro.core.matetools.MateParser;
-//import de.tudarmstadt.ukp.dkpro.core.matetools.MatePosTagger;
-//import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
 import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
-//import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
-//import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordNamedEntityRecognizer;
-//import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
-
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -25,9 +16,14 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.brmlab.yodaqa.analysis.tycor.LATByWordnet;
-import cz.brmlab.yodaqa.io.debug.DumpConstituents;
-import cz.brmlab.yodaqa.provider.OpenNlpNamedEntities;
+//import de.tudarmstadt.ukp.dkpro.core.maltparser.MaltParser;
+//import de.tudarmstadt.ukp.dkpro.core.matetools.MateLemmatizer;
+//import de.tudarmstadt.ukp.dkpro.core.matetools.MateParser;
+//import de.tudarmstadt.ukp.dkpro.core.matetools.MatePosTagger;
+//import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpPosTagger;
+//import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordLemmatizer;
+//import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordNamedEntityRecognizer;
+//import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
 
 /**
  * Annotate the QuestionCAS.
@@ -130,7 +126,9 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySubject.class));
 		/* Convert some syntactic clues to concept clues */
-		builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class));
+		//builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class));
+		/* Generate Concepts by Stepnicka*/
+		builder.add(AnalysisEngineFactory.createEngineDescription(StepnickaToConcepts.class));
 		/* Merge any duplicate clues */
 		builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
 
