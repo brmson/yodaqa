@@ -37,16 +37,10 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 
 	protected static String texts[] = {
 		// XXX: "quantity" is not the primary label for this wordnet sense
-		"measure",
-		// quantitative relation, e.g. speed:
-		"magnitude relation",
-		// positions and distances, e.g. altitude:
-		"magnitude",
+		"množství",
 	};
 	protected static long synsets[] = {
 		33914,
-		13837364,
-		5097645,
 	};
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -92,7 +86,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 			pos.setBegin(0);
 			pos.setEnd(jcas.getDocumentText().length());
 		}
-		pos.setPosValue("NNS");
+		pos.setPosValue("k1");
 		pos.addToIndexes();
 
 		/* Also set a feature when the quantity is an actual number
@@ -100,13 +94,9 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 		if (isCD) {
 			addLATFeature(jcas, AF.LATQuantityCD);
 			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
-			addLAT(new QuantityCDLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
 		} else {
 			addLATFeature(jcas, AF.LATQuantity);
 			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[1], synsets[1], pos, spec);
-			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[2], synsets[2], pos, spec);
 		}
 
 		logger.debug(".. Quantity {} LAT {}/{}, {}/{}, {}/{} based on [{}] <<{}>>",
