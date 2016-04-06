@@ -52,12 +52,12 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * in that case, rerun StanfordParser just on the answer. */
 		builder.add(createPrimitiveDescription(FindReqParse.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
-		builder.add(createPrimitiveDescription(
-				StanfordParser.class,
-				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
-				StanfordParser.PARAM_ANNOTATIONTYPE_TO_PARSE, "cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing",
-				StanfordParser.PARAM_WRITE_POS, true),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+//		builder.add(createPrimitiveDescription(
+//				StanfordParser.class,
+//				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+//				StanfordParser.PARAM_ANNOTATIONTYPE_TO_PARSE, "cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing",
+//				StanfordParser.PARAM_WRITE_POS, true),
+//			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Generate and store on the side a "syntactically canonical
 		 * form" of the answer text. */
