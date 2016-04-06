@@ -38,7 +38,7 @@ public class AnswerFV {
 			"originPsgByClueNE", "originPsgByClueLAT",
 			"originPsgByClueSubject", "originPsgByClueSubjectNE",
 			"originPsgByClueSubjectToken", "originPsgByClueSubjectPhrase",
-			"originPsgByClueNgram", "originPsgByClueConcept",
+			"originPsgByClueNgram", "originPsgByClueConcept", "originPsgByAbstractClue",
 			"originPsgByConceptSourceRR", "originPsgByConceptLabelRR", "originPsgByConceptScore",
 		"originPsgNP", "originPsgNE", "originPsgNPByLATSubj",
 			"originPsgBIO",
