@@ -173,14 +173,16 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		if (property.getScore() != null)
 			fv.setFeature(AF.PropertyScore, property.getScore());
 
+		/*
 		List<String> qtoks = PropertyGloVeScoring.questionRepr(questionView);
 		List<String> proptoks = PropertyGloVeScoring.tokenize(property.getProperty());
 		double gloVeScore = PropertyGloVeScoring.getInstance().relatedness(qtoks, proptoks);
 		fv.setFeature(AF.PropertyGloVeScore, gloVeScore);
+		*/
 
 		logger.info(" FOUND: {} -- {}  :: prop score={}, GloVe score={}",
 				ap, property.getValue(),
-				property.getScore(), gloVeScore);
+				property.getScore(), 0/*gloVeScore*/);
 
 		/* Mark by concept-clue-origin AFs. */
 		addConceptFeatures(questionView, fv, property.getObject());
