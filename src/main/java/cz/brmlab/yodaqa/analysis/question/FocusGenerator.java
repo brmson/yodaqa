@@ -104,7 +104,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		if (focus == null) {
 			for (DEP dep : JCasUtil.selectCovered(DEP.class, sentence)) {
 				if (dep.getDependent().getPos().getPosValue().matches(".*yQ.*")) {
-					if (dep.getDependent().getPos() instanceof ADV) {
+					if (dep.getDependent().getPos().getPosValue().matches("^k6.*")) {
 						/* Not 'what' but adverbish like 'when'. */
 						focusTok = dep.getDependent();
 					} else {
