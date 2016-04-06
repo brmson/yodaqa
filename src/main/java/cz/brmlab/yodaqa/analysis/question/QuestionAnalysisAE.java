@@ -139,7 +139,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		//builder.add(AnalysisEngineFactory.createEngineDescription(ClassClassifier.class));
 		/* Some debug dumps of the intermediate CAS. */
 		if (logger.isDebugEnabled()) {
-			builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));
+//			builder.add(AnalysisEngineFactory.createEngineDescription(DumpConstituents.class));
 			builder.add(AnalysisEngineFactory.createEngineDescription(
 				CasDumpWriter.class,
 				CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/yodaqa-qacas.txt"));

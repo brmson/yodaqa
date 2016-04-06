@@ -70,6 +70,8 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		Response response = processResponse(is);
 		addTagToTokens(jCas, tokens, response);
 		conn.disconnect();
+		ROOT r = new ROOT(jCas, 0, jCas.getDocumentText().length());
+		r.addToIndexes();
 	}
 
 	private String createRequest(List<Token> tokens) {
@@ -82,7 +84,7 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		return jObject.toString();
 	}
 
-	public InputStream sendRequest(String json) {
+	private InputStream sendRequest(String json) {
 		try {
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
@@ -110,7 +112,9 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		for (int i = 0; i < tokens.size(); i++) {
 			Token tok = tokens.get(i);
 			POS pos = new POS(jCas);
+//			if (tok.getPos() != null) tok.getPos();
 			Lemma lemma = new Lemma(jCas);
+//			if (tok.getLemma() != null) lemma = tok.getLemma();
 			logger.debug("Token: " + response.lemmas.get(i) + " " + response.posTags.get(i));
 			pos.setPosValue(response.posTags.get(i));
 			lemma.setValue(response.diacritics.get(i));
