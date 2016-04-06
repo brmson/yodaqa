@@ -35,54 +35,17 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(ClueByTokenConstituent.class);
 
 	public static String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
-	public static String CONSTITMATCH = "AD.*|NP|QP";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 	}
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		/* Walk the constituent tree and add all content-bearing
-		 * constituents as keyphrases and content-bearing tokens
-		 * as keywords. The constituents are often nested, so
-		 * we can add all of "the Nobel Prize for Physiology and Medicine",
-		 * "the Nobel Prize", "Physiology and Medicine", etc.
-		 * (And then the individual tokens too.) */
+		/* XXX we don't do constituents in Czech */
 
-		/* This is a DFS over the Constituent tree. */
-		LinkedList<Constituent> lifo = new LinkedList<Constituent>();
-		for (ROOT sentence : JCasUtil.select(jcas, ROOT.class))
-			lifo.add(sentence);
-		while (!lifo.isEmpty()) {
-			Constituent c = lifo.poll();
-			if (c.getConstituentType().matches(CONSTITMATCH)) {
-				/* Sometimes, we get an absurd NP like "it".
-				 * Guard against that. */
-				boolean absurd = true;
-				for (Token t : JCasUtil.selectCovered(Token.class, c)) {
-					if (t.getPos().getPosValue().matches(TOKENMATCH)) {
-						absurd = false;
-						break;
-					}
-				}
-				if (absurd)
-					continue;
-
-				/* <1.0 so that we slightly prefer tokens,
-				 * usable even for fulltext search, when
-				 * merging clues. */
-				addClue(new CluePhrase(jcas), c.getBegin(), c.getEnd(), c, false, 0.99);
-			}
-
-			for (FeatureStructure child : c.getChildren().toArray()) {
-				if (!(child instanceof Constituent)) {
-					Token t = (Token) child;
-					if (t.getPos().getPosValue().matches(TOKENMATCH))
-						addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t, true, 1.0);
-					continue;
-				}
-				lifo.add((Constituent) child);
-			}
+		for (Token t : JCasUtil.select(jcas, Token.class)) {
+			if (t.getPos().getPosValue().matches(TOKENMATCH))
+				addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t, true, 1.0);
 		}
 	}
 
