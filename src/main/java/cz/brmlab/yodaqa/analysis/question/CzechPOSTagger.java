@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class CzechPOSTagger extends JCasAnnotator_ImplBase {
@@ -74,8 +73,10 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		Response response = processResponse(is);
 		addTagToTokens(jCas, tokens, response);
 		conn.disconnect();
-		ROOT r = new ROOT(jCas, 0, jCas.getDocumentText().length());
-		r.addToIndexes();
+		if (jCas.getDocumentText() != null) {
+			ROOT r = new ROOT(jCas, 0, jCas.getDocumentText().length());
+			r.addToIndexes();
+		}
 	}
 
 	private String createRequest(List<Token> tokens) {
@@ -89,19 +90,21 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 	}
 
 	private InputStream sendRequest(String json) {
-		try {
-			conn.setDoOutput(true);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type", "application/json");
+		while(true) {
+			try {
+				conn.setDoOutput(true);
+				conn.setRequestMethod("POST");
+				conn.setRequestProperty("Content-Type", "application/json");
 
-			OutputStream os = conn.getOutputStream();
-			os.write(json.getBytes());
-			os.flush();
-			return conn.getInputStream();
-		} catch (IOException e) {
-			e.printStackTrace();
+				OutputStream os = conn.getOutputStream();
+				os.write(json.getBytes());
+				os.flush();
+				return conn.getInputStream();
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.info("Service unavailable. Retrying...");
+			}
 		}
-		return null;
 	}
 
 	private Response processResponse(InputStream is) {
@@ -116,9 +119,9 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		for (int i = 0; i < tokens.size(); i++) {
 			Token tok = tokens.get(i);
 			POS pos = new POS(jCas);
-//			if (tok.getPos() != null) tok.getPos();
+			if (tok.getPos() != null) tok.getPos();
 			Lemma lemma = new Lemma(jCas);
-//			if (tok.getLemma() != null) lemma = tok.getLemma();
+			if (tok.getLemma() != null) lemma = tok.getLemma();
 			logger.debug("Token: " + response.lemmas.get(i) + " " + response.posTags.get(i));
 			pos.setPosValue(response.posTags.get(i));
 			lemma.setValue(response.diacritics.get(i));

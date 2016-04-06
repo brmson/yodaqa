@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
+import cz.brmlab.yodaqa.analysis.question.CzechPOSTagger;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasDumpWriter;
@@ -49,16 +50,17 @@ public class StructuredAnswerProducer /* XXX: extends AggregateBuilder ? */ {
 		 * here (esp. wrt. named entities). */
 
 		/* POS, constituents, dependencies: */
-		builder.add(AnalysisEngineFactory.createEngineDescription(
-				StanfordParser.class,
-				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
-				StanfordParser.PARAM_WRITE_POS, true),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+//		builder.add(AnalysisEngineFactory.createEngineDescription(
+//				StanfordParser.class,
+//				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
+//				StanfordParser.PARAM_WRITE_POS, true),
+//			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Lemma features: */
 		builder.add(AnalysisEngineFactory.createEngineDescription(LanguageToolLemmatizer.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
+		builder.add(AnalysisEngineFactory.createEngineDescription(CzechPOSTagger.class));
 		/* Named Entities: */
 		/* XXX: Do we really want to do this? */
 		builder.add(OpenNlpNamedEntities.createEngineDescription(),
