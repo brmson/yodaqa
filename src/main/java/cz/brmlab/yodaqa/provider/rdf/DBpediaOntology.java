@@ -57,16 +57,21 @@ public class DBpediaOntology extends DBpediaLookup {
 			"  ?redir rdfs:label \"" + quotedTitle + "\"@cs .\n" +
 			"}\n" +
 			 // set the output variables
-			"?res ?property ?valres .\n" +
+			"?res ?propres ?valres .\n" +
 			 // ?val might be a resource - in that case, convert it to a label
 			"OPTIONAL { ?valres rdfs:label ?vlabel . }\n" +
 			"BIND ( IF(BOUND(?vlabel), ?vlabel, ?valres) AS ?value )\n" +
+			 // ?propres might have a label
+			"OPTIONAL { ?propres rdfs:label ?plabel . " +
+			"  FILTER ( LANG(?plabel) = \"cs\" )\n" +
+			"}\n" +
+			"BIND ( IF(BOUND(?plabel), ?plabel, ?propres) AS ?property )\n" +
 
 			 // weed out resources that are categories and other in-namespace junk
 			"FILTER ( !regex(str(?res), '^http://cs.dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			 // select only relevant properties
-			"FILTER ( regex(str(?property), '^http://dbpedia.org/ontology', 'i') )\n" +
-			"FILTER ( !regex(str(?property), '^http://dbpedia.org/ontology/(wiki|abstract)', 'i') )\n" +
+			"FILTER ( regex(str(?propres), '^http://dbpedia.org/ontology', 'i') )\n" +
+			"FILTER ( !regex(str(?propres), '^http://dbpedia.org/ontology/(wiki|abstract)', 'i') )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
