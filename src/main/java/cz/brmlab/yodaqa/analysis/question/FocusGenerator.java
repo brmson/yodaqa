@@ -10,6 +10,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DET;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DOBJ;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.NSUBJ;
 
+import java.util.Iterator;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -59,103 +61,43 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		}
 	}
 
+	protected Token firstK1Token(JCas jcas) {
+		for (Token t : JCasUtil.select(jcas, Token.class)) {
+			if (t.getPos().getPosValue().matches("k1.*"))
+				return t;
+		}
+		return null;
+	}
+
 	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
-		Token focusTok = null;
-		Annotation focus = null;
+		Token focus = null;
 
-		/* What -- and Which -- are DET dependencies; the governor
-		 * may be either a noun or a verb, accept only a noun.
-		 * ("Which is the genetic defect causing Neurofibromatosis type 1?"
-		 * has "is" as a governor). */
-		if (focus == null) {
-			for (DET det : JCasUtil.selectCovered(DET.class, sentence)) {
-				if (det.getDependent().getPos().getPosValue().matches(".*yQ.*")
-				    && !det.getGovernor().getPos().getPosValue().matches("^k5.*")) {
-					focusTok = det.getGovernor();
-					focus = focusTok;
-					logger.debug("DET+W {}", focus.getCoveredText());
-					break;
-				}
-			}
+		Iterator<Token> tokens = JCasUtil.select(jcas, Token.class).iterator();
+		Token first = tokens.next();
+		Token second = tokens.next();
+
+		// k6yQ + k3c4 -> next k1 (“jak se”)
+		if (focus == null
+		    && (first.getPos().getPosValue().matches("k6yQ")
+		        && second.getPos().getPosValue().matches("k3c4.*"))) {
+			focus = firstK1Token(jcas);
+			if (focus != null)
+				logger.debug("jakse, firstK1: {}", focus.getCoveredText());
 		}
 
-		/* When, where is ADVMOD; take the covered text as focus.
-		 * However, "how" is also ADVMOD; we need to take the
-		 * governing token then (adverb or verb). */
-		if (focus == null) {
-			for (ADVMOD advmod : JCasUtil.selectCovered(ADVMOD.class, sentence)) {
-				if (advmod.getDependent().getLemma().getValue().toLowerCase().equals("how")) {
-					focusTok = advmod.getGovernor();
-					focus = focusTok;
-					logger.debug("ADVMOD+how {}", focus.getCoveredText());
-					break;
-				} else if (advmod.getDependent().getPos().getPosValue().matches(".*yQ.*")) {
-					focusTok = advmod.getDependent();
-					focus = focusTok;
-					logger.debug("ADVMOD+W {}", focus.getCoveredText());
-					break;
-				}
-			}
+		// k6yQ or k9yQ or k4c1yQ -> ID
+		if (focus == null
+		    && (first.getPos().getPosValue().matches("k[69]yQ")
+		        || first.getPos().getPosValue().matches("k4c1yQ"))) {
+			focus = first;
+			logger.debug("first: {}", focus.getCoveredText());
 		}
 
-		/* DEP dependencies are also sometimes generated, e.g.
-		 * "When was the battle of Aigospotamoi?" (When / was)
-		 * "What lays blue eggs?" (What / lays) */
+		// ELSE -> next k1
 		if (focus == null) {
-			for (DEP dep : JCasUtil.selectCovered(DEP.class, sentence)) {
-				if (dep.getDependent().getPos().getPosValue().matches(".*yQ.*")) {
-					if (dep.getDependent().getPos().getPosValue().matches("^k6.*")) {
-						/* Not 'what' but adverbish like 'when'. */
-						focusTok = dep.getDependent();
-					} else {
-						/* A verb like 'lays'. */
-						focusTok = dep.getGovernor();
-					}
-					focus = focusTok;
-					logger.debug("DEP+W {}", focus.getCoveredText());
-					break;
-				}
-			}
-		}
-
-		/* Wh- DOBJ is preferrable to NSUBJ, if available and not be-bound.
-		 * "Who did X Y play in Z?" -> DOBJ:who (and NSUBJ:X Y) */
-		if (focus == null) {
-			for (DOBJ dobj : JCasUtil.selectCovered(DOBJ.class, sentence)) {
-				if (dobj.getDependent().getPos().getPosValue().matches(".*yQ.*")
-				    && !LATByFocus.isAmbiguousQLemma(dobj.getDependent().getLemma().getValue().toLowerCase())) {
-					focusTok = dobj.getDependent();
-					focus = focusTok;
-					logger.debug("DOBJ+W {}", focus.getCoveredText());
-					break;
-				}
-			}
-		}
-
-		/* Fall back on the NSUBJ.
-		 * "Who is the most famous Italian painter?" -> NSUBJ:painter
-		 * "Who invented the first transistor?" -> NSUBJ:who
-		 */
-		if (focus == null) {
-			for (NSUBJ nsubj : JCasUtil.selectCovered(NSUBJ.class, sentence)) {
-				focusTok = nsubj.getDependent();
-				focus = nsubj;
-				logger.debug("NSUBJ {}", focus.getCoveredText());
-				break;
-			}
-		}
-
-		/* If the question is actually an imperative sentence,
-		 * take DOBJ:
-		 * List all games by GMT. -> DOBJ:games
-		 */
-		if (focus == null) {
-			for (DOBJ dobj : JCasUtil.selectCovered(DOBJ.class, sentence)) {
-				focusTok = dobj.getDependent();
-				focus = dobj;
-				logger.debug("DOBJ {}", focus.getCoveredText());
-				break;
-			}
+			focus = firstK1Token(jcas);
+			if (focus != null)
+				logger.debug("firstK1: {}", focus.getCoveredText());
 		}
 
 		if (focus == null) {
@@ -167,7 +109,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		f.setBegin(focus.getBegin());
 		f.setEnd(focus.getEnd());
 		f.setBase(focus);
-		f.setToken(focusTok);
+		f.setToken(focus);
 		f.addToIndexes();
 	}
 }

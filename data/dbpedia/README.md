@@ -38,6 +38,9 @@ Download Data Files
 	bunzip2 -k *.bz2
 	cd ..
 
+We also generated a list of Czech ontology relation labels based on the infobox
+mapping rules, as ``data/dbpedia/Mapping_cs.xml.nt``; copy it over too!
+
 Set Up RDF Database
 ===================
 

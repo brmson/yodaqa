@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.provider;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -13,7 +14,10 @@ public class PrivateResources {
 	private PrivateResources() {
 		props = new Properties();
 		try {
-			props.load(PrivateResources.class.getResourceAsStream("addresses.property"));
+			InputStream is = PrivateResources.class.getResourceAsStream("addresses.property");
+			if (is == null)
+				return;
+			props.load(is);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
