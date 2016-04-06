@@ -73,7 +73,7 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 					continue;
 				if (!num.getGovernor().equals(focus.getToken()))
 					continue;
-				boolean isCD = num.getDependent().getPos().getPosValue().equals("CD");
+				boolean isCD = num.getDependent().getPos().getPosValue().equals("k4");
 				addQuantityLAT(jcas, num, isCD);
 			}
 		}
