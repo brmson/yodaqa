@@ -137,7 +137,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 3,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 2,
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -290,8 +290,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		builder.add(dbpOnt);
 		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
 		builder.add(dbpProp);
-		AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
-		builder.add(fbOnt);
+		//AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
+		//builder.add(fbOnt);
 
 		/* Full-text search: */
 		/* XXX: These aggregates have "Solr" in name but do not

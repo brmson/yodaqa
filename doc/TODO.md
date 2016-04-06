@@ -13,6 +13,11 @@ as **NP** that are suitable for non-coders too!
 
 Apologies if this list is not kept 100% up-to-date all the time.
 
+Czech TODO Items
+----------------
+
+  * PropertyGloveScoring
+
 Immediate TODO Items
 --------------------
 
