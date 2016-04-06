@@ -82,7 +82,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 
 		String input = buildRequestBody(tokens);
 		OutputStream os = conn.getOutputStream();
-		os.write(input.getBytes());
+		os.write(input.getBytes("UTF-8"));
 		os.flush();
 
 		ArrayList<StepnickaResult> stepnickaResult = (ArrayList<StepnickaResult>) processResponse(conn.getInputStream());
@@ -133,7 +133,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 
 	protected static void notifyRetry(Exception e) {
 		e.printStackTrace();
-		System.err.println("*** " + STEPNICKA_ADDRES + " STS Query (temporarily?) failed, retrying in a moment...");
+		System.err.println("*** " + STEPNICKA_ADDRES + " Stepnicka Query (temporarily?) failed, retrying in a moment...");
 		try {
 			TimeUnit.SECONDS.sleep(10);
 		} catch (InterruptedException e2) { // oof...
@@ -141,6 +141,12 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		}
 	}
 
+	/**
+	 * Create concepts
+	 * @param resultView
+	 * @param stepnickaResults
+	 * @return
+	 */
 	private List<Concept> createConcepts(JCas resultView, List<StepnickaResult> stepnickaResults) {
 		ArrayList<Concept> concepts = new ArrayList<>();
 		for (int i = 0; i < stepnickaResults.size(); i++) {
@@ -221,6 +227,9 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		}
 	}
 
+	/**
+	 *
+	 */
 	private class UriList {
 		private String wiki_uri;
 		private String concept_name;
