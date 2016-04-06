@@ -9,6 +9,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
 import org.apache.jena.atlas.json.JsonArray;
+import org.apache.jena.atlas.json.JsonObject;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -31,6 +32,7 @@ import java.util.List;
 public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(CzechPOSTagger.class);
 	private static String URL_STRING;
+	private HttpURLConnection conn = null;
 
 	private static class Response {
 		@SerializedName("lemmas")
@@ -43,7 +45,8 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
-		URL_STRING = PrivateResources.getInstance().getResource("neco");
+
+		URL_STRING = PrivateResources.getInstance().getResource("lemma_url");
 		if (URL_STRING == null) {
 			logger.warn("Czech pos tagger not used (URL not specified)");
 		}
@@ -57,34 +60,35 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		Collection<ROOT> sentences = JCasUtil.select(jCas, ROOT.class);
 		List<Token> allTokens = new ArrayList<>();
 		for(ROOT sentence: sentences) {
-			logger.debug("SEP");
 			List<Token> tokens = JCasUtil.selectCovered(Token.class, sentence);
-			for (Token tok : tokens) {
-				logger.debug("TOKEN " + tok.getLemma().getValue());
-				logger.debug("POS " + tok.getPos().getPosValue());
-			}
-			logger.debug("JSON " + createRequest(tokens));
+			allTokens.addAll(tokens);
 		}
-//		String jsonRequest = createRequest(allTokens);
-//		InputStream is = sendRequest(jsonRequest);
-//		Response response = processResponse(is);
-//		addTagToTokens(jCas, allTokens, response);
+		URL url;
+		try {
+			url = new URL(URL_STRING);
+			conn = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String jsonRequest = createRequest(allTokens);
+		InputStream is = sendRequest(jsonRequest);
+		Response response = processResponse(is);
+		addTagToTokens(jCas, allTokens, response);
+		conn.disconnect();
 	}
 
 	private String createRequest(List<Token> tokens) {
+		JsonObject jObject = new JsonObject();
 		JsonArray jArray = new JsonArray();
 		for(Token tok: tokens) {
 			jArray.add(tok.getLemma().getValue());
 		}
-		return jArray.toString();
+		jObject.put("query", jArray);
+		return jObject.toString();
 	}
 
 	public InputStream sendRequest(String json) {
-		URL url;
-		HttpURLConnection conn = null;
 		try {
-			url = new URL(URL_STRING);
-			conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
@@ -95,10 +99,6 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 			return conn.getInputStream();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				conn.disconnect();
-			} catch (NullPointerException e1) {}
 		}
 		return null;
 	}
@@ -113,11 +113,12 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 	private void addTagToTokens(JCas jCas, List<Token> tokens, Response response) {
 		//FIXME Add list size check
 		for (int i = 0; i < tokens.size(); i++) {
+			Token tok = tokens.get(i);
 			POS pos = new POS(jCas);
 			Lemma lemma = new Lemma(jCas);
+			logger.debug("Token: " + response.lemmas.get(i) + " " + response.posTags.get(i));
 			pos.setPosValue(response.posTags.get(i));
-			lemma.setValue(response.lemmas.get(i));
-			Token tok = tokens.get(i);
+			lemma.setValue(response.diacritics.get(i));
 			tok.setLemma(lemma);
 			tok.setPos(pos);
 		}
