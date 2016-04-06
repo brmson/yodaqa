@@ -34,7 +34,7 @@ import cz.brmlab.yodaqa.model.Question.ClueToken;
 public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(ClueByTokenConstituent.class);
 
-	public static String TOKENMATCH = "CD|FW|JJ.*|NN.*|RB.*|UH.*";
+	public static String TOKENMATCH = "k4|UNKNOWN|k2.*|k1.*|k6.*|k0.*";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);

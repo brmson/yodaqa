@@ -195,7 +195,7 @@ public class LATNormalize extends JCasAnnotator_ImplBase {
 			 */
 			/* N.B. this heuristic is also used in LATByMultiWord. */
 			for (Token v : JCasUtil.select(jcas, Token.class)) {
-				if (v.getPos().getPosValue().matches("^N.*")) {
+				if (v.getPos().getPosValue().matches("^k1.*")) {
 					head = v;
 				} else if (head != null) {
 					break;

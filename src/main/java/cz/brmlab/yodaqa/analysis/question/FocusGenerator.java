@@ -69,8 +69,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		 * has "is" as a governor). */
 		if (focus == null) {
 			for (DET det : JCasUtil.selectCovered(DET.class, sentence)) {
-				if (det.getDependent().getPos().getPosValue().matches("^W.*")
-				    && !det.getGovernor().getPos().getPosValue().matches("^V.*")) {
+				if (det.getDependent().getPos().getPosValue().matches(".*yQ.*")
+				    && !det.getGovernor().getPos().getPosValue().matches("^k5.*")) {
 					focusTok = det.getGovernor();
 					focus = focusTok;
 					logger.debug("DET+W {}", focus.getCoveredText());
@@ -89,7 +89,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 					focus = focusTok;
 					logger.debug("ADVMOD+how {}", focus.getCoveredText());
 					break;
-				} else if (advmod.getDependent().getPos().getPosValue().matches("^W.*")) {
+				} else if (advmod.getDependent().getPos().getPosValue().matches(".*yQ.*")) {
 					focusTok = advmod.getDependent();
 					focus = focusTok;
 					logger.debug("ADVMOD+W {}", focus.getCoveredText());
@@ -103,7 +103,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		 * "What lays blue eggs?" (What / lays) */
 		if (focus == null) {
 			for (DEP dep : JCasUtil.selectCovered(DEP.class, sentence)) {
-				if (dep.getDependent().getPos().getPosValue().matches("^W.*")) {
+				if (dep.getDependent().getPos().getPosValue().matches(".*yQ.*")) {
 					if (dep.getDependent().getPos() instanceof ADV) {
 						/* Not 'what' but adverbish like 'when'. */
 						focusTok = dep.getDependent();
@@ -122,7 +122,7 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		 * "Who did X Y play in Z?" -> DOBJ:who (and NSUBJ:X Y) */
 		if (focus == null) {
 			for (DOBJ dobj : JCasUtil.selectCovered(DOBJ.class, sentence)) {
-				if (dobj.getDependent().getPos().getPosValue().matches("^W.*")
+				if (dobj.getDependent().getPos().getPosValue().matches(".*yQ.*")
 				    && !LATByFocus.isAmbiguousQLemma(dobj.getDependent().getLemma().getValue().toLowerCase())) {
 					focusTok = dobj.getDependent();
 					focus = focusTok;

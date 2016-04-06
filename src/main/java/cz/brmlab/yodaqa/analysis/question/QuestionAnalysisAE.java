@@ -52,6 +52,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(OpenNlpSegmenter.class));
 
+
 		/* POS, constituents, dependencies: */
 		// fast, reliable
 		builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class,
@@ -102,7 +103,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		*/
 
 		/* ...and misc extras: */
-
+		builder.add(AnalysisEngineFactory.createEngineDescription(CzechPOSTagger.class));
 		/*
 		// too sparse to be useful
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClearNlpSemanticRoleLabeler.class));
@@ -132,6 +133,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class));
 		/* Merge any duplicate clues */
 		builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
+
 
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(DashboardHook.class));

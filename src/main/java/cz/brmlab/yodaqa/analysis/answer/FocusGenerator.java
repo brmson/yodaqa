@@ -152,15 +152,15 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				 * hack guards against that. */
 				continue;
 			}
-			if (t.getPos().getPosValue().matches("^NN.*")) {
+			if (t.getPos().getPosValue().matches("^k1.*")) {
 				focusTok = t;
 				focus = focusTok;
 				break;
-			} else if (t.getPos().getPosValue().matches("^RB.*")) {
+			} else if (t.getPos().getPosValue().matches("^k6.*")) {
 				focusTok = t;
-			} else if (t.getPos().getPosValue().matches("^JJ.*")) {
+			} else if (t.getPos().getPosValue().matches("^k2.*")) {
 				focusTok = t;
-			} else if (t.getPos().getPosValue().matches("^CD.*")) {
+			} else if (t.getPos().getPosValue().matches("^k4.*")) {
 				focusTok = t;
 			}
 			focus = focusTok;

@@ -64,14 +64,14 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 
 				/* In "What is the X that Y?", "What" can be
 				 * the governor.  That won't do. */
-				if (!v.getPos().getPosValue().matches("^V.*")) {
+				if (!v.getPos().getPosValue().matches("^k5.*")) {
 					logger.debug("Ignoring SV proposal: {}", v.getCoveredText());
 					v = null;
 				}
 			}
 
 			if (v == null && focus.getTypeIndexID() == Token.type
-			    && ((Token) focus).getPos().getPosValue().matches("^V.*")
+			    && ((Token) focus).getPos().getPosValue().matches("^k5.*")
 			    && !isAux((Token) focus)) {
 				/* The focus is a verb itself! Make it an SV too. */
 				v = (Token) focus;
@@ -99,7 +99,7 @@ public class SVGenerator extends JCasAnnotator_ImplBase {
 
 	protected Token getFirstVerb(Constituent sentence) {
 		for (Token v : JCasUtil.selectCovered(Token.class, sentence)) {
-			if (!v.getPos().getPosValue().matches("^V.*"))
+			if (!v.getPos().getPosValue().matches("^k5.*"))
 				continue;
 			if (isAux(v))
 				continue;

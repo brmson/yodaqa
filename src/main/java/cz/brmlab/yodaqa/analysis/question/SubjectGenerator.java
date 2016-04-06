@@ -60,7 +60,7 @@ public class SubjectGenerator extends JCasAnnotator_ImplBase {
 			cparent = (Constituent) parent;
 
 		/* Skip question word focuses (e.g. "Who"). */
-		if (stok.getPos().getPosValue().matches("^W.*"))
+		if (stok.getPos().getPosValue().matches(".*yQ.*"))
 			return;
 		/* In "What country is Berlin in?", "country" (with
 		 * parent "What country" WHNP) is *also* a NSUBJ
