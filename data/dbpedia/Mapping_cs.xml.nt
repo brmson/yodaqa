@@ -1,0 +1,451 @@
+<http://dbpedia.org/ontology/height> <http://www.w3.org/2000/01/rdf-schema#label> "výška"@cs .
+<http://dbpedia.org/ontology/height> <http://www.w3.org/2000/01/rdf-schema#label> "šířka"@cs .
+<http://dbpedia.org/ontology/composer> <http://www.w3.org/2000/01/rdf-schema#label> "autor"@cs .
+<http://dbpedia.org/ontology/composer> <http://www.w3.org/2000/01/rdf-schema#label> "skladatel"@cs .
+<http://dbpedia.org/ontology/composer> <http://www.w3.org/2000/01/rdf-schema#label> "tvurce"@cs .
+<http://dbpedia.org/ontology/child> <http://www.w3.org/2000/01/rdf-schema#label> "potomstvo"@cs .
+<http://dbpedia.org/ontology/child> <http://www.w3.org/2000/01/rdf-schema#label> "děti"@cs .
+<http://dbpedia.org/ontology/subtitle> <http://www.w3.org/2000/01/rdf-schema#label> "podnazev"@cs .
+<http://xmlns.com/foaf/0.1/nam> <http://www.w3.org/2000/01/rdf-schema#label> "název"@cs .
+<http://dbpedia.org/ontology/humanDevelopmentIndexRankingCategory> <http://www.w3.org/2000/01/rdf-schema#label> "HDIvýše"@cs .
+<http://dbpedia.org/ontology/heig> <http://www.w3.org/2000/01/rdf-schema#label> "výška"@cs .
+<http://dbpedia.org/ontology/relation> <http://www.w3.org/2000/01/rdf-schema#label> "příbuzní"@cs .
+<http://dbpedia.org/ontology/spokenIn> <http://www.w3.org/2000/01/rdf-schema#label> "Rozšíření"@cs .
+<http://dbpedia.org/ontology/head> <http://www.w3.org/2000/01/rdf-schema#label> "předseda"@cs .
+<http://dbpedia.org/ontology/chiefEditor> <http://www.w3.org/2000/01/rdf-schema#label> "Šéfeditor zpráv"@cs .
+<http://dbpedia.org/ontology/chiefEditor> <http://www.w3.org/2000/01/rdf-schema#label> "Šéfed. veř. mínění"@cs .
+<http://dbpedia.org/ontology/chiefEditor> <http://www.w3.org/2000/01/rdf-schema#label> "Editor"@cs .
+<http://dbpedia.org/ontology/chiefEditor> <http://www.w3.org/2000/01/rdf-schema#label> "Šéfeditor sportu"@cs .
+<http://dbpedia.org/ontology/volume> <http://www.w3.org/2000/01/rdf-schema#label> "objem"@cs .
+<http://dbpedia.org/ontology/foundingYea> <http://www.w3.org/2000/01/rdf-schema#label> "Rok"@cs .
+<http://dbpedia.org/ontology/staff> <http://www.w3.org/2000/01/rdf-schema#label> "počet akademických pracovníků"@cs .
+<http://dbpedia.org/ontology/firstDriverCountry> <http://www.w3.org/2000/01/rdf-schema#label> "První_stát"@cs .
+<http://dbpedia.org/ontology/automobilePlatfor> <http://www.w3.org/2000/01/rdf-schema#label> "platforma"@cs .
+<http://dbpedia.org/ontology/coachClub> <http://www.w3.org/2000/01/rdf-schema#label> "trenér kluby"@cs .
+<http://dbpedia.org/ontology/strength> <http://www.w3.org/2000/01/rdf-schema#label> "síla2"@cs .
+<http://dbpedia.org/ontology/strength> <http://www.w3.org/2000/01/rdf-schema#label> "síla1"@cs .
+<http://dbpedia.org/ontology/leng> <http://www.w3.org/2000/01/rdf-schema#label> "délka"@cs .
+<http://dbpedia.org/ontology/writer> <http://www.w3.org/2000/01/rdf-schema#label> "scénář"@cs .
+<http://dbpedia.org/ontology/royalAnthem> <http://www.w3.org/2000/01/rdf-schema#label> "hymna"@cs .
+<http://dbpedia.org/ontology/productionEndYear> <http://www.w3.org/2000/01/rdf-schema#label> "výstavba"@cs .
+<http://dbpedia.org/ontology/headquarte> <http://www.w3.org/2000/01/rdf-schema#label> "Adresa"@cs .
+<http://dbpedia.org/ontology/result> <http://www.w3.org/2000/01/rdf-schema#label> "výsledek"@cs .
+<http://dbpedia.org/ontology/basedOn> <http://www.w3.org/2000/01/rdf-schema#label> "námět"@cs .
+<http://dbpedia.org/ontology/currency> <http://www.w3.org/2000/01/rdf-schema#label> "měna"@cs .
+<http://dbpedia.org/ontology/currency> <http://www.w3.org/2000/01/rdf-schema#label> "kód měny"@cs .
+<http://dbpedia.org/ontology/colourName> <http://www.w3.org/2000/01/rdf-schema#label> "css"@cs .
+<http://dbpedia.org/ontology/firstDriver> <http://www.w3.org/2000/01/rdf-schema#label> "První_pilot"@cs .
+<http://dbpedia.org/ontology/latestReleaseDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum aktuální verze"@cs .
+<http://dbpedia.org/ontology/areaTot> <http://www.w3.org/2000/01/rdf-schema#label> "rozloha"@cs .
+<http://dbpedia.org/ontology/areaTot> <http://www.w3.org/2000/01/rdf-schema#label> "výměra"@cs .
+<http://dbpedia.org/ontology/associateEditor> <http://www.w3.org/2000/01/rdf-schema#label> "Zástupce šéfredaktora"@cs .
+<http://dbpedia.org/ontology/destination> <http://www.w3.org/2000/01/rdf-schema#label> "destinace"@cs .
+<http://dbpedia.org/ontology/club> <http://www.w3.org/2000/01/rdf-schema#label> "současný klub"@cs .
+<http://dbpedia.org/ontology/club> <http://www.w3.org/2000/01/rdf-schema#label> "kluby"@cs .
+<http://dbpedia.org/ontology/club> <http://www.w3.org/2000/01/rdf-schema#label> "klubaktual"@cs .
+<http://dbpedia.org/ontology/giniCoefficient> <http://www.w3.org/2000/01/rdf-schema#label> "Gini"@cs .
+<http://dbpedia.org/ontology/distan> <http://www.w3.org/2000/01/rdf-schema#label> "Délka závodu_km"@cs .
+<http://dbpedia.org/ontology/distan> <http://www.w3.org/2000/01/rdf-schema#label> "Délka závodu_mi"@cs .
+<http://dbpedia.org/ontology/startDate> <http://www.w3.org/2000/01/rdf-schema#label> "počet let existence"@cs .
+<http://dbpedia.org/ontology/starring> <http://www.w3.org/2000/01/rdf-schema#label> "hrají"@cs .
+<http://dbpedia.org/ontology/runti> <http://www.w3.org/2000/01/rdf-schema#label> "délka"@cs .
+<http://dbpedia.org/ontology/aspectRatio> <http://www.w3.org/2000/01/rdf-schema#label> "rozliseni"@cs .
+<http://dbpedia.org/ontology/headquarter> <http://www.w3.org/2000/01/rdf-schema#label> "sidlo"@cs .
+<http://dbpedia.org/ontology/headquarter> <http://www.w3.org/2000/01/rdf-schema#label> "Sídlo společnosti"@cs .
+<http://dbpedia.org/ontology/date> <http://www.w3.org/2000/01/rdf-schema#label> "trvání"@cs .
+<http://dbpedia.org/ontology/date> <http://www.w3.org/2000/01/rdf-schema#label> "datum"@cs .
+<http://dbpedia.org/ontology/date> <http://www.w3.org/2000/01/rdf-schema#label> "Rok"@cs .
+<http://dbpedia.org/ontology/date> <http://www.w3.org/2000/01/rdf-schema#label> "Datum"@cs .
+<http://dbpedia.org/ontology/date> <http://www.w3.org/2000/01/rdf-schema#label> "termín"@cs .
+<http://dbpedia.org/ontology/commander> <http://www.w3.org/2000/01/rdf-schema#label> "velitel2"@cs .
+<http://dbpedia.org/ontology/commander> <http://www.w3.org/2000/01/rdf-schema#label> "velitel1"@cs .
+<http://dbpedia.org/ontology/colourHexCode> <http://www.w3.org/2000/01/rdf-schema#label> "hex"@cs .
+<http://dbpedia.org/ontology/editing> <http://www.w3.org/2000/01/rdf-schema#label> "střih"@cs .
+<http://dbpedia.org/ontology/director> <http://www.w3.org/2000/01/rdf-schema#label> "režie"@cs .
+<http://dbpedia.org/ontology/director> <http://www.w3.org/2000/01/rdf-schema#label> "ředitel závodu"@cs .
+<http://dbpedia.org/ontology/areaCode> <http://www.w3.org/2000/01/rdf-schema#label> "předvolba"@cs .
+<http://dbpedia.org/ontology/education> <http://www.w3.org/2000/01/rdf-schema#label> "vzdělání"@cs .
+<http://dbpedia.org/ontology/product> <http://www.w3.org/2000/01/rdf-schema#label> "Produkce"@cs .
+<http://dbpedia.org/ontology/setupTime> <http://www.w3.org/2000/01/rdf-schema#label> "doba přípravy"@cs .
+<http://dbpedia.org/ontology/licensee> <http://www.w3.org/2000/01/rdf-schema#label> "licence"@cs .
+<http://dbpedia.org/ontology/populationMetroDensity> <http://www.w3.org/2000/01/rdf-schema#label> "hustota_zalidnění"@cs .
+<http://dbpedia.org/ontology/administrativeDistric> <http://www.w3.org/2000/01/rdf-schema#label> "katastrální území"@cs .
+<http://dbpedia.org/ontology/administrativeDistric> <http://www.w3.org/2000/01/rdf-schema#label> "kraj"@cs .
+<http://dbpedia.org/ontology/wid> <http://www.w3.org/2000/01/rdf-schema#label> "šířka"@cs .
+<http://dbpedia.org/ontology/combatant> <http://www.w3.org/2000/01/rdf-schema#label> "strana1"@cs .
+<http://dbpedia.org/ontology/combatant> <http://www.w3.org/2000/01/rdf-schema#label> "strana2"@cs .
+<http://dbpedia.org/ontology/designe> <http://www.w3.org/2000/01/rdf-schema#label> "designer"@cs .
+<http://dbpedia.org/ontology/number> <http://www.w3.org/2000/01/rdf-schema#label> "Pořadí závodu v sezóně"@cs .
+<http://dbpedia.org/ontology/number> <http://www.w3.org/2000/01/rdf-schema#label> "číslo dresu"@cs .
+<http://dbpedia.org/ontology/branchFrom> <http://www.w3.org/2000/01/rdf-schema#label> "větve"@cs .
+<http://dbpedia.org/ontology/humanDevelopmentIndex> <http://www.w3.org/2000/01/rdf-schema#label> "HDI"@cs .
+<http://dbpedia.org/ontology/similar> <http://www.w3.org/2000/01/rdf-schema#label> "souvisi_s"@cs .
+<http://dbpedia.org/ontology/notableWork> <http://www.w3.org/2000/01/rdf-schema#label> "díla"@cs .
+<http://dbpedia.org/ontology/manufacturer> <http://www.w3.org/2000/01/rdf-schema#label> "výrobce"@cs .
+<http://dbpedia.org/ontology/id> <http://www.w3.org/2000/01/rdf-schema#label> "ID"@cs .
+<http://dbpedia.org/ontology/leaderName> <http://www.w3.org/2000/01/rdf-schema#label> "vládce1"@cs .
+<http://dbpedia.org/ontology/leaderName> <http://www.w3.org/2000/01/rdf-schema#label> "vládce2"@cs .
+<http://dbpedia.org/ontology/producer> <http://www.w3.org/2000/01/rdf-schema#label> "produkce"@cs .
+<http://dbpedia.org/ontology/firstDriverTeam> <http://www.w3.org/2000/01/rdf-schema#label> "První_tým"@cs .
+<http://dbpedia.org/ontology/secondTeam> <http://www.w3.org/2000/01/rdf-schema#label> "Druhý_tým"@cs .
+<http://dbpedia.org/ontology/successo> <http://www.w3.org/2000/01/rdf-schema#label> "nástupce"@cs .
+<http://dbpedia.org/ontology/engin> <http://www.w3.org/2000/01/rdf-schema#label> "pohon"@cs .
+<http://dbpedia.org/ontology/motto> <http://www.w3.org/2000/01/rdf-schema#label> "motto"@cs .
+<http://dbpedia.org/ontology/motto> <http://www.w3.org/2000/01/rdf-schema#label> "motto překlad"@cs .
+<http://dbpedia.org/ontology/distanceLaps> <http://www.w3.org/2000/01/rdf-schema#label> "Délka závodu_kola"@cs .
+<http://dbpedia.org/ontology/designCompan> <http://www.w3.org/2000/01/rdf-schema#label> "designer"@cs .
+<http://dbpedia.org/ontology/editor> <http://www.w3.org/2000/01/rdf-schema#label> "Redaktoři"@cs .
+<http://dbpedia.org/ontology/editor> <http://www.w3.org/2000/01/rdf-schema#label> "Vydavatel/é"@cs .
+<http://dbpedia.org/ontology/closingDate> <http://www.w3.org/2000/01/rdf-schema#label> "ukonceni"@cs .
+<http://dbpedia.org/ontology/closingDate> <http://www.w3.org/2000/01/rdf-schema#label> "Zastavená publikace"@cs .
+<http://dbpedia.org/ontology/closingDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum_uzavření"@cs .
+<http://dbpedia.org/ontology/vicePresident> <http://www.w3.org/2000/01/rdf-schema#label> "viceprezident"@cs .
+<http://dbpedia.org/ontology/meshNumber> <http://www.w3.org/2000/01/rdf-schema#label> "MeshNumber"@cs .
+<http://dbpedia.org/ontology/iucnCategory> <http://www.w3.org/2000/01/rdf-schema#label> "kategorie IUCN"@cs .
+<http://dbpedia.org/ontology/picture> <http://www.w3.org/2000/01/rdf-schema#label> "foto"@cs .
+<http://dbpedia.org/ontology/picture> <http://www.w3.org/2000/01/rdf-schema#label> "obrázek"@cs .
+<http://dbpedia.org/ontology/picture> <http://www.w3.org/2000/01/rdf-schema#label> "Foto"@cs .
+<http://dbpedia.org/ontology/picture> <http://www.w3.org/2000/01/rdf-schema#label> "image"@cs .
+<http://dbpedia.org/ontology/picture> <http://www.w3.org/2000/01/rdf-schema#label> "Obrázek"@cs .
+<http://dbpedia.org/ontology/birthName> <http://www.w3.org/2000/01/rdf-schema#label> "rodné jméno"@cs .
+<http://dbpedia.org/ontology/requirement> <http://www.w3.org/2000/01/rdf-schema#label> "pozadavky"@cs .
+<http://dbpedia.org/ontology/youthYears> <http://www.w3.org/2000/01/rdf-schema#label> "mládežnické roky"@cs .
+<http://dbpedia.org/ontology/birthPlace> <http://www.w3.org/2000/01/rdf-schema#label> "stát narození"@cs .
+<http://dbpedia.org/ontology/birthPlace> <http://www.w3.org/2000/01/rdf-schema#label> "Místo narození"@cs .
+<http://dbpedia.org/ontology/birthPlace> <http://www.w3.org/2000/01/rdf-schema#label> "město narození"@cs .
+<http://dbpedia.org/ontology/birthPlace> <http://www.w3.org/2000/01/rdf-schema#label> "místo narození"@cs .
+<http://dbpedia.org/ontology/anthem> <http://www.w3.org/2000/01/rdf-schema#label> "hymna"@cs .
+<http://dbpedia.org/ontology/activeYearsEndDate> <http://www.w3.org/2000/01/rdf-schema#label> "Kosmonaut do"@cs .
+<http://dbpedia.org/ontology/activeYearsEndDate> <http://www.w3.org/2000/01/rdf-schema#label> "konec"@cs .
+<http://dbpedia.org/ontology/ceremonialCount> <http://www.w3.org/2000/01/rdf-schema#label> "okres"@cs .
+<http://dbpedia.org/ontology/numberOfPostgraduateStudents> <http://www.w3.org/2000/01/rdf-schema#label> "počet studentů navazujícího studia"@cs .
+<http://dbpedia.org/ontology/collection> <http://www.w3.org/2000/01/rdf-schema#label> "vyhledávané_exponáty"@cs .
+<http://dbpedia.org/ontology/developer> <http://www.w3.org/2000/01/rdf-schema#label> "vyvojar"@cs .
+<http://dbpedia.org/ontology/developer> <http://www.w3.org/2000/01/rdf-schema#label> "vývojář"@cs .
+<http://dbpedia.org/ontology/fastestDriver> <http://www.w3.org/2000/01/rdf-schema#label> "Nejrychlejší kolo_pilot"@cs .
+<http://dbpedia.org/ontology/region> <http://www.w3.org/2000/01/rdf-schema#label> "stát podcelek1"@cs .
+<http://dbpedia.org/ontology/region> <http://www.w3.org/2000/01/rdf-schema#label> "stát podcelek1 název"@cs .
+<http://dbpedia.org/ontology/region> <http://www.w3.org/2000/01/rdf-schema#label> "stát podcelek2"@cs .
+<http://dbpedia.org/ontology/region> <http://www.w3.org/2000/01/rdf-schema#label> "stát podcelek2 název"@cs .
+<http://dbpedia.org/ontology/region> <http://www.w3.org/2000/01/rdf-schema#label> "Oblast"@cs .
+<http://dbpedia.org/ontology/thirdTeam> <http://www.w3.org/2000/01/rdf-schema#label> "Třetí_tým"@cs .
+<http://dbpedia.org/ontology/shoreLength> <http://www.w3.org/2000/01/rdf-schema#label> "hrázdélka"@cs .
+<http://dbpedia.org/ontology/signature> <http://www.w3.org/2000/01/rdf-schema#label> "podpis"@cs .
+<http://dbpedia.org/ontology/sportCountry> <http://www.w3.org/2000/01/rdf-schema#label> "repaktual"@cs .
+<http://dbpedia.org/ontology/sportCountry> <http://www.w3.org/2000/01/rdf-schema#label> "reprezentace jméno"@cs .
+<http://dbpedia.org/ontology/municipalityCode> <http://www.w3.org/2000/01/rdf-schema#label> "NUTS"@cs .
+<http://www.w3.org/2003/01/geo/wgs84_pos#la> <http://www.w3.org/2000/01/rdf-schema#label> "zem.šíř"@cs .
+<http://www.w3.org/2003/01/geo/wgs84_pos#la> <http://www.w3.org/2000/01/rdf-schema#label> "zeměpisná šířka"@cs .
+<http://dbpedia.org/ontology/numberOfVisitors> <http://www.w3.org/2000/01/rdf-schema#label> "počet hráčů"@cs .
+<http://dbpedia.org/ontology/numberOfVisitors> <http://www.w3.org/2000/01/rdf-schema#label> "počet návštěvníků"@cs .
+<http://dbpedia.org/ontology/numberOfVisitors> <http://www.w3.org/2000/01/rdf-schema#label> "návštěvníci"@cs .
+<http://dbpedia.org/ontology/percentageOfAreaWater> <http://www.w3.org/2000/01/rdf-schema#label> "procent vody"@cs .
+<http://dbpedia.org/ontology/occupation> <http://www.w3.org/2000/01/rdf-schema#label> "Zaměstnání"@cs .
+<http://dbpedia.org/ontology/occupation> <http://www.w3.org/2000/01/rdf-schema#label> "povolání"@cs .
+<http://dbpedia.org/ontology/occupation> <http://www.w3.org/2000/01/rdf-schema#label> "Předch_zaměstnání"@cs .
+<http://dbpedia.org/ontology/occupation> <http://www.w3.org/2000/01/rdf-schema#label> "Současné_zaměstnání"@cs .
+<http://dbpedia.org/ontology/deathDate> <http://www.w3.org/2000/01/rdf-schema#label> "Datum úmrtí"@cs .
+<http://dbpedia.org/ontology/deathDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum úmrtí"@cs .
+<http://dbpedia.org/ontology/deathDate> <http://www.w3.org/2000/01/rdf-schema#label> "úmrtí"@cs .
+<http://dbpedia.org/ontology/playingTime> <http://www.w3.org/2000/01/rdf-schema#label> "doba hraní"@cs .
+<http://dbpedia.org/ontology/series> <http://www.w3.org/2000/01/rdf-schema#label> "serie"@cs .
+<http://dbpedia.org/ontology/precursor> <http://www.w3.org/2000/01/rdf-schema#label> "prekurzor"@cs .
+<http://dbpedia.org/ontology/title> <http://www.w3.org/2000/01/rdf-schema#label> "tituly"@cs .
+<http://dbpedia.org/ontology/title> <http://www.w3.org/2000/01/rdf-schema#label> "hra"@cs .
+<http://dbpedia.org/ontology/title> <http://www.w3.org/2000/01/rdf-schema#label> "titul"@cs .
+<http://dbpedia.org/ontology/title> <http://www.w3.org/2000/01/rdf-schema#label> "nazev"@cs .
+<http://dbpedia.org/ontology/languageFamily> <http://www.w3.org/2000/01/rdf-schema#label> "Klasifikace"@cs .
+<http://xmlns.com/foaf/0.1/familyName> <http://www.w3.org/2000/01/rdf-schema#label> "rod"@cs .
+<http://xmlns.com/foaf/0.1/familyName> <http://www.w3.org/2000/01/rdf-schema#label> "dynastie"@cs .
+<http://dbpedia.org/ontology/powerOutp> <http://www.w3.org/2000/01/rdf-schema#label> "pohon"@cs .
+<http://dbpedia.org/ontology/width> <http://www.w3.org/2000/01/rdf-schema#label> "výška"@cs .
+<http://dbpedia.org/ontology/width> <http://www.w3.org/2000/01/rdf-schema#label> "width"@cs .
+<http://dbpedia.org/ontology/years> <http://www.w3.org/2000/01/rdf-schema#label> "reprezentace roky"@cs .
+<http://dbpedia.org/ontology/years> <http://www.w3.org/2000/01/rdf-schema#label> "roky"@cs .
+<http://dbpedia.org/ontology/influencedBy> <http://www.w3.org/2000/01/rdf-schema#label> "vlivy"@cs .
+<http://dbpedia.org/ontology/longName> <http://www.w3.org/2000/01/rdf-schema#label> "název_okresu"@cs .
+<http://dbpedia.org/ontology/longName> <http://www.w3.org/2000/01/rdf-schema#label> "úřední název česky"@cs .
+<http://dbpedia.org/ontology/longName> <http://www.w3.org/2000/01/rdf-schema#label> "úřední název"@cs .
+<http://dbpedia.org/ontology/longName> <http://www.w3.org/2000/01/rdf-schema#label> "celé jméno"@cs .
+<http://dbpedia.org/ontology/releaseDate> <http://www.w3.org/2000/01/rdf-schema#label> "spuštěno"@cs .
+<http://dbpedia.org/ontology/outflow> <http://www.w3.org/2000/01/rdf-schema#label> "odtok"@cs .
+<http://dbpedia.org/ontology/iso6393Code> <http://www.w3.org/2000/01/rdf-schema#label> "ISO6393"@cs .
+<http://dbpedia.org/ontology/owner> <http://www.w3.org/2000/01/rdf-schema#label> "Majitel/é"@cs .
+<http://dbpedia.org/ontology/owner> <http://www.w3.org/2000/01/rdf-schema#label> "Majitel"@cs .
+<http://dbpedia.org/ontology/timeZone> <http://www.w3.org/2000/01/rdf-schema#label> "čas"@cs .
+<http://dbpedia.org/ontology/countr> <http://www.w3.org/2000/01/rdf-schema#label> "země"@cs .
+<http://dbpedia.org/ontology/managingEditor> <http://www.w3.org/2000/01/rdf-schema#label> "Šéfredaktor"@cs .
+<http://xmlns.com/foaf/0.1/homepage> <http://www.w3.org/2000/01/rdf-schema#label> "website"@cs .
+<http://xmlns.com/foaf/0.1/homepage> <http://www.w3.org/2000/01/rdf-schema#label> "web"@cs .
+<http://xmlns.com/foaf/0.1/homepage> <http://www.w3.org/2000/01/rdf-schema#label> "Web"@cs .
+<http://xmlns.com/foaf/0.1/homepage> <http://www.w3.org/2000/01/rdf-schema#label> "url"@cs .
+<http://xmlns.com/foaf/0.1/homepage> <http://www.w3.org/2000/01/rdf-schema#label> "web federace"@cs .
+<http://xmlns.com/foaf/0.1/homepage> <http://www.w3.org/2000/01/rdf-schema#label> "Internetové stránky"@cs .
+<http://xmlns.com/foaf/0.1/homepage> <http://www.w3.org/2000/01/rdf-schema#label> "stranky"@cs .
+<http://dbpedia.org/ontology/vein> <http://www.w3.org/2000/01/rdf-schema#label> "žíla"@cs .
+<http://dbpedia.org/ontology/giniCoefficientAsOf> <http://www.w3.org/2000/01/rdf-schema#label> "Ginirok"@cs .
+<http://dbpedia.org/ontology/casualties> <http://www.w3.org/2000/01/rdf-schema#label> "ztráty3"@cs .
+<http://dbpedia.org/ontology/casualties> <http://www.w3.org/2000/01/rdf-schema#label> "ztráty2"@cs .
+<http://dbpedia.org/ontology/casualties> <http://www.w3.org/2000/01/rdf-schema#label> "ztráty1"@cs .
+<http://dbpedia.org/ontology/humanDevelopmentIndexAsOf> <http://www.w3.org/2000/01/rdf-schema#label> "HDIrok"@cs .
+<http://dbpedia.org/ontology/numberOfDoctoralStudents> <http://www.w3.org/2000/01/rdf-schema#label> "počet studentů doktorského studia"@cs .
+<http://dbpedia.org/ontology/activeYearsStartDate> <http://www.w3.org/2000/01/rdf-schema#label> "zacatek"@cs .
+<http://dbpedia.org/ontology/activeYearsStartDate> <http://www.w3.org/2000/01/rdf-schema#label> "Kosmonaut od"@cs .
+<http://dbpedia.org/ontology/weight> <http://www.w3.org/2000/01/rdf-schema#label> "váha"@cs .
+<http://dbpedia.org/ontology/populationAsOf> <http://www.w3.org/2000/01/rdf-schema#label> "obyvrok"@cs .
+<http://dbpedia.org/ontology/thirdDriverCountry> <http://www.w3.org/2000/01/rdf-schema#label> "Třetí_stát"@cs .
+<http://dbpedia.org/ontology/displaceme> <http://www.w3.org/2000/01/rdf-schema#label> "pohon"@cs .
+<http://dbpedia.org/ontology/notes> <http://www.w3.org/2000/01/rdf-schema#label> "poznámky"@cs .
+<http://dbpedia.org/ontology/latestPreviewVersion> <http://www.w3.org/2000/01/rdf-schema#label> "připravovaná verze"@cs .
+<http://dbpedia.org/ontology/campus> <http://www.w3.org/2000/01/rdf-schema#label> "kampus"@cs .
+<http://dbpedia.org/ontology/pastMember> <http://www.w3.org/2000/01/rdf-schema#label> "poslední vítěz"@cs .
+<http://dbpedia.org/ontology/thirdDriver> <http://www.w3.org/2000/01/rdf-schema#label> "Třetí_pilot"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "obrázek"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "foto"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "screenshot"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "obrazek"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "image"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "fotka"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "Fotografie"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "Portrét"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "image2"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "logo"@cs .
+<http://xmlns.com/foaf/0.1/thumbnail> <http://www.w3.org/2000/01/rdf-schema#label> "obr"@cs .
+<http://dbpedia.org/ontology/governmentType> <http://www.w3.org/2000/01/rdf-schema#label> "státní zřízení"@cs .
+<http://dbpedia.org/ontology/assembl> <http://www.w3.org/2000/01/rdf-schema#label> "místa"@cs .
+<http://dbpedia.org/ontology/relatedMeanOfTransportatio> <http://www.w3.org/2000/01/rdf-schema#label> "příbuzné"@cs .
+<http://dbpedia.org/ontology/clas> <http://www.w3.org/2000/01/rdf-schema#label> "třída"@cs .
+<http://dbpedia.org/ontology/designer> <http://www.w3.org/2000/01/rdf-schema#label> "designer"@cs .
+<http://dbpedia.org/ontology/designer> <http://www.w3.org/2000/01/rdf-schema#label> "architekt"@cs .
+<http://dbpedia.org/ontology/silCode> <http://www.w3.org/2000/01/rdf-schema#label> "SIL"@cs .
+<http://dbpedia.org/ontology/graySubject> <http://www.w3.org/2000/01/rdf-schema#label> "GraySubject"@cs .
+<http://dbpedia.org/ontology/partner> <http://www.w3.org/2000/01/rdf-schema#label> "partner"@cs .
+<http://dbpedia.org/ontology/partner> <http://www.w3.org/2000/01/rdf-schema#label> "partnerka"@cs .
+<http://dbpedia.org/ontology/speaker> <http://www.w3.org/2000/01/rdf-schema#label> "Mluvčích"@cs .
+<http://dbpedia.org/ontology/operatingSystem> <http://www.w3.org/2000/01/rdf-schema#label> "platformy"@cs .
+<http://dbpedia.org/ontology/operatingSystem> <http://www.w3.org/2000/01/rdf-schema#label> "operační systém"@cs .
+<http://dbpedia.org/ontology/capita> <http://www.w3.org/2000/01/rdf-schema#label> "status"@cs .
+<http://dbpedia.org/ontology/capita> <http://www.w3.org/2000/01/rdf-schema#label> "pověřená obec"@cs .
+<http://dbpedia.org/ontology/capita> <http://www.w3.org/2000/01/rdf-schema#label> "obec s rozšířenou působností"@cs .
+<http://dbpedia.org/ontology/productionStartYear> <http://www.w3.org/2000/01/rdf-schema#label> "výstavba"@cs .
+<http://dbpedia.org/ontology/status> <http://www.w3.org/2000/01/rdf-schema#label> "Znaky"@cs .
+<http://dbpedia.org/ontology/cour> <http://www.w3.org/2000/01/rdf-schema#label> "Délka trati_mi"@cs .
+<http://dbpedia.org/ontology/cour> <http://www.w3.org/2000/01/rdf-schema#label> "Délka trati_km"@cs .
+<http://dbpedia.org/ontology/genre> <http://www.w3.org/2000/01/rdf-schema#label> "žánr"@cs .
+<http://dbpedia.org/ontology/genre> <http://www.w3.org/2000/01/rdf-schema#label> "zanr"@cs .
+<http://dbpedia.org/ontology/spouse> <http://www.w3.org/2000/01/rdf-schema#label> "partner2"@cs .
+<http://dbpedia.org/ontology/spouse> <http://www.w3.org/2000/01/rdf-schema#label> "partner3"@cs .
+<http://dbpedia.org/ontology/spouse> <http://www.w3.org/2000/01/rdf-schema#label> "partner1"@cs .
+<http://dbpedia.org/ontology/spouse> <http://www.w3.org/2000/01/rdf-schema#label> "choť"@cs .
+<http://dbpedia.org/ontology/spouse> <http://www.w3.org/2000/01/rdf-schema#label> "partner4"@cs .
+<http://dbpedia.org/ontology/spouse> <http://www.w3.org/2000/01/rdf-schema#label> "partner5"@cs .
+<http://dbpedia.org/ontology/spouse> <http://www.w3.org/2000/01/rdf-schema#label> "královna"@cs .
+<http://dbpedia.org/ontology/ar> <http://www.w3.org/2000/01/rdf-schema#label> "rozloha"@cs .
+<http://dbpedia.org/ontology/language> <http://www.w3.org/2000/01/rdf-schema#label> "jazyk"@cs .
+<http://dbpedia.org/ontology/language> <http://www.w3.org/2000/01/rdf-schema#label> "lokalizace"@cs .
+<http://dbpedia.org/ontology/language> <http://www.w3.org/2000/01/rdf-schema#label> "Jazyk"@cs .
+<http://dbpedia.org/ontology/hubAirport> <http://www.w3.org/2000/01/rdf-schema#label> "dalsi_zakl"@cs .
+<http://dbpedia.org/ontology/hubAirport> <http://www.w3.org/2000/01/rdf-schema#label> "hl_zakladna"@cs .
+<http://dbpedia.org/ontology/influenced> <http://www.w3.org/2000/01/rdf-schema#label> "ovlivnil"@cs .
+<http://dbpedia.org/ontology/map> <http://www.w3.org/2000/01/rdf-schema#label> "mapa"@cs .
+<http://dbpedia.org/ontology/parent> <http://www.w3.org/2000/01/rdf-schema#label> "otec"@cs .
+<http://dbpedia.org/ontology/parent> <http://www.w3.org/2000/01/rdf-schema#label> "matka"@cs .
+<http://dbpedia.org/ontology/poleDriverCountry> <http://www.w3.org/2000/01/rdf-schema#label> "Pole_stát"@cs .
+<http://dbpedia.org/ontology/architecturalStyle> <http://www.w3.org/2000/01/rdf-schema#label> "sloh"@cs .
+<http://dbpedia.org/ontology/publicationDate> <http://www.w3.org/2000/01/rdf-schema#label> "vydani"@cs .
+<http://dbpedia.org/ontology/publicationDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum"@cs .
+<http://dbpedia.org/ontology/category> <http://www.w3.org/2000/01/rdf-schema#label> "kategorie"@cs .
+<http://dbpedia.org/ontology/openingDate> <http://www.w3.org/2000/01/rdf-schema#label> "zahajeni"@cs .
+<http://dbpedia.org/ontology/areaOfCatchment> <http://www.w3.org/2000/01/rdf-schema#label> "povodí"@cs .
+<http://dbpedia.org/ontology/computingMedia> <http://www.w3.org/2000/01/rdf-schema#label> "media"@cs .
+<http://dbpedia.org/ontology/inflow> <http://www.w3.org/2000/01/rdf-schema#label> "přítok"@cs .
+<http://dbpedia.org/ontology/president> <http://www.w3.org/2000/01/rdf-schema#label> "prezident"@cs .
+<http://dbpedia.org/ontology/president> <http://www.w3.org/2000/01/rdf-schema#label> "ředitel"@cs .
+<http://dbpedia.org/ontology/leaderTitle> <http://www.w3.org/2000/01/rdf-schema#label> "funkce1"@cs .
+<http://dbpedia.org/ontology/leaderTitle> <http://www.w3.org/2000/01/rdf-schema#label> "funkce2"@cs .
+<http://dbpedia.org/ontology/distributor> <http://www.w3.org/2000/01/rdf-schema#label> "distributor"@cs .
+<http://dbpedia.org/ontology/distributor> <http://www.w3.org/2000/01/rdf-schema#label> "distributor v cr"@cs .
+<http://dbpedia.org/ontology/distributor> <http://www.w3.org/2000/01/rdf-schema#label> "distribuce"@cs .
+<http://dbpedia.org/ontology/cinematography> <http://www.w3.org/2000/01/rdf-schema#label> "kamera"@cs .
+<http://dbpedia.org/ontology/foundingYear> <http://www.w3.org/2000/01/rdf-schema#label> "rok založení"@cs .
+<http://dbpedia.org/ontology/religion> <http://www.w3.org/2000/01/rdf-schema#label> "náboženství"@cs .
+<http://dbpedia.org/ontology/state> <http://www.w3.org/2000/01/rdf-schema#label> "stát"@cs .
+<http://dbpedia.org/ontology/alliance> <http://www.w3.org/2000/01/rdf-schema#label> "aliance"@cs .
+<http://dbpedia.org/ontology/chancellor> <http://www.w3.org/2000/01/rdf-schema#label> "kancléř"@cs .
+<http://dbpedia.org/ontology/poleDriverTeam> <http://www.w3.org/2000/01/rdf-schema#label> "Pole_tým"@cs .
+<http://dbpedia.org/ontology/latestPreviewDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum připravované verze"@cs .
+<http://dbpedia.org/ontology/populationMetro> <http://www.w3.org/2000/01/rdf-schema#label> "počet_obyvatel"@cs .
+<http://dbpedia.org/ontology/causedBy> <http://www.w3.org/2000/01/rdf-schema#label> "příčina"@cs .
+<http://xmlns.com/foaf/0.1/page> <http://www.w3.org/2000/01/rdf-schema#label> "stránky"@cs .
+<http://dbpedia.org/ontology/abbreviation> <http://www.w3.org/2000/01/rdf-schema#label> "zkratka"@cs .
+<http://dbpedia.org/ontology/budg> <http://www.w3.org/2000/01/rdf-schema#label> "rozpočet"@cs .
+<http://dbpedia.org/ontology/municipality> <http://www.w3.org/2000/01/rdf-schema#label> "obec"@cs .
+<http://dbpedia.org/ontology/trainer> <http://www.w3.org/2000/01/rdf-schema#label> "trenéraktual"@cs .
+<http://dbpedia.org/ontology/trainer> <http://www.w3.org/2000/01/rdf-schema#label> "trenér jméno"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "oficialni_nazev"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "originální název"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "Jméno"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "latinský název"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "nazev_svatku"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "film"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "sportovní disciplína"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "latinsky"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "Název"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "jméno"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "jezero"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "původní název"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "celé jméno"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "název_muzea"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "genitiv"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "hra"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "css"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "jméno hráče"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "nazev"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "titulek"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "český název"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "Střetnutí"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "název"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "jiny_nazev"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "Oficiální název"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "Jazyk"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "Název Pivovaru"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "jména"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "název festivalu"@cs .
+<http://xmlns.com/foaf/0.1/name> <http://www.w3.org/2000/01/rdf-schema#label> "originál"@cs .
+<http://dbpedia.org/ontology/iso6391Code> <http://www.w3.org/2000/01/rdf-schema#label> "ISO6391"@cs .
+<http://dbpedia.org/ontology/populationDensi> <http://www.w3.org/2000/01/rdf-schema#label> "hustota"@cs .
+<http://dbpedia.org/ontology/supplies> <http://www.w3.org/2000/01/rdf-schema#label> "přítok"@cs .
+<http://dbpedia.org/ontology/ethnicGroup> <http://www.w3.org/2000/01/rdf-schema#label> "národnosti"@cs .
+<http://dbpedia.org/ontology/bran> <http://www.w3.org/2000/01/rdf-schema#label> "Značky"@cs .
+<http://dbpedia.org/ontology/endDate> <http://www.w3.org/2000/01/rdf-schema#label> "počet let existence"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "typ školy"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "Druh"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "druh"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "typ"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "zaměření"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "mody"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "typ závodu"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "Typ"@cs .
+<http://dbpedia.org/ontology/type> <http://www.w3.org/2000/01/rdf-schema#label> "typ softwaru"@cs .
+<http://dbpedia.org/ontology/predecessor> <http://www.w3.org/2000/01/rdf-schema#label> "předchůdce"@cs .
+<http://dbpedia.org/ontology/callSign> <http://www.w3.org/2000/01/rdf-schema#label> "callsign"@cs .
+<http://dbpedia.org/ontology/musicComposer> <http://www.w3.org/2000/01/rdf-schema#label> "hudba"@cs .
+<http://dbpedia.org/ontology/author> <http://www.w3.org/2000/01/rdf-schema#label> "autor"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "provincie"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "diecéze"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "seniorát"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "popisek"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "sbor"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "Popis"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "farnost"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "commons"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "unie"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "komentář"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "církev"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "popis1"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "sdružení"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "děkanát"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "popisek2"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "vikariát"@cs .
+<http://purl.org/dc/elements/1.1/description> <http://www.w3.org/2000/01/rdf-schema#label> "popis"@cs .
+<http://dbpedia.org/ontology/pseudonym> <http://www.w3.org/2000/01/rdf-schema#label> "pseudonym"@cs .
+<http://dbpedia.org/ontology/company> <http://www.w3.org/2000/01/rdf-schema#label> "vydavatel"@cs .
+<http://dbpedia.org/ontology/company> <http://www.w3.org/2000/01/rdf-schema#label> "název federace"@cs .
+<http://dbpedia.org/ontology/company> <http://www.w3.org/2000/01/rdf-schema#label> "vydavatelstvi"@cs .
+<http://dbpedia.org/ontology/numberOfUndergraduateStudents> <http://www.w3.org/2000/01/rdf-schema#label> "počet studentů bakalářského studia"@cs .
+<http://dbpedia.org/ontology/length> <http://www.w3.org/2000/01/rdf-schema#label> "délka"@cs .
+<http://dbpedia.org/ontology/creationYear> <http://www.w3.org/2000/01/rdf-schema#label> "Rok"@cs .
+<http://dbpedia.org/ontology/creationYear> <http://www.w3.org/2000/01/rdf-schema#label> "první ročník"@cs .
+<http://dbpedia.org/ontology/birthDate> <http://www.w3.org/2000/01/rdf-schema#label> "Datum narození"@cs .
+<http://dbpedia.org/ontology/birthDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum narození"@cs .
+<http://dbpedia.org/ontology/birthDate> <http://www.w3.org/2000/01/rdf-schema#label> "narozen"@cs .
+<http://dbpedia.org/ontology/birthDate> <http://www.w3.org/2000/01/rdf-schema#label> "narození"@cs .
+<http://dbpedia.org/ontology/topLevelDomain> <http://www.w3.org/2000/01/rdf-schema#label> "doména"@cs .
+<http://dbpedia.org/ontology/country> <http://www.w3.org/2000/01/rdf-schema#label> "Stát"@cs .
+<http://dbpedia.org/ontology/country> <http://www.w3.org/2000/01/rdf-schema#label> "stát"@cs .
+<http://dbpedia.org/ontology/country> <http://www.w3.org/2000/01/rdf-schema#label> "Smluvní stát"@cs .
+<http://dbpedia.org/ontology/country> <http://www.w3.org/2000/01/rdf-schema#label> "Smluvní stát3"@cs .
+<http://dbpedia.org/ontology/country> <http://www.w3.org/2000/01/rdf-schema#label> "Smluvní stát2"@cs .
+<http://dbpedia.org/ontology/country> <http://www.w3.org/2000/01/rdf-schema#label> "země"@cs .
+<http://dbpedia.org/ontology/vehicleCode> <http://www.w3.org/2000/01/rdf-schema#label> "SPZ"@cs .
+<http://dbpedia.org/ontology/vehicleCode> <http://www.w3.org/2000/01/rdf-schema#label> "mpz"@cs .
+<http://dbpedia.org/ontology/populationTotal> <http://www.w3.org/2000/01/rdf-schema#label> "počet_obyvatel"@cs .
+<http://dbpedia.org/ontology/locatedInArea> <http://www.w3.org/2000/01/rdf-schema#label> "kraj"@cs .
+<http://dbpedia.org/ontology/rector> <http://www.w3.org/2000/01/rdf-schema#label> "rektor"@cs .
+<http://xmlns.com/foaf/0.1/logo> <http://www.w3.org/2000/01/rdf-schema#label> "logo"@cs .
+<http://dbpedia.org/ontology/highestMountain> <http://www.w3.org/2000/01/rdf-schema#label> "nejvyšší hora"@cs .
+<http://dbpedia.org/ontology/areaTotal> <http://www.w3.org/2000/01/rdf-schema#label> "rozloha_okresu"@cs .
+<http://dbpedia.org/ontology/nationality> <http://www.w3.org/2000/01/rdf-schema#label> "národnost"@cs .
+<http://dbpedia.org/ontology/nationality> <http://www.w3.org/2000/01/rdf-schema#label> "St. příslušnost"@cs .
+<http://dbpedia.org/ontology/locationCountry> <http://www.w3.org/2000/01/rdf-schema#label> "Stát"@cs .
+<http://dbpedia.org/ontology/criteria> <http://www.w3.org/2000/01/rdf-schema#label> "Kritérium"@cs .
+<http://dbpedia.org/ontology/latestReleaseVersion> <http://www.w3.org/2000/01/rdf-schema#label> "aktuální verze"@cs .
+<http://dbpedia.org/ontology/latestReleaseVersion> <http://www.w3.org/2000/01/rdf-schema#label> "verze"@cs .
+<http://dbpedia.org/ontology/poleDriver> <http://www.w3.org/2000/01/rdf-schema#label> "Pole_pilot"@cs .
+<http://dbpedia.org/ontology/address> <http://www.w3.org/2000/01/rdf-schema#label> "adresa"@cs .
+<http://dbpedia.org/ontology/location> <http://www.w3.org/2000/01/rdf-schema#label> "světadíl"@cs .
+<http://dbpedia.org/ontology/location> <http://www.w3.org/2000/01/rdf-schema#label> "Místo"@cs .
+<http://dbpedia.org/ontology/location> <http://www.w3.org/2000/01/rdf-schema#label> "místo"@cs .
+<http://dbpedia.org/ontology/location> <http://www.w3.org/2000/01/rdf-schema#label> "umístění"@cs .
+<http://xmlns.com/foaf/0.1/nick> <http://www.w3.org/2000/01/rdf-schema#label> "přezdívka"@cs .
+<http://dbpedia.org/ontology/city> <http://www.w3.org/2000/01/rdf-schema#label> "sídla"@cs .
+<http://dbpedia.org/ontology/city> <http://www.w3.org/2000/01/rdf-schema#label> "město"@cs .
+<http://dbpedia.org/ontology/city> <http://www.w3.org/2000/01/rdf-schema#label> "sídlo"@cs .
+<http://dbpedia.org/ontology/secondDriverCountry> <http://www.w3.org/2000/01/rdf-schema#label> "Druhý_stát"@cs .
+<http://dbpedia.org/ontology/license> <http://www.w3.org/2000/01/rdf-schema#label> "licence obsahu"@cs .
+<http://dbpedia.org/ontology/license> <http://www.w3.org/2000/01/rdf-schema#label> "licence"@cs .
+<http://dbpedia.org/ontology/timeInSpa> <http://www.w3.org/2000/01/rdf-schema#label> "Čas ve vesmíru"@cs .
+<http://dbpedia.org/ontology/dateOfBurial> <http://www.w3.org/2000/01/rdf-schema#label> "korunovace"@cs .
+<http://dbpedia.org/ontology/fastestDriverCountry> <http://www.w3.org/2000/01/rdf-schema#label> "Nejrychlejší kolo_stát"@cs .
+<http://dbpedia.org/ontology/source> <http://www.w3.org/2000/01/rdf-schema#label> "zdroj"@cs .
+<http://dbpedia.org/ontology/capital> <http://www.w3.org/2000/01/rdf-schema#label> "sídlo_okresu"@cs .
+<http://dbpedia.org/ontology/capital> <http://www.w3.org/2000/01/rdf-schema#label> "hlavní město"@cs .
+<http://dbpedia.org/ontology/programmingLanguage> <http://www.w3.org/2000/01/rdf-schema#label> "vyvíjeno v"@cs .
+<http://dbpedia.org/ontology/mission> <http://www.w3.org/2000/01/rdf-schema#label> "Mise"@cs .
+<http://dbpedia.org/ontology/youthClub> <http://www.w3.org/2000/01/rdf-schema#label> "mládežnické kluby"@cs .
+<http://dbpedia.org/ontology/foundedBy> <http://www.w3.org/2000/01/rdf-schema#label> "zakladatelé"@cs .
+<http://dbpedia.org/ontology/foundedBy> <http://www.w3.org/2000/01/rdf-schema#label> "zakladatel"@cs .
+<http://dbpedia.org/ontology/weig> <http://www.w3.org/2000/01/rdf-schema#label> "šířka"@cs .
+<http://dbpedia.org/ontology/pictureDescription> <http://www.w3.org/2000/01/rdf-schema#label> "popisek"@cs .
+<http://dbpedia.org/ontology/position> <http://www.w3.org/2000/01/rdf-schema#label> "Hodnost"@cs .
+<http://dbpedia.org/ontology/position> <http://www.w3.org/2000/01/rdf-schema#label> "pozice"@cs .
+<http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/2000/01/rdf-schema#label> "popisek"@cs .
+<http://dbpedia.org/ontology/place> <http://www.w3.org/2000/01/rdf-schema#label> "místo"@cs .
+<http://dbpedia.org/ontology/territory> <http://www.w3.org/2000/01/rdf-schema#label> "Území"@cs .
+<http://dbpedia.org/ontology/configurati> <http://www.w3.org/2000/01/rdf-schema#label> "pohon"@cs .
+<http://dbpedia.org/ontology/languageRegulator> <http://www.w3.org/2000/01/rdf-schema#label> "Regulátor"@cs .
+<http://dbpedia.org/ontology/nearestCity> <http://www.w3.org/2000/01/rdf-schema#label> "nejbližší město"@cs .
+<http://dbpedia.org/ontology/island> <http://www.w3.org/2000/01/rdf-schema#label> "ostrovy"@cs .
+<http://dbpedia.org/ontology/format> <http://www.w3.org/2000/01/rdf-schema#label> "Formát"@cs .
+<http://dbpedia.org/ontology/successor> <http://www.w3.org/2000/01/rdf-schema#label> "následník"@cs .
+<http://dbpedia.org/ontology/successor> <http://www.w3.org/2000/01/rdf-schema#label> "dědic"@cs .
+<http://dbpedia.org/ontology/ethnicity> <http://www.w3.org/2000/01/rdf-schema#label> "etnikum"@cs .
+<http://dbpedia.org/ontology/transmissio> <http://www.w3.org/2000/01/rdf-schema#label> "stupňů"@cs .
+<http://dbpedia.org/ontology/fastestDriverTeam> <http://www.w3.org/2000/01/rdf-schema#label> "Nejrychlejší kolo_tým"@cs .
+<http://dbpedia.org/ontology/fuelCapaci> <http://www.w3.org/2000/01/rdf-schema#label> "nádrž"@cs .
+<http://dbpedia.org/ontology/meaning> <http://www.w3.org/2000/01/rdf-schema#label> "slaveny"@cs .
+<http://dbpedia.org/ontology/meaning> <http://www.w3.org/2000/01/rdf-schema#label> "oslavy"@cs .
+<http://dbpedia.org/ontology/bodyStyl> <http://www.w3.org/2000/01/rdf-schema#label> "karoserie"@cs .
+<http://dbpedia.org/ontology/wheelba> <http://www.w3.org/2000/01/rdf-schema#label> "rozvor"@cs .
+<http://dbpedia.org/ontology/deathPlace> <http://www.w3.org/2000/01/rdf-schema#label> "stát úmrtí"@cs .
+<http://dbpedia.org/ontology/deathPlace> <http://www.w3.org/2000/01/rdf-schema#label> "Místo úmrtí"@cs .
+<http://dbpedia.org/ontology/deathPlace> <http://www.w3.org/2000/01/rdf-schema#label> "město úmrtí"@cs .
+<http://dbpedia.org/ontology/deathPlace> <http://www.w3.org/2000/01/rdf-schema#label> "místo úmrtí"@cs .
+<http://dbpedia.org/ontology/gameEngine> <http://www.w3.org/2000/01/rdf-schema#label> "engine"@cs .
+<http://dbpedia.org/ontology/predecesso> <http://www.w3.org/2000/01/rdf-schema#label> "předchůdce"@cs .
+<http://dbpedia.org/ontology/gro> <http://www.w3.org/2000/01/rdf-schema#label> "tržby"@cs .
+<http://dbpedia.org/ontology/numberOfMunicipalities> <http://www.w3.org/2000/01/rdf-schema#label> "obce"@cs .
+<http://dbpedia.org/ontology/numberOfMunicipalities> <http://www.w3.org/2000/01/rdf-schema#label> "města"@cs .
+<http://dbpedia.org/ontology/iso6392Code> <http://www.w3.org/2000/01/rdf-schema#label> "ISO6392T"@cs .
+<http://dbpedia.org/ontology/iso6392Code> <http://www.w3.org/2000/01/rdf-schema#label> "ISO6392B"@cs .
+<http://dbpedia.org/ontology/secondDriver> <http://www.w3.org/2000/01/rdf-schema#label> "Druhý_pilot"@cs .
+<http://dbpedia.org/ontology/grayPage> <http://www.w3.org/2000/01/rdf-schema#label> "GrayPage"@cs .
+<http://dbpedia.org/ontology/transmission> <http://www.w3.org/2000/01/rdf-schema#label> "převodovka"@cs .
+<http://dbpedia.org/ontology/foundingDate> <http://www.w3.org/2000/01/rdf-schema#label> "Založení"@cs .
+<http://dbpedia.org/ontology/foundingDate> <http://www.w3.org/2000/01/rdf-schema#label> "založena federace"@cs .
+<http://dbpedia.org/ontology/foundingDate> <http://www.w3.org/2000/01/rdf-schema#label> "založeno"@cs .
+<http://dbpedia.org/ontology/foundingDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum_založení"@cs .
+<http://dbpedia.org/ontology/foundingDate> <http://www.w3.org/2000/01/rdf-schema#label> "datum vzniku"@cs .
+<http://dbpedia.org/ontology/award> <http://www.w3.org/2000/01/rdf-schema#label> "ocenění"@cs .
+<http://dbpedia.org/ontology/meshName> <http://www.w3.org/2000/01/rdf-schema#label> "MeshName"@cs .
+<http://dbpedia.org/ontology/imdbId> <http://www.w3.org/2000/01/rdf-schema#label> "imdb"@cs .
