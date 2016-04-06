@@ -1,15 +1,19 @@
 package cz.brmlab.yodaqa.analysis.question;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
+
 import cz.brmlab.yodaqa.provider.PrivateResources;
+
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
+
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -78,9 +82,9 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		JsonObject jObject = new JsonObject();
 		JsonArray jArray = new JsonArray();
 		for(Token tok: tokens) {
-			jArray.add(tok.getLemma().getValue());
+			jArray.add(new JsonPrimitive(tok.getLemma().getValue()));
 		}
-		jObject.put("query", jArray);
+		jObject.add("query", jArray);
 		return jObject.toString();
 	}
 
