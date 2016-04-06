@@ -4,12 +4,10 @@ package cz.brmlab.yodaqa.provider.rdf;
 
 public abstract class DBpediaLookup extends CachedJenaLookup {
 	public DBpediaLookup() {
-		/* Replace the first URL below with http://dbpedia.org/sparql
-		 * to use the public DBpedia SPARQL endpoint. */
-		super("http://dbpedia.ailao.eu:3030/dbpedia/query",
-			"PREFIX : <http://dbpedia.org/resource/>\n" +
-			"PREFIX dbpedia2: <http://dbpedia.org/property/>\n" +
-			"PREFIX dbpedia: <http://dbpedia.org/>\n" +
+		super("http://dbpedia.ailao.eu:3031/dbpedia/query",
+			"PREFIX : <http://cs.dbpedia.org/resource/>\n" +
+			"PREFIX dbpedia2: <http://cs.dbpedia.org/property/>\n" +
+			"PREFIX dbpedia: <http://cs.dbpedia.org/>\n" +
 			"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 			"");
 	}

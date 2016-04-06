@@ -50,11 +50,11 @@ public class DBpediaOntology extends DBpediaLookup {
 		String rawQueryStr =
 			"{\n" +
 			   // (A) fetch resources with @title label
-			"  ?res rdfs:label \"" + quotedTitle + "\"@en.\n" +
+			"  ?res rdfs:label \"" + quotedTitle + "\"@cs.\n" +
 			"} UNION {\n" +
 			   // (B) fetch also resources targetted by @title redirect
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
-			"  ?redir rdfs:label \"" + quotedTitle + "\"@en .\n" +
+			"  ?redir rdfs:label \"" + quotedTitle + "\"@cs .\n" +
 			"}\n" +
 			 // set the output variables
 			"?res ?property ?valres .\n" +
@@ -63,7 +63,7 @@ public class DBpediaOntology extends DBpediaLookup {
 			"BIND ( IF(BOUND(?vlabel), ?vlabel, ?valres) AS ?value )\n" +
 
 			 // weed out resources that are categories and other in-namespace junk
-			"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
+			"FILTER ( !regex(str(?res), '^http://cs.dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			 // select only relevant properties
 			"FILTER ( regex(str(?property), '^http://dbpedia.org/ontology', 'i') )\n" +
 			"FILTER ( !regex(str(?property), '^http://dbpedia.org/ontology/(wiki|abstract)', 'i') )\n" +
