@@ -85,10 +85,9 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				logger.debug("jakse, firstK1: {}", focus.getCoveredText());
 		}
 
-		// k6yQ or k9yQ or k4c1yQ -> ID
+		// kdo, kdy, kde... -> ID
 		if (focus == null
-		    && (first.getPos().getPosValue().matches("k[69]yQ")
-		        || first.getPos().getPosValue().matches("k4c1yQ"))) {
+		    && (first.getPos().getPosValue().matches("k[3694].*yQ"))) {
 			focus = first;
 			logger.debug("first: {}", focus.getCoveredText());
 		}
