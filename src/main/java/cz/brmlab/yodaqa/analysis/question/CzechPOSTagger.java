@@ -57,12 +57,7 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		if (URL_STRING == null)
 			return;
 		logger.debug("Czech pos tagger");
-		Collection<ROOT> sentences = JCasUtil.select(jCas, ROOT.class);
-		List<Token> allTokens = new ArrayList<>();
-		for(ROOT sentence: sentences) {
-			List<Token> tokens = JCasUtil.selectCovered(Token.class, sentence);
-			allTokens.addAll(tokens);
-		}
+		List<Token> tokens = new ArrayList<>(JCasUtil.select(jCas, Token.class));
 		URL url;
 		try {
 			url = new URL(URL_STRING);
@@ -70,10 +65,10 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		String jsonRequest = createRequest(allTokens);
+		String jsonRequest = createRequest(tokens);
 		InputStream is = sendRequest(jsonRequest);
 		Response response = processResponse(is);
-		addTagToTokens(jCas, allTokens, response);
+		addTagToTokens(jCas, tokens, response);
 		conn.disconnect();
 	}
 
