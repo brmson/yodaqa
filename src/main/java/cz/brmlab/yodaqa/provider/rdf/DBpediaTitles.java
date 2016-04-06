@@ -156,7 +156,7 @@ public class DBpediaTitles extends DBpediaLookup {
 		// This escapes unicode characters properly
 		String resURI;
 		try {
-			resURI = new URI("http://dbpedia.org/resource/" + name).toASCIIString();
+			resURI = new URI("http://cs.dbpedia.org/resource/" + name).toASCIIString();
 		} catch (URISyntaxException e) {
 			System.err.println("Bad name: " + name);
 			e.printStackTrace();
@@ -190,13 +190,13 @@ public class DBpediaTitles extends DBpediaLookup {
 			 // set the output variables
 			"?res dbo:wikiPageID ?pageID .\n" +
 			"?res rdfs:label ?label .\n" +
-			"OPTIONAL { ?res rdfs:comment ?description . FILTER ( LANG(?description) = 'en' ) }\n" +
+			"OPTIONAL { ?res rdfs:comment ?description . FILTER ( LANG(?description) = 'cs' ) }\n" +
 
 			 // ignore the redundant (A) entries (redirects, disambs)
 			"FILTER ( !BOUND(?redirTarget) )\n" +
 			"FILTER ( !BOUND(?disambTarget) )\n" +
 			 // output only english labels, thankyouverymuch
-			"FILTER ( LANG(?label) = 'en' )\n" +
+			"FILTER ( LANG(?label) = 'cs' )\n" +
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
@@ -220,7 +220,7 @@ public class DBpediaTitles extends DBpediaLookup {
 				continue;
 			}
 
-			String tgName = tgRes.substring("http://dbpedia.org/resource/".length());
+			String tgName = tgRes.substring("http://cs.dbpedia.org/resource/".length());
 
 			/* We approximate the concept popularity simply by how
 			 * many relations it partakes in.  We take a log
