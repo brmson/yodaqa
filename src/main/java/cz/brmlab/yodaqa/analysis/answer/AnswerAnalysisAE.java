@@ -46,19 +46,6 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		 * ...so usually it's a simple term plus possibly some
 		 * adjectives, but can be a complex subsentence system. */
 
-		/* In addition, we already have StanfordParser annotations,
-		 * so tokens, POS, lemmas, constituents and dependencies.
-		 * One exception is if the source sentence was too long;
-		 * in that case, rerun StanfordParser just on the answer. */
-		builder.add(createPrimitiveDescription(FindReqParse.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
-//		builder.add(createPrimitiveDescription(
-//				StanfordParser.class,
-//				StanfordParser.PARAM_MAX_TOKENS, 50, // more takes a lot of RAM and is sloow, StanfordParser is O(N^2)
-//				StanfordParser.PARAM_ANNOTATIONTYPE_TO_PARSE, "cz.brmlab.yodaqa.model.CandidateAnswer.PassageForParsing",
-//				StanfordParser.PARAM_WRITE_POS, true),
-//			CAS.NAME_DEFAULT_SOFA, "Answer");
-
 		/* Generate and store on the side a "syntactically canonical
 		 * form" of the answer text. */
 		builder.add(createPrimitiveDescription(SyntaxCanonization.class),
