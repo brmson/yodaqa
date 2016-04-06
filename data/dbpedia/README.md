@@ -16,30 +16,26 @@ and set up a RDF database on top of them.
 Download Data Files
 ===================
 
-	mkdir 2014
-	cd 2014
-	wget http://downloads.dbpedia.org/2014/dbpedia_2014.owl.bz2
-	wget http://downloads.dbpedia.org/2014/en/labels_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/redirects_transitive_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/page_ids_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/instance_types_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/instance_types_heuristic_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/links/wordnet_links.nt.bz2
-	wget http://downloads.dbpedia.org/2014/links/yago_types.nt.bz2
-	wget http://downloads.dbpedia.org/2014/links/yago_taxonomy.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/mappingbased_properties_cleaned_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/specific_mappingbased_properties_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/infobox_properties_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/infobox_property_definitions_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/disambiguations_en.nt.bz2
-	wget http://downloads.dbpedia.org/2014/en/short_abstracts_en.nt.bz2
+	mkdir 2015-10-cs
+	cd 2015-10-cs
+	#wget http://downloads.dbpedia.org/2014/dbpedia_2014.owl.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/labels_cs.ttl.bz2
+	#wget http://downloads.dbpedia.org/2014/en/redirects_transitive_en.nt.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/redirects_cs.ttl.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/page_ids_cs.ttl.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/instance_types_cs.ttl.bz2
+	#wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/instance_types_heuristic_cs.ttl.bz2
+	wget http://downloads.dbpedia.org/2015-10/links/wordnet_links.nt.bz2
+	wget http://downloads.dbpedia.org/2015-10/links/yago_types.nt.bz2
+	wget http://downloads.dbpedia.org/2015-10/links/yago_taxonomy.nt.bz2
+	#wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/mappingbased_properties_cleaned_cs.ttl.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/specific_mappingbased_properties_cs.ttl.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/infobox_properties_cs.ttl.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/infobox_property_definitions_cs.ttl.bz2
+	#wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/disambiguations_cs.ttl.bz2
+	wget http://downloads.dbpedia.org/2015-10/core-i18n/cs/short_abstracts_cs.ttl.bz2
 	bunzip2 -k *.bz2
 	cd ..
-
-The file short_abstracts_en.nt contains a syntax error on line 1263473,
-1947033, 2245904, 2305615, 4391674.  You can fix it e.g. by variations of
-
-	sed -i -e '4391674s/^/#/' short_abstracts_en.nt
 
 Set Up RDF Database
 ===================
@@ -53,11 +49,11 @@ tar.gz (2.12.1 at the time of writing) and Jena Fuseki distribution tar.gz
 	tar xvvfz jena-fuseki-1.1.1-distribution.tar.gz
 	cd jena-fuseki-1.1.1
 	mkdir db
-	../apache-jena-2.12.1/bin/tdbloader2 --loc db ../2014/dbpedia_2014.owl ../2014/*.nt
+	../apache-jena-2.12.1/bin/tdbloader2 --loc db ../2015-10-cs/*.ttl ../2015-10-cs/*.nt
 
 To start the Fuseki server, run then (in jena-fuseki-1.1.1)
 
-	./fuseki-server --loc db /dbpedia
+	./fuseki-server --port 3031 --loc db /dbpedia
 
 and edit ``src/main/java/cz/brmlab/yodaqa/provider/rdf/DBpediaLookup.java``
 changing default value of the ``service`` attribute.  It should work.
