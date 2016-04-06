@@ -72,11 +72,11 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Generate Wordnet instance-of based LATs */
-		builder.add(createPrimitiveDescription(LATByWnInstance.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+		//builder.add(createPrimitiveDescription(LATByWnInstance.class),
+		//	CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate DBpedia LATs based on wordnet mappings */
-		builder.add(createPrimitiveDescription(LATByDBpediaWN.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+		//builder.add(createPrimitiveDescription(LATByDBpediaWN.class),
+		//	CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate DBpedia LATs based on type properties
 		 * (mostly article category based; noisiest source) */
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
@@ -88,16 +88,16 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(LATNormalize.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Multiplicate LATs by wordnet hypernymy. */
-		builder.add(createPrimitiveDescription(LATByWordnet.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+		//builder.add(createPrimitiveDescription(LATByWordnet.class),
+		//	CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* We do no LAT multiplication below here since all of our LATs
 		 * are already "on-the-spot" and won't benefit from further
 		 * generalization - already sufficiently generic. */
 
 		/* Generate NamedEntity type LATs */
-		builder.add(createPrimitiveDescription(LATByNE.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+		//builder.add(createPrimitiveDescription(LATByNE.class),
+		//	CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate LATs based on quantity statements. */
 		builder.add(createPrimitiveDescription(LATByQuantity.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
@@ -105,7 +105,7 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		/* Perform type coercion. */
 		builder.add(createPrimitiveDescription(LATMatchTyCor.class));
 		/* Add features accordign to the question class*/
-		builder.add(AnalysisEngineFactory.createEngineDescription(QuestionClassFeatures.class));
+		//builder.add(AnalysisEngineFactory.createEngineDescription(QuestionClassFeatures.class));
 
 
 		/* Some debug dumps of the intermediate CAS. */

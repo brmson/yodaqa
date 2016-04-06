@@ -119,8 +119,8 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByFocus.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATBySV.class));
 		/* Generalize imprecise LATs */
-		builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class,
-					LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
+		//builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class,
+		//			LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
 
 		/* Generate clues; the order is less specific to more specific */
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByTokenConstituent.class));

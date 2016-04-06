@@ -17,6 +17,8 @@ Czech TODO Items
 ----------------
 
   * PropertyGloveScoring
+  * LATByNE
+  * QuestionClassFeatures
 
 Immediate TODO Items
 --------------------
