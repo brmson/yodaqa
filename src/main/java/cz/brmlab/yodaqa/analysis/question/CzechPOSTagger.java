@@ -44,10 +44,15 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 		URL_STRING = PrivateResources.getInstance().getResource("neco");
+		if (URL_STRING == null) {
+			logger.warn("Czech pos tagger not used (URL not specified)");
+		}
 	}
 
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
+		if (URL_STRING == null)
+			return;
 		logger.debug("Czech pos tagger");
 		Collection<ROOT> sentences = JCasUtil.select(jCas, ROOT.class);
 		List<Token> allTokens = new ArrayList<>();
