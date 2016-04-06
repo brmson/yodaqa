@@ -112,7 +112,7 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusNameProxy.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(SubjectGenerator.class));
+		//builder.add(AnalysisEngineFactory.createEngineDescription(SubjectGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(SVGenerator.class));
 
 		/* Prepare LATs */

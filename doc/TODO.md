@@ -16,9 +16,15 @@ Apologies if this list is not kept 100% up-to-date all the time.
 Czech TODO Items
 ----------------
 
+Question analysis:
+
+  * SubjectGenerator
+  * QuestionClassFeatures
+
+Answer analysis:
+
   * PropertyGloveScoring
   * LATByNE
-  * QuestionClassFeatures
 
 Immediate TODO Items
 --------------------
