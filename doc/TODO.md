@@ -20,6 +20,7 @@ Question analysis:
 
   * SubjectGenerator
   * QuestionClassFeatures
+  * LATByFocus covering-NP
 
 Answer analysis:
 
