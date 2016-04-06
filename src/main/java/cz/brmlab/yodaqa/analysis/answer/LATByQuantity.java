@@ -99,9 +99,9 @@ public class LATByQuantity extends JCasAnnotator_ImplBase {
 			addLAT(new QuantityLAT(jcas), LATbase.getBegin(), LATbase.getEnd(), LATbase, texts[0], synsets[0], pos, spec);
 		}
 
-		logger.debug(".. Quantity {} LAT {}/{}, {}/{}, {}/{} based on [{}] <<{}>>",
+		logger.debug(".. Quantity {} LAT {}/{} based on [{}] <<{}>>",
 			isCD ? "CD" : "noCD",
-			texts[0], synsets[0], texts[1], synsets[1], texts[2], synsets[2],
+			texts[0], synsets[0],
 			LATbase.getClass().getSimpleName(), LATbase.getCoveredText());
 	}
 
