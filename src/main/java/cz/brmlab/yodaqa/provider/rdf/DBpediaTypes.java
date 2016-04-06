@@ -50,6 +50,10 @@ public class DBpediaTypes extends DBpediaLookup {
 			   // (B) fetch also resources targetted by @title redirect
 			"  ?redir dbo:wikiPageRedirects ?res .\n" +
 			"  ?redir rdfs:label \"" + title + "\"@en .\n" +
+			"} UNION {\n" +
+			   // (B) fetch also resources targetted by same-as redirect
+			"  ?redir owl:sameAs ?res .\n" +
+			"  ?redir rdfs:label \"" + title + "\"@en .\n" +
 			"}\n" +
 			 // set the output variable
 			"?res rdf:type ?type .\n" +
@@ -60,11 +64,12 @@ public class DBpediaTypes extends DBpediaLookup {
 			"  ?type rdfs:subClassOf ?superType .\n" +
 			"}\n" +
 
+			"FILTER ( LANG(?type) = \"sl\" )\n" + // XXX: Yes, Slovenian!!!
 			 // keep only resources; e.g. /property/ objects also
 			 // have types!
-			"FILTER ( regex(str(?res), '^http://dbpedia.org/resource/', 'i') )\n" +
+			"FILTER ( regex(str(?res), '^http://.*.dbpedia.org/resource/', 'i') )\n" +
 			 // weed out resources that are categories and other in-namespace junk
-			"FILTER ( !regex(str(?res), '^http://dbpedia.org/resource/[^_]*:', 'i') )\n" +
+			"FILTER ( !regex(str(?res), '^http://.*.dbpedia.org/resource/[^_]*:', 'i') )\n" +
 			"";
 		//logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
@@ -77,7 +82,7 @@ public class DBpediaTypes extends DBpediaLookup {
 		List<String> results = new LinkedList<String>();
 		for (Literal[] rawResult : rawResults) {
 			String typeLabel = cookTypeLabel(rawResult[0].getString());
-			if (typeLabel.equals("Thing") || typeLabel.equals(" Feature")) {
+			if (typeLabel.equals("Thing") || typeLabel.equals(" Feature")) { // yago
 				// just skip this, about everything is tagged as owl#thing
 				// and most stuff is tagger as a " Feature" (sic)
 				continue;
