@@ -34,7 +34,7 @@ import cz.brmlab.yodaqa.model.Question.ClueToken;
 public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(ClueByTokenConstituent.class);
 
-	public static String TOKENMATCH = "k4|UNKNOWN|k2.*|k1.*|k6.*|k0.*";
+	public static String TOKENMATCH = "k1.*|UNKNOWN|k2.*|k4.*|k6.*";
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
@@ -44,8 +44,10 @@ public class ClueByTokenConstituent extends JCasAnnotator_ImplBase {
 		/* XXX we don't do constituents in Czech */
 
 		for (Token t : JCasUtil.select(jcas, Token.class)) {
-			if (t.getPos().getPosValue().matches(TOKENMATCH))
-				addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t, true, 1.0);
+			if (t.getPos().getPosValue().matches(TOKENMATCH)) {
+				if (t.getEnd() - t.getBegin() > 1) // skip one-letter things like interpunction
+					addClue(new ClueToken(jcas), t.getBegin(), t.getEnd(), t, true, 1.0);
+			}
 		}
 	}
 
