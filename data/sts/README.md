@@ -18,22 +18,10 @@ Passage Scoring
 First major usage of STS is for scoring passages, instead of a very simplistic
 keyword based PassScoreSimple.  Download
 
-	http://pasky.or.cz/dev/brmson/weights-ubuntu-anssel80-rnn-3b7f4a294ad6f4c3-03-bestval.h5
-	http://rover.ms.mff.cuni.cz/~pasky/ubuntu-dialog/v2-vocab.pickle.gz
+	http://pasky.or.cz/dev/brmson/weights-anssel-termfreq-3368350fbcab42e4-bestval.h5
 
 and run
 
-	tools/scoring-api.py rnn anssel v2-vocab.pickle weights-ubuntu-anssel80-rnn-3b7f4a294ad6f4c3-03-bestval.h5 "vocabt='ubuntu'" ptscorer=B.dot_ptscorer pdim=1
+	tools/scoring-api.py termfreq anssel data/anssel/yodaqa/large2470-training.csv weights-anssel-termfreq-3368350fbcab42e4-bestval.h5
 
-We have choosen 3b7f4a294ad6f4c3-03 as it was the model with highest val MRR
-on val set in the 16-train run:
-
-	data/anssel/yodaqa/large2470-training.csv Accuracy: raw 0.810384 (y=0 0.808999, y=1 0.830573), bal 0.819786
-	data/anssel/yodaqa/large2470-training.csv MRR: 0.616968
-	data/anssel/yodaqa/large2470-training.csv MAP: 0.419500
-	data/anssel/yodaqa/large2470-val.csv Accuracy: raw 0.726943 (y=0 0.735079, y=1 0.599774), bal 0.667426
-	data/anssel/yodaqa/large2470-val.csv MRR: 0.543145
-	data/anssel/yodaqa/large2470-val.csv MAP: 0.343900
-	data/anssel/yodaqa/large2470-test.csv Accuracy: raw 0.745831 (y=0 0.766308, y=1 0.522780), bal 0.644544
-	data/anssel/yodaqa/large2470-test.csv MRR: 0.551201
-	data/anssel/yodaqa/large2470-test.csv MAP: 0.357700
+This is a BM25 model trained on large2470-train.
