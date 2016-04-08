@@ -83,7 +83,7 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		JsonObject jObject = new JsonObject();
 		JsonArray jArray = new JsonArray();
 		for(Token tok: tokens) {
-			jArray.add(new JsonPrimitive(tok.getLemma().getValue()));
+			jArray.add(new JsonPrimitive(tok.getCoveredText()));
 		}
 		jObject.add("query", jArray);
 		return jObject.toString();
