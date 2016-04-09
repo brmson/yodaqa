@@ -108,15 +108,15 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JsonObject jsonObject = (JsonObject) jsonArray.get(i);
 			JsonArray position = jsonObject.getAsJsonArray("position");
-			ArrayList<Integer> positions = new ArrayList<>(); //IMPORTANT
+			ArrayList<Integer> positions = new ArrayList<>();
 			for (int j = 0; j < position.size(); j++) {
 				positions.add(position.get(j).getAsInt());
 			}
 			JsonArray uriList = jsonObject.getAsJsonArray("uri_list");
-			ArrayList<UriList> uriLists = new ArrayList<>(); //IMPORTANT
+			ArrayList<UriList> uriLists = new ArrayList<>();
 			for (int j = 0; j < uriList.size(); j++) {
 				String wiki_uri = uriList.get(j).getAsJsonObject().get("wiki_uri").getAsString();
-				String concept_name = uriList.get(j).getAsJsonObject().get("concept_name").getAsString();
+				String concept_name = uriList.get(j).getAsJsonObject().get("concept_name").getAsString().replace("_"," ");
 				String uri = uriList.get(j).getAsJsonObject().get("uri").getAsString();
 				float score = uriList.get(j).getAsJsonObject().get("score").getAsFloat();
 				String dbpedia_uri = uriList.get(j).getAsJsonObject().get("dbpedia_uri").getAsString();
@@ -157,7 +157,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 				concept.setBegin(stepnickaResults.get(i).getPosition().get(0));
 				concept.setEnd(stepnickaResults.get(i).getPosition().get(1));
 				concept.setFullLabel(stepnickaResults.get(i).getUriList().get(j).getConcept_name());
-				concept.setCookedLabel(stepnickaResults.get(i).getUriList().get(j).getConcept_name().replace("_"," "));
+				concept.setCookedLabel(stepnickaResults.get(i).getUriList().get(j).getConcept_name());
 				concept.setLabelProbability(stepnickaResults.get(i).getUriList().get(j).getScore());
 				concept.setPageID(stepnickaResults.get(i).getUriList().get(j).getPage_id());
 				//concept.setEditDistance(a.getDist());
