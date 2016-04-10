@@ -74,10 +74,10 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 
 		Iterator<Token> tokens = JCasUtil.select(jcas, Token.class).iterator();
 		Token first = tokens.next();
-		Token second = tokens.next();
+		Token second = tokens.hasNext() ? tokens.next() : null;
 
 		// k6yQ + k3c4 -> next k1 (“jak se”)
-		if (focus == null
+		if (focus == null && second != null
 		    && (first.getPos().getPosValue().matches("k6yQ")
 		        && second.getPos().getPosValue().matches("k3c4.*"))) {
 			focus = firstK1Token(jcas);
