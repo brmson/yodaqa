@@ -16,7 +16,7 @@ import java.util.Map;
 public class RNNScoring {
 
 	private static final String MODEL_URL = "http://pichl.ailao.eu:5000/score";
-	private static final String SEPARATOR = " ### ";
+	private static final String SEPARATOR = " # ";
 
 	public static List<Double> getScores(String question, List<String> labels, int propertyNumber) {
 		List<Double> res = null;
@@ -53,12 +53,13 @@ public class RNNScoring {
 
 	private static String buildRequestBody(String question, List<String> labels, int propertyNumber) {
 		JsonObject jobject = new JsonObject();
-		jobject.addProperty("question", question);
+		jobject.addProperty("qtext", question.toLowerCase());
 		JsonArray propLabels = new JsonArray();
 		for(String lab: labels) {
-			propLabels.add(new JsonPrimitive(lab));
+			propLabels.add(new JsonPrimitive(lab.toLowerCase()));
 		}
-		jobject.add("prop_labels", propLabels);
+		jobject.add("atext", propLabels);
+		// FIXME Parameter property_number is no longer used in new version of scoring-api
 		jobject.addProperty("property_number", propertyNumber);
 		return jobject.toString();
 	}

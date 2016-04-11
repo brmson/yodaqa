@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.rdf;
 
+import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -170,10 +171,14 @@ public class FBPathLogistic {
 	public static class PathScore {
 		public PropertyPath path;
 		public double proba;
+		public PropertyValue entity;
+		public PropertyValue witness;
 
 		public PathScore(PropertyPath path, double proba) {
 			this.path = path;
 			this.proba = proba;
+			this.entity = null;
+			this.witness = null;
 		}
 	};
 

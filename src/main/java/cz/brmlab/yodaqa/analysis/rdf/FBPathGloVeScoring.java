@@ -68,11 +68,11 @@ public class FBPathGloVeScoring {
 	}
 
 	private static String fullQuestionRepr(JCas questionView, int entityLimit) {
-		String entityToken = "<e>";
+		String entityToken = "ENT_TOK";
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		String text = qi.getCAS().getDocumentText();
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-		concepts.sort(new Comparator<Concept>() {
+		Collections.sort(concepts, new Comparator<Concept>() {
 			@Override
 			public int compare(Concept c1, Concept c2) {
 				return Double.valueOf(c2.getScore()).compareTo(c1.getScore());
@@ -85,7 +85,7 @@ public class FBPathGloVeScoring {
 			beginEnd.add(concept.getEnd());
 			idxs.add(beginEnd);
 		}
-		idxs.sort(new Comparator<List<Integer>>() {
+		Collections.sort(idxs, new Comparator<List<Integer>>() {
 			@Override
 			public int compare(List<Integer> l1, List<Integer> l2) {
 				if (l1.get(0).equals(l2.get(0))) return l2.get(1).compareTo(l1.get(1));
@@ -129,7 +129,6 @@ public class FBPathGloVeScoring {
 		logger.debug("questionRepr: {}", qtoks);
 
 		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
-		logger.debug("REPRRR " + questionText);
 
 		/* Generate pvPaths for the 1-level neighborhood. */
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
@@ -307,8 +306,12 @@ public class FBPathGloVeScoring {
 			for (Concept w: concepts) {
 				logger.debug("Page ids " + c.getPageID() + " to " + w.getPageID());
 				if (c.getPageID() == w.getPageID()) continue;
-					logger.debug("Witness path from " + c.getFullLabel() + " to " + w.getFullLabel());
-					res.addAll(fbo.queryWitnessRelations(c.getPageID(), c.getFullLabel(), w.getPageID(), logger));
+				logger.debug("Witness path from " + c.getFullLabel() + " to " + w.getFullLabel());
+				List<List<PropertyValue>> paths = fbo.queryWitnessRelations(c.getPageID(), c.getFullLabel(), w.getPageID(), logger);
+				for(List<PropertyValue> path: paths) {
+					path.get(1).setConcept(c);
+				}
+				res.addAll(paths);
 			}
 		}
 		// Scoring...
@@ -399,6 +402,9 @@ public class FBPathGloVeScoring {
 			// XXX: better way than averaging?
 
 			FBPathLogistic.PathScore ps = new FBPathLogistic.PathScore(pp, score);
+			ps.entity = path.get(0);
+			if (path.size() == 3) ps.witness = path.get(2);
+			logger.debug("NEW path score " + ps.entity + " " + ps.witness);
 			scores.add(ps);
 		}
 		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {

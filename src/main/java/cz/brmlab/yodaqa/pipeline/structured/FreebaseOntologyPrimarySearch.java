@@ -87,9 +87,32 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		List<PathScore> aPrioriPaths = new ArrayList<>();
 
 		/* Now, get the property values. */
+		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView));
+//		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+//			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
+//		}
+		return properties;
+	}
 
-		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
-			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
+	protected List<PropertyValue> getConceptPropertiesFromExploring(List<PathScore> paths, JCas jCas) {
+		List<PropertyValue> properties = new ArrayList<>();
+		String midPrefix = "http://rdf.freebase.com/ns/";
+		/* First, get the set of topics covering this concept. */
+		/* (This will be just a single-member set aside of a few
+		 * exceptional cases.) */
+
+		for(PathScore ps: paths) {
+			List<PathScore> path = new ArrayList<>();
+			path.add(ps);
+			List<Concept> witness = new ArrayList<>();
+			if (ps.path.size() == 3) {
+				Concept c = ps.witness.getConcept();
+				logger.debug("WITNESS " + c.getFullLabel() + " " + c.getPageID());
+				witness.add(c);
+			}
+
+			String mid = ps.entity.getObjRes().substring(midPrefix.length());
+			properties.addAll(fbo.queryTopicSpecific(ps.entity.getObject(), mid, path, witness, new ArrayList<String>(), logger));
 		}
 		return properties;
 	}

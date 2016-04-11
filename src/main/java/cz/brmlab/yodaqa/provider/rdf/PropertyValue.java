@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.model.Question.Concept;
 
 /** An (object, property, propres, value, valres, afv, score, ...) tuple.
  * * object is its English string label
@@ -22,6 +23,7 @@ public class PropertyValue {
 	protected String value;
 	protected String valRes;
 	protected String witness;
+	protected Concept concept;
 
 	AnswerFV afv;
 	String origin;  /* AnswerSourceStructured origin field. */
@@ -51,6 +53,7 @@ public class PropertyValue {
 	public String getProperty() { return property; }
 	public String getValue() { return value; }
 	public String getValRes() { return valRes; }
+	public Concept getConcept() { return concept; }
 	public String getWitness() { return witness; }
 	public AnswerFV getAFV() { return afv; }
 	public String getOrigin() { return origin; }
@@ -58,6 +61,7 @@ public class PropertyValue {
 	public String getPropRes() { return propRes; }
 	public void setPropRes(String propRes) { this.propRes = propRes; }
 	public void setProperty(String prop) { this.property = prop; }
+	public void setConcept(Concept c) { this.concept = c; }
 
 	public Double getScore() { return score; }
 	public void setScore(double score) { this.score = score; }
