@@ -394,14 +394,14 @@ public class FBPathGloVeScoring {
 			List<String> properties = new ArrayList<>();
 //			logger.debug("Logistic regression score: " + ranker.getScore(path));
 			double score = 0;
-//			String s = "";
-//			for(PropertyValue pv: path) {
-//				properties.add(pv.getPropRes());
-//				score += pv.getScore();
-//				s += pv.getPropRes() + " | ";
-//			}
+			String s = "";
+			for(PropertyValue pv: path) {
+				properties.add(pv.getPropRes());
+				score += pv.getScore();
+				s += pv.getPropRes() + " | ";
+			}
 //			logger.debug(s);
-//			score /= path.size();
+			score /= path.size();
 //			score = ranker.getScore(path);
 			score = rnnScores.get(scoreIdx++);
 
@@ -411,7 +411,6 @@ public class FBPathGloVeScoring {
 			FBPathLogistic.PathScore ps = new FBPathLogistic.PathScore(pp, score);
 			ps.entity = path.get(0);
 			if (path.size() == 3) ps.witness = path.get(2);
-			logger.debug("NEW path score " + ps.entity + " " + ps.witness);
 			scores.add(ps);
 		}
 		Collections.sort(scores, new Comparator<FBPathLogistic.PathScore>() {
