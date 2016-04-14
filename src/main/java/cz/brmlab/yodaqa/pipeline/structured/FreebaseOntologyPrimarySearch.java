@@ -111,8 +111,12 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 				witness.add(c);
 			}
 
-			String mid = ps.entity.getObjRes().substring(midPrefix.length());
-			properties.addAll(fbo.queryTopicSpecific(ps.entity.getObject(), mid, path, witness, new ArrayList<String>(), logger));
+			Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(ps.entity.getConcept().getPageID(), logger);
+			for (FreebaseOntology.TitledMid topic : topics) {
+				if (!paths.isEmpty())
+					properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, paths, witness, new ArrayList<String>(), logger));
+			}
+//			properties.addAll(fbo.queryTopicSpecific(ps.entity.getObject(), mid, path, witness, new ArrayList<String>(), logger));
 		}
 		return properties;
 	}
