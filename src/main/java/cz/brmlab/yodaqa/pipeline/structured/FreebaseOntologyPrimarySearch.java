@@ -87,10 +87,10 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		List<PathScore> aPrioriPaths = new ArrayList<>();
 
 		/* Now, get the property values. */
-		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView));
-//		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
-//			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
-//		}
+//		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView));
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
+		}
 		return properties;
 	}
 

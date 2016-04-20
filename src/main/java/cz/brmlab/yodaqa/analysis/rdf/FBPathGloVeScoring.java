@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.rdf;
 
+import cz.brmlab.yodaqa.model.Question.Clue;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.Question.QuestionInfo;
 import cz.brmlab.yodaqa.model.Question.SV;
@@ -7,6 +8,7 @@ import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.model.TyCor.WordnetLAT;
 import cz.brmlab.yodaqa.provider.glove.MbWeights;
 import cz.brmlab.yodaqa.provider.glove.Relatedness;
+import cz.brmlab.yodaqa.provider.rdf.FreebaseExploration;
 import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
 import cz.brmlab.yodaqa.provider.rdf.PropertyPath;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
@@ -25,7 +27,7 @@ import java.util.*;
 public class FBPathGloVeScoring {
 	private static final String midPrefix = "http://rdf.freebase.com/ns/";
 	private static final int TOP_N_WITNESSES = 2;
-	private static final int TOP_N_ENTITIES_REPLACE = Integer.MAX_VALUE;
+	private static final int TOP_N_ENTITIES_REPLACE = 0;
 
 	private static FBPathGloVeScoring fbpgs = new FBPathGloVeScoring();
 	protected Logger logger = LoggerFactory.getLogger(FBPathGloVeScoring.class);
@@ -124,36 +126,39 @@ public class FBPathGloVeScoring {
 			}
 		});
 		List<List<PropertyValue>> pvPaths = new ArrayList<>();
-
+		FreebaseExploration fbex = new FreebaseExploration();
 		List<String> qtoks = questionRepr(questionView);
 		logger.debug("questionRepr: {}", qtoks);
 
 		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
-
+		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
 		/* Generate pvPaths for the 1-level neighborhood. */
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
-			addConceptPVPaths(pvPaths, qtoks, c);
+			pvPaths.addAll(fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class)));
+//			addConceptPVPaths(pvPaths, qtoks, c);
 		}
 		//XXX Select top N path counting only distincs ones
-		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, Integer.MAX_VALUE);
+//		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, Integer.MAX_VALUE);
+
 
 		/* Expand pvPaths for the 2-level neighborhood. */
-		pvPaths.clear();
-		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-		for(Concept c: concepts) {
-			logger.debug("CONCEPT " + c.getFullLabel() + " " + c.getPageID());
-			logger.debug(c.getBegin() + " " + c.getEnd());
-		}
-		for (List<PropertyValue> path: lenOnePaths)
-			addExpandedPVPaths(pvPaths, path, qtoks, concepts);
+//		pvPaths.clear();
 
-		List<List<PropertyValue>> lenTwoPaths = new ArrayList<>(pvPaths);
+//		for(Concept c: concepts) {
+//			logger.debug("CONCEPT " + c.getFullLabel() + " " + c.getPageID());
+//			logger.debug(c.getBegin() + " " + c.getEnd());
+//
+//		}
+//		for (List<PropertyValue> path: lenOnePaths)
+//			addExpandedPVPaths(pvPaths, path, qtoks, concepts);
+
+//		List<List<PropertyValue>> lenTwoPaths = new ArrayList<>(pvPaths);
 
 		/* Add witness relations to paths of length 2 if possible */
-		pvPaths.clear();
-		List<List<PropertyValue>> potentialWitnesses = getPotentialWitnesses(concepts, qtoks);
-		for (List<PropertyValue> path: lenTwoPaths)
-			addWitnessPVPaths(pvPaths, path, potentialWitnesses);
+//		pvPaths.clear();
+//		List<List<PropertyValue>> potentialWitnesses = getPotentialWitnesses(concepts, qtoks);
+//		for (List<PropertyValue> path: lenTwoPaths)
+//			addWitnessPVPaths(pvPaths, path, potentialWitnesses);
 
 		// Deduplication
 		pathSet.addAll(pvPaths);
@@ -385,16 +390,16 @@ public class FBPathGloVeScoring {
 		int scoreIdx = 0;
 		for (List<PropertyValue> path: pathList) {
 			List<String> properties = new ArrayList<>();
-			logger.debug("Logistic regression score: " + ranker.getScore(path));
+//			logger.debug("Logistic regression score: " + ranker.getScore(path));
 			double score = 0;
 			String s = "";
 			for(PropertyValue pv: path) {
 				properties.add(pv.getPropRes());
-				score += pv.getScore();
+//				score += pv.getScore();
 				s += pv.getPropRes() + " | ";
 			}
 			logger.debug(s);
-			score /= path.size();
+//			score /= path.size();
 //			score = ranker.getScore(path);
 			score = rnnScores.get(scoreIdx++);
 
