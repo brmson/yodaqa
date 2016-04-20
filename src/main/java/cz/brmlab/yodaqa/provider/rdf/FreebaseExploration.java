@@ -158,6 +158,7 @@ public class FreebaseExploration {
 					is = conn.getInputStream();
 					FileUtils.copyInputStreamToFile(is, new File(fullPath));
 					conn.disconnect();
+					logger.debug("Exists " + new File(fullPath).exists());
 					is = new FileInputStream(fullPath);
 				} catch (IOException e1) {
 					e1.printStackTrace();
