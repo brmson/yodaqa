@@ -149,6 +149,8 @@ public class FreebaseExploration {
 				HttpURLConnection conn = null;
 				try {
 					String urlString = FREEBASE_URL + mid.mid.substring(2, mid.mid.length());
+					String key = System.getProperty("cz.brmlab.yodaqa.provider.rdf.FreebaseExploration.ApiKey");
+					if (key != null && !key.isEmpty()) urlString += "?key=" + key;
 //					logger.debug("API {}", System.getProperty("cz.brmlab.yodaqa.provider.rdf.FreebaseExploration.ApiKey"));
 //					logger.debug("URL {}", urlString);
 					URL url = new URL(urlString);
