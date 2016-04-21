@@ -24,10 +24,14 @@ public class FreebaseExploration {
 	protected Logger logger = LoggerFactory.getLogger(FreebaseExploration.class);
 
 	private FreebaseOntology fbo;
+	private HashMap<String, String> labelCache;
+	private HashMap<Integer, Set<FreebaseOntology.TitledMid>> midCache;
 
 
 	public FreebaseExploration() {
 		fbo = new FreebaseOntology();
+		labelCache = new HashMap<>();
+		midCache = new HashMap<>();
 	}
 
 	public List<List<PropertyValue>> getConceptNeighbourhood(Concept c, List<Concept> witnesses, Collection<Clue> clues) {
@@ -63,7 +67,7 @@ public class FreebaseExploration {
 //						logger.debug("ID " + id);
 						boolean match = false;
 						for(Concept w: witnesses) {
-							for(FreebaseOntology.TitledMid m: fbo.queryTopicByPageID(w.getPageID(), logger)) {
+							for(FreebaseOntology.TitledMid m: getMids(w.getPageID())) {
 //								logger.debug("MID {}", m.mid);
 								if (id.equals(m.mid)) {
 									match = true;
@@ -113,6 +117,16 @@ public class FreebaseExploration {
 		return relPaths;
 	}
 
+	private Set<FreebaseOntology.TitledMid> getMids(int pageId) {
+		Set<FreebaseOntology.TitledMid> mids;
+		if (midCache.containsKey(pageId)) mids = midCache.get(pageId);
+		else {
+			mids = fbo.queryTopicByPageID(pageId, logger);
+			midCache.put(pageId, mids);
+		}
+		return mids;
+	}
+
 	private boolean isFiltered(String property) {
 		String[] filters = new String[]{"/type", "/common"};
 		for (int i = 0; i < filters.length; i++) {
@@ -126,7 +140,8 @@ public class FreebaseExploration {
 		fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 		property = property.substring(1).replaceAll("/",".");
 //		logger.debug("Property {}", property);
-		String label = fbo.queryPropertyLabel(property);
+		if (!labelCache.containsKey(property)) labelCache.put(property, fbo.queryPropertyLabel(property));
+		String label = labelCache.get(property);
 		PropertyValue pv = new PropertyValue(null, null, label, null, null, null,
 				fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
 		pv.setPropRes(property);
@@ -137,7 +152,7 @@ public class FreebaseExploration {
 //		logger.debug("API {}", System.getProperty("cz.brmlab.yodaqa.provider.rdf.FreebaseExploration.ApiKey"));
 		InputStream is = null;
 //		logger.debug("Concept {} with page ID {}", c.getFullLabel(), c.getPageID());
-		Set<FreebaseOntology.TitledMid> mids = fbo.queryTopicByPageID(c.getPageID(), logger);
+		Set<FreebaseOntology.TitledMid> mids = getMids(c.getPageID());
 //		logger.debug("MIDs {}", mids.size());
 		for(FreebaseOntology.TitledMid mid: mids) {
 			String fullPath = PATH + mid.mid + ".json";
