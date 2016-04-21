@@ -20,26 +20,27 @@ public class RNNScoring {
 
 	public static List<Double> getScores(String question, List<String> labels, int propertyNumber) {
 		List<Double> res = null;
-		try {
-			URL url = new URL(MODEL_URL);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(true);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type", "application/json");
+		while(true) {
+			try {
+				URL url = new URL(MODEL_URL);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setDoOutput(true);
+				conn.setRequestMethod("POST");
+				conn.setRequestProperty("Content-Type", "application/json");
 
-			String input = buildRequestBody(question, labels, propertyNumber);
+				String input = buildRequestBody(question, labels, propertyNumber);
 
-			OutputStream os = conn.getOutputStream();
-			os.write(input.getBytes());
-			os.flush();
+				OutputStream os = conn.getOutputStream();
+				os.write(input.getBytes());
+				os.flush();
 
-			res = processResponse(conn.getInputStream());
-			conn.disconnect();
-
-		} catch (IOException e) {
-			e.printStackTrace();
+				res = processResponse(conn.getInputStream());
+				conn.disconnect();
+				return res;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		return res;
 	}
 
 	public static List<Double> getFullPathScores(String question, List<List<String>> labels) {
