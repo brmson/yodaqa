@@ -74,14 +74,13 @@ public class FreebaseExploration {
 									pathSuffixes.add(makePV(e.getKey()));
 									break;
 								}
-								if (match) break;
 							}
+							if (match) break;
 						}
-					} else {
-						for(String label: witLabels) {
-							if (val.getAsJsonObject().get("text").getAsString().contains(label)) {
-								pathSuffixes.add(makePV(e.getKey()));
-							}
+					}
+					for(String label: witLabels) {
+						if (val.getAsJsonObject().get("text").getAsString().contains(label)) {
+							pathSuffixes.add(makePV(e.getKey()));
 						}
 					}
 				}
