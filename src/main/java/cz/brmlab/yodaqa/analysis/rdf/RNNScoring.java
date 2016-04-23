@@ -39,6 +39,11 @@ public class RNNScoring {
 				return res;
 			} catch (IOException e) {
 				e.printStackTrace();
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 	}
