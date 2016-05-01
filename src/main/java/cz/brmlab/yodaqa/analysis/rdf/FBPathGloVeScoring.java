@@ -43,7 +43,7 @@ public class FBPathGloVeScoring {
 
 	private List<List<PropertyValue>> pathDump;
 	private LogisticRegressionFBPathRanking ranker = new LogisticRegressionFBPathRanking();
-	private String questionText;
+	private HashMap<Integer, Set<FreebaseOntology.TitledMid>> midCache = new HashMap<>();
 
 	/** For legacy reasons, we use our own tokenization.
 	 * We also lower-case while at it, and might do some other
@@ -69,11 +69,27 @@ public class FBPathGloVeScoring {
 		return tokens;
 	}
 
-	private static String fullQuestionRepr(JCas questionView, int entityLimit) {
+	private String fullQuestionRepr(JCas questionView, List<PropertyValue> path) {
 		String entityToken = "ENT_TOK";
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		String text = qi.getCAS().getDocumentText();
-		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		List<Concept> allConcepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		HashSet<String> entities = new HashSet<>();
+		entities.add(path.get(0).getObjRes().substring(1).replace("/", "."));
+		if (path.size() > 2 && path.get(2).getObjRes() != null) entities.add(path.get(2).getObjRes().substring(1).replace("/", "."));
+		List<Concept> concepts = new ArrayList<>();
+		for(Concept c: allConcepts) {
+			if (!midCache.containsKey(c.getPageID())) {
+				midCache.put(c.getPageID(), fbo.queryTopicByPageID(c.getPageID(), logger));
+			}
+			for(FreebaseOntology.TitledMid tmid: midCache.get(c.getPageID())) {
+				if (entities.contains(tmid.mid)) {
+					concepts.add(c);
+					logger.debug("Adding {} {}", c.getFullLabel(), c.getPageID());
+					break;
+				}
+			}
+		}
 		Collections.sort(concepts, new Comparator<Concept>() {
 			@Override
 			public int compare(Concept c1, Concept c2) {
@@ -96,7 +112,7 @@ public class FBPathGloVeScoring {
 		});
 		int prevb = -1, preve = -1;
 		for (int i = 0; i < idxs.size(); i++) {
-			if (i == entityLimit) break;
+//			if (i == entityLimit) break;
 			int size = text.length();
 			int b = idxs.get(i).get(0);
 			int e = idxs.get(i).get(1);
@@ -130,7 +146,7 @@ public class FBPathGloVeScoring {
 		List<String> qtoks = questionRepr(questionView);
 		logger.debug("questionRepr: {}", qtoks);
 
-		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
+//		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
 		/* Generate pvPaths for the 1-level neighborhood. */
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
@@ -164,29 +180,37 @@ public class FBPathGloVeScoring {
 		pathSet.addAll(pvPaths);
 		pathDump = new ArrayList<>(pathSet);
 		/* Convert to a sorted list of PathScore objects. */
-		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pathSet, pathLimitCnt);
+		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pathSet, questionView, pathLimitCnt);
 
 		return scores;
 	}
 
-	protected List<Double> getRnnScores(List<PropertyValue> list, int propertyNum) {
-		List<String> propLabels = new ArrayList<>();
-		for(PropertyValue pv: list) {
-			propLabels.add(pv.getProperty());
-		}
-		return RNNScoring.getScores(questionText, propLabels, propertyNum);
-	}
+//	protected List<Double> getRnnScores(List<PropertyValue> list, int propertyNum) {
+//		List<String> propLabels = new ArrayList<>();
+//		for(PropertyValue pv: list) {
+//			propLabels.add(pv.getProperty());
+//		}
+//		return RNNScoring.getScores(questionText, propLabels, propertyNum);
+//	}
 
-	protected List<Double> getFullPathRnnScores(List<List<PropertyValue>> list) {
-		List<List<String>> pathLabels = new ArrayList<>();
+	protected List<Double> getFullPathRnnScores(List<List<PropertyValue>> list, JCas questionView) {
+		HashMap<String, List<List<String>>> questions = new HashMap<>();
 		for(List<PropertyValue> path: list) {
+			String qtext = fullQuestionRepr(questionView, path);
 			List<String> propLabels = new ArrayList<>();
+			String tmp = "";
 			for(PropertyValue pv: path) {
 				propLabels.add(pv.getProperty());
+				tmp += pv.getProperty() + " | ";
 			}
-			pathLabels.add(propLabels);
+			if (!questions.containsKey(qtext)) questions.put(qtext, new ArrayList<List<String>>());
+			questions.get(qtext).add(propLabels);
 		}
-		return RNNScoring.getFullPathScores(questionText, pathLabels);
+		List<Double> res = new ArrayList<>();
+		for(Map.Entry<String, List<List<String>>> e: questions.entrySet()) {
+			res.addAll(RNNScoring.getFullPathScores(e.getKey(), e.getValue()));
+		}
+		return res;
 	}
 
 	/** Score and add all pvpaths of a concept to the pvPaths. */
@@ -364,10 +388,10 @@ public class FBPathGloVeScoring {
 		return pathDump;
 	}
 
-	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, int pathLimitCnt) {
+	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, JCas questionView, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
-		List<Double> rnnScores = getFullPathRnnScores(pathList);
+		List<Double> rnnScores = getFullPathRnnScores(pathList, questionView);
 //		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
 //			@Override
 //			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
@@ -401,7 +425,7 @@ public class FBPathGloVeScoring {
 			logger.debug(s);
 //			score /= path.size();
 //			score = ranker.getScore(path);
-			score = rnnScores.get(scoreIdx++);
+			score = 1 / (1 + Math.exp(-rnnScores.get(scoreIdx++)));
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?
@@ -425,7 +449,7 @@ public class FBPathGloVeScoring {
 			for (int i = 0; i < s.path.size(); i++) {
 				str += s.path.get(i) + " | ";
 			}
-			logger.debug("Explorative paths: " + str + " " + s.proba);
+			logger.debug("Explorative paths: " + str + " " + s.proba );
 		}
 		if (scores.size() > pathLimitCnt)
 			scores = scores.subList(0, pathLimitCnt);

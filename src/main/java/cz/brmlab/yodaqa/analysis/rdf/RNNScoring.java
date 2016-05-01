@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class RNNScoring {
 
-	private static final String MODEL_URL = "http://pichl.ailao.eu:5000/score";
+	private static final String MODEL_URL = "http://localhost:5050/score";
 	private static final String SEPARATOR = " # ";
 
 	public static List<Double> getScores(String question, List<String> labels, int propertyNumber) {

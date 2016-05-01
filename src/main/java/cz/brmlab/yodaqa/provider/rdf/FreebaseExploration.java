@@ -71,7 +71,7 @@ public class FreebaseExploration {
 //								logger.debug("MID {}", m.mid);
 								if (id.equals(m.mid)) {
 									match = true;
-									pathSuffixes.add(makePV(e.getKey()));
+									pathSuffixes.add(makePV(e.getKey(), id));
 									break;
 								}
 							}
@@ -80,7 +80,7 @@ public class FreebaseExploration {
 					}
 					for(String label: witLabels) {
 						if (val.getAsJsonObject().get("text").getAsString().contains(label)) {
-							pathSuffixes.add(makePV(e.getKey()));
+							pathSuffixes.add(makePV(e.getKey(), null));
 						}
 					}
 				}
@@ -91,14 +91,14 @@ public class FreebaseExploration {
 			for(PropertyValue suffix: pathSuffixes) {
 				List<PropertyValue> path = new ArrayList<>();
 				path.addAll(pathPrefix);
-				path.add(makePV(e.getKey()));
+				path.add(makePV(e.getKey(), json.getAsJsonObject().get("id").getAsString()));
 				path.add(suffix);
 				relPaths.add(path);
 			}
 			if (pathSuffixes.isEmpty()) {
 				List<PropertyValue> path = new ArrayList<>();
 				path.addAll(pathPrefix);
-				path.add(makePV(e.getKey()));
+				path.add(makePV(e.getKey(), json.getAsJsonObject().get("id").getAsString()));
 				relPaths.add(path);
 			}
 		}
@@ -108,7 +108,7 @@ public class FreebaseExploration {
 				if (val.getAsJsonObject().has("property")) {
 					List<PropertyValue> newPrefix = new ArrayList<>();
 					newPrefix.addAll(pathPrefix);
-					newPrefix.add(makePV(e.getKey()));
+					newPrefix.add(makePV(e.getKey(), json.getAsJsonObject().get("id").getAsString()));
 					relPaths.addAll(walkNode(val, newPrefix, pathSuffixes, witnesses, witLabels));
 				}
 			}
@@ -134,14 +134,14 @@ public class FreebaseExploration {
 		return false;
 	}
 
-	private PropertyValue makePV(String property) {
+	private PropertyValue makePV(String property, String mid) {
 		AnswerFV fv = new AnswerFV();
 		fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 		property = property.substring(1).replaceAll("/",".");
 //		logger.debug("Property {}", property);
 		if (!labelCache.containsKey(property)) labelCache.put(property, fbo.queryPropertyLabel(property));
 		String label = labelCache.get(property);
-		PropertyValue pv = new PropertyValue(null, null, label, null, null, null,
+		PropertyValue pv = new PropertyValue(null, mid, label, null, null, null,
 				fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
 		pv.setPropRes(property);
 		return pv;
