@@ -13,6 +13,7 @@ import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
 import cz.brmlab.yodaqa.provider.rdf.PropertyPath;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.slf4j.Logger;
@@ -85,7 +86,6 @@ public class FBPathGloVeScoring {
 			for(FreebaseOntology.TitledMid tmid: midCache.get(c.getPageID())) {
 				if (entities.contains(tmid.mid)) {
 					concepts.add(c);
-					logger.debug("Adding {} {}", c.getFullLabel(), c.getPageID());
 					break;
 				}
 			}
@@ -193,8 +193,9 @@ public class FBPathGloVeScoring {
 //		return RNNScoring.getScores(questionText, propLabels, propertyNum);
 //	}
 
-	protected List<Double> getFullPathRnnScores(List<List<PropertyValue>> list, JCas questionView) {
+	protected HashMap<String, Double> getFullPathRnnScores(List<List<PropertyValue>> list, JCas questionView) {
 		HashMap<String, List<List<String>>> questions = new HashMap<>();
+		HashMap<String, Double> results = new HashMap<>();
 		for(List<PropertyValue> path: list) {
 			String qtext = fullQuestionRepr(questionView, path);
 			List<String> propLabels = new ArrayList<>();
@@ -203,14 +204,18 @@ public class FBPathGloVeScoring {
 				propLabels.add(pv.getProperty());
 				tmp += pv.getProperty() + " | ";
 			}
+			logger.debug("Question {}, path {}", qtext, tmp);
 			if (!questions.containsKey(qtext)) questions.put(qtext, new ArrayList<List<String>>());
 			questions.get(qtext).add(propLabels);
 		}
-		List<Double> res = new ArrayList<>();
+//		List<Double> res = new ArrayList<>();
 		for(Map.Entry<String, List<List<String>>> e: questions.entrySet()) {
-			res.addAll(RNNScoring.getFullPathScores(e.getKey(), e.getValue()));
+			List<Double> tmp = RNNScoring.getFullPathScores(e.getKey(), e.getValue());
+			for (int i = 0; i < tmp.size(); i++) {
+				results.put(StringUtils.join(e.getValue().get(i), " # "), tmp.get(i));
+			}
 		}
-		return res;
+		return results;
 	}
 
 	/** Score and add all pvpaths of a concept to the pvPaths. */
@@ -391,7 +396,7 @@ public class FBPathGloVeScoring {
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, JCas questionView, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
-		List<Double> rnnScores = getFullPathRnnScores(pathList, questionView);
+		HashMap<String, Double> rnnScores = getFullPathRnnScores(pathList, questionView);
 //		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
 //			@Override
 //			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
@@ -417,15 +422,19 @@ public class FBPathGloVeScoring {
 //			logger.debug("Logistic regression score: " + ranker.getScore(path));
 			double score = 0;
 			String s = "";
+			StringBuilder key = new StringBuilder();
 			for(PropertyValue pv: path) {
 				properties.add(pv.getPropRes());
 //				score += pv.getScore();
 				s += pv.getPropRes() + " | ";
+				key.append(pv.getProperty()).append(" # ");
 			}
+			String strKey = key.substring(0, key.length() - 3);
+			logger.debug("Key {}",strKey);
 			logger.debug(s);
 //			score /= path.size();
 //			score = ranker.getScore(path);
-			score = 1 / (1 + Math.exp(-rnnScores.get(scoreIdx++)));
+			score = 1 / (1 + Math.exp(-rnnScores.get(strKey)));
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?
