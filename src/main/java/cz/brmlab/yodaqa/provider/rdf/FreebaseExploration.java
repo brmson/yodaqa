@@ -71,7 +71,9 @@ public class FreebaseExploration {
 //								logger.debug("MID {}", m.mid);
 								if (id.equals(m.mid)) {
 									match = true;
-									pathSuffixes.add(makePV(e.getKey(), id));
+									PropertyValue pv = makePV(e.getKey(), id);
+									pv.setConcept(w);
+									pathSuffixes.add(pv);
 									break;
 								}
 							}
@@ -141,7 +143,9 @@ public class FreebaseExploration {
 //		logger.debug("Property {}", property);
 		if (!labelCache.containsKey(property)) labelCache.put(property, fbo.queryPropertyLabel(property));
 		String label = labelCache.get(property);
-		PropertyValue pv = new PropertyValue(null, mid, label, null, null, null,
+		String rmid = mid;
+		if (mid != null && mid.startsWith("/")) rmid = mid.substring(1).replace("/", ".");
+		PropertyValue pv = new PropertyValue(null, rmid, label, null, null, null,
 				fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
 		pv.setPropRes(property);
 		return pv;
