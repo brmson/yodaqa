@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import cz.brmlab.yodaqa.provider.UrlManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,6 +136,67 @@ public class WebInterface implements Runnable {
 				return "[" + StringUtils.join(qJson, ",\n") + "]";
 			}
 		});
+
+		// Print report on selected data backends
+		get(new Route("/dataUrls") {
+			@Override
+			public Object handle(Request request, Response response) {
+				response.type("application/json");
+				response.header("Access-Control-Allow-Origin", "*");
+				return UrlManager.printState();
+
+			}
+		});
+
+		// The following two methods could be used to change backends during runtime
+
+		// Trigger load of custom backends from conf/backendURLs.json
+//		get(new Route("/loadBackends") {
+//			@Override
+//			public Object handle(Request request, Response response) {
+//				response.type("application/json");
+//				response.header("Access-Control-Allow-Origin", "*");
+//				if(UrlManager.updateUrlTable()) {
+//                    return "{\"status\":\"success\"\n\"message\":\"Loaded set of URLs.\"}";
+//                } else {
+//                    return "{\"status\":\"error\"\n\"message\":\"Load failed.\"}";
+//                }
+//
+//			}
+//		});
+
+		// Switch set of data backend URLs, e.g. http://127.0.0.1:4567/switchBackend?id=2
+//		get(new Route("/switchBackend") {
+//			@Override
+//			public Object handle(Request request, Response response) {
+//
+//				response.type("application/json");
+//				response.header("Access-Control-Allow-Origin", "*");
+//
+//				if (request.queryParams("id")!=null) {
+//                    try {
+//                        int id = Integer.parseInt(request.queryParams("id"));
+//
+//						 if(UrlManager.setCurrentBackend(id)) {
+//							 return "{\"status\":\"success\"\n\"message\":\"Successfully switched backend to " +
+//									 Integer.toString(id) + "\"}";
+//						 }
+//						 else {
+//							 return "{\"status\":\"error\"\n\"message\":\"Index out of bounds.\"}";
+//						 }
+//
+//						//UrlManager.updateUrlTable();
+//						//return UrlManager.lookUpUrl(1,2);
+//
+//                    } catch (NumberFormatException nfe){
+//						return "{\"status\":\"error\"\n\"message\":\"NumberFormatException\"}";
+//					}
+//				}
+//
+//                return "{\"status\":\"error\"\n\"message\":\"Could not switch backend.\"}";
+//
+//			}
+//		});
 	}
 
 	private List<QuestionConcept> retrieveArtificialConcepts(Request request){

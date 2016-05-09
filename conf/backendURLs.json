@@ -1,0 +1,23 @@
+[
+  [
+    "http://dbpedia.ailao.eu:3030/dbpedia/query",
+    "http://freebase.ailao.eu:3030/freebase/query",
+    "http://dbp-labels.ailao.eu:5000",
+    "http://dbp-labels.ailao.eu:5001",
+    "http://enwiki.ailao.eu:8983/solr/"
+  ],
+  [
+    "http://127.0.0.1:3037/dbpedia/query",
+    "http://127.0.0.1:3030/freebase/query",
+    "http://127.0.0.1:5000",
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:8983/solr"
+  ],
+  [
+    "http://sth.somecompany.com:3037/dbpedia/query",
+    "http://sth.somecompany.com:3030/freebase/query",
+    "http://sth.somecompany.com:5000",
+    "http://sth.somecompany.com:5001",
+    "http://sth.somecompany.com:8983/solr"
+  ]
+]
