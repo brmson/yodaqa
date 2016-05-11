@@ -13,6 +13,9 @@ import cz.brmlab.yodaqa.provider.rdf.FreebaseOntology;
 import cz.brmlab.yodaqa.provider.rdf.PropertyPath;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.constituent.ROOT;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DEP;
+import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -148,10 +151,19 @@ public class FBPathGloVeScoring {
 
 //		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+//		for(ROOT sentence: JCasUtil.select(questionView, ROOT.class)) {
+//			for(Dependency dep: JCasUtil.selectCovered(Dependency.class, sentence)) {
+//				logger.debug("Dependency {}, {}, {}, {}", dep.getCoveredText(), dep.getDependencyType(), dep.getDependent().getCoveredText(), dep.getGovernor().getCoveredText());
+//			}
+//		}
 		/* Generate pvPaths for the 1-level neighborhood. */
+		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
-			pvPaths.addAll(fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class)));
+			pathSet.addAll(fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class)));
+//			pvPaths.addAll(pathSet);
+			scores.addAll(pvPathsToScores(pathSet, questionView, pathLimitCnt));
 //			addConceptPVPaths(pvPaths, qtoks, c);
+			pathSet.clear();
 		}
 		//XXX Select top N path counting only distincs ones
 //		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, Integer.MAX_VALUE);
@@ -177,10 +189,10 @@ public class FBPathGloVeScoring {
 //			addWitnessPVPaths(pvPaths, path, potentialWitnesses);
 
 		// Deduplication
-		pathSet.addAll(pvPaths);
-		pathDump = new ArrayList<>(pathSet);
+//		pathSet.addAll(pvPaths);
+//		pathDump = new ArrayList<>(pathSet);
 		/* Convert to a sorted list of PathScore objects. */
-		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pathSet, questionView, pathLimitCnt);
+//		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths, questionView, pathLimitCnt);
 
 		return scores;
 	}

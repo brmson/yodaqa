@@ -33,7 +33,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 	/* Number of top non-direct property paths to query.
 	 * It's ok to be liberal since most will likely be
 	 * non-matching. */
-	protected static final int N_TOP_PATHS = 20;
+	protected static final int N_TOP_PATHS = 1;
 
 	protected static FBPathLogistic fbpathLogistic = null;
 
@@ -83,18 +83,18 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		/* Method #2 (A Priori): Get a question-based list of specific properties
 		 * to query (predicting them based on the paths we've seen
 		 * for similar questions). */
-		List<PathScore> aPrioriPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
-//		List<PathScore> aPrioriPaths = new ArrayList<>();
+//		List<PathScore> aPrioriPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		List<PathScore> aPrioriPaths = new ArrayList<>();
 
 		/* Now, get the property values. */
-		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView, witnessLabels));
+		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView, witnessConcepts, witnessLabels));
 //		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
 //			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
 //		}
 		return properties;
 	}
 
-	protected List<PropertyValue> getConceptPropertiesFromExploring(List<PathScore> paths, JCas jCas, List<String> witnessLabels) {
+	protected List<PropertyValue> getConceptPropertiesFromExploring(List<PathScore> paths, JCas jCas, List<Concept> witnessConcepts, List<String> witnessLabels) {
 		List<PropertyValue> properties = new ArrayList<>();
 		String midPrefix = "http://rdf.freebase.com/ns/";
 		/* First, get the set of topics covering this concept. */
@@ -116,8 +116,8 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 //			for (FreebaseOntology.TitledMid topic : topics) {
 //				if (!paths.isEmpty())
 //					properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, paths, witness, witnessLabels, logger));
-//			}
-			properties.addAll(fbo.queryTopicSpecific("", ps.entity.getObjRes(), paths, witness, witnessLabels, logger));
+			logger.debug("MID {}", ps.entity.getObjRes());
+			properties.addAll(fbo.queryTopicSpecific("", ps.entity.getObjRes(), path, witnessConcepts, witnessLabels, logger));
 //			properties.addAll(fbo.queryTopicSpecific(ps.entity.getObject(), mid, path, witness, new ArrayList<String>(), logger));
 		}
 		return properties;
