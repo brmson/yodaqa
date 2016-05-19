@@ -137,7 +137,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 7,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -286,20 +286,20 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		 * PARAM_ISLAST_BARRIER. */
 
 		/* Structured search: */
-		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
-		builder.add(dbpOnt);
-		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
-		builder.add(dbpProp);
+//		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
+//		builder.add(dbpOnt);
+//		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
+//		builder.add(dbpProp);
 		AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
 		builder.add(fbOnt);
 
 		/* Full-text search: */
 		/* XXX: These aggregates have "Solr" in name but do not
 		 * necessarily use just Solr, e.g. Bing. */
-		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
-		builder.add(solrFull); /* This one is worth 3 isLasts. */
-		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
-		builder.add(solrDoc);
+//		AnalysisEngineDescription solrFull = SolrFullAnswerProducer.createEngineDescription();
+//		builder.add(solrFull); /* This one is worth 3 isLasts. */
+//		AnalysisEngineDescription solrDoc = SolrDocAnswerProducer.createEngineDescription();
+//		builder.add(solrDoc);
 
 		builder.setFlowControllerDescription(
 				FlowControllerFactory.createFlowControllerDescription(
