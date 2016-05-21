@@ -42,6 +42,7 @@ public class WebInterface implements Runnable {
 	final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
 	public void run() {
+		setPort(4010);
 		staticFileLocation("/webpublic");
 
 		// Ask a question

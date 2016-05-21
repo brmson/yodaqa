@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import cz.brmlab.yodaqa.analysis.rdf.PropertyGloVeScoring;
+import cz.brmlab.yodaqa.analysis.rdf.SynonymPCCPPropertyScorer;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerIDGenerator;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.flow.dashboard.QuestionDashboard;
@@ -93,10 +94,23 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		questionView = jcas;
 
+		SynonymPCCPPropertyScorer propScorer = new SynonymPCCPPropertyScorer(questionView);
+
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
 		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
-			properties.addAll(getConceptProperties(questionView, concept));
+			List<PropertyValue> conceptProperties = getConceptProperties(questionView, concept);
+			for (PropertyValue pv : conceptProperties) {
+				Double pscore = propScorer.getPropertyScore(pv);
+				if (pscore == null)
+					continue;
+				if (pv.getScore() == null) {
+					pv.setScore(pscore);
+				} else {
+					pv.setScore(pv.getScore() + pscore);
+				}
+			}
+			properties.addAll(conceptProperties);
 		}
 		relIter = properties.iterator();
 		i = 0;
