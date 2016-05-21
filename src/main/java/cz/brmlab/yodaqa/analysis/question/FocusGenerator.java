@@ -69,12 +69,28 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		return null;
 	}
 
+	protected Token firstK1Token(JCas jcas, Token since) {
+		for (Token t : JCasUtil.select(jcas, Token.class)) {
+			if (t == since)
+				since = null;
+			else if (since != null)
+				continue;
+			if (t.getPos().getPosValue().matches("k1.*"))
+				return t;
+		}
+		return null;
+	}
+
 	public void processSentence(JCas jcas, Constituent sentence) throws AnalysisEngineProcessException {
 		Token focus = null;
 
 		Iterator<Token> tokens = JCasUtil.select(jcas, Token.class).iterator();
 		Token first = tokens.next();
 		Token second = tokens.hasNext() ? tokens.next() : null;
+		logger.debug("first {}/{}, second {}/{}",
+			first.getLemma().getValue(), first.getPos().getPosValue(),
+			second == null ? null : second.getLemma().getValue(),
+			second == null ? null : second.getPos().getPosValue());
 
 		// k6yQ + k3c4 -> next k1 (“jak se”)
 		if (focus == null && second != null
@@ -83,6 +99,16 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 			focus = firstK1Token(jcas);
 			if (focus != null)
 				logger.debug("jakse, firstK1: {}", focus.getCoveredText());
+		}
+
+		// kdo/co/jak <být> k1 -> that k1
+		if (focus == null
+		    && ((first.getLemma().getValue().equals("kdo") || first.getLemma().getValue().equals("co") || first.getLemma().getValue().startsWith("jak"))
+			    && second != null
+			    && (second.getLemma().getValue().equals("být") || second.getLemma().getValue().equals("je") /* XXX */))) {
+			focus = firstK1Token(jcas, second);
+			if (focus != null)
+				logger.debug("kdobýt, firstK1: {}", focus.getCoveredText());
 		}
 
 		// kdo, kdy, kde... -> ID
