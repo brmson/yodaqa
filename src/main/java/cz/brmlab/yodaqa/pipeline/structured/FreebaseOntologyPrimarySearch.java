@@ -33,7 +33,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 	/* Number of top non-direct property paths to query.
 	 * It's ok to be liberal since most will likely be
 	 * non-matching. */
-	protected static final int N_TOP_PATHS = 1;
+	protected static final int N_TOP_PATHS = 15;
 
 	protected static FBPathLogistic fbpathLogistic = null;
 
@@ -87,10 +87,10 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		List<PathScore> aPrioriPaths = new ArrayList<>();
 
 		/* Now, get the property values. */
-		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView, witnessConcepts, witnessLabels));
-//		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
-//			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
-//		}
+//		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView, witnessConcepts, witnessLabels));
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
+		}
 		return properties;
 	}
 

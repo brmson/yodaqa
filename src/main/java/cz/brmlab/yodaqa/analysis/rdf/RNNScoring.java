@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class RNNScoring {
 
-	private static final String MODEL_URL = "http://doom13.metacentrum.cz:5050/score";
+	private static final String MODEL_URL = "http://doom12.metacentrum.cz:5050/score";
 	private static final String SEPARATOR = " # ";
 
 	public static List<Double> getScores(String question, List<String> labels, int propertyNumber) {

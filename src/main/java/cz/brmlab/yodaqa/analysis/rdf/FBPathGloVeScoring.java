@@ -79,8 +79,8 @@ public class FBPathGloVeScoring {
 		String text = qi.getCAS().getDocumentText();
 		List<Concept> allConcepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
 		HashSet<String> entities = new HashSet<>();
-		entities.add(path.get(0).getObjRes().substring(1).replace("/", "."));
-		if (path.size() > 2 && path.get(2).getObjRes() != null) entities.add(path.get(2).getObjRes().substring(1).replace("/", "."));
+		entities.add(path.get(0).getObjRes());
+		if (path.size() > 2 && path.get(2).getObjRes() != null) entities.add(path.get(2).getObjRes());
 		List<Concept> concepts = new ArrayList<>();
 		for(Concept c: allConcepts) {
 			if (!midCache.containsKey(c.getPageID())) {
@@ -151,48 +151,62 @@ public class FBPathGloVeScoring {
 
 //		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-//		for(ROOT sentence: JCasUtil.select(questionView, ROOT.class)) {
-//			for(Dependency dep: JCasUtil.selectCovered(Dependency.class, sentence)) {
-//				logger.debug("Dependency {}, {}, {}, {}", dep.getCoveredText(), dep.getDependencyType(), dep.getDependent().getCoveredText(), dep.getGovernor().getCoveredText());
-//			}
-//		}
 		/* Generate pvPaths for the 1-level neighborhood. */
-		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
+//		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
+		List<Concept> notFound = new ArrayList<>();
+		Relatedness[] rr = new Relatedness[] {r1, r2, r3};
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
-			pathSet.addAll(fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class)));
+//			pathSet.addAll(fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class)));
+			List<List<PropertyValue>> nei = fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class));
+			if (nei == null || nei.size() == 0) {
+				notFound.add(c);
+			}
+			else {
+				for (List<PropertyValue> path: nei) {
+					for (int i = 0; i < path.size(); i++) {
+						List<String> proptoks = tokenize(path.get(i).getProperty());
+						path.get(i).setScore(rr[i].probability(qtoks, proptoks));
+					}
+				}
+				pvPaths.addAll(nei);
+			}
 //			pvPaths.addAll(pathSet);
-			scores.addAll(pvPathsToScores(pathSet, questionView, pathLimitCnt));
+//			scores.addAll(pvPathsToScores(pathSet, questionView, pathLimitCnt));
 //			addConceptPVPaths(pvPaths, qtoks, c);
-			pathSet.clear();
+//			pathSet.clear();
 		}
-		//XXX Select top N path counting only distincs ones
-//		List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths, Integer.MAX_VALUE);
+
+		List<List<PropertyValue>> pvPaths2 = new ArrayList<>();
+		if (notFound.size() > 0) {
+			for (Concept c : notFound) {
+				logger.debug("Concept {} was not found using Freebase API, falling to old approach...", c.getFullLabel());
+				addConceptPVPaths(pvPaths2, qtoks, c);
+			}
+			//XXX Select top N path counting only distincs ones
+			List<List<PropertyValue>> lenOnePaths = getTopPVPaths(pvPaths2, Integer.MAX_VALUE);
 
 
-		/* Expand pvPaths for the 2-level neighborhood. */
-//		pvPaths.clear();
+			/* Expand pvPaths for the 2-level neighborhood. */
+			pvPaths2.clear();
 
-//		for(Concept c: concepts) {
-//			logger.debug("CONCEPT " + c.getFullLabel() + " " + c.getPageID());
-//			logger.debug(c.getBegin() + " " + c.getEnd());
-//
-//		}
-//		for (List<PropertyValue> path: lenOnePaths)
-//			addExpandedPVPaths(pvPaths, path, qtoks, concepts);
+			for (List<PropertyValue> path : lenOnePaths)
+				addExpandedPVPaths(pvPaths2, path, qtoks, notFound);
 
-//		List<List<PropertyValue>> lenTwoPaths = new ArrayList<>(pvPaths);
+			List<List<PropertyValue>> lenTwoPaths = new ArrayList<>(pvPaths2);
 
-		/* Add witness relations to paths of length 2 if possible */
-//		pvPaths.clear();
-//		List<List<PropertyValue>> potentialWitnesses = getPotentialWitnesses(concepts, qtoks);
-//		for (List<PropertyValue> path: lenTwoPaths)
-//			addWitnessPVPaths(pvPaths, path, potentialWitnesses);
+			/* Add witness relations to paths of length 2 if possible */
+			pvPaths2.clear();
+			List<List<PropertyValue>> potentialWitnesses = getPotentialWitnesses(concepts, qtoks);
+			for (List<PropertyValue> path : lenTwoPaths)
+				addWitnessPVPaths(pvPaths2, path, potentialWitnesses);
+		}
 
 		// Deduplication
-//		pathSet.addAll(pvPaths);
-//		pathDump = new ArrayList<>(pathSet);
+		pathSet.addAll(pvPaths);
+		pathSet.addAll(pvPaths2);
+		pathDump = new ArrayList<>(pathSet);
 		/* Convert to a sorted list of PathScore objects. */
-//		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pvPaths, questionView, pathLimitCnt);
+		List<FBPathLogistic.PathScore> scores = pvPathsToScores(pathSet, questionView, pathLimitCnt);
 
 		return scores;
 	}
@@ -408,7 +422,7 @@ public class FBPathGloVeScoring {
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, JCas questionView, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
-		HashMap<String, Double> rnnScores = getFullPathRnnScores(pathList, questionView);
+//		HashMap<String, Double> rnnScores = getFullPathRnnScores(pathList, questionView);
 //		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
 //			@Override
 //			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
@@ -437,16 +451,16 @@ public class FBPathGloVeScoring {
 			StringBuilder key = new StringBuilder();
 			for(PropertyValue pv: path) {
 				properties.add(pv.getPropRes());
-//				score += pv.getScore();
+				score += pv.getScore();
 				s += pv.getPropRes() + " | ";
 				key.append(pv.getProperty()).append(" # ");
 			}
 			String strKey = key.substring(0, key.length() - 3);
 			logger.debug("Key {}",strKey);
 			logger.debug(s);
-//			score /= path.size();
+			score /= path.size();
 //			score = ranker.getScore(path);
-			score = 1 / (1 + Math.exp(-rnnScores.get(strKey)));
+//			score = 1 / (1 + Math.exp(-rnnScores.get(strKey)));
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?
