@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 
 public class DBpediaTitles extends DBpediaLookup {
 	protected static final String fuzzyLookupUrl = UrlManager.lookUpUrl(UrlManager.DataBackends.LABEL1.ordinal());
-	protected static final String crossWikiLookupUrl = UrlManager.lookUpUrl(UrlManager.DataBackends.LABEL2.ordinal());;
+	protected static final String crossWikiLookupUrl = UrlManager.lookUpUrl(UrlManager.DataBackends.LABEL2.ordinal());
 
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
