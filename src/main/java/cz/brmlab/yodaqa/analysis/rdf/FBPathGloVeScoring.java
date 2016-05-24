@@ -422,7 +422,7 @@ public class FBPathGloVeScoring {
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, JCas questionView, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
-		HashMap<String, Double> rnnScores = getFullPathRnnScores(pathList, questionView);
+//		HashMap<String, Double> rnnScores = getFullPathRnnScores(pathList, questionView);
 //		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
 //			@Override
 //			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
@@ -460,7 +460,7 @@ public class FBPathGloVeScoring {
 			logger.debug(s);
 			score /= path.size();
 //			score = ranker.getScore(path);
-			score = 1 / (1 + Math.exp(-rnnScores.get(strKey)));
+//			score = 1 / (1 + Math.exp(-rnnScores.get(strKey)));
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?
