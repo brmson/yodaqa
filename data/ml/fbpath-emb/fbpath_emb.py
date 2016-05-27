@@ -50,7 +50,7 @@ def jacana_dump(q, f, rel_num, gs):
     """ dump q concepts in jacana format (suitable for Sentence-selection) """
     print('<Q> ' + ' '.join(qrepr(q)), file=f)
     for r in q['allRelations']:
-        isCorrect = 1 if r['relation'] in gs else 0
+        isCorrect = 1 if r['property'] in gs else 0
         print('%d 1 %s' % (isCorrect, ' '.join(rrepr(r))), file=f)
 
 

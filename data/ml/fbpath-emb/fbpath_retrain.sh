@@ -13,13 +13,13 @@ datadir=$1
 
 # First stage - training Mb concept matrix
 
-rm -rf data/ml/fbpath-emb/props-webquestions-train
-mkdir -p data/ml/fbpath-emb/props-webquestions-train/first
-mkdir -p data/ml/fbpath-emb/props-webquestions-train/second
-mkdir -p data/ml/fbpath-emb/props-webquestions-train/third
-data/ml/fbpath-emb/fbpath_emb.py 1 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/first
-data/ml/fbpath-emb/fbpath_emb.py 2 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations2/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/second
-data/ml/fbpath-emb/fbpath_emb.py 3 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations2/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/third
+# rm -rf data/ml/fbpath-emb/props-webquestions-train
+# mkdir -p data/ml/fbpath-emb/props-webquestions-train/first
+# mkdir -p data/ml/fbpath-emb/props-webquestions-train/second
+# mkdir -p data/ml/fbpath-emb/props-webquestions-train/third
+# data/ml/fbpath-emb/fbpath_emb.py 1 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/first
+# data/ml/fbpath-emb/fbpath_emb.py 2 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations2/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/second
+# data/ml/fbpath-emb/fbpath_emb.py 3 "$datadir"/d-dump/trainmodel.json data/ml/fbpath-emb/relations2/trainmodel.json "$datadir"/d-freebase-brp/trainmodel.json data/ml/fbpath-emb/props-webquestions-train/third
 
 basedir=$(pwd)
 cd ../Sentence-selection/
