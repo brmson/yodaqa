@@ -149,14 +149,12 @@ public class FBPathGloVeScoring {
 		List<String> qtoks = questionRepr(questionView);
 		logger.debug("questionRepr: {}", qtoks);
 
-//		questionText = fullQuestionRepr(questionView, TOP_N_ENTITIES_REPLACE);
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
 		/* Generate pvPaths for the 1-level neighborhood. */
-//		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
+
 		List<Concept> notFound = new ArrayList<>();
 		Relatedness[] rr = new Relatedness[] {r1, r2, r3};
 		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
-//			pathSet.addAll(fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class)));
 			List<List<PropertyValue>> nei = fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class));
 			if (nei == null || nei.size() == 0) {
 				notFound.add(c);
@@ -170,10 +168,7 @@ public class FBPathGloVeScoring {
 				}
 				pvPaths.addAll(nei);
 			}
-//			pvPaths.addAll(pathSet);
-//			scores.addAll(pvPathsToScores(pathSet, questionView, pathLimitCnt));
-//			addConceptPVPaths(pvPaths, qtoks, c);
-//			pathSet.clear();
+
 		}
 
 		List<List<PropertyValue>> pvPaths2 = new ArrayList<>();
@@ -211,13 +206,7 @@ public class FBPathGloVeScoring {
 		return scores;
 	}
 
-//	protected List<Double> getRnnScores(List<PropertyValue> list, int propertyNum) {
-//		List<String> propLabels = new ArrayList<>();
-//		for(PropertyValue pv: list) {
-//			propLabels.add(pv.getProperty());
-//		}
-//		return RNNScoring.getScores(questionText, propLabels, propertyNum);
-//	}
+
 
 	protected HashMap<String, Double> getFullPathRnnScores(List<List<PropertyValue>> list, JCas questionView) {
 		HashMap<String, List<List<String>>> questions = new HashMap<>();
@@ -234,7 +223,6 @@ public class FBPathGloVeScoring {
 			if (!questions.containsKey(qtext)) questions.put(qtext, new ArrayList<List<String>>());
 			questions.get(qtext).add(propLabels);
 		}
-//		List<Double> res = new ArrayList<>();
 		for(Map.Entry<String, List<List<String>>> e: questions.entrySet()) {
 			List<Double> tmp = RNNScoring.getFullPathScores(e.getKey(), e.getValue());
 			for (int i = 0; i < tmp.size(); i++) {
@@ -250,16 +238,11 @@ public class FBPathGloVeScoring {
 		for(PropertyValue pv: list) {
 			pv.setProperty(fbo.queryPropertyLabel(pv.getPropRes()));
 		}
-//		List<Double> scores = getRnnScores(list, 1);
 		int i = 0;
 		for(PropertyValue pv: list) {
-//			if (pv.getValRes() != null && !pv.getValRes().startsWith(midPrefix)) {
-//				continue; // e.g. "Star Wars/m.0dtfn property: Trailers/film.film.trailers -> null (http://www.youtube.com/watch?v=efs57YVF2UE&feature=player_detailpage)"
-//			}
+
 			List<String> proptoks = tokenize(pv.getProperty());
 			pv.setScore(r1.probability(qtoks, proptoks));
-//			pv.setScore(scores.get(i));
-//			logger.debug("SCORESS " + r1.probability(qtoks, proptoks) + " " + scores.get(i));
 			logger.debug("FIRST " + pv.getPropRes());
 			List<PropertyValue> pvlist = new ArrayList<>();
 			pvlist.add(pv);
@@ -303,10 +286,6 @@ public class FBPathGloVeScoring {
 	 * and to get to the answer we need to crawl one more step. */
 	protected void addExpandedPVPaths(List<List<PropertyValue>> pvPaths, List<PropertyValue> path, List<String> qtoks, List<Concept> concepts) {
 		PropertyValue first = path.get(0);
-//		if (first.getValRes() != null && /* no label */ first.getValRes().endsWith(first.getValue())) {
-			// meta-node, crawl it too
-//			String mid = first.getValRes().substring(midPrefix.length());
-//			String title = first.getValue();
 			List<List<PropertyValue>> secondPaths = scoreSecondRelation(first.getPropRes(), qtoks, concepts);
 			for (List<PropertyValue> secondPath: secondPaths) {
 				List<PropertyValue> newpath = new ArrayList<>(path);
@@ -322,26 +301,20 @@ public class FBPathGloVeScoring {
 						pv.getValue());
 			}
 			if (secondPaths.size() == 0) pvPaths.add(path);
-//		} else {
-//			pvPaths.add(path);
-//		}
+
 	}
 
 	protected List<List<PropertyValue>> scoreSecondRelation(String prop, List<String> qtoks, List<Concept> concepts) {
-//		List<PropertyValue> nextpvs = fbo.queryAllRelations(mid, title, logger);
 		List<PropertyValue> nextpvs = new ArrayList<>();
 		for (Concept c: concepts) {
-//			fbo.isExpandable(c.getPageID(), prop);
 			String metaMid = fbo.preExpand(c.getPageID(), prop);
 			if (metaMid == null) continue;
-//			List<PropertyValue> results = fbo.queryAllRelations(metaMid, "", null, logger);
 			List<PropertyValue> results = fbo.queryAllRelations(c.getPageID(), prop, logger);
 			for(PropertyValue res: results) {
 				res.setProperty(fbo.queryPropertyLabel(res.getPropRes()));
 			}
 			nextpvs.addAll(results);
 		}
-//		List<Double> scores = getRnnScores(nextpvs, 2);
 		/* Now, add the followup paths, possibly including a required
 		 * witness match. */
 		int i = 0;
@@ -350,7 +323,6 @@ public class FBPathGloVeScoring {
 			logger.debug("SECOND " + pv.getPropRes());
 			List<String> proptoks = tokenize(pv.getProperty());
 			pv.setScore(r2.probability(qtoks, proptoks));
-//			pv.setScore(scores.get(i));
 			List<PropertyValue> secondPath = new ArrayList<>();
 			secondPath.add(pv);
 			secondPaths.add(secondPath);
@@ -422,30 +394,11 @@ public class FBPathGloVeScoring {
 	protected List<FBPathLogistic.PathScore> pvPathsToScores(Set<List<PropertyValue>> pvPaths, JCas questionView, int pathLimitCnt) {
 		List<FBPathLogistic.PathScore> scores = new ArrayList<>();
 		List<List<PropertyValue>> pathList = new ArrayList<>(pvPaths);
-//		HashMap<String, Double> rnnScores = getFullPathRnnScores(pathList, questionView);
-//		Collections.sort(pathList, new Comparator<List<PropertyValue>>() {
-//			@Override
-//			public int compare(List<PropertyValue> list1, List<PropertyValue> list2) {
-//				// descending
-//				int cmp;
-//				for (int i = 0; i < Math.min(list1.size(), list2.size()); i++) {
-//					cmp = list2.get(i).getScore().compareTo(list1.get(i).getScore());
-//					if (cmp != 0 || Math.max(list1.size(), list2.size()) == i + 1) return cmp;
-//				}
-//				return Integer.valueOf(list2.size()).compareTo(Integer.valueOf(list1.size()));
-//			}
-//		});
+		HashMap<String, Double> rnnScores = getFullPathRnnScores(pathList, questionView);
 
-//		List<List<PropertyValue>> reducedList = new ArrayList<>();
-//		List<PropertyValue> prev = null;
-//		for (List<PropertyValue> path: pathList) {
-//			if (prev == null || !path.get(0).getPropRes().equals(prev.get(0).getPropRes())) reducedList.add(path);
-//			prev = path;
-//		}
 		int scoreIdx = 0;
 		for (List<PropertyValue> path: pathList) {
 			List<String> properties = new ArrayList<>();
-//			logger.debug("Logistic regression score: " + ranker.getScore(path));
 			double score = 0;
 			String s = "";
 			StringBuilder key = new StringBuilder();
@@ -459,8 +412,7 @@ public class FBPathGloVeScoring {
 			logger.debug("Key {}",strKey);
 			logger.debug(s);
 			score /= path.size();
-//			score = ranker.getScore(path);
-//			score = 1 / (1 + Math.exp(-rnnScores.get(strKey)));
+			score = 1 / (1 + Math.exp(-rnnScores.get(strKey)));
 
 			PropertyPath pp = new PropertyPath(properties);
 			// XXX: better way than averaging?
