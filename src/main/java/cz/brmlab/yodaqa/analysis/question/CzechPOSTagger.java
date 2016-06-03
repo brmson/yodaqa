@@ -31,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(CzechPOSTagger.class);
@@ -104,6 +105,7 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 				e.printStackTrace();
 				logger.info("Service unavailable. Retrying...");
 				try {
+					TimeUnit.SECONDS.sleep(10);
 					conn.disconnect();
 				} catch (Exception ee) {
 				}
