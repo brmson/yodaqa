@@ -53,6 +53,7 @@ and somewhat smaller dump.  Then, we import this into Solr.
     of gigabytes).
 
 The standalone Solr server can now answer YodaQA's Solr queries.
+Edit the appropriate line of ``conf/backendURLs.json`` to point YodaQA at the server.
 
 Files In This Directory
 -----------------------
