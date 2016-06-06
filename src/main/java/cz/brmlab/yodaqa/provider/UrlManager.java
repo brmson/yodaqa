@@ -9,7 +9,17 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Created by fp on 5/9/16.
+ * Provider of various API URLs we depend on.  This offers a single place
+ * for managing the endpoints used, and overriding them with your local
+ * deployments.
+ *
+ * In theory, we support multiple backend sets, but offer no UI to switch
+ * between these yet. (TODO)
+ *
+ * TODO: Change the config file JSON to use a dict map rather than array
+ * of URLs, use strings (static public String attributes) to refer to
+ * DataBackends rather than enum so that we can prettify the property
+ * access code.  TODO rename "label1", "label2".
  */
 public class UrlManager {
 
@@ -188,10 +198,10 @@ public class UrlManager {
 	 * @return URL for that particular set and field
 	 */
 	public static String lookUpUrl(int setId, int fieldId) {
-		if(urlLookUpTable != null && setId<urlLookUpTable.length &&
-				fieldId<urlLookUpTable[setId].length) {
+		if (urlLookUpTable != null && setId < urlLookUpTable.length &&
+		    fieldId < urlLookUpTable[setId].length) {
 			return urlLookUpTable[setId][fieldId];
-				}
+		}
 		return null;
 	}
 
