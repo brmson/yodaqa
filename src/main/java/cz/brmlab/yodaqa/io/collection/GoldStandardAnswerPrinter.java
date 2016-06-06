@@ -72,7 +72,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 			qi.getQuestionText(),
 			Double.toString(score),
 			Integer.toString(rank), Integer.toString(nranks),
-			qi.getAnswerPattern(), aMatch,
+			qi.getAnswerPattern() != null ? qi.getAnswerPattern() : "", aMatch,
 			Integer.toString(qi.getPassE_scored()),
 			Integer.toString(qi.getPassE_gsscored()),
 			Integer.toString(qi.getPassE_picked()),
@@ -99,7 +99,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 		}
 
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
-		Pattern ap = Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+		Pattern ap = qi.getAnswerPattern() != null ? Pattern.compile(qi.getAnswerPattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE) : null;
 		double procTime = (System.currentTimeMillis() - qi.getProcBeginTime()) / 1000.0;
 
 		FSIndex idx = answerHitlist.getJFSIndexRepository().getIndex("SortedAnswers");
@@ -116,7 +116,7 @@ public class GoldStandardAnswerPrinter extends JCasConsumer_ImplBase {
 				if (i < topListLen) {
 					toplist[i] = text + ":" + answer.getConfidence();
 				}
-				if (match < 0 && ap.matcher(text).find()) {
+				if (match < 0 && ap != null && ap.matcher(text).find()) {
 					match = i;
 					matchText = text;
 				}
