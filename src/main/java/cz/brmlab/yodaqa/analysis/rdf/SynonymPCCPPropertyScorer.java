@@ -5,6 +5,7 @@ import cz.brmlab.yodaqa.provider.SynonymsPCCP;
 import cz.brmlab.yodaqa.provider.SynonymsPCCP.Synonym;
 import cz.brmlab.yodaqa.provider.rdf.PropertyValue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,17 +33,22 @@ public class SynonymPCCPPropertyScorer {
 		for (LAT lat : JCasUtil.select(questionView, LAT.class)) {
 			if (lat.getSpecificity() <= -1)
 				continue;
-			baseTexts.add(lat.getText());
-			logger.debug("[{}]?", lat.getText());
-			List<Synonym> latSyns = SynonymsPCCP.getSynonyms(lat.getText());
-			for (Synonym s : latSyns) {
-				String w = s.getWord().toLowerCase();
-				logger.debug("[{}] new syn <<{}>> {}", lat.getText(), w, s.getScore());
-				if (synonyms.containsKey(w))
-					synonyms.put(w, synonyms.get(w) + s.getScore());
-				else
-					synonyms.put(w, s.getScore());
-			}
+			logger.debug("LAT [{}]?", lat.getText());
+			loadSynonyms(lat.getText());
+		}
+	}
+
+	protected void loadSynonyms(String text) {
+		baseTexts.add(text);
+
+		List<Synonym> latSyns = SynonymsPCCP.getSynonyms(text);
+		for (Synonym s : latSyns) {
+			String w = s.getWord().toLowerCase();
+			logger.debug("[{}] new syn <<{}>> {}", text, w, s.getScore());
+			if (synonyms.containsKey(w))
+				synonyms.put(w, synonyms.get(w) + s.getScore());
+			else
+				synonyms.put(w, s.getScore());
 		}
 	}
 
