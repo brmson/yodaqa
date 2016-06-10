@@ -23,13 +23,16 @@ import org.slf4j.LoggerFactory;
 public class SynonymPCCPPropertyScorer {
 	final Logger logger = LoggerFactory.getLogger(SynonymPCCPPropertyScorer.class);
 
+	List<String> baseTexts;
 	Map<String, Double> synonyms;
 
 	public SynonymPCCPPropertyScorer(JCas questionView) {
+		baseTexts = new ArrayList<>();
 		synonyms = new HashMap<>();
 		for (LAT lat : JCasUtil.select(questionView, LAT.class)) {
 			if (lat.getSpecificity() <= -1)
 				continue;
+			baseTexts.add(lat.getText());
 			logger.debug("[{}]?", lat.getText());
 			List<Synonym> latSyns = SynonymsPCCP.getSynonyms(lat.getText());
 			for (Synonym s : latSyns) {
@@ -46,7 +49,10 @@ public class SynonymPCCPPropertyScorer {
 	public Double getPropertyScore(PropertyValue pv) {
 		String prop = pv.getProperty().toLowerCase();
 		prop = prop.replaceAll("[0-9]*$", "");
-		if (synonyms.containsKey(prop)) {
+		if (baseTexts.contains(prop)) {
+			logger.debug("prop {} EXACT", prop);
+			return 2.0; // synonym scores go up to ~1.87
+		} else if (synonyms.containsKey(prop)) {
 			logger.debug("prop {}: {}", prop, synonyms.get(prop));
 			return synonyms.get(prop);
 		} else {
