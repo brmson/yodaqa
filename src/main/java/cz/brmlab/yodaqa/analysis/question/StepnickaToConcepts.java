@@ -26,9 +26,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,8 +43,29 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 
 	final Logger logger = LoggerFactory.getLogger(StepnickaToConcepts.class);
 
+	/** Concept blacklist. Created based on:
+	 * grep Concept log_* | cut -d : -f 2- | cut -d- -f 2 | sort | uniq -c | sort -n  | grep '<[^ ]*>'
+	 */
+	String[] namebl_list = {
+		/*  5 */ "Herec",
+		/*  5 */ "Jmeniny",
+		/*  5 */ "Korunovace",
+		/*  6 */ "Citát",
+		/*  7 */ "Autor",
+		/*  8 */ "Choť",
+		/*  8 */ "Prezident",
+		/*  9 */ "Bydliště",
+		/*  9 */ "Smrt",
+		/* 21 */ "Dítě",
+		/* 40 */ "Film",
+	};
+	protected Set<String> namebl;
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+
+		if (namebl == null)
+			namebl = new HashSet<String>(Arrays.asList(namebl_list));
 	}
 
 	@Override
@@ -153,6 +177,11 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 			ArrayList<UriList> uriLists = stepnickaResults.get(i).getUriList();
 			ArrayList<Concept> conceptsForClue = new ArrayList<>();
 			for (int j = 0; j < uriLists.size(); j++) {
+				String name = stepnickaResults.get(i).getUriList().get(j).getConcept_name();
+				if (namebl.contains(name)) {
+					logger.debug("ignoring blacklisted concept <<{}>>", name);
+					continue;
+				}
 				Concept concept = new Concept(resultView);
 				concept.setBegin(stepnickaResults.get(i).getPosition().get(0));
 				concept.setEnd(stepnickaResults.get(i).getPosition().get(1));
