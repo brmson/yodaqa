@@ -107,6 +107,9 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 
 		/* Okay! Now, we can proceed with our key tasks. */
 
+		/* Generate Concepts by Stepnicka - earlier than in YodaQA because we need concept NEs in FocusGenerator */
+		builder.add(AnalysisEngineFactory.createEngineDescription(StepnickaToConcepts.class));
+
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusGenerator.class));
 		builder.add(AnalysisEngineFactory.createEngineDescription(FocusNameProxy.class));
 		//builder.add(AnalysisEngineFactory.createEngineDescription(SubjectGenerator.class));
@@ -127,8 +130,6 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySubject.class));
 		/* Convert some syntactic clues to concept clues */
 		//builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class));
-		/* Generate Concepts by Stepnicka*/
-		builder.add(AnalysisEngineFactory.createEngineDescription(StepnickaToConcepts.class));
 		/* Merge any duplicate clues */
 		builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
 

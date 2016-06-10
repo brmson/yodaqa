@@ -22,6 +22,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.model.Question.Focus;
 
 /**
@@ -65,6 +66,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 
 	protected Token firstK1Token(JCas jcas) {
 		for (Token t : JCasUtil.select(jcas, Token.class)) {
+			if (!JCasUtil.selectCovering(Concept.class, t).isEmpty())
+				continue; // skip named entites
 			if (t.getPos().getPosValue().matches("k1.*"))
 				return t;
 		}
@@ -87,7 +90,13 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 		Token focus = null;
 
 		Iterator<Token> tokens = JCasUtil.select(jcas, Token.class).iterator();
-		Token first = tokens.next();
+
+		// the first token, except skip named entities at the beginning
+		Token first;
+		do {
+			first = tokens.next();
+		} while (!JCasUtil.selectCovering(Concept.class, first).isEmpty() && tokens.hasNext());
+
 		Token second = tokens.hasNext() ? tokens.next() : null;
 		logger.debug("first {}/{}, second {}/{}",
 			first.getLemma().getValue(), first.getPos().getPosValue(),
