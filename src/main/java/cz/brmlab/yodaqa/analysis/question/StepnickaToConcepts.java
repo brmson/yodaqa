@@ -183,10 +183,8 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 					continue;
 				}
 				Concept concept = new Concept(resultView);
-				concept.setBegin(stepnickaResults.get(i).getPosition().get(0));
-				concept.setEnd(stepnickaResults.get(i).getPosition().get(1));
-				concept.setFullLabel(stepnickaResults.get(i).getUriList().get(j).getConcept_name());
-				concept.setCookedLabel(stepnickaResults.get(i).getUriList().get(j).getConcept_name());
+				concept.setFullLabel(name);
+				concept.setCookedLabel(name);
 				concept.setMatchedStr(stepnickaResults.get(i).getUriList().get(j).getMatch_str());
 				concept.setLabelProbability(stepnickaResults.get(i).getUriList().get(j).getScore());
 				concept.setPageID(stepnickaResults.get(i).getUriList().get(j).getPage_id());
@@ -199,6 +197,11 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 				concept.setByFuzzyLookup(false);
 				concept.setByCWLookup(false);
 				concept.setDescription("");
+
+				int begin = resultView.getDocumentText().indexOf(concept.getMatchedStr());
+				concept.setBegin(begin);
+				concept.setEnd(begin + concept.getMatchedStr().length());
+
 				concepts.add(concept);
 				conceptsForClue.add(concept);
 
