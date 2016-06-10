@@ -124,15 +124,25 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		//FIXME Add list size check
 		for (int i = 0; i < tokens.size(); i++) {
 			Token tok = tokens.get(i);
-			POS pos = new POS(jCas);
-			if (tok.getPos() != null) tok.getPos();
-			Lemma lemma = new Lemma(jCas);
-			if (tok.getLemma() != null) lemma = tok.getLemma();
-			logger.debug("Token: " + response.lemmas.get(i) + " " + response.posTags.get(i));
-			pos.setPosValue(response.posTags.get(i));
-			lemma.setValue(response.diacritics.get(i));
-			tok.setLemma(lemma);
-			tok.setPos(pos);
+			logger.debug("Token: {}/{} {}", tok.getCoveredText(), response.lemmas.get(i), response.posTags.get(i));
+
+			if (tok.getPos() == null) {
+				POS pos = new POS(jCas);
+				pos.setBegin(tok.getBegin());
+				pos.setEnd(tok.getEnd());
+				pos.addToIndexes();
+				tok.setPos(pos);
+			}
+			tok.getPos().setPosValue(response.posTags.get(i));
+
+			if (tok.getLemma() == null) {
+				Lemma lemma = new Lemma(jCas);
+				lemma.setBegin(tok.getBegin());
+				lemma.setEnd(tok.getEnd());
+				lemma.addToIndexes();
+				tok.setLemma(lemma);
+			}
+			tok.getLemma().setValue(response.lemmas.get(i));
 		}
 	}
 
