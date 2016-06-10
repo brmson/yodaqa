@@ -57,6 +57,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		for (ROOT sentence : JCasUtil.select(jcas, ROOT.class)) {
+			if (JCasUtil.select(jcas, Token.class).isEmpty())
+				continue; // don't crash on empty input
 			processSentence(jcas, sentence);
 		}
 	}
