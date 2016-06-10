@@ -59,9 +59,7 @@ public class SynonymPCCPPropertyScorer {
 		}
 	}
 
-	public Double getPropertyScore(PropertyValue pv) {
-		String prop = pv.getProperty().toLowerCase();
-		prop = prop.replaceAll("[0-9]*$", "");
+	protected Double getPropTextScore(String prop) {
 		if (baseTexts.contains(prop)) {
 			logger.debug("prop {} EXACT", prop);
 			return 2.0; // synonym scores go up to ~1.87
@@ -71,6 +69,32 @@ public class SynonymPCCPPropertyScorer {
 		} else {
 			logger.debug("unk prop <<{}>>", prop);
 			return null;
+		}
+	}
+
+	public Double getPropertyScore(PropertyValue pv) {
+		String prop = pv.getProperty().toLowerCase();
+		prop = prop.replaceAll("[0-9]*$", "");
+
+		if (!prop.contains(" ")) {
+			return getPropTextScore(prop);
+		} else {
+			/* Multi-word property name, e.g. "český dabing"
+			 * or "místo narození".
+			 * XXX: be really silly about this for now, just
+			 * trying to match the first and last word. */
+			String[] words = prop.split(" ");
+			Double score = null;
+			Double s0 = getPropTextScore(words[0]);
+			if (s0 != null)
+				score = s0;
+			Double s1 = getPropTextScore(words[words.length-1]);
+			if (s1 != null)
+				if (score == null)
+					score = s1;
+				else
+					score += s1;
+			return score;
 		}
 	}
 }
