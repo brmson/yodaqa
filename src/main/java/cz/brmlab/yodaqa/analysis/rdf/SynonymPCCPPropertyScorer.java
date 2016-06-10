@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.rdf;
 
+import cz.brmlab.yodaqa.model.Question.SV;
 import cz.brmlab.yodaqa.model.TyCor.LAT;
 import cz.brmlab.yodaqa.provider.SynonymsPCCP;
 import cz.brmlab.yodaqa.provider.SynonymsPCCP.Synonym;
@@ -35,6 +36,12 @@ public class SynonymPCCPPropertyScorer {
 				continue;
 			logger.debug("LAT [{}]?", lat.getText());
 			loadSynonyms(lat.getText());
+		}
+		for (SV sv : JCasUtil.select(questionView, SV.class)) {
+			logger.debug("SV [{}]?", sv.getCoveredText());
+			loadSynonyms(sv.getCoveredText());
+			if (!sv.getCoveredText().equals(sv.getBase().getLemma().getValue()))
+				loadSynonyms(sv.getBase().getLemma().getValue());
 		}
 	}
 
