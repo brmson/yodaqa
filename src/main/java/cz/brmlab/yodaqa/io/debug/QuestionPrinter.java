@@ -136,6 +136,8 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "{";
 			Concepttmp += "\"fullLabel\": \"" + c.getFullLabel().replaceAll("\"", "\\\\\"") + "\", ";
 			Concepttmp += "\"cookedLabel\": \"" + c.getCookedLabel().replaceAll("\"", "\\\\\"") + "\", ";
+			if (c.getMatchedStr() != null)
+				Concepttmp += "\"matchedStr\": " + c.getMatchedStr().replaceAll("\"", "\\\\\"") + "\", ";
 			Concepttmp += "\"pageID\": \"" + c.getPageID() + "\", ";
 			Concepttmp += "\"editDist\": " + c.getEditDistance() + ", ";
 			Concepttmp += "\"labelProbability\": " + c.getLabelProbability() + ", ";

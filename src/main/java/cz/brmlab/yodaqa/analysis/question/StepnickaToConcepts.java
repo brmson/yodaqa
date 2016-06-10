@@ -121,10 +121,10 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 				float score = uriList.get(j).getAsJsonObject().get("score").getAsFloat();
 				String dbpedia_uri = uriList.get(j).getAsJsonObject().get("dbpedia_uri").getAsString();
 				int page_id = uriList.get(j).getAsJsonObject().get("page_id").getAsInt();
-				uriLists.add(new UriList(wiki_uri, concept_name, uri, score, dbpedia_uri, page_id));
+				String match_str = jsonObject.get("match_str").getAsString();
+				uriLists.add(new UriList(wiki_uri, concept_name, uri, score, dbpedia_uri, page_id, match_str));
 			}
-			String match_str = jsonObject.get("match_str").getAsString();
-			StepnickaResult stepnickaResult = new StepnickaResult(positions, uriLists, match_str);
+			StepnickaResult stepnickaResult = new StepnickaResult(positions, uriLists);
 			stepnickaResults.add(stepnickaResult);
 		}
 
@@ -158,6 +158,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 				concept.setEnd(stepnickaResults.get(i).getPosition().get(1));
 				concept.setFullLabel(stepnickaResults.get(i).getUriList().get(j).getConcept_name());
 				concept.setCookedLabel(stepnickaResults.get(i).getUriList().get(j).getConcept_name());
+				concept.setMatchedStr(stepnickaResults.get(i).getUriList().get(j).getMatch_str());
 				concept.setLabelProbability(stepnickaResults.get(i).getUriList().get(j).getScore());
 				concept.setPageID(stepnickaResults.get(i).getUriList().get(j).getPage_id());
 				//concept.setEditDistance(a.getDist());
@@ -206,11 +207,9 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 	public class StepnickaResult {
 		private ArrayList<Integer> position;
 		private ArrayList<UriList> uriLists;
-		private String match_str;
 
-		public StepnickaResult(ArrayList<Integer> position, ArrayList<UriList> uriLists, String match_str) {
+		public StepnickaResult(ArrayList<Integer> position, ArrayList<UriList> uriLists) {
 			this.position = position;
-			this.match_str = match_str;
 			this.uriLists = uriLists;
 		}
 
@@ -220,10 +219,6 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 
 		public ArrayList<UriList> getUriList() {
 			return uriLists;
-		}
-
-		public String getMatch_str() {
-			return match_str;
 		}
 	}
 
@@ -237,14 +232,16 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		private float score;
 		private String dbpedia_uri;
 		private int page_id;
+		private String match_str;
 
-		public UriList(String wiki_uri, String concept_name, String uri, float score, String dbpedia_uri, int page_id) {
+		public UriList(String wiki_uri, String concept_name, String uri, float score, String dbpedia_uri, int page_id, String match_str) {
 			this.wiki_uri = wiki_uri;
 			this.concept_name = concept_name;
 			this.uri = uri;
 			this.score = score;
 			this.dbpedia_uri = dbpedia_uri;
 			this.page_id = page_id;
+			this.match_str = match_str;
 		}
 
 		public String getWiki_uri() {
@@ -269,6 +266,10 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 
 		public int getPage_id() {
 			return page_id;
+		}
+
+		public String getMatch_str() {
+			return match_str;
 		}
 	}
 }

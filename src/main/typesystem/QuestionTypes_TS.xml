@@ -245,6 +245,11 @@
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>matchedStr</name>
+            <description>Surface form of the concept as the exact string matched in the question text.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>pageID</name>
             <description>The id of the wikipedia page (can be fed to solr as well as freebase or dbpedia).</description>
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
