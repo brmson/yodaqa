@@ -9,7 +9,9 @@
 FROM java:8
 
 # Copy fuseki files
-ADD ./solr-4.6.0 /solr-4.6.0
+# ADD ./solr-4.6.0 /solr
+RUN wget https://archive.apache.org/dist/lucene/solr/4.6.0/solr-4.6.0.tgz
+RUN mkdir solr; tar -xvzf solr-4.6.0.tgz -C solr --strip-components=1
 
 
 # JAVA_HOME is not set by default
@@ -19,7 +21,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64/
 ENV TERM dumb
 
 # Define working directory
-WORKDIR /solr-4.6.0/example
+WORKDIR /solr/example
 
 # Expose port
 EXPOSE 8983
