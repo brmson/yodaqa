@@ -3,7 +3,7 @@ dbpedia:
   ports:
    - "3037:3037"
   volumes:
-   - /<path>/data/db/:/jena-fuseki-1.1.1/db/
+   - /<path>/data/db/:/jena-fuseki/db/
   command: ./fuseki-server --port 3037 --loc db /dbpedia
 
 enwiki:
@@ -11,7 +11,7 @@ enwiki:
   ports:
    - "8983:8983"
   volumes:
-   - /<path>/data/enwiki/collection1/:/solr-4.6.0/example/enwiki/collection1/
+   - /<path>/data/enwiki/collection1/:/solr/example/enwiki/collection1/
   command: java -Dsolr.solr.home=enwiki -jar start.jar
 
 freebase:
@@ -19,7 +19,7 @@ freebase:
   ports:
    - "3030:3030"
   volumes:
-   - /<path>/data/d-freebase/:/jena-fuseki-1.1.1/d-freebase/
+   - /<path>/data/d-freebase/:/jena-fuseki/d-freebase/
   command: ./fuseki-server --loc d-freebase /freebase
 
 label1:
