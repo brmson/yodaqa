@@ -31,8 +31,7 @@ public class ConceptGloVeScoring {
 	private Relatedness r = new Relatedness(new MbWeights(ConceptGloVeScoring.class.getResourceAsStream("Mbdesc.txt")));
 
 	public double relatedness(List<String> qtoks, List<String> dtoks) {
-		double res = r.probability(qtoks, dtoks);
-		return res;
+		return r.probability(qtoks, dtoks);
 	}
 
 	/** For legacy reasons, we use our own tokenization.

@@ -41,7 +41,7 @@ public abstract class TreeDist {
 
 	@Override
 	public String toString() {
-		String strNorm = (this.isNormalized() ? "(normalized)" : "(not normalized)");
+		String strNorm = this.isNormalized() ? "(normalized)" : "(not normalized)";
 		return this.getClass().getSimpleName() + strNorm;
 	}
 

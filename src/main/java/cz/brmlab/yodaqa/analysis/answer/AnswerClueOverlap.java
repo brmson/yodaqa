@@ -81,7 +81,7 @@ public class AnswerClueOverlap extends JCasAnnotator_ImplBase {
 		matchClues(ai, questionView, answerView,
 				new ClueFilter() {
 					public boolean test(Clue c) {
-						return (c instanceof ClueNE || c instanceof ClueConcept);
+						return c instanceof ClueNE || c instanceof ClueConcept;
 					}
 				},
 				AF.ClOCMatchScore,

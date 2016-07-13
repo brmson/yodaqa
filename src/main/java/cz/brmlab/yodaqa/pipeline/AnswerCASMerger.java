@@ -189,7 +189,7 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 			needALasts.put(o, need);
 		}
 		// logger.debug("in: {} resultIsLast {}, alasts {} < {}", o, ri.getIsLast(), seen, need);
-		return (need > 0 && seen >= need);
+		return need > 0 && seen >= need;
 	}
 
 	/** Convert given AnswerCAS to an Answer FS in an AnswerHitlistCAS. */
@@ -204,7 +204,6 @@ public class AnswerCASMerger extends JCasMultiplier_ImplBase {
 		} else { //create new IntegerArray of size 0
 		answer.setSnippetIDs(new IntegerArray(hitlistCas, 0));
 		}
-		int i = 0;
 		/* Store the Focus. */
 		for (Focus focus : JCasUtil.select(canAnswer, Focus.class)) {
 			answer.setFocus(focus.getCoveredText());
