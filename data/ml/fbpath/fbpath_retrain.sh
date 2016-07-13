@@ -5,8 +5,9 @@
 # Example: data/ml/fbpath/fbpath_retrain.sh ../dataset-factoid-webquestions $googleapikey
 #
 # This is useful when question analysis is modified (e.g. entity linking).
-# Requires dataset-factoid-webquestions checkout, refreshing its components
-# too (you may want to commit + push that as well).
+# Requires dataset-factoid-webquestions checkout.
+#
+# !!! You may want to run scripts/dump-refresh.sh in there first !!!
 
 set -e
 
@@ -18,6 +19,7 @@ mkdir -p data/ml/fbpath/wq-fbpath
 
 cd "$dataset_co"
 # scripts/dump-refresh.sh "$basedir" $googleapikey
+
 
 for i in trainmodel val devtest; do
 	scripts/fulldata.py $i "$basedir/data/ml/fbpath/wq-fbpath/" main/ d-dump/ d-freebase-brp/

@@ -73,8 +73,7 @@ public class FBPathLogistic {
 				if (w != null)
 					t += w;
 			}
-			double prob = 1.0 / (1.0 + Math.exp(-t));
-			return prob;
+			return 1.0 / (1.0 + Math.exp(-t));
 		}
 	};
 

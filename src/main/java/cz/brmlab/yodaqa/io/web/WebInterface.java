@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import cz.brmlab.yodaqa.provider.UrlManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,11 +58,14 @@ public class WebInterface implements Runnable {
 				}
 				logger.info("{} :: new question {} <<{}>>", request.ip(), id, text);
 				List<QuestionConcept> artificialConcepts = retrieveArtificialConcepts(request);
-				Question q;
+				Question q = new Question(id, text);
 				if (!artificialConcepts.isEmpty()) {
-					q = new Question(id, text, artificialConcepts, true);
-				} else {
-					q = new Question(id, text);
+					q.setArtificialConcepts(artificialConcepts);
+					q.setHasOnlyArtificialConcept(true);
+				}
+				String artificialClueText = request.queryParams("artificialClue");
+				if (artificialClueText != null){
+					q.setArtificialClueText(artificialClueText);
 				}
 				QuestionDashboard.getInstance().askQuestion(q);
 				response.header("Access-Control-Allow-Origin", "*");
@@ -89,9 +93,8 @@ public class WebInterface implements Runnable {
 					response.status(404);
 					return "{}";
 				}
-				String json = q.toJson();
-				logger.debug("{} :: /q <<{}>> -> <<{}>>", request.ip(), id, json);
-				return json;
+				// logger.debug("{} :: /q <<{}>> -> <<{}>>", request.ip(), id, json);
+				return q.toJson();
 			}
 		});
 
@@ -131,6 +134,16 @@ public class WebInterface implements Runnable {
 					}
 
 				return "[" + StringUtils.join(qJson, ",\n") + "]";
+			}
+		});
+
+		get(new Route("/dataUrls") {
+			@Override
+			public Object handle(Request request, Response response) {
+				response.type("application/json");
+				response.header("Access-Control-Allow-Origin", "*");
+				return UrlManager.printState();
+
 			}
 		});
 	}

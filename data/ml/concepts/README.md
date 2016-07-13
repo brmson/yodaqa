@@ -5,32 +5,32 @@ This script is for training and evaluating a classifier of concepts using the ed
 
 TL;DR:
 
-	data/ml/concepts/concepts_retrain.sh ../dataset-factoid-movies/moviesC
+	data/ml/concepts/concepts_retrain.sh ../dataset-factoid-movies/moviesF
 
 Retraining
 ----------
 
 It requires two inputs:
 
-  * The gold standard dataset. For moviesC-train, it is located in:
+  * The gold standard dataset. For moviesF-train, it is located in:
 
-	dataset-factoid-movies/moviesC/entity-linking.json
+	dataset-factoid-movies/moviesF/entity-linking.json
 
   * Question dump dataset with concept features (*all*, not just top N as is usual).
 
-	./gradlew questionDump -PexecArgs="data/eval/moviesC-train.tsv data/ml/concepts/questionDump-tofix.json" -Dcz.brmlab.yodaqa.topLinkedConcepts=0
+	./gradlew questionDump -PexecArgs="data/eval/moviesF-train.tsv data/ml/concepts/questionDump-tofix.json" -Dcz.brmlab.yodaqa.topLinkedConcepts=0
 	python data/ml/repair-json.py data/ml/concepts/questionDump-tofix.json > data/ml/concepts/questionDump.json
 
 To train the classifier:
 
-	python data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesC/entity-linking.json
+	python data/ml/concepts/concepts_train_logistic.py data/ml/concepts/questionDump.json ../dataset-factoid-movies/moviesF/entity-linking.json
 
 Put the full output in the class code of:
 
 	src/main/java/cz/brmlab/yodaqa/analysis/question/ConceptClassifier.java
 
-Experiments
------------
+Experiments (archive)
+---------------------
 
 We trained and tested the classifier on moviesC-train dataset (commit hash 93a974e), taking the top5 concepts sorted by dbpedia popularity.
 

@@ -13,38 +13,38 @@ import cz.brmlab.yodaqa.model.Question.Concept;
  * data/ml/concepts/concepts_train_logistic.py script.
  */
 public class ConceptClassifier {
-	/* N.B. This is trained on the moviesC-train dataset,
+	/* N.B. This is trained on the moviesF-train dataset,
 	 * not on curated or anything! */
-	/* Training data - correct: 671 (11.571%), incorrect: 5128 (88.429%) */
+	/* Training data - correct: 1217 (9.896%), incorrect: 11081 (90.104%) */
 
 	/* 10-fold cross-validation (with 0.20 test splits): */
-	/* CV fold precision 93.534% (1085/1160) */
-	/* CV fold precision 94.483% (1096/1160) */
-	/* CV fold precision 93.276% (1082/1160) */
-	/* CV fold precision 94.224% (1093/1160) */
-	/* CV fold precision 94.052% (1091/1160) */
-	/* CV fold precision 95.000% (1102/1160) */
-	/* CV fold precision 94.483% (1096/1160) */
-	/* CV fold precision 95.259% (1105/1160) */
-	/* CV fold precision 94.828% (1100/1160) */
-	/* CV fold precision 93.448% (1084/1160) */
-	/* === CV average precision 94.259% (+-SD 0.645%) */
+	/* CV fold precision 93.740% (2306/2460) */
+	/* CV fold precision 94.756% (2331/2460) */
+	/* CV fold precision 94.390% (2322/2460) */
+	/* CV fold precision 94.350% (2321/2460) */
+	/* CV fold precision 94.309% (2320/2460) */
+	/* CV fold precision 94.797% (2332/2460) */
+	/* CV fold precision 94.837% (2333/2460) */
+	/* CV fold precision 95.122% (2340/2460) */
+	/* CV fold precision 94.187% (2317/2460) */
+	/* CV fold precision 94.512% (2325/2460) */
+	/* === CV average precision 94.500% (+-SD 0.374%) */
 
-	/* Training set precision 94.378% (5473/5799) */
+	/* Training set precision 94.609% (11635/12298) */
 	/* Model (trained on the whole training set): */
 	double[] weights = {
-		0.248860, // editDist
-		4.457111, // labelProbability
-		0.577820, // logPopularity
-		4.231233, // relatedness
-		-1.064028, // getByLAT
-		0.683527, // getByNE
-		0.491508, // getBySubject
+		0.008670, // editDist
+		4.447859, // labelProbability
+		0.506590, // logPopularity
+		4.145722, // relatedness
+		-1.986273, // getByLAT
+		0.500504, // getByNE
+		0.270530, // getBySubject
 		0.000000, // getByNgram
-		1.178016, // getByFuzzyLookup
-		-1.393301, // getByCWLookup
+		0.837017, // getByFuzzyLookup
+		-1.686557, // getByCWLookup
 	};
-	double intercept = -7.214133;
+	double intercept = -6.556334;
 	
 	public double calculateProbability(JCas questionView, Concept l) {
 		List<String> qtoks = ConceptGloVeScoring.questionRepr(questionView);
@@ -69,8 +69,7 @@ public class ConceptClassifier {
 		for(int i = 0; i < weights.length; i++) {
 			sum += features[i]*weights[i];
 		}
-		double probability = sigmoid(sum);
-		return probability;
+		return sigmoid(sum);
 	}
 
 	public double sigmoid(double z) {

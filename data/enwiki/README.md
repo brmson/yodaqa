@@ -43,6 +43,10 @@ and somewhat smaller dump.  Then, we import this into Solr.
 
 ### Solr Import
 
+  * Download solr (http://www.apache.org/dyn/closer.cgi/lucene/solr/ - we use
+    version 4.6.0), unpack and cd to the ``example/`` subdirectory.
+  * Symlink or copy the ``data/enwiki/`` directory from this repository to the
+    ``example/`` subdirectory; it contains the data import configuration.
   * Revise the enwiki-text XML file reference in ``collection1/conf/data-config.xml``
     according to the dump date you used.
   * In the parent directory (``example/``), start the standalone Solr server:
@@ -53,6 +57,7 @@ and somewhat smaller dump.  Then, we import this into Solr.
     of gigabytes).
 
 The standalone Solr server can now answer YodaQA's Solr queries.
+Edit the appropriate line of ``conf/backendURLs.json`` to point YodaQA at the server.
 
 Files In This Directory
 -----------------------

@@ -29,7 +29,6 @@ public class IPv6Check {
 		try {
 			// This flag is set to true after an IPv6 connection was
 			// established.
-			boolean ipv6Works = false;
 			// Temporarily undo this setting. Altering preferIPv6Address will
 			// suffice
 			for (InetAddress addr : InetAddress.getAllByName("ipv6.ailao.eu")) {
@@ -39,7 +38,6 @@ public class IPv6Check {
 					continue;
 				if (addr instanceof Inet6Address) {
 					new Socket(addr, 80);
-					ipv6Works = true;
 				}
 			}
 			System.err.println("Preferring IPv6 connections");

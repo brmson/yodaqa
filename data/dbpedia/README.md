@@ -59,8 +59,7 @@ To start the Fuseki server, run then (in jena-fuseki-1.1.1)
 
 	./fuseki-server --loc db /dbpedia
 
-and edit ``src/main/java/cz/brmlab/yodaqa/provider/rdf/DBpediaLookup.java``
-changing default value of the ``service`` attribute.  It should work.
+and edit the appropriate line of ``conf/backendURLs.json``.
 
 Fuzzy Label Lookup Service
 ==========================
@@ -73,4 +72,4 @@ fuzzier lookup mechanism than plain SPARQL, we use
 
 which contains some details on how to set it up.  To make YodaQA use your
 own instance, edit the appropriate http URL in the file
-``src/main/java/cz/brmlab/yodaqa/provider/rdf/DBpediaTitles.java``.
+``conf/backendURLs.json``.
