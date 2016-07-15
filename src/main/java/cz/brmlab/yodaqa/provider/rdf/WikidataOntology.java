@@ -20,20 +20,24 @@ public class WikidataOntology extends WikidataLookup {
 	}
 
 	private List<PropertyValue> queryTitleForm(String title, Logger logger) {
-		title = super.capitalizeTitle(title);
+//		title = super.capitalizeTitle(title);
+		title = title.trim();
 
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 			"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
 			"{	?res ?propres ?valres .	}\n" +
-			"UNION\n" +
-			"{	?valres ?propres ?res .	}\n" +
+			// XXX: This direction of relationship could produce a very large result set or lead to a query timeout
+			// Example: quotedTitle = Spojené království - 355424 Results in 17140 ms on web SPARQL client
+			// timeout in YodaQA
+			//"UNION\n" +
+			//"{	?valres ?propres ?res .	}\n" +
 			"?prop wikibase:directClaim ?propres .\n" +
 			"		SERVICE wikibase:label {\n" +
 			"	bd:serviceParam wikibase:language \"cs\"\n" +
 			"}" +
 			"";
-//		logger.debug("executing sparql query: {}", rawQueryStr);
+		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 				new String[] { "propLabel", "valresLabel", "valres", "res" }, 0);
 
