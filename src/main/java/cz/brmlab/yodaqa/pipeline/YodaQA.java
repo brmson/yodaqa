@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import cz.brmlab.yodaqa.pipeline.structured.WikidataOntologyAnswerProducer;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -137,7 +138,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 2,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 3,
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -286,6 +287,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		 * PARAM_ISLAST_BARRIER. */
 
 		/* Structured search: */
+		AnalysisEngineDescription wkdOnt = WikidataOntologyAnswerProducer.createEngineDescription();
+		builder.add(wkdOnt);
 		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
 		builder.add(dbpOnt);
 		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
