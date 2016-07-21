@@ -17,7 +17,7 @@ import java.util.List;
 public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 	public WikidataOntologyPrimarySearch() {
 		// FIXME Wikidata specific features
-		super("WikidataOntology", AF.OriginDBpO_ClueType, AF.OriginDBpONoClue);
+		super("WikidataOntology", AF.OriginFBO_ClueType, AF.OriginFBONoClue);
 		logger = LoggerFactory.getLogger(WikidataOntologyPrimarySearch.class);
 	}
 
@@ -39,7 +39,7 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 	@Override
 	protected void addTypeLAT(JCas jcas, AnswerFV fv, String type) throws AnalysisEngineProcessException {
 		// FIXME Wikidata specific features
-		fv.setFeature(AF.LATDBpOntology, 1.0);
+		fv.setFeature(AF.LATFBOntology, 1.0);
 		addTypeLAT(jcas, fv, type, new WikidataOntologyLAT(jcas));
 	}
 }
