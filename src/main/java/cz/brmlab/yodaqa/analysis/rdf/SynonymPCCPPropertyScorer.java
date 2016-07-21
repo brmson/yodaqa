@@ -38,10 +38,11 @@ public class SynonymPCCPPropertyScorer {
 			loadSynonyms(lat.getText());
 		}
 		for (SV sv : JCasUtil.select(questionView, SV.class)) {
-			logger.debug("SV [{}]?", sv.getCoveredText());
+			String lemma = sv.getBase().getLemma().getValue();
+			logger.debug("SV [{}]/[{}]?", sv.getCoveredText(), lemma);
 			loadSynonyms(sv.getCoveredText());
-			if (!sv.getCoveredText().equals(sv.getBase().getLemma().getValue()))
-				loadSynonyms(sv.getBase().getLemma().getValue());
+			if (!sv.getCoveredText().equals(lemma))
+				loadSynonyms(lemma);
 		}
 	}
 
