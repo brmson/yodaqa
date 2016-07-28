@@ -7,6 +7,8 @@ public class WikidataLookup extends CachedJenaLookup {
 		public WikidataLookup() {
 		super("https://query.wikidata.org/sparql",
 				"PREFIX wikibase: <http://wikiba.se/ontology#>" +
-				"PREFIX bd: <http://www.bigdata.com/rdf#>");
+				"PREFIX bd: <http://www.bigdata.com/rdf#>" +
+				"PREFIX wd: <http://www.wikidata.org/entity/>" +
+				"PREFIX wdt: <http://www.wikidata.org/prop/direct/>");
 	}
 }

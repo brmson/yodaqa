@@ -138,7 +138,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			AnalysisEngineDescription answerCASMerger = AnalysisEngineFactory.createEngineDescription(
 					AnswerCASMerger.class,
-					AnswerCASMerger.PARAM_ISLAST_BARRIER, 3,
+					AnswerCASMerger.PARAM_ISLAST_BARRIER, 1,
 					AnswerCASMerger.PARAM_PHASE, 0,
 					ParallelEngineFactory.PARAM_NO_MULTIPROCESSING, 1);
 			builder.add(answerCASMerger);
@@ -201,10 +201,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 			/* Diffuse scores between textually similar answers. */
-			AnalysisEngineDescription evidenceDiffusion = AnalysisEngineFactory.createEngineDescription(
-					EvidenceDiffusion.class);
-			builder.add(evidenceDiffusion,
-				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
+//			AnalysisEngineDescription evidenceDiffusion = AnalysisEngineFactory.createEngineDescription(
+//					EvidenceDiffusion.class);
+//			builder.add(evidenceDiffusion,
+//				CAS.NAME_DEFAULT_SOFA, "AnswerHitlist");
 
 		/* (Serialization / scoring point #1.) */
 		} else if (loadPhase == 1) {
@@ -289,10 +289,10 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 		/* Structured search: */
 		AnalysisEngineDescription wkdOnt = WikidataOntologyAnswerProducer.createEngineDescription();
 		builder.add(wkdOnt);
-		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
-		builder.add(dbpOnt);
-		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
-		builder.add(dbpProp);
+//		AnalysisEngineDescription dbpOnt = DBpediaOntologyAnswerProducer.createEngineDescription();
+//		builder.add(dbpOnt);
+//		AnalysisEngineDescription dbpProp = DBpediaPropertyAnswerProducer.createEngineDescription();
+//		builder.add(dbpProp);
 		//AnalysisEngineDescription fbOnt = FreebaseOntologyAnswerProducer.createEngineDescription();
 		//builder.add(fbOnt);
 

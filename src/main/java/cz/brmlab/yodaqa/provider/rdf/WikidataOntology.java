@@ -1,8 +1,10 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.sparql.util.StringUtils;
 import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import org.slf4j.Logger;
 
@@ -40,7 +42,31 @@ public class WikidataOntology extends WikidataLookup {
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 				new String[] { "propLabel", "valresLabel", "valres", "res" }, 0);
+		return processResults(rawResults, title);
+	}
 
+
+	public List<PropertyValue> queryFromLabel(PathScore ps, String title, Logger logger) {
+		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
+		String rawQueryStr =
+		"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
+		//"?res " + ps.path.get(0)+ " ?valres .\n" +
+		makeQuery(ps) +
+		"BIND(" + getProperty(ps.path.get(0)) + " AS ?propres)\n" +
+		"?valres rdfs:label ?vallabel .\n" +
+		"FILTER(LANGMATCHES(LANG(?vallabel), \"cs\"))\n" + // TODO not every vallabel needs to be in czech
+		"?prop wikibase:directClaim ?propres .\n" +
+		"		SERVICE wikibase:label {\n" +
+		"	bd:serviceParam wikibase:language \"cs\"\n" +
+		"}" +
+		"";
+		logger.debug("executing sparql query: {}", rawQueryStr);
+		List<Literal[]> rawResults = rawQuery(rawQueryStr,
+				new String[] { "propLabel", "vallabel", "valres", "res" }, 0);
+		return processResults(rawResults, title);
+	}
+
+	private List<PropertyValue> processResults(List<Literal[]> rawResults, String title) {
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
 			String propLabel = rawResult[0].getString().
@@ -52,7 +78,7 @@ public class WikidataOntology extends WikidataLookup {
 			String objRes = rawResult[3].getString();
 			logger.debug("Wikidata {} property: {} -> {} ({})", title, propLabel, value, valRes);
 			AnswerFV fv = new AnswerFV();
-			fv.setFeature(AF.OriginDBpOntology, 1.0);
+			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 			results.add(new PropertyValue(title, objRes, propLabel,
 					value, valRes, null,
 					fv, AnswerSourceStructured.ORIGIN_ONTOLOGY));
@@ -60,5 +86,19 @@ public class WikidataOntology extends WikidataLookup {
 		return results;
 	}
 
+	private String getProperty(String s) {
+		try {
+			return s.split(" ")[1];
+		} catch (IndexOutOfBoundsException e) {
+			return "";
+		}
+	}
 
+	private String makeQuery(PathScore ps) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < ps.path.size(); i++) {
+			sb.append(ps.path.get(i)).append(" . \n");
+		}
+		return sb.toString();
+	}
 }

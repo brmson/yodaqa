@@ -80,7 +80,7 @@ public class FBPathLogistic {
 	protected Map<PropertyPath, LogRegClassifier> pathCfiers = new HashMap<>();
 
 	public void initialize() throws ResourceInitializationException {
-		modelName = "FBPathLogistic.model";
+		modelName = "WikidataLogistic.model";
 
 		/* Load and parse the model. */
 		try {
