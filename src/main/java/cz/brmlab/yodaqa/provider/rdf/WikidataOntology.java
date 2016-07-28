@@ -42,7 +42,7 @@ public class WikidataOntology extends WikidataLookup {
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
 				new String[] { "propLabel", "valresLabel", "valres", "res" }, 0);
-		return processResults(rawResults, title);
+		return processResults(rawResults, title, logger);
 	}
 
 
@@ -50,11 +50,13 @@ public class WikidataOntology extends WikidataLookup {
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 		"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
-		//"?res " + ps.path.get(0)+ " ?valres .\n" +
 		makeQuery(ps) +
 		"BIND(" + getProperty(ps.path.get(0)) + " AS ?propres)\n" +
-		"?valres rdfs:label ?vallabel .\n" +
-		"FILTER(LANGMATCHES(LANG(?vallabel), \"cs\"))\n" + // TODO not every vallabel needs to be in czech
+//		"OPTIONAL {\n" +
+//		"  ?valres rdfs:label ?vallabel .\n" +
+//		"  FILTER(LANGMATCHES(LANG(?vallabel), \"cs\"))\n" + // TODO not every vallabel needs to be in czech
+//		"}\n" +
+//		"BIND( IF(BOUND(?vallabel), ?vallabel, ?valres) AS ?value )\n" +
 		"?prop wikibase:directClaim ?propres .\n" +
 		"		SERVICE wikibase:label {\n" +
 		"	bd:serviceParam wikibase:language \"cs\"\n" +
@@ -62,11 +64,11 @@ public class WikidataOntology extends WikidataLookup {
 		"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-				new String[] { "propLabel", "vallabel", "valres", "res" }, 0);
-		return processResults(rawResults, title);
+				new String[] { "propLabel", "valresLabel", "valres", "res" }, 0);
+		return processResults(rawResults, title, logger);
 	}
 
-	private List<PropertyValue> processResults(List<Literal[]> rawResults, String title) {
+	private List<PropertyValue> processResults(List<Literal[]> rawResults, String title, Logger logger) {
 		List<PropertyValue> results = new ArrayList<PropertyValue>(rawResults.size());
 		for (Literal[] rawResult : rawResults) {
 			String propLabel = rawResult[0].getString().
@@ -76,6 +78,8 @@ public class WikidataOntology extends WikidataLookup {
 			String value = rawResult[1].getString().replaceAll("\\s+\\([^)]*\\)\\s*$", "");
 			String valRes = rawResult[2] != null ? rawResult[2].getString() : null;
 			String objRes = rawResult[3].getString();
+			if (value != null && value.length() > 0 && value.charAt(0) == 'Q' && value.equals(valRes))
+				continue; //No czech label
 			logger.debug("Wikidata {} property: {} -> {} ({})", title, propLabel, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
