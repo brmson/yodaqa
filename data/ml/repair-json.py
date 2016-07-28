@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Repairs questionDump json output to have a correct syntax.
 #
