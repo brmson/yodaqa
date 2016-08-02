@@ -1,4 +1,12 @@
 #!/usr/bin/python3
+#
+# Generates gold standard of wikidata queries for given questions according to their templates.
+# This script is only applicable to a set of questions generated using templates described in this file.
+# These question also need to be saved in the files with a specific name representing given template.
+#
+# Usage: ./path_from_template.py QUESTION_DIR QUESTION_SUBSET
+# QUESTION_DIR 		- contains questions in json format saved in files with names (datumnarozenihuman.json, ...)
+# QUESTION_SUBSET 	- a json file containing subset of questions from the directory above (possibly a mix of questions from different files)
 
 import os, sys, json
 
