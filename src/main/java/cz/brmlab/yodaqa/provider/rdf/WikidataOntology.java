@@ -35,7 +35,7 @@ public class WikidataOntology extends WikidataLookup {
 			//"UNION\n" +
 			//"{	?valres ?propres ?res .	}\n" +
 			"?prop wikibase:directClaim ?propres .\n" +
-			"		SERVICE wikibase:label {\n" +
+			"SERVICE wikibase:label {\n" +
 			"	bd:serviceParam wikibase:language \"cs\"\n" +
 			"}" +
 			"";
@@ -58,7 +58,7 @@ public class WikidataOntology extends WikidataLookup {
 //		"}\n" +
 //		"BIND( IF(BOUND(?vallabel), ?vallabel, ?valres) AS ?value )\n" +
 		"?prop wikibase:directClaim ?propres .\n" +
-		"		SERVICE wikibase:label {\n" +
+		"SERVICE wikibase:label {\n" +
 		"	bd:serviceParam wikibase:language \"cs\"\n" +
 		"}" +
 		"";
