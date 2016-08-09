@@ -46,6 +46,7 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 	@Override
 	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
 		List<PropertyValue> properties = wkdo.query(concept.getCookedLabel(), logger);
+		
 		List<String> labels = new ArrayList<>();
 		for(PropertyValue pv: properties) {
 			labels.add(pv.getProperty());
@@ -62,9 +63,9 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 				return o2.getScore().compareTo(o1.getScore());
 			}
 		});
-		for(PropertyValue pv: properties) {
-			logger.debug("SORTED {} {} {}", pv.getProperty(), pv.getPropRes(), pv.getScore());
-		}
+		int LIMIT = 1;
+		if (properties.size() > LIMIT) return properties.subList(0, LIMIT);
+
 //		List<PropertyValue> properties = new ArrayList<>();
 //		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, 2);
 //		for(PathScore ps: pathScs) {
@@ -72,9 +73,7 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 //			if (ps.proba < 0.2) continue; // XXX: Manually selected fixed threshold
 //			properties.addAll(wkdo.queryFromLabel(ps, concept.getCookedLabel(), logger));
 //		}
-		int LIMIT = 1;
-		if (properties.size() > LIMIT) return properties.subList(0, LIMIT);
-		else return properties;
+		return properties;
 	}
 
 	@Override

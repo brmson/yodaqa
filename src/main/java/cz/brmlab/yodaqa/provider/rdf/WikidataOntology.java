@@ -28,7 +28,7 @@ public class WikidataOntology extends WikidataLookup {
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 			"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
-			"{	?res ?propres ?valres .	}\n" +
+			"{	?res ?propres ?val .	}\n" +
 			// XXX: This direction of relationship could produce a very large result set or lead to a query timeout
 			// Example: quotedTitle = Spojené království - 355424 Results in 17140 ms on web SPARQL client
 			// timeout in YodaQA
@@ -38,10 +38,13 @@ public class WikidataOntology extends WikidataLookup {
 			"SERVICE wikibase:label {\n" +
 			"	bd:serviceParam wikibase:language \"cs\"\n" +
 			"}" +
+			"?val rdfs:label ?vallabel\n" +
+//			"BIND( IF(BOUND(?val), ?val, ?vallabel) AS ?val )\n" +
+			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
 			"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-				new String[] { "propLabel", "valresLabel", "valres", "res" }, 0);
+				new String[] { "propLabel", "vallabel", "val", "res" }, 0);
 		return processResults(rawResults, title, logger);
 	}
 

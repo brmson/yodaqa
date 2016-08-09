@@ -6,9 +6,9 @@ package cz.brmlab.yodaqa.provider.rdf;
 public class WikidataLookup extends CachedJenaLookup {
 		public WikidataLookup() {
 		super("https://query.wikidata.org/sparql",
-				"PREFIX wikibase: <http://wikiba.se/ontology#>" +
-				"PREFIX bd: <http://www.bigdata.com/rdf#>" +
-				"PREFIX wd: <http://www.wikidata.org/entity/>" +
-				"PREFIX wdt: <http://www.wikidata.org/prop/direct/>");
+				"PREFIX wikibase: <http://wikiba.se/ontology#>\n" +
+				"PREFIX bd: <http://www.bigdata.com/rdf#>\n" +
+				"PREFIX wd: <http://www.wikidata.org/entity/>\n" +
+				"PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n");
 	}
 }
