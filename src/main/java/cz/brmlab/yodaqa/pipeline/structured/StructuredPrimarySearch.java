@@ -95,16 +95,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		SynonymPCCPPropertyScorer propScorer = new SynonymPCCPPropertyScorer(questionView);
 
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
-		//Only top 1 concept
-		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-		Collections.sort(concepts, new Comparator<Concept>() {
-			@Override
-			public int compare(Concept o1, Concept o2) {
-				return Double.compare(o2.getLabelProbability(), o1.getLabelProbability());
-			}
-		});
-		//
-		for (Concept concept : concepts.size() > 1 ? concepts.subList(0, 1) : concepts) {
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
 			List<PropertyValue> conceptProperties = getConceptProperties(questionView, concept);
 			for (PropertyValue pv : conceptProperties) {
 				Double pscore = propScorer.getPropertyScore(pv);

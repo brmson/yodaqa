@@ -72,9 +72,15 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 //			if (ps.proba < 0.2) continue; // XXX: Manually selected fixed threshold
 //			properties.addAll(wkdo.queryFromLabel(ps, concept.getCookedLabel(), logger));
 //		}
-		int LIMIT = 1;
-		if (properties.size() > LIMIT) return properties.subList(0, LIMIT);
-		else return properties;
+		List<PropertyValue> res = new ArrayList<>();
+		if (properties.size() > 0) {
+			String first = properties.get(0).getProperty();
+			for(PropertyValue pv: properties) {
+				if (!first.equals(pv.getProperty())) break;
+				res.add(pv);
+			}
+		}
+		return res;
 	}
 
 	@Override
