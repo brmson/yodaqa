@@ -404,7 +404,7 @@ public class FreebaseOntology extends FreebaseLookup {
 			"FILTER( !ISURI(?value) )\n" +
 			/* Ignore non-English values (this checks even literals,
 			 * not target labels like the filter above. */
-			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"cs\") )\n" +
+			"FILTER( LANG(?value) = \"\" || LANGMATCHES(LANG(?value), \"en\") )\n" +
 			"";
 		// logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,

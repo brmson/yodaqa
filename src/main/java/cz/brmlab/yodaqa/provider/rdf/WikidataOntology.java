@@ -40,7 +40,7 @@ public class WikidataOntology extends WikidataLookup {
 			"}" +
 			"?val rdfs:label ?vallabel\n" +
 //			"BIND( IF(BOUND(?val), ?val, ?vallabel) AS ?val )\n" +
-			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"en\") )\n" +
+			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
 			"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
