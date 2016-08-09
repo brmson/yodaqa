@@ -5,9 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import cz.brmlab.yodaqa.analysis.rdf.PropertyGloVeScoring;
@@ -97,8 +95,16 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		SynonymPCCPPropertyScorer propScorer = new SynonymPCCPPropertyScorer(questionView);
 
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
-
-		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+		//Only top 1 concept
+		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		Collections.sort(concepts, new Comparator<Concept>() {
+			@Override
+			public int compare(Concept o1, Concept o2) {
+				return Double.compare(o2.getLabelProbability(), o1.getLabelProbability());
+			}
+		});
+		//
+		for (Concept concept : concepts.size() > 1 ? concepts.subList(0, 1) : concepts) {
 			List<PropertyValue> conceptProperties = getConceptProperties(questionView, concept);
 			for (PropertyValue pv : conceptProperties) {
 				Double pscore = propScorer.getPropertyScore(pv);
