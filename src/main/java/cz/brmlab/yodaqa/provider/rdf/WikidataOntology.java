@@ -28,6 +28,7 @@ public class WikidataOntology extends WikidataLookup {
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 			"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
+			"?res wdt:P31 wd:Q5 .\n" + // Person filter
 			"{	?res ?propres ?val .	}\n" +
 			// XXX: This direction of relationship could produce a very large result set or lead to a query timeout
 			// Example: quotedTitle = Spojené království - 355424 Results in 17140 ms on web SPARQL client
@@ -37,8 +38,8 @@ public class WikidataOntology extends WikidataLookup {
 			"?prop wikibase:directClaim ?propres .\n" +
 			"SERVICE wikibase:label {\n" +
 			"	bd:serviceParam wikibase:language \"cs\"\n" +
-			"}" +
-			"?val rdfs:label ?vallabel\n" +
+			"}\n" +
+			"?val rdfs:label ?vallabel .\n" +
 //			"BIND( IF(BOUND(?val), ?val, ?vallabel) AS ?val )\n" +
 			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
 			"";
@@ -53,6 +54,7 @@ public class WikidataOntology extends WikidataLookup {
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 		"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
+		"?res wdt:P31 wd:Q5 .\n" + // Person filter
 		makeQuery(ps) +
 		"BIND(" + getProperty(ps.path.get(0)) + " AS ?propres)\n" +
 //		"OPTIONAL {\n" +
