@@ -59,7 +59,9 @@ if __name__ == '__main__':
         print(qtext)
         answers = set(line['answers'])
         for prop in properties_map[line['qId']]:
-            label = 1 if answers == set(prop['values']) else 0
+            # label = 1 if answers == set(prop['values']) else 0
+            gs_prop = line['relPaths'][0][0].split()[1].split(':')[1]
+            label = 1 if gs_prop == prop['property'] else 0
             outcsv.writerow({'qtext': qtext, 'label': label, 'atext': prop['label']})
 
     out.close()

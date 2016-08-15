@@ -70,17 +70,18 @@ with open(valfile, 'r') as f:
 	for i in range(len(json_file)):
 		res = check_q(cfier, data, i)
 		for gold in res[3]:
-			if (len(gold.split("|")) != 3):
-				continue
+			# if (len(gold.split("|")) != 3):
+			# 	continue
 			cnt += 1
 			if (print_question):
+				print(json_file[i]['qId'])
 				print('qText: %s\nin: %s\nout: %s\noutp: %s\ngold: %s' % (json_file[i]['qText'], res[0], res[1], res[2], res[3]))
 			if (gold in res[1]):
 				predicted += 1
-			outl = [outp.split(":")[0] for outp in res[2]]
-			if (gold in outl):
+			outl = [':'.join(outp.split(":")[:-1]) for outp in res[2]]
+			if (gold in set(outl)):
 				idx = [i for i, o in enumerate(outl)][0]
-				# print(1/(float)(idx+1))
+				print(1/(float)(idx+1))
 				mrr += 1.0/(idx+1)
 				predicted_in_top += 1
 	mrr = mrr / cnt

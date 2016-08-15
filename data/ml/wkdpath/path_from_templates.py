@@ -11,27 +11,27 @@
 import os, sys, json
 
 
-mapping = {	'datumnarozenihuman.json': [[['/?res wdt:P569 ?valres']]],
-			'dcerahuman.json': [[['/?res wdt:P40 ?valres', '/?valres wdt:P21 wd:Q6581072']]],
-			'detihuman.json': [[['/?res wdt:P40 ?valres']]],
-			'humandiskografie.json': [[['/?valres wdt:P175 ?res']]],
-			'humanfilmografie.json': [[['/?valres wdt:P161 ?res']]],
-			'humanfilmy.json': [[['/?valres wdt:P161 ?res']]],
-			'humankniha.json': [[['/?valres wdt:P50 ?res']]],
-			'humanknihy.json': [[['/?valres wdt:P50 ?res']]],
-			'humanmanzel.json': [[['/?res wdt:P26 ?valres']]],	#'humanmanzel.json': [['wdt:P21', 'wd:Q6581072', 'wdt:P26']]],
-			'humanmanzelka.json': [[['/?res wdt:P26 ?valres']]],	#'humanmanzelka.json': [['wdt:P21', 'wd:Q6581097', 'wdt:P26']]],
-			'humanoficialnistranky.json': [[['/?res wdt:P856 ?valres']]],	#'humanoficialnistranky.json': [['wdt:P31', 'wd:Q5', 'wdt:P856']]],
-			'humanpisnicky.json': [[['/?valres wdt:P175 ?res', '/?valres wdt:P31 wd:Q134556']], [['/?valres wdt:P175 ?res', '/?valres wdt:P31 wd:Q7302866']]],
-			'humanpritel.json': [[['/?res wdt:P451 ?valres']]],
-			'humanpritelkyne.json': [[['/?res wdt:P451 ?valres']]],
-			'humanvyska.json': [[['/?res wdt:P2048 ?valres']]],
-			'kdyzemrelhuman.json': [[['/?res wdt:P570 ?valres']]],
-			'kdezemrelhuman.json':[[['/?res wdt:P20 ?valres']]],
-			'matkahuman.json': [[['/?res wdt:P25 ?valres']]],
-			'otechuman.json': [[['/?res wdt:P22 ?valres']]],
-			'synhuman.json': [[['/?res wdt:P40 ?valres', '/?valres wdt:P21 wd:Q6581097']]],
-			'vnukhuman.json': [[['/?res wdt:P40 ?med', '/?med wdt:P40 ?valres', '/?valres wdt:P21 wd:Q6581097']]]
+mapping = {	'datumnarozenihuman.json': [['?res wdt:P569 ?valres']],
+			'dcerahuman.json': [['?res wdt:P40 ?valres', '?valres wdt:P21 wd:Q6581072']],
+			'detihuman.json': [['?res wdt:P40 ?valres']],
+			'humandiskografie.json': [['?valres wdt:P175 ?res']],
+			'humanfilmografie.json': [['?valres wdt:P161 ?res']],
+			'humanfilmy.json': [['?valres wdt:P161 ?res']],
+			'humankniha.json': [['?valres wdt:P50 ?res']],
+			'humanknihy.json': [['?valres wdt:P50 ?res']],
+			'humanmanzel.json': [['?res wdt:P26 ?valres']],	#'humanmanzel.json': [['wdt:P21', 'wd:Q6581072', 'wdt:P26']],
+			'humanmanzelka.json': [['?res wdt:P26 ?valres']],	#'humanmanzelka.json': [['wdt:P21', 'wd:Q6581097', 'wdt:P26']],
+			'humanoficialnistranky.json': [['?res wdt:P856 ?valres']],	#'humanoficialnistranky.json': [['wdt:P31', 'wd:Q5', 'wdt:P856']],
+			'humanpisnicky.json': [['?valres wdt:P175 ?res', '?valres wdt:P31 wd:Q134556'], ['?valres wdt:P175 ?res', '?valres wdt:P31 wd:Q7302866']],
+			'humanpritel.json': [['?res wdt:P451 ?valres']],
+			'humanpritelkyne.json': [['?res wdt:P451 ?valres']],
+			'humanvyska.json': [['?res wdt:P2048 ?valres']],
+			'kdyzemrelhuman.json': [['?res wdt:P570 ?valres']],
+			'kdezemrelhuman.json':[['?res wdt:P20 ?valres']],
+			'matkahuman.json': [['?res wdt:P25 ?valres']],
+			'otechuman.json': [['?res wdt:P22 ?valres']],
+			'synhuman.json': [['?res wdt:P40 ?valres', '?valres wdt:P21 wd:Q6581097']],
+			'vnukhuman.json': [['?res wdt:P40 ?med', '?med wdt:P40 ?valres', '?valres wdt:P21 wd:Q6581097']]
 }
 
 if __name__ == '__main__':

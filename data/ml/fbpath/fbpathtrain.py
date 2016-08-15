@@ -32,7 +32,10 @@ def q_to_fdict(q):
 def q_to_lset(q):
     lset = set()
     for rp in q['relPaths']:
-        lset.add('|'.join(rp[0]))
+        if (type(rp[0]) is list):
+            lset.add('|'.join(rp[0]))
+        else:
+            lset.add('|'.join(rp))
     return lset
 
 
