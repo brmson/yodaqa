@@ -93,7 +93,7 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 	private InputStream sendRequest(String json) {
 		while(true) {
 			try {
-				conn.setDoOutput(true);
+				if (!conn.getDoOutput()) conn.setDoOutput(true);
 				conn.setRequestMethod("POST");
 				conn.setRequestProperty("Content-Type", "application/json");
 
