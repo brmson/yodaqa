@@ -46,8 +46,8 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 
 	@Override
 	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
-		List<PropertyValue> properties = wikiprop.pairScoringBasedProperties(questionView, concept);
-//		List<PropertyValue> properties = wikiprop.fbpathBasedProperties(fbpathLogistic, questionView, concept);
+//		List<PropertyValue> properties = wikiprop.pairScoringBasedProperties(questionView, concept);
+		List<PropertyValue> properties = wikiprop.fbpathBasedProperties(fbpathLogistic, questionView, concept);
 		return properties;
 	}
 
