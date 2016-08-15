@@ -106,7 +106,6 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 				logger.info("Service unavailable. Retrying...");
 				try {
 					TimeUnit.SECONDS.sleep(10);
-					conn.disconnect();
 				} catch (Exception ee) {
 				}
 			}
