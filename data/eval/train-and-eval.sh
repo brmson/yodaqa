@@ -81,6 +81,7 @@ pushd "$clonedir"
 git checkout "$cid"
 mkdir -p conf
 cp "$baserepo"/conf/bingapi.properties conf/bingapi.properties || :
+cp "$baserepo"/src/main/resources/cz/brmlab/yodaqa/provider/addresses.property src/main/resources/cz/brmlab/yodaqa/provider/addresses.property || :
 
 if [ -n "$maxheapsize" ]; then
 	sed -i -e 's/maxHeapSize.*/maxHeapSize = "'$maxheapsize'"/' build.gradle
