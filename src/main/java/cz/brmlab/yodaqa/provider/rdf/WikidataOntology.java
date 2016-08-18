@@ -65,11 +65,13 @@ public class WikidataOntology extends WikidataLookup {
 		"?prop wikibase:directClaim ?propres .\n" +
 		"SERVICE wikibase:label {\n" +
 		"	bd:serviceParam wikibase:language \"cs\"\n" +
-		"}" +
+		"}\n" +
+		"?valres rdfs:label ?vallabel .\n" +
+		"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
 		"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-				new String[] { "propLabel", "valresLabel", "valres", "res" }, 0);
+				new String[] { "propLabel", "vallabel", "valres", "res" }, 0);
 		return processResults(rawResults, title, logger);
 	}
 
