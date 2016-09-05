@@ -1,0 +1,43 @@
+dbpedia:
+  image: fuseki
+  ports:
+   - "3037:3037"
+  volumes:
+   - /home/fp/docker/data/db/:/jena-fuseki/db/
+  command: ./fuseki-server --port 3037 --loc db /dbpedia
+
+enwiki:
+  image: enwiki
+  ports:
+   - "8983:8983"
+  volumes:
+   - /home/fp/docker/data/enwiki/collection1/:/solr/example/enwiki/collection1/
+  command: java -Dsolr.solr.home=enwiki -jar start.jar
+
+label1:
+  image: labels
+  ports:
+   - "5000:5000"
+  volumes:
+   - /home/fp/docker/data/labels/:/shared
+  command: pypy /label-lookup/lookup-service.py /shared/sorted_list.dat
+
+label2:
+  image: labels
+  ports:
+   - "5001:5001"
+  volumes:
+   - /home/fp/docker/data/labels/:/shared
+  command: pypy /label-lookup/lookup-service-sqlite.py /shared/labels.db
+
+yoda_offline:
+  image: yodaqa
+  links:
+   - enwiki:enwiki
+   - dbpedia:dbpedia
+   - label1:label1
+   - label2:label2
+  ports:
+   - "4567:4567"
+  command: ./gradlew web -q -Dcz.brmlab.yodaqa.dbpediaurl="http://dbpedia:3037/dbpedia/query" -Dcz.brmlab.yodaqa.freebaseurl="http://freebase:3030/freebase/query" -Dcz.brmlab.yodaqa.solrurl="http://enwiki:8983/solr" -Dcz.brmlab.yodaqa.label1url="http://label1:5000" -Dcz.brmlab.yodaqa.label2url="http://label2:5001"
+  entrypoint: /bin/bash
