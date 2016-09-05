@@ -62,18 +62,9 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 			return;
 		logger.debug("Czech pos tagger");
 		List<Token> tokens = new ArrayList<>(JCasUtil.select(jCas, Token.class));
-		URL url;
-		try {
-			url = new URL(URL_STRING);
-			conn = (HttpURLConnection) url.openConnection();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		String jsonRequest = createRequest(tokens);
-		InputStream is = sendRequest(jsonRequest);
-		Response response = processResponse(is);
+		Response response = sendRequest(jsonRequest);
 		addTagToTokens(jCas, tokens, response);
-		conn.disconnect();
 		if (jCas.getDocumentText() != null) {
 			ROOT r = new ROOT(jCas, 0, jCas.getDocumentText().length());
 			r.addToIndexes();
@@ -90,9 +81,11 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		return jObject.toString();
 	}
 
-	private InputStream sendRequest(String json) {
+	private Response sendRequest(String json) {
 		while(true) {
 			try {
+				URL url = new URL(URL_STRING);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setDoOutput(true);
 				conn.setRequestMethod("POST");
 				conn.setRequestProperty("Content-Type", "application/json");
@@ -100,7 +93,9 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 				OutputStream os = conn.getOutputStream();
 				os.write(json.getBytes());
 				os.flush();
-				return conn.getInputStream();
+				Response response = processResponse(conn.getInputStream());
+				conn.disconnect();
+				return response;
 			} catch (IOException e) {
 				e.printStackTrace();
 				logger.info("Service unavailable. Retrying...");
