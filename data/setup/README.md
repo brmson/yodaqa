@@ -1,7 +1,7 @@
 Backend setup
 =============
 This directory contains scripts for setting up separate backends. All data is downloaded into ``/home/fp/docker/data``
-directory for convenience when running ``docker-compose`.`
+directory for convenience when running ``docker-compose``.
 
 ## Labels
 Run ``label-lookup.sh`` to install both normal and lite versions. Run ``sqlite.sh`` to install only the lite version.
