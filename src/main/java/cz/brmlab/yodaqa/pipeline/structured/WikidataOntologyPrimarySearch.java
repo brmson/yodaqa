@@ -31,6 +31,8 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 		logger = LoggerFactory.getLogger(WikidataOntologyPrimarySearch.class);
 	}
 
+	final WikidataOntology wdo = new WikidataOntology();
+
 	protected static FBPathLogistic fbpathLogistic = null;
 	private static WikidataPropertySelection wikiprop = new WikidataPropertySelection();
 
@@ -48,6 +50,7 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
 //		List<PropertyValue> properties = wikiprop.pairScoringBasedProperties(questionView, concept);
 		List<PropertyValue> properties = wikiprop.fbpathBasedProperties(fbpathLogistic, questionView, concept);
+//		List<PropertyValue> properties = wdo.query(concept.getWikiUrl(), concept.getCookedLabel(), logger);
 		return properties;
 	}
 

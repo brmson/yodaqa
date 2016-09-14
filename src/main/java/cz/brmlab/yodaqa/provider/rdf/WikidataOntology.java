@@ -8,26 +8,28 @@ import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import org.slf4j.Logger;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WikidataOntology extends WikidataLookup {
-	public List<PropertyValue> query(String title, Logger logger) {
+	public List<PropertyValue> query(String url, String title, Logger logger) {
 		for (String titleForm : cookedTitles(title)) {
-			List<PropertyValue> results = queryTitleForm(titleForm, logger);
+			List<PropertyValue> results = queryTitleForm(url, titleForm, logger);
 			if (!results.isEmpty())
 				return results;
 		}
 		return new ArrayList<>();
 	}
 
-	private List<PropertyValue> queryTitleForm(String title, Logger logger) {
+	private List<PropertyValue> queryTitleForm(String url, String title, Logger logger) {
 //		title = super.capitalizeTitle(title);
 		title = title.trim();
-
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 			"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
+//			"<" + htmlEncode(url) + "> schema:about ?res .\n" +
 			"?res wdt:P31 wd:Q5 .\n" + // Person filter
 			"{	?res ?propres ?val .	}\n" +
 			// XXX: This direction of relationship could produce a very large result set or lead to a query timeout
@@ -39,8 +41,13 @@ public class WikidataOntology extends WikidataLookup {
 			"SERVICE wikibase:label {\n" +
 			"	bd:serviceParam wikibase:language \"cs\"\n" +
 			"}\n" +
-			"?val rdfs:label ?vallabel .\n" +
-//			"BIND( IF(BOUND(?val), ?val, ?vallabel) AS ?val )\n" +
+			"OPTIONAL {\n" +
+			"	?val rdfs:label ?vallab .\n" +
+			"	FILTER(LANG(?vallab) = \"cs\").\n" +
+			"}\n" +
+//		"BIND( IF(!BOUND(?vallab) && DATATYPE(?val) = xsd:dateTime, ?val, ?vallab) AS ?vallabel )\n" +
+			"BIND( IF(!BOUND(?vallab), ?val, ?vallab) AS ?vallabel )\n" +
+			"FILTER(BOUND(?vallabel))\n" +
 			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
 			"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
@@ -50,10 +57,11 @@ public class WikidataOntology extends WikidataLookup {
 	}
 
 
-	public List<PropertyValue> queryFromLabel(PathScore ps, String title, Logger logger) {
+	public List<PropertyValue> queryFromLabel(PathScore ps, String url, String title, Logger logger) {
 		String quotedTitle = title.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
 		String rawQueryStr =
 		"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
+//		"<" + htmlEncode(url) + "> schema:about ?res .\n" +
 		"?res wdt:P31 wd:Q5 .\n" + // Person filter
 		makeQuery(ps) +
 		"BIND(" + getProperty(ps.path.get(0)) + " AS ?propres)\n" +
@@ -62,11 +70,18 @@ public class WikidataOntology extends WikidataLookup {
 //		"  FILTER(LANGMATCHES(LANG(?vallabel), \"cs\"))\n" + // TODO not every vallabel needs to be in czech
 //		"}\n" +
 //		"BIND( IF(BOUND(?vallabel), ?vallabel, ?valres) AS ?value )\n" +
-		"?prop wikibase:directClaim ?propres .\n" +
+//		"?prop wikibase:directClaim ?propres .\n" +
+		"BIND(\"\" as ?propLabel)\n" +
 		"SERVICE wikibase:label {\n" +
 		"	bd:serviceParam wikibase:language \"cs\"\n" +
 		"}\n" +
-		"?valres rdfs:label ?vallabel .\n" +
+		"OPTIONAL {\n" +
+		"	?valres rdfs:label ?vallab .\n" +
+		"	FILTER(LANG(?vallab) = \"cs\").\n" +
+		"}\n" +
+//		"BIND( IF(!BOUND(?vallab) && DATATYPE(?valres) = xsd:dateTime, ?valres, ?vallab) AS ?vallabel )\n" +
+		"BIND( IF(!BOUND(?vallab), ?valres, ?vallab) AS ?vallabel )\n" +
+		"FILTER(BOUND(?vallabel))\n" +
 		"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
 		"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
@@ -111,5 +126,17 @@ public class WikidataOntology extends WikidataLookup {
 			sb.append(ps.path.get(i)).append(" . \n");
 		}
 		return sb.toString();
+	}
+
+	private String htmlEncode(String s) {
+		int idx = "http://cs.wikipedia.org/wiki/".length();
+		String uri = s.substring(idx).replaceAll("_", " ");
+		String address = s.substring(0, idx).replaceAll("http://", "https://");
+		try {
+			return address + URLEncoder.encode(uri, "utf-8").replaceAll("\\+", "%20");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

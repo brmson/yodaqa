@@ -255,6 +255,11 @@
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>wikiUrl</name>
+            <description>The url of the wikipedia page (used for Wikidata mapping).</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>bySubject</name>
             <description>Whether this concept has subdued a ClueSubject.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>

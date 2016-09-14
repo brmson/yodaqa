@@ -28,7 +28,7 @@ public class WikidataPropertySelection {
 	}
 
 	public List<PropertyValue> pairScoringBasedProperties(JCas questionView, Concept concept) {
-		List<PropertyValue> properties = wkdo.query(concept.getCookedLabel(), logger);
+		List<PropertyValue> properties = wkdo.query(concept.getWikiUrl(), concept.getCookedLabel(), logger);
 		List<String> labels = new ArrayList<>();
 		for(PropertyValue pv: properties) {
 			labels.add(pv.getProperty());
@@ -61,11 +61,11 @@ public class WikidataPropertySelection {
 
 	public List<PropertyValue> fbpathBasedProperties(FBPathLogistic fbpathLogistic, JCas questionView, Concept concept) {
 		List<PropertyValue> properties = new ArrayList<>();
-		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, 2);
+		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, 1);
 		for(PathScore ps: pathScs) {
 			logger.debug("WIKI path {}, {}", ps.path, ps.proba);
-			if (ps.proba < 0.2) continue; // XXX: Manually selected fixed threshold
-			properties.addAll(wkdo.queryFromLabel(ps, concept.getCookedLabel(), logger));
+//			if (ps.proba < 0.5) continue; // XXX: Manually selected fixed threshold
+			properties.addAll(wkdo.queryFromLabel(ps, concept.getWikiUrl(), concept.getCookedLabel(), logger));
 		}
 		return properties;
 	}

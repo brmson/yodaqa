@@ -72,7 +72,6 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 	public void process(JCas resultView) throws AnalysisEngineProcessException {
 		//Get tokens
 		Collection<Token> tokens = JCasUtil.select(resultView, Token.class);
-
 		//Send to Stepnicka and get information for concepts
 		List<StepnickaResult> stepnickaResults = getStepnickaResult(tokens);
 
@@ -188,6 +187,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 				concept.setMatchedStr(stepnickaResults.get(i).getUriList().get(j).getMatch_str());
 				concept.setLabelProbability(stepnickaResults.get(i).getUriList().get(j).getScore());
 				concept.setPageID(stepnickaResults.get(i).getUriList().get(j).getPage_id());
+				concept.setWikiUrl(stepnickaResults.get(i).getUriList().get(j).getWiki_uri());
 				//concept.setEditDistance(a.getDist());
 				//concept.setLogPopularity(a.getPop());
 				concept.setBySubject(false);
