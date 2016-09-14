@@ -65,6 +65,7 @@ public class WikidataOntology extends WikidataLookup {
 		"?res wdt:P31 wd:Q5 .\n" + // Person filter
 		makeQuery(ps) +
 		"BIND(" + getProperty(ps.path.get(0)) + " AS ?propres)\n" +
+		"BIND(" + ps.proba + " AS ?score)\n" +
 //		"OPTIONAL {\n" +
 //		"  ?valres rdfs:label ?vallabel .\n" +
 //		"  FILTER(LANGMATCHES(LANG(?vallabel), \"cs\"))\n" + // TODO not every vallabel needs to be in czech
@@ -86,7 +87,7 @@ public class WikidataOntology extends WikidataLookup {
 		"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
-				new String[] { "propLabel", "vallabel", "valres", "res" }, 0);
+				new String[] { "propLabel", "vallabel", "valres", "res", "score" }, 0);
 		return processResults(rawResults, title, logger);
 	}
 
@@ -105,9 +106,14 @@ public class WikidataOntology extends WikidataLookup {
 			logger.debug("Wikidata {} property: {} -> {} ({})", title, propLabel, value, valRes);
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
-			results.add(new PropertyValue(title, objRes, propLabel,
+			PropertyValue pv = new PropertyValue(title, objRes, propLabel,
 					value, valRes, null,
-					fv, AnswerSourceStructured.ORIGIN_ONTOLOGY));
+					fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
+			if (rawResult.length > 4) {
+				double score = rawResult[4].getDouble();
+				pv.setScore(score);
+			}
+			results.add(pv);
 		}
 		return results;
 	}
