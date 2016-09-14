@@ -114,7 +114,7 @@ data/eval/tsvout-stats.sh "$cid"
 echo
 echo "Now, you may want to do and commit:"
 for i in "" 1 2; do
-	echo "cp data/ml/models/decision-forest${i}-${cid}.model src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreDecisionForest${i}.model"
+	echo "cp data/ml/models/logistic-forest${i}-${cid}.model src/main/resources/cz/brmlab/yodaqa/analysis/ansscore/AnswerScoreDecisionForest${i}.model"
 done
 echo
 echo "Run finished. Press Enter to rm -rf \"$clonedir\"; Ctrl-C to preserve it for whatever reason (data and logs are not kept there)."
