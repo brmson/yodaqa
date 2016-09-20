@@ -1,4 +1,5 @@
 #!/bin/bash
+username=$(whoami)
 if [ $1 != "sqlite" ] 
 	then
 	echo "Running label lookup..."
