@@ -1,10 +1,11 @@
 #!/bin/bash
 
+username=$(whoami)
 # Create directory for the data
-mkdir /home/fp/docker/data/db
-cp setup-jena.sh /home/fp/docker/data/db
-cp fix-nt.sh /home/fp/docker/data/db
-cd /home/fp/docker/data/db
+mkdir /home/$username/docker/data/db
+cp setup-jena.sh /home/$username/docker/data/db
+cp fix-nt.sh /home/$username/docker/data/db
+cd /home/$username/docker/data/db
 
 # Download files
 wget http://downloads.dbpedia.org/2014/dbpedia_2014.owl.bz2

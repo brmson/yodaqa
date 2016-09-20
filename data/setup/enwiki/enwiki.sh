@@ -1,6 +1,7 @@
 #!/bin/bash
-mkdir /home/fp/docker/data/enwiki
-cd /home/fp/docker/data/enwiki
+username=$(whoami)
+mkdir /home/$username/docker/data/enwiki
+cd /home/$username/docker/data/enwiki
 
 # Clone extractor repo
 git clone https://github.com/brmson/wikipedia-extractor

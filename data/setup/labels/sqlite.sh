@@ -1,8 +1,9 @@
 #!/bin/bash
+username=$(whoami)
 # Create directory if does not exist
-mkdir /home/fp/docker/data
-cp lookup-lite.sh /home/fp/docker/data
-cd /home/fp/docker/data
+mkdir /home/$username/docker/data
+cp lookup-lite.sh /home/$username/docker/data
+cd /home/$username/docker/data
 
 # Clone repo
 git clone https://github.com/brmson/label-lookup.git
