@@ -63,5 +63,4 @@ To start the Fuseki server, run then (in jena-fuseki-1.1.1)
 
 	./fuseki-server --loc d-freebase /freebase
 
-and edit ``src/main/java/cz/brmlab/yodaqa/provider/rdf/FreebaseLookup.java``
-changing default value of the ``service`` attribute.  It should work.
+and edit the appropriate line of ``conf/backendURLs.json``.

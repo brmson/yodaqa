@@ -92,7 +92,10 @@ To connect YodaQA to IRC, see ``contrib/irssi-brmson-pipe.pl``.
 
 By default, YodaQA uses preconfigured data sources running on the authors'
 infrastructure that supply open domain information.  Detailed documentation
-on setup of these open domain data sources is available below.
+on setup of these open domain data sources is available below.  Furthermore,
+all the data source components are now compartmentalized and easy to deploy
+using Docker - see the Dockerfiles in respective ``data/`` subdirectories
+and ``data/README_DockerCompose.txt`` for details.
 
 It is certainly possible to adapt YodaQA for a particular domain and use
 custom data sources, but this process is not documented in detail yet.
@@ -113,15 +116,7 @@ memory and IO intensive process. You will need about 80-100GiB of disk space and
 bandwidth to download 10GiB source file; indexing will require roughly 8GiB RAM.
 
 To index and then search in Wikipedia, we need to set it up as a standalone Solr
-source:
-
-  * Download solr (http://www.apache.org/dyn/closer.cgi/lucene/solr/ - we use
-    version 4.6.0), unpack and cd to the ``example/`` subdirectory.
-  * Symlink or copy the ``data/enwiki/`` directory from this repository to the
-    ``example/`` subdirectory; it contains the data import configuration.
-  * Proceed with instructions in ``data/enwiki/README.md``.
-
-You may want to edit the URL in ``src/main/java/cz/brmlab/yodaqa/pipeline/YodaQA.java``.
+source.  See ``data/enwiki/README.md`` for instructions.
 
 ### Database Data Source
 
@@ -136,14 +131,8 @@ below.
 Regarding Freebase, we use its RDF export with SPARQL endpoint,
 running on infrastructure
 provided by the author's academic group (Jan Šedivý's 3C Group at the
-Dept. of Cybernetics, FEE CTU Prague).  If the endpoint is not available
-for some reason, you can also disable Freebase usage by editing the
-method getConceptProperties() (instructions inside) of:
-
-	src/main/java/cz/brmlab/yodaqa/pipeline/structured/FreebaseOntologyPrimarySearch.java
-
-You can start your own instance by following the instructions in
-``data/freebase/README.md`` but it is quite arduous and resource intensive.
+Dept. of Cybernetics, FEE CTU Prague).  See ``data/freebase/README.md``
+for details.
 
 ### Ontology Data Source
 

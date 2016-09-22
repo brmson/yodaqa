@@ -32,12 +32,15 @@ correctly_answered = 0
 recall = 0
 finished = False
 
-print('%04s\t%.50s\t%.10s\t%.15s\t%.15s\t%s' % ("ID", "Question Text".ljust(50), "indicator", "correct answer".ljust(15), "found".ljust(15), "URL"))
+print('%-10.10s\t%.50s\t%.10s\t%.15s\t%.15s\t%s' % ("ID", "Question Text".ljust(50), "indicator", "correct answer".ljust(15), "found".ljust(15), "URL"))
 
 while question_counter < number_of_questions:
     questionText = parsed_data[question_counter]["qText"]
-    questionAnswer = parsed_data[question_counter]["answers"][0]
-    ID = parsed_data[question_counter]["qID"]
+    try:
+        questionAnswer = parsed_data[question_counter]["answers"][0]
+    except IndexError:
+        questionAnswer = ''
+    ID = parsed_data[question_counter]["qId"]
     finished = False
     indicator = "incorrect"
     r = requests.post(URL+"/q", data={'text':questionText} )
@@ -58,7 +61,7 @@ while question_counter < number_of_questions:
                 recall	 += 1
                 indicator = "recall   "
                 continue
-    print('%03s\t%.50s\t%.10s\t%.15s\t%.15s\t%s' % (ID, questionText.ljust(50),indicator, questionAnswer.ljust(15), answer_list[0]['text'].ljust(15), (URL+"/q/"+str(current_qID))))
+    print('%.10s\t%.50s\t%.10s\t%.15s\t%.15s\t%s' % (ID, questionText.ljust(50),indicator, questionAnswer.ljust(15), answer_list[0]['text'].ljust(15), (URL+"/q/"+str(current_qID))))
     question_counter += 1
 
 print("correctly answered: " + str(correctly_answered))
