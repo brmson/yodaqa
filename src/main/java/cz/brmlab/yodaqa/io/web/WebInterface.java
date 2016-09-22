@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import cz.brmlab.yodaqa.provider.UrlManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,6 +134,16 @@ public class WebInterface implements Runnable {
 					}
 
 				return "[" + StringUtils.join(qJson, ",\n") + "]";
+			}
+		});
+
+		get(new Route("/dataUrls") {
+			@Override
+			public Object handle(Request request, Response response) {
+				response.type("application/json");
+				response.header("Access-Control-Allow-Origin", "*");
+				return UrlManager.printState();
+
 			}
 		});
 	}

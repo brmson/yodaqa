@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.pipeline;
 
+import cz.brmlab.yodaqa.provider.UrlManager;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -54,7 +55,8 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 			 * instructions on how to obtain an example one. */
 
 			//SolrNamedSource.register("guten", "data/guten", null);
-			SolrNamedSource.register("enwiki", "collection1", "http://enwiki.ailao.eu:8983/solr/");
+			//SolrNamedSource.register("enwiki", "collection1", "http://127.0.0.1:8983/solr/");
+			SolrNamedSource.register("enwiki", "collection1", UrlManager.lookUpUrl(UrlManager.DataBackends.SOLR.ordinal()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("*** Exception caught during SolrNamedSource initialization. ***");
