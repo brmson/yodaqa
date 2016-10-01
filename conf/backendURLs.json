@@ -1,6 +1,6 @@
 [
   [
-    "http://dbpedia.ailao.eu:3030/dbpedia/query",
+    "http://dbpedia.ailao.eu:3037/dbpedia/query",
     "http://freebase.ailao.eu:3030/freebase/query",
     "http://dbp-labels.ailao.eu:5000",
     "http://dbp-labels.ailao.eu:5001",
