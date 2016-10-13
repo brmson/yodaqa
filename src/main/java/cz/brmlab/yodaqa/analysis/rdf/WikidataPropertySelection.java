@@ -64,7 +64,7 @@ public class WikidataPropertySelection {
 		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, 1);
 		for(PathScore ps: pathScs) {
 			logger.debug("WIKI path {}, {}", ps.path, ps.proba);
-//			if (ps.proba < 0.5) continue; // XXX: Manually selected fixed threshold
+			if (ps.proba < 0.5) continue; // XXX: Manually selected fixed threshold
 			properties.addAll(wkdo.queryFromLabel(ps, concept.getWikiUrl(), concept.getCookedLabel(), logger));
 		}
 		return properties;
