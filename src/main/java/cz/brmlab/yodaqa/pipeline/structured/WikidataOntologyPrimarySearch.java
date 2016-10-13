@@ -19,10 +19,9 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 	public WikidataOntologyPrimarySearch() {
@@ -51,6 +50,9 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 //		List<PropertyValue> properties = wikiprop.pairScoringBasedProperties(questionView, concept);
 		List<PropertyValue> properties = wikiprop.fbpathBasedProperties(fbpathLogistic, questionView, concept);
 //		List<PropertyValue> properties = wdo.query(concept.getWikiUrl(), concept.getCookedLabel(), logger);
+		for (PropertyValue pv: properties) {
+			pv.setValue(normalizeDate(pv.getValue()));
+		}
 		return properties;
 	}
 
@@ -65,5 +67,22 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 		// FIXME Wikidata specific features
 		fv.setFeature(AF.LATFBOntology, 1.0);
 		addTypeLAT(jcas, fv, type, new WikidataOntologyLAT(jcas));
+	}
+
+	private String normalizeDate (String text) {
+		HashMap<String, String> months = new HashMap<>();
+		months.put("01", "ledna"); months.put("02", "února"); months.put("03", "března");
+		months.put("04", "dubna"); months.put("05", "května"); months.put("06", "června");
+		months.put("07", "července"); months.put("08", "srpna"); months.put("09", "září");
+		months.put("10", "října"); months.put("11", "listopadu"); months.put("12", "prosince");
+		Pattern pattern = Pattern.compile("(\\d{4,4})-(\\d{2,2})-(\\d{2,2})T00:00:00Z");
+		Matcher m = pattern.matcher(text);
+		if (m.find()) {
+			String day = Integer.decode(m.group(3)).toString();
+			String month = months.get(m.group(2));
+			String year = Integer.decode(m.group(1)).toString();
+			return day + ". " + month + " " + year;
+		}
+		return text;
 	}
 }
