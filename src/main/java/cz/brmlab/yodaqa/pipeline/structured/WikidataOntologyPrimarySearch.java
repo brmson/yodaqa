@@ -78,9 +78,9 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 		Pattern pattern = Pattern.compile("(\\d{4,4})-(\\d{2,2})-(\\d{2,2})T00:00:00Z");
 		Matcher m = pattern.matcher(text);
 		if (m.find()) {
-			String day = Integer.decode(m.group(3)).toString();
+			String day = Integer.valueOf(m.group(3)).toString();
 			String month = months.get(m.group(2));
-			String year = Integer.decode(m.group(1)).toString();
+			String year = Integer.valueOf(m.group(1)).toString();
 			return day + ". " + month + " " + year;
 		}
 		return text;
