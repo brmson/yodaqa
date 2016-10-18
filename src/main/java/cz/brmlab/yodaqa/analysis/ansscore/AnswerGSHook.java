@@ -156,7 +156,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		 * give a negative bias to all of the answer candidates? */
 		if (refAnswer == null) {
 			logger.debug("not including any answers, no correct answer");
-			return;
+			//return;
 		}
 
 		/* Pass all correct answers in the initial scoring phase. */
@@ -172,7 +172,9 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 				logger.debug("not including correct answer: {} < {}", a.getText(), refAnswer);
 				continue; // output only the top positive match
 			}
-			dumpAnswerFV(trainFileName, qi.getQuestionId(), a, isMatch, astats);
+			int match = isMatch ? 1 : 0;
+			if (a.getText().equals("Nevím")) match = 2;
+			dumpAnswerFV(trainFileName, qi.getQuestionId(), a, match, astats);
 		}
 	}
 
@@ -213,7 +215,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 		return bestShorterA.getText();
 	}
 
-	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, boolean isMatch, AnswerStats astats) {
+	protected void dumpAnswerFV(String trainFileName, String qid, Answer a, int match, AnswerStats astats) {
 		String[] labels = AnswerFV.getFVLabels();
 		/* First, open the output file. */
 		if (trainFile == null) {
@@ -251,7 +253,7 @@ public class AnswerGSHook extends JCasAnnotator_ImplBase {
 			sb.append("\t");
 		}
 
-		sb.append(isMatch ? 1 : 0);
+		sb.append(match);
 		trainFile.println(sb.toString());
 		trainFile.flush();
 	}

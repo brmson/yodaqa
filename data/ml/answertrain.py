@@ -33,13 +33,24 @@ class AnswerSet:
         # vectors go in randomized, but reproducible across runs.
         fv_set = np.array(fv_set)
         class_set = np.array(class_set)
-
         order = np.lexsort(np.hstack([fv_set, np.array(class_set, ndmin=2).T]).T)
         z = zip(fv_set[order], class_set[order])
         random.shuffle(z)
 
-        self.fv_set = np.array([i[0] for i in z])
-        self.class_set = np.array([i[1] for i in z])
+        self.fv_set = [i[0] for i in z]
+        self.class_set = [i[1] for i in z]
+        self.sample_weight = []
+        for i in range(len(self.class_set)):
+            if self.class_set[i] == 2:
+                x = self.fv_set[i]
+                self.class_set[i] = 0
+                self.class_set.insert(i, 1)
+                self.fv_set.insert(i, x)
+                self.sample_weight.extend([1, 1])
+            else:
+                self.sample_weight.append(2)
+        self.fv_set = np.array(self.fv_set)
+        self.class_set = np.array(self.class_set)
 
     def measure(self, scorer):
         # Perform the selection of top N answers within this answerset
@@ -131,7 +142,6 @@ def load_answers(f, exclude=[]):
         qid = items.pop(0)
         cl = int(items.pop())
         fv = [float(x) for x in items]
-
         # First item is occurences; skip dummy answers representing
         # no occurences
         if fv[0 * 2] < 1.0:
@@ -160,10 +170,12 @@ def load_answers(f, exclude=[]):
 def sets_by_idx(answersets, idx_set):
     fv_set = []
     class_set = []
+    sample_weight = []
     for i in idx_set:
         fv_set.append(answersets[i].fv_set)
         class_set.append(answersets[i].class_set)
-    return (np.vstack(fv_set), np.hstack(class_set))
+        sample_weight.append(answersets[i].sample_weight)
+    return (np.vstack(fv_set), np.hstack(class_set), np.hstack(sample_weight))
 
 
 def traintest(answersets):
@@ -176,20 +188,22 @@ def traintest(answersets):
     trainidx = allidx[0:teststart]
     testidx = allidx[teststart:]
 
-    (fv_train, class_train) = sets_by_idx(answersets, trainidx)
-    (fv_test, class_test) = sets_by_idx(answersets, testidx)
+    (fv_train, class_train, train_weight) = sets_by_idx(answersets, trainidx)
+    (fv_test, class_test, test_weight) = sets_by_idx(answersets, testidx)
 
-    return (fv_train, class_train, trainidx, fv_test, class_test, testidx)
+    return (fv_train, class_train, train_weight, trainidx, fv_test, class_test, test_weight, testidx)
 
 
 def fullset(answersets):
     """ Return the full answersets as a (fv, class) format set. """
     fv_full = []
     class_full = []
+    sample_weight = []
     for aset in answersets:
         fv_full += list(aset.fv_set)
         class_full += list(aset.class_set)
-    return np.array(fv_full), np.array(class_full)
+        sample_weight += list(aset.sample_weight)
+    return np.array(fv_full), np.array(class_full), np.array(sample_weight)
 
 
 def measure(scorer, answersets, could_picked):
@@ -218,7 +232,7 @@ def simple_score(labels, fvset):
     return score
 
 
-def train_model(fv_train, class_train, cfier_factory):
+def train_model(fv_train, class_train, sample_weight, cfier_factory):
     """
     Train a classifier on the given (fv_train, class_train) training data.
     Returns the classifier.
@@ -227,7 +241,7 @@ def train_model(fv_train, class_train, cfier_factory):
     """
     class_ratio = float(np.sum(class_train == 1)) / np.size(class_train)
     # print('// class ratio ', class_ratio)
-    cfier = cfier_factory(class_ratio, fv_train, class_train)
+    cfier = cfier_factory(class_ratio, fv_train, sample_weight, class_train)
     return cfier
 
 
@@ -331,10 +345,9 @@ def cross_validate_one(idx):
     # Make sure each worker has a different random seed
     random.seed(base_seed + idx)
     # Generate a random train/test set split
-    (fv_train, class_train, trainidx, fv_test, class_test, testidx) = traintest(answersets)
+    (fv_train, class_train, train_weight, trainidx, fv_test, class_test, test_weight, testidx) = traintest(answersets)
     # print np.size(fv_train, axis=0), np.size(class_train), np.size(fv_test, axis=0), np.size(class_test)
-
-    cfier = train_model(fv_train, class_train, cfier_factory)
+    cfier = train_model(fv_train, class_train, train_weight, cfier_factory)
 
     return test_model(cfier, fv_test, class_test, [answersets[i] for i in testidx], labels)
 

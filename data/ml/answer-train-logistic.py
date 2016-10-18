@@ -24,6 +24,7 @@ import time
 from sklearn import linear_model
 import numpy as np
 import numpy.random as random
+from sklearn.multiclass import OneVsOneClassifier
 
 from answertrain import *
 
@@ -55,11 +56,11 @@ class GBFactory:
         self.base_class_ratio = self.cfier_params.pop('base_class_ratio', 0.5)
         self.fit_intercept = self.cfier_params.pop('fit_intercept', True)
 
-    def __call__(self, class_ratio, fv_train, class_train):
-        cfier = linear_model.LogisticRegression(
+    def __call__(self, class_ratio, fv_train, sample_weight, class_train):
+        cfier = linear_model.LogisticRegression(solver='newton-cg',
                     class_weight={0: 1, 1: self.base_class_ratio/class_ratio},
                     dual=False, fit_intercept=self.fit_intercept, **self.cfier_params)
-        cfier.fit(fv_train, class_train)
+        cfier.fit(fv_train, class_train, sample_weight)
         return cfier
 
 
@@ -91,9 +92,9 @@ if __name__ == "__main__":
 
     # Train on the complete model now
     print('// + Full training set:')
-    fv_full, class_full = fullset(answersets)
+    fv_full, class_full, sample_weight = fullset(answersets)
     t_start = time.clock()
-    cfier = train_model(fv_full, class_full, cfier_factory)
+    cfier = train_model(fv_full, class_full, sample_weight, cfier_factory)
     t_end = time.clock()
     print('// training took %d seconds' % (t_end-t_start,))
 

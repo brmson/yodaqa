@@ -65,6 +65,7 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	protected JCas questionView;
 	protected Iterator<PropertyValue> relIter;
 	protected int i;
+	protected boolean doNotKnowSet;
 
 	protected String sourceName;
 	protected String clueFeaturePrefix;
@@ -111,12 +112,13 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		}
 		relIter = properties.iterator();
 		i = 0;
+		doNotKnowSet = false;
 	}
 
 
 	@Override
 	public boolean hasNext() throws AnalysisEngineProcessException {
-		return relIter.hasNext() || i == 0;
+		return relIter.hasNext() || !doNotKnowSet;
 	}
 
 	@Override
@@ -133,9 +135,13 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 			jcas.createView("Answer");
 			JCas canAnswerView = jcas.getView("Answer");
 			if (property != null) {
-				propertyToAnswer(canAnswerView, property, !relIter.hasNext() ? i : 0, questionView);
+				int isLast = !relIter.hasNext() && doNotKnowSet ? i : 0;
+				propertyToAnswer(canAnswerView, property, isLast, questionView);
 			} else {
-				dummyAnswer(canAnswerView, i);
+//				dummyAnswer(canAnswerView, i);
+				doNotKnowSet = true;
+				int isLast = !relIter.hasNext() && doNotKnowSet ? i : 0;
+				doNotKnowAnswer(canAnswerView, isLast);
 			}
 		} catch (Exception e) {
 			jcas.release();
@@ -241,6 +247,26 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 		AnswerInfo ai = new AnswerInfo(jcas);
 		ai.setIsLast(1);
 		ai.addToIndexes();
+	}
+
+	protected void doNotKnowAnswer(JCas jcas, int isLast) throws Exception {
+		jcas.setDocumentText("Nevím");
+		jcas.setDocumentLanguage("en"); // XXX
+
+		ResultInfo ri = new ResultInfo(jcas);
+		ri.setDocumentTitle("Nevím");
+		ri.setOrigin(this.getClass().getCanonicalName());
+		ri.setIsLast(isLast);
+		ri.addToIndexes();
+
+		AnswerInfo ai = new AnswerInfo(jcas);
+		AnswerFV fv = new AnswerFV();
+		fv.setFeature(AF.Occurences, 1.0);
+		fv.setFeature(AF.doNotKnow, 1.0);
+		ai.setFeatures(fv.toFSArray(jcas));
+		ai.setIsLast(1);
+		ai.addToIndexes();
+
 	}
 
 	protected void addConceptFeatures(JCas questionView, AnswerFV fv, String text) {
