@@ -80,6 +80,8 @@ public class FocusGenerator extends JCasAnnotator_ImplBase {
 				since = null;
 			else if (since != null)
 				continue;
+			if (!JCasUtil.selectCovering(Concept.class, t).isEmpty())
+				continue; // skip named entites
 			if (t.getPos().getPosValue().matches("k1.*"))
 				return t;
 		}
