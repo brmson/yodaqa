@@ -66,8 +66,8 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		//	CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate DBpedia LATs based on type properties
 		 * (mostly article category based; noisiest source) */
-		builder.add(createPrimitiveDescription(LATByDBpedia.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+//		builder.add(createPrimitiveDescription(LATByDBpedia.class),
+//			CAS.NAME_DEFAULT_SOFA, "Answer");
 
 		/* Post-process LATs gathered so far: */
 		/* Convert plurals to singulars, spin off single-word LATs
