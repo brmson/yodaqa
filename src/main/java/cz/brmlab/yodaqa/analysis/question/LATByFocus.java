@@ -1,5 +1,6 @@
 package cz.brmlab.yodaqa.analysis.question;
 
+import java.text.Normalizer;
 import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
@@ -99,11 +100,13 @@ public class LATByFocus extends JCasAnnotator_ImplBase {
 			 * example for "species", we also generate the original
 			 * form in addition to the (wrongly) lemmatized
 			 * "specie". */
+			String noDiacriticsText = Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 			String realText = focus.getCoveredText().toLowerCase();
-			addFocusLAT(jcas, focus, realText, pos, 0, 0.0, new LAT(jcas));
+			if (!noDiacriticsText.equals(realText) || text.equals(realText))
+				addFocusLAT(jcas, focus, realText, pos, 0, 0.0, new LAT(jcas));
 
 			if (!text.equals(realText))
-				addFocusLAT(jcas, focus, text, pos, 0, 0.0, new ImplicitQLAT(jcas));
+				addFocusLAT(jcas, focus, text, pos, 0, 0.0, new LAT(jcas));
 
 			/* Also try to generate a "main character" LAT in
 			 * addition to "character", etc. */
