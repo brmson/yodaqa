@@ -50,8 +50,8 @@ header h1 {
 	float: left;
 }
 .twocolumn-right {
-	width: 50%;
-	float: right;
+	/*width: 50%;*/
+	float: left;
 }
 
 #summary {
