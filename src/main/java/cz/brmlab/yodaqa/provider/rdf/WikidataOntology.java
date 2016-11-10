@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WikidataOntology extends WikidataLookup {
 	public List<PropertyValue> query(String url, String title, Logger logger) {
@@ -30,7 +32,7 @@ public class WikidataOntology extends WikidataLookup {
 		String rawQueryStr =
 			"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
 //			"<" + htmlEncode(url) + "> schema:about ?res .\n" +
-			"?res wdt:P31 wd:Q5 .\n" + // Person filter
+//			"?res wdt:P31 wd:Q5 .\n" + // Person filter
 			"{	?res ?propres ?val .	}\n" +
 			// XXX: This direction of relationship could produce a very large result set or lead to a query timeout
 			// Example: quotedTitle = Spojené království - 355424 Results in 17140 ms on web SPARQL client
@@ -48,7 +50,9 @@ public class WikidataOntology extends WikidataLookup {
 //		"BIND( IF(!BOUND(?vallab) && DATATYPE(?val) = xsd:dateTime, ?val, ?vallab) AS ?vallabel )\n" +
 			"BIND( IF(!BOUND(?vallab), ?val, ?vallab) AS ?vallabel )\n" +
 			"FILTER(BOUND(?vallabel))\n" +
-			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
+//			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
+			"FILTER(!STRSTARTS(STR(?vallabel), \"https://www.wikidata.org/entity/\") )\n" +
+			"FILTER(!STRSTARTS(STR(?vallabel), \"http://www.wikidata.org/entity/\") )\n" +
 			"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
@@ -62,7 +66,7 @@ public class WikidataOntology extends WikidataLookup {
 		String rawQueryStr =
 		"?res rdfs:label \"" + quotedTitle + "\"@cs .\n" +
 //		"<" + htmlEncode(url) + "> schema:about ?res .\n" +
-		"?res wdt:P31 wd:Q5 .\n" + // Person filter
+//		"{?res wdt:P31 wd:Q5} UNION {?res wdt:P31 wd:Q6256}\n" + // Person filter
 		makeQuery(ps) +
 		"BIND(" + getProperty(ps.path.get(0)) + " AS ?propres)\n" +
 		"BIND(" + ps.proba + " AS ?score)\n" +
@@ -83,7 +87,9 @@ public class WikidataOntology extends WikidataLookup {
 //		"BIND( IF(!BOUND(?vallab) && DATATYPE(?valres) = xsd:dateTime, ?valres, ?vallab) AS ?vallabel )\n" +
 		"BIND( IF(!BOUND(?vallab), ?valres, ?vallab) AS ?vallabel )\n" +
 		"FILTER(BOUND(?vallabel))\n" +
-		"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
+//		"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
+		"FILTER(!STRSTARTS(STR(?vallabel), \"https://www.wikidata.org/entity/\") )\n" +
+		"FILTER(!STRSTARTS(STR(?vallabel), \"http://www.wikidata.org/entity/\") )\n" +
 		"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
@@ -116,6 +122,21 @@ public class WikidataOntology extends WikidataLookup {
 			results.add(pv);
 		}
 		return results;
+	}
+
+	public Set<String> getEntityType(String entityUrl) {
+		String rawQueryStr =
+			"<" + htmlEncode(entityUrl) + "> schema:about ?res .\n" +
+			"?res wdt:P31 ?val .\n" +
+			"";
+		List<Literal[]> rawResults = rawQuery(rawQueryStr,
+				new String[] { "val" }, 0);
+		Set<String> result = new HashSet<>();
+		for (Literal[] rawResult : rawResults) {
+			String instance = rawResult[0].getString();
+			result.add(instance);
+		}
+		return result;
 	}
 
 	private String getProperty(String s) {

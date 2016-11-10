@@ -93,21 +93,21 @@ public abstract class StructuredPrimarySearch extends JCasMultiplier_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		questionView = jcas;
 
-		SynonymPCCPPropertyScorer propScorer = new SynonymPCCPPropertyScorer(questionView);
+//		SynonymPCCPPropertyScorer propScorer = new SynonymPCCPPropertyScorer(questionView);
 
 		List<PropertyValue> properties = new ArrayList<PropertyValue>();
 		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
 			List<PropertyValue> conceptProperties = getConceptProperties(questionView, concept);
-			for (PropertyValue pv : conceptProperties) {
-				Double pscore = propScorer.getPropertyScore(pv);
-				if (pscore == null)
-					continue;
-				if (pv.getScore() == null) {
-					pv.setScore(pscore);
-				} else {
-					pv.setScore(pv.getScore() + pscore);
-				}
-			}
+//			for (PropertyValue pv : conceptProperties) {
+//				Double pscore = propScorer.getPropertyScore(pv);
+//				if (pscore == null)
+//					continue;
+//				if (pv.getScore() == null) {
+//					pv.setScore(pscore);
+//				} else {
+//					pv.setScore(pv.getScore() + pscore);
+//				}
+//			}
 			properties.addAll(conceptProperties);
 		}
 		relIter = properties.iterator();

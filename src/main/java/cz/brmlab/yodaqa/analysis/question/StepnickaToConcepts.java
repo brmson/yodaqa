@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import cz.brmlab.yodaqa.model.Question.ClueConcept;
 import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.provider.PrivateResources;
+import cz.brmlab.yodaqa.provider.rdf.WikidataOntology;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -25,13 +26,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,6 +54,15 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		/* 21 */ "Dítě",
 		/* 40 */ "Film",
 	};
+
+	String[] instance_whitelist = {
+			"Q6256", //State
+			"Q5", //Person
+			"Q515", //City
+			"Q15978299", //municipality with town privileges
+			"Q35657", //state of the United States
+			//XXX More general approach, superclass or something...
+	};
 	protected Set<String> namebl;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -71,10 +75,9 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas resultView) throws AnalysisEngineProcessException {
 		//Get tokens
-		Collection<Token> tokens = JCasUtil.select(resultView, Token.class);
+		List<Token> tokens = new ArrayList<>(JCasUtil.select(resultView, Token.class));
 		//Send to Stepnicka and get information for concepts
 		List<StepnickaResult> stepnickaResults = getStepnickaResult(tokens);
-
 
 		//create concept and clues
 		ArrayList<Concept> concepts = (ArrayList<Concept>) createConcepts(resultView, stepnickaResults);
@@ -84,25 +87,46 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 	}
 
 	public List<StepnickaResult> getStepnickaResult(Collection<Token> tokens) {
-		ArrayList<StepnickaResult> res = null;
+		List<StepnickaResult> res = new ArrayList<>();
+		ArrayList<String> rawTokens = new ArrayList<>();
+		for (Token token: tokens) {
+			rawTokens.add(token.getCoveredText());
+		}
 		while (true) {
 			try {
-				res = (ArrayList<StepnickaResult>) stepnickaAsk(tokens);
+				res.addAll(stepnickaAsk(rawTokens));
 				break; // Success!
 			} catch (IOException e) {
 				notifyRetry(e);
 			}
 		}
+		res = filterConcepts(null, res, 0);
+		List<StepnickaResult> subset;
+		for (int i = Math.min(5, tokens.size() - 1); i > 0; i--) {
+			for (int j = 0; j + i <= tokens.size(); j++) {
+				List<String> tokenSubset = rawTokens.subList(j, j+i);
+				while (true) {
+					try {
+						subset = stepnickaAsk(tokenSubset);
+						break; // Success!
+					} catch (IOException e) {
+						notifyRetry(e);
+					}
+				}
+				res = filterConcepts(res, subset, j);
+			}
+		}
 		return res;
 	}
 
-	public List<StepnickaResult> stepnickaAsk(Collection<Token> tokens) throws IOException {
+	public List<StepnickaResult> stepnickaAsk(Collection<String> tokens) throws IOException {
+		if (tokens.isEmpty())
+			return new ArrayList<>();
 		URL url = new URL(STEPNICKA_ADDRES);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Content-Type", "application/json");
-
 		String input = buildRequestBody(tokens);
 		OutputStream os = conn.getOutputStream();
 		os.write(input.getBytes());
@@ -113,11 +137,47 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		return stepnickaResult;
 	}
 
-	private static String buildRequestBody(Collection<Token> tokens) {
+	private List<StepnickaResult> filterConcepts(List<StepnickaResult> oldConcepts, List<StepnickaResult> newConcepts, int shift) {
+		List<StepnickaResult> notCovered = new ArrayList<>();
+		if (oldConcepts == null)
+			oldConcepts = new ArrayList<>();
+		boolean covered;
+		for (StepnickaResult c1: newConcepts) {
+			covered = false;
+			for (StepnickaResult c2: oldConcepts) {
+				if (c1.getPosition().get(0) + shift >= c2.getPosition().get(0)
+						&& c1.getPosition().get(1) + shift <= c2.getPosition().get(1)) {
+					covered = true;
+					break;
+				}
+			}
+			if (!covered) notCovered.add(c1);
+		}
+		WikidataOntology wko = new WikidataOntology();
+		List<StepnickaResult> filtered = new ArrayList<>();
+		for (StepnickaResult res: notCovered) {
+			ArrayList<UriList> newUriList = new ArrayList<>();
+			for (int i = 0; i < res.getUriList().size(); i++) {
+				Set<String> types = wko.getEntityType(res.getUriList().get(i).wiki_uri);
+				if (types.size() > 0 && !Collections.disjoint(Arrays.asList(instance_whitelist), types)) {
+					newUriList.add(res.getUriList().get(i));
+				} else {
+					logger.debug("Entity filtered: {}", res.getUriList().get(i).getConcept_name());
+				}
+			}
+			if (newUriList.size() > 0) {
+				filtered.add(new StepnickaResult(res.getPosition(), newUriList));
+			}
+		}
+		oldConcepts.addAll(filtered);
+		return oldConcepts;
+	}
+
+	private static String buildRequestBody(Collection<String> tokens) {
 		JsonObject jobject = new JsonObject();
 		JsonArray jsonArray = new JsonArray();
-		for (Token token : tokens) {
-			jsonArray.add(new JsonPrimitive(token.getCoveredText()));
+		for (String token : tokens) {
+			jsonArray.add(new JsonPrimitive(token));
 		}
 		jobject.add("query", jsonArray);
 		return jobject.toString();
