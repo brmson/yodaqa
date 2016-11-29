@@ -48,11 +48,13 @@ public class WikidataOntology extends WikidataLookup {
 			"	FILTER(LANG(?vallab) = \"cs\").\n" +
 			"}\n" +
 //		"BIND( IF(!BOUND(?vallab) && DATATYPE(?val) = xsd:dateTime, ?val, ?vallab) AS ?vallabel )\n" +
+			"BIND(datatype(?valres) as ?type)\n" +
+			"FILTER(!BOUND(?type) || ?type != rdf:langString || LANG(?valres) = \"cs\")\n" +
 			"BIND( IF(!BOUND(?vallab), ?val, ?vallab) AS ?vallabel )\n" +
 			"FILTER(BOUND(?vallabel))\n" +
 //			"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
-			"FILTER(!STRSTARTS(STR(?vallabel), \"https://www.wikidata.org/entity/\") )\n" +
-			"FILTER(!STRSTARTS(STR(?vallabel), \"http://www.wikidata.org/entity/\") )\n" +
+//			"FILTER(!STRSTARTS(STR(?vallabel), 'https://www.wikidata.org/entity/') )\n" +
+			"FILTER(!STRSTARTS(STR(?vallabel), 'http://www.wikidata.org/entity/') )\n" +
 			"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
@@ -85,11 +87,13 @@ public class WikidataOntology extends WikidataLookup {
 		"	FILTER(LANG(?vallab) = \"cs\").\n" +
 		"}\n" +
 //		"BIND( IF(!BOUND(?vallab) && DATATYPE(?valres) = xsd:dateTime, ?valres, ?vallab) AS ?vallabel )\n" +
+		"BIND(datatype(?valres) as ?type)\n" +
+		"FILTER(!BOUND(?type) || ?type != rdf:langString || LANGMATCHES(LANG(?valres), \"cs\"))\n" +
 		"BIND( IF(!BOUND(?vallab), ?valres, ?vallab) AS ?vallabel )\n" +
 		"FILTER(BOUND(?vallabel))\n" +
 //		"FILTER( LANG(?vallabel) = \"\" || LANGMATCHES(LANG(?vallabel), \"cs\") )\n" +
-		"FILTER(!STRSTARTS(STR(?vallabel), \"https://www.wikidata.org/entity/\") )\n" +
-		"FILTER(!STRSTARTS(STR(?vallabel), \"http://www.wikidata.org/entity/\") )\n" +
+//		"FILTER(!STRSTARTS(STR(?vallabel), 'https://www.wikidata.org/entity/') )\n" +
+//		"FILTER(!STRSTARTS(STR(?vallabel), 'http://www.wikidata.org/entity/') )\n" +
 		"";
 		logger.debug("executing sparql query: {}", rawQueryStr);
 		List<Literal[]> rawResults = rawQuery(rawQueryStr,
