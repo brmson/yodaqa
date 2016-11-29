@@ -37,6 +37,8 @@ from sklearn.multiclass import OneVsRestClassifier
 import numpy as np
 from urllib2 import HTTPError
 
+URL = 'http://yodaqa.felk.cvut.cz/fuseki-dbp/dbpedia/query'
+
 def check_q(cfier, v, i):
     probs = cfier.predict_proba(v.X.toarray()[i])[0]
     top_probs = sorted(enumerate(probs), key=lambda k: k[1], reverse=True)
@@ -134,13 +136,12 @@ def generate_results(paths, mids, concepts):
     FILTER( !ISURI(?value) )
     FILTER( LANG(?value) = "" || LANGMATCHES(LANG(?value), "en") )
      }LIMIT 400"""
-    url = 'http://freebase.ailao.eu:3030/freebase/query'
     results = []
     for m in mids:
         tmp = generate_query(paths, m, "1", concepts)
         if (len(tmp) == 0):
             return []
-        sparql = SPARQLWrapper(url)
+        sparql = SPARQLWrapper(URL)
         sparql.setReturnFormat(JSON)
         query = prefix + " UNION ".join(tmp) + postfix
         # print(query)
@@ -152,7 +153,6 @@ def generate_results(paths, mids, concepts):
     return results
 
 def mid_by_pageid(pageID):
-    url = 'http://freebase.ailao.eu:3030/freebase/query'
     query = '''PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ns: <http://rdf.freebase.com/ns/>
 
@@ -161,7 +161,7 @@ def mid_by_pageid(pageID):
         ?topic rdfs:label ?label .
         FILTER( LANGMATCHES(LANG(?label), "en") )
     }'''
-    sparql = SPARQLWrapper(url)
+    sparql = SPARQLWrapper(URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(query)
     res = sparql.query().convert()
