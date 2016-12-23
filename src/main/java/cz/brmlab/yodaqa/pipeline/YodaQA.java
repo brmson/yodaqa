@@ -1,6 +1,7 @@
 package cz.brmlab.yodaqa.pipeline;
 
-import cz.brmlab.yodaqa.provider.UrlManager;
+import cz.brmlab.yodaqa.provider.url.UrlConstants;
+import cz.brmlab.yodaqa.provider.url.UrlManager;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
@@ -20,7 +21,6 @@ import cz.brmlab.yodaqa.pipeline.solrfull.SolrFullAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.DBpediaOntologyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.DBpediaPropertyAnswerProducer;
 import cz.brmlab.yodaqa.pipeline.structured.FreebaseOntologyAnswerProducer;
-import cz.brmlab.yodaqa.pipeline.AnswerHitlistSerialize;
 import cz.brmlab.yodaqa.provider.IPv6Check;
 import cz.brmlab.yodaqa.provider.solr.SolrNamedSource;
 
@@ -56,7 +56,7 @@ public class YodaQA /* XXX: extends AggregateBuilder ? */ {
 
 			//SolrNamedSource.register("guten", "data/guten", null);
 			//SolrNamedSource.register("enwiki", "collection1", "http://127.0.0.1:8983/solr/");
-			SolrNamedSource.register("enwiki", "collection1", UrlManager.lookUpUrl(UrlManager.DataBackends.SOLR.ordinal()));
+			SolrNamedSource.register("enwiki", "collection1", UrlManager.getInstance().getUrl(UrlConstants.SOLR));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("*** Exception caught during SolrNamedSource initialization. ***");

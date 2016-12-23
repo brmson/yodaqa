@@ -11,14 +11,12 @@ import static spark.Spark.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import cz.brmlab.yodaqa.provider.UrlManager;
+import cz.brmlab.yodaqa.provider.url.UrlManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -142,7 +140,7 @@ public class WebInterface implements Runnable {
 			public Object handle(Request request, Response response) {
 				response.type("application/json");
 				response.header("Access-Control-Allow-Origin", "*");
-				return UrlManager.printState();
+				return UrlManager.getInstance().printState();
 
 			}
 		});

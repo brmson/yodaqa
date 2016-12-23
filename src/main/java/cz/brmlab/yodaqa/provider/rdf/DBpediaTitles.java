@@ -18,7 +18,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.Gson;
 import com.hp.hpl.jena.rdf.model.Literal;
 
-import cz.brmlab.yodaqa.provider.UrlManager;
+import cz.brmlab.yodaqa.provider.url.UrlConstants;
+import cz.brmlab.yodaqa.provider.url.UrlManager;
 import org.slf4j.Logger;
 
 /** A wrapper around DBpedia "Titles" dataset that maps titles to
@@ -31,8 +32,8 @@ import org.slf4j.Logger;
  * and disambiguation pages. */
 
 public class DBpediaTitles extends DBpediaLookup {
-	protected static final String fuzzyLookupUrl = UrlManager.lookUpUrl(UrlManager.DataBackends.LABEL1.ordinal());
-	protected static final String crossWikiLookupUrl = UrlManager.lookUpUrl(UrlManager.DataBackends.LABEL2.ordinal());
+	protected static final String fuzzyLookupUrl = UrlManager.getInstance().getUrl(UrlConstants.DBPEDIA_LABEL);
+	protected static final String crossWikiLookupUrl = UrlManager.getInstance().getUrl(UrlConstants.DICTIONARY_LABEL);
 
 	/** A container of enwiki article metadata.
 	 * This must 1:1 map to label-lookup API. */
