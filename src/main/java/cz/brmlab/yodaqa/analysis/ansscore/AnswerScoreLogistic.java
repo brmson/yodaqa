@@ -42,7 +42,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 
 	protected String modelName;
 
-	public double weights[];
+	public double[] weights;
 	public double intercept;
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -120,7 +120,7 @@ public class AnswerScoreLogistic extends JCasAnnotator_ImplBase {
 			AnswerFV fv = new AnswerFV(a, astats);
 
 			double t = intercept;
-			double fvec[] = fv.getFV();
+			double[] fvec = fv.getFV();
 			for (int i = 0; i < fvec.length; i++) {
 				t += fvec[i] * weights[i];
 			}

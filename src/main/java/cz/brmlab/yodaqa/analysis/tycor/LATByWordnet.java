@@ -61,7 +61,7 @@ public class LATByWordnet extends JCasAnnotator_ImplBase {
 	 * N.B. there is another generalization limit instilled in
 	 * LATMatchTyCor.
 	 */
-	protected static String tops_list[] = {
+	protected static String[] tops_list = {
 		"entity", "physical entity", "abstraction", "thing", "object",
 		"whole", "congener", "living thing", "organism", "benthos",
 		"dwarf", "heterotroph", "parent", "life", "biont", "cell",

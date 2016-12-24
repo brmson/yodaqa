@@ -35,7 +35,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	 * in at least two topics, so it can be a pipeline like this:
 	 *   grep FreebaseOntology.*property: logs/curated-train-8c3f62a.log | sed 's#[^/]*./##; s# ->.*##' | uniq -c | sort -n | uniq | awk '$1>=20{print$0}' | sed 's/.*://' | sort | uniq -c | sort -n | awk '$1>1{print$0}' | sed -re 's#^ *([0-9]+) *([^/]*)/(.*)#\t\t/\* \1x \2 *\/ "\3",#'
 	 */
-	String propBlacklist[] = {
+	String[] propBlacklist = {
 		/* 2x Categories */ "award.award.category",
 		/* 2x Contains */ "location.location.contains",
 		/* 2x Editions */ "book.book.editions",

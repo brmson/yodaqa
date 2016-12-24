@@ -153,7 +153,7 @@ public class LATMatchTyCor extends JCasAnnotator_ImplBase {
 	 *
 	 * XXX: Compiled manually by cursory logs investigation.  We should
 	 * build a TyCor dataset and train it by that. */
-	protected static Long wnwn_synsetbl_list[] = {
+	protected static Long[] wnwn_synsetbl_list = {
 		/* communication/ */ 33319L,
 		/* cognition/ */ 23451L,
 		/* ability/ */ 5624029L,
