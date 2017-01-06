@@ -83,6 +83,30 @@
         </features>
       </typeDescription>
       <typeDescription>
+        <name>cz.brmlab.yodaqa.model.Question.Diacritics</name>
+        <description>The token modified by adding diacritics if possible.</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>value</name>
+            <description>The string value of the token with diacritics</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
+        <name>de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token</name>
+        <description>Original Token class plus the token with diacritics.</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>diacritics</name>
+            <description>The token modified by adding diacritics if possible.</description>
+            <rangeTypeName>cz.brmlab.yodaqa.model.Question.Diacritics</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
         <name>cz.brmlab.yodaqa.model.Question.SV</name>
         <description>Selective Verb</description>
         <supertypeName>uima.tcas.Annotation</supertypeName>

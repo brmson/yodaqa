@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 
+import cz.brmlab.yodaqa.model.Question.Diacritics;
 import cz.brmlab.yodaqa.provider.PrivateResources;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -36,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 	final Logger logger = LoggerFactory.getLogger(CzechPOSTagger.class);
 	private static String URL_STRING;
-	private HttpURLConnection conn = null;
 
 	private static class Response {
 		@SerializedName("lemmas")
@@ -118,7 +118,8 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 		//FIXME Add list size check
 		for (int i = 0; i < tokens.size(); i++) {
 			Token tok = tokens.get(i);
-			logger.debug("Token: {}/{} {}", tok.getCoveredText(), response.lemmas.get(i), response.posTags.get(i));
+			logger.debug("Token: {}/{} {} {}", tok.getCoveredText(), response.lemmas.get(i),
+					response.posTags.get(i), response.diacritics.get(i));
 
 			if (tok.getPos() == null) {
 				POS pos = new POS(jCas);
@@ -137,6 +138,15 @@ public class CzechPOSTagger extends JCasAnnotator_ImplBase {
 				tok.setLemma(lemma);
 			}
 			tok.getLemma().setValue(response.lemmas.get(i));
+
+			if (tok.getDiacritics() == null) {
+				Diacritics diacritics = new Diacritics(jCas);
+				diacritics.setBegin(tok.getBegin());
+				diacritics.setEnd(tok.getEnd());
+				diacritics.addToIndexes();
+				tok.setDiacritics(diacritics);
+			}
+			tok.getDiacritics().setValue(response.diacritics.get(i));
 		}
 	}
 

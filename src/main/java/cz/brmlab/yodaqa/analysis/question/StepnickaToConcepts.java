@@ -9,6 +9,7 @@ import cz.brmlab.yodaqa.model.Question.Concept;
 import cz.brmlab.yodaqa.provider.PrivateResources;
 import cz.brmlab.yodaqa.provider.rdf.WikidataOntology;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -88,10 +89,8 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 
 	public List<StepnickaResult> getStepnickaResult(Collection<Token> tokens) {
 		List<StepnickaResult> res = new ArrayList<>();
-		ArrayList<String> rawTokens = new ArrayList<>();
-		for (Token token: tokens) {
-			rawTokens.add(token.getCoveredText());
-		}
+		ArrayList<Token> rawTokens = new ArrayList<>(tokens);
+
 		while (true) {
 			try {
 				res.addAll(stepnickaAsk(rawTokens));
@@ -104,7 +103,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		List<StepnickaResult> subset;
 		for (int i = Math.min(5, tokens.size() - 1); i > 0; i--) {
 			for (int j = 0; j + i <= tokens.size(); j++) {
-				List<String> tokenSubset = rawTokens.subList(j, j+i);
+				List<Token> tokenSubset = rawTokens.subList(j, j+i);
 				while (true) {
 					try {
 						subset = stepnickaAsk(tokenSubset);
@@ -119,7 +118,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		return res;
 	}
 
-	public List<StepnickaResult> stepnickaAsk(Collection<String> tokens) throws IOException {
+	public List<StepnickaResult> stepnickaAsk(Collection<Token> tokens) throws IOException {
 		if (tokens.isEmpty())
 			return new ArrayList<>();
 		URL url = new URL(STEPNICKA_ADDRES);
@@ -132,7 +131,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		os.write(input.getBytes());
 		os.flush();
 
-		ArrayList<StepnickaResult> stepnickaResult = (ArrayList<StepnickaResult>) processResponse(conn.getInputStream());
+		ArrayList<StepnickaResult> stepnickaResult = (ArrayList<StepnickaResult>) processResponse(conn.getInputStream(), tokens);
 		conn.disconnect();
 		return stepnickaResult;
 	}
@@ -173,27 +172,42 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 		return oldConcepts;
 	}
 
-	private static String buildRequestBody(Collection<String> tokens) {
+	private static String buildRequestBody(Collection<Token> tokens) {
 		JsonObject jobject = new JsonObject();
 		JsonArray jsonArray = new JsonArray();
-		for (String token : tokens) {
-			jsonArray.add(new JsonPrimitive(token));
+		for (Token token : tokens) {
+			if (token.getDiacritics() != null)
+				jsonArray.add(new JsonPrimitive(token.getDiacritics().getValue()));
+			else
+				jsonArray.add(new JsonPrimitive(token.getCoveredText()));
 		}
 		jobject.add("query", jsonArray);
 		return jobject.toString();
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<StepnickaResult> processResponse(InputStream stream) {
+	private List<StepnickaResult> processResponse(InputStream stream, Collection<Token> tokens) {
 		ArrayList<StepnickaResult> stepnickaResults = new ArrayList<>();
 		JsonParser parser = new JsonParser();
 		JsonArray jsonArray = parser.parse(new InputStreamReader(stream)).getAsJsonArray();
 		for (int i = 0; i < jsonArray.size(); i++) {
+			String matchedString = "";
 			JsonObject jsonObject = (JsonObject) jsonArray.get(i);
 			JsonArray position = jsonObject.getAsJsonArray("position");
 			ArrayList<Integer> positions = new ArrayList<>();
 			for (int j = 0; j < position.size(); j++) {
 				positions.add(position.get(j).getAsInt());
+			}
+			try{
+				int b = position.get(0).getAsInt();
+				int e = position.get(1).getAsInt();
+				List<Token> matchedSubList = new ArrayList<>(tokens).subList(b, e);
+				List<String> stringSubList = new ArrayList<>();
+				for (Token t: matchedSubList)
+					stringSubList.add(t.getCoveredText());
+				matchedString = StringUtils.join(stringSubList, " ");
+			} catch (IndexOutOfBoundsException e) {
+				logger.warn("Position array has only {} element(s)", position.size());
 			}
 			JsonArray uriList = jsonObject.getAsJsonArray("uri_list");
 			ArrayList<UriList> uriLists = new ArrayList<>();
@@ -204,7 +218,7 @@ public class StepnickaToConcepts extends JCasAnnotator_ImplBase {
 				float score = uriList.get(j).getAsJsonObject().get("score").getAsFloat();
 				String dbpedia_uri = uriList.get(j).getAsJsonObject().get("dbpedia_uri").getAsString();
 				int page_id = uriList.get(j).getAsJsonObject().get("page_id").getAsInt();
-				String match_str = jsonObject.get("match_str").getAsString();
+				String match_str = !matchedString.isEmpty() ? matchedString : jsonObject.get("match_str").getAsString();
 				uriLists.add(new UriList(wiki_uri, concept_name, uri, score, dbpedia_uri, page_id, match_str));
 			}
 			StepnickaResult stepnickaResult = new StepnickaResult(positions, uriLists);
