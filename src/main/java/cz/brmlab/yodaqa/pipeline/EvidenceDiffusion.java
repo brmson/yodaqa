@@ -83,6 +83,7 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 		FSIterator sortedAnswers = idx.iterator();
 		while (sortedAnswers.hasNext()) {
 			Answer a = (Answer) sortedAnswers.next();
+			if (a.getCanonText() == null) continue;
 			answers.add(a);
 			Patterns ps = new Patterns(a.getCanonText());
 			patterns.put(a, ps);

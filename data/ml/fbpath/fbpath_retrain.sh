@@ -18,6 +18,8 @@ basedir=$(pwd)
 mkdir -p data/ml/fbpath/wq-fbpath
 
 cd "$dataset_co"
+# scripts/dump-refresh.sh "$basedir" $googleapikey
+
 for i in trainmodel val devtest; do
 	scripts/fulldata.py $i "$basedir/data/ml/fbpath/wq-fbpath/" main/ d-dump/ d-freebase-brp/
 done

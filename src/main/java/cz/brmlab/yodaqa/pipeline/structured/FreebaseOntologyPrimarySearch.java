@@ -1,8 +1,8 @@
 package cz.brmlab.yodaqa.pipeline.structured;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -12,6 +12,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.LoggerFactory;
 
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
+import cz.brmlab.yodaqa.analysis.rdf.FBPathGloVeScoring;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
@@ -53,13 +54,16 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		}
 	}
 
-	protected synchronized List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
+	/* Fetch concept properties from the Freebase ontology dataset,
+	 * looking for Freebase topics specifically linked to the enwiki
+	 * articles we have linked to the question. */
+	@Override
+	protected synchronized List<PropertyValue> getProperties(JCas questionView) {
 		List<PropertyValue> properties = new ArrayList<>();
 		/* --- Uncomment the next line to disable Freebase lookups. --- */
 		// if (true) return properties;
 
-		/* Get a list of specific properties to query. */
-		List<PathScore> pathScs = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		/* First, determine the Freebase property paths to query for. */
 
 		/* Get a list of witnesses (besides concepts), i.e. clues of
 		 * question that might select the relevant property path by
@@ -68,14 +72,80 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 		for (Clue cl : JCasUtil.select(questionView, ClueNE.class)) {
 			witnessLabels.add(cl.getLabel());
 		}
+		List<Concept> witnessConcepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
 
-		/* Fetch concept properties from the Freebase ontology dataset,
-		 * looking for Freebase topics specifically linked to the enwiki
-		 * articles we have found. */
-		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-		properties.addAll(fbo.queryPageID(concept.getPageID(), pathScs, concepts, witnessLabels, logger));
+		/* Method #1 (Explorative): Get a list of promising-looking property paths
+		 * (based on looking at their labels). */
+		/* FIXME: getPaths() actually already fetches all the
+		 * PropertyValues, but we throw them away... */
+		List<PathScore> exploringPaths = FBPathGloVeScoring.getInstance().getPaths(questionView, N_TOP_PATHS);
+
+		/* Method #2 (A Priori): Get a question-based list of specific properties
+		 * to query (predicting them based on the paths we've seen
+		 * for similar questions). */
+//		List<PathScore> aPrioriPaths = fbpathLogistic.getPaths(fbpathLogistic.questionFeatures(questionView)).subList(0, N_TOP_PATHS);
+		List<PathScore> aPrioriPaths = new ArrayList<>();
+
+		/* Now, get the property values. */
+//		properties.addAll(getConceptPropertiesFromExploring(exploringPaths, questionView, witnessConcepts, witnessLabels));
+		for (Concept concept : JCasUtil.select(questionView, Concept.class)) {
+			properties.addAll(getConceptProperties(questionView, concept, exploringPaths, aPrioriPaths, witnessConcepts, witnessLabels));
+		}
+		return properties;
+	}
+
+	protected List<PropertyValue> getConceptPropertiesFromExploring(List<PathScore> paths, JCas jCas, List<Concept> witnessConcepts, List<String> witnessLabels) {
+		List<PropertyValue> properties = new ArrayList<>();
+		String midPrefix = "http://rdf.freebase.com/ns/";
+		/* First, get the set of topics covering this concept. */
+		/* (This will be just a single-member set aside of a few
+		 * exceptional cases.) */
+
+		for(PathScore ps: paths) {
+			List<PathScore> path = new ArrayList<>();
+			path.add(ps);
+			List<Concept> witness = new ArrayList<>();
+			if (ps.path.size() == 3) {
+				Concept c = ps.witness.getConcept();
+				if (c != null) logger.debug("WITNESS " + c.getFullLabel() + " " + c.getPageID());
+				else logger.debug("WITNESS NULL");
+				if (c != null) witness.add(c);
+			}
+
+//			Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(ps.entity.getConcept().getPageID(), logger);
+//			for (FreebaseOntology.TitledMid topic : topics) {
+//				if (!paths.isEmpty())
+//					properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, paths, witness, witnessLabels, logger));
+			logger.debug("MID {}", ps.entity.getObjRes());
+			properties.addAll(fbo.queryTopicSpecific("", ps.entity.getObjRes(), path, witnessConcepts, witnessLabels, logger));
+//			properties.addAll(fbo.queryTopicSpecific(ps.entity.getObject(), mid, path, witness, new ArrayList<String>(), logger));
+		}
+		return properties;
+	}
+
+	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept,
+			List<PathScore> exploringPaths, List<PathScore> aPrioriPaths,
+			List<Concept> witnessConcepts, List<String> witnessLabels) {
+		List<PropertyValue> properties = new ArrayList<>();
+
+		/* First, get the set of topics covering this concept. */
+		/* (This will be just a single-member set aside of a few
+		 * exceptional cases.) */
+		Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(concept.getPageID(), logger);
+
+		for (FreebaseOntology.TitledMid topic : topics) {
+			if (!exploringPaths.isEmpty())
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, exploringPaths, witnessConcepts, witnessLabels, logger));
+			if (!aPrioriPaths.isEmpty())
+				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, aPrioriPaths, witnessConcepts, witnessLabels, logger));
+		}
 
 		return properties;
+	}
+
+	protected List<PropertyValue> getConceptProperties(JCas questionView, Concept concept) {
+		assert(false); // we override getProperties()
+		return null;
 	}
 
 	protected AnswerSourceStructured makeAnswerSource(PropertyValue property) {

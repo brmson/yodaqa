@@ -6,16 +6,13 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
+import com.hp.hpl.jena.query.*;
 import cz.brmlab.yodaqa.analysis.StopWordFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -64,12 +61,12 @@ public abstract class CachedJenaLookup {
 	 * be fetched (or null, failing that).
 	 *
 	 * Example: rawQuery("?lab rdfs:label \"Achilles\"@en", "lab", 0); */
-	public List<Literal[]> rawQuery(String selectWhere, String resources[], int limit) {
+	public List<Literal[]> rawQuery(String distinct, String selectWhere, String resources[], int limit) {
 		ArrayList<String> varNames = new ArrayList<>();
 		for (String r : resources)
 			varNames.add(r.replace("/", ""));
 
-		String queryExpr = prefixes + "SELECT ?"
+		String queryExpr = prefixes + "SELECT " + distinct + "?"
 			+ StringUtils.join(varNames, " ?")
 			+ " WHERE { " + selectWhere + " }"
 			+ (limit > 0 ? "LIMIT " + Integer.toString(limit) : "");
@@ -77,24 +74,35 @@ public abstract class CachedJenaLookup {
 			return cache.retrieve(queryExpr);
 		}
 		QueryExecution qe = QueryExecutionFactory.sparqlService(service, queryExpr);
-		// logger.debug(queryExpr);
+//		logger.debug(queryExpr);
 
 		ResultSet rs;
-		while (true) {
-			try {
-				rs = qe.execSelect();
-				break; // Success!
-			} catch (QueryExceptionHTTP e) {
-				e.printStackTrace();
-				System.err.println("*** " + service + " SPARQL Query (temporarily?) failed, retrying in a moment...");
-				System.err.println("Please refer to the README.md for tips on disabling this lookup.");
+//		RedisCache redisCache = RedisCache.getInstance();
+//		logger.debug("Before load" + Thread.currentThread().getName());
+//		ResultSet rs = redisCache.loadResultSet(queryExpr);
+//		logger.debug("After load");
+//		logger.debug("Resultset " + rs);
+//		if (rs == null) {
+//			logger.debug("Not loading from cache");
+			while (true) {
 				try {
-					TimeUnit.SECONDS.sleep(10);
-				} catch (InterruptedException e2) { // oof...
-					e2.printStackTrace();
+					rs = qe.execSelect();
+					break; // Success!
+				} catch (QueryExceptionHTTP e) {
+					e.printStackTrace();
+					System.err.println("*** " + service + " SPARQL Query (temporarily?) failed, retrying in a moment...");
+					System.err.println("Please refer to the README.md for tips on disabling this lookup.");
+					try {
+						TimeUnit.SECONDS.sleep(10);
+					} catch (InterruptedException e2) { // oof...
+						e2.printStackTrace();
+					}
 				}
 			}
-		}
+//			logger.debug("Before store"+ Thread.currentThread().getName());
+//			redisCache.storeResultSet(queryExpr, rs);
+//			logger.debug("After store");
+//		}
 
 		List<Literal[]> results = new LinkedList<Literal[]>();
 		while (rs.hasNext()) {
@@ -126,6 +134,14 @@ public abstract class CachedJenaLookup {
 		qe.close();
 		cache.add(queryExpr,results);
 		return results;
+	}
+
+	public List<Literal[]> rawQuery(String selectWhere, String resources[], int limit) {
+		return rawQuery("", selectWhere, resources, limit);
+	}
+
+	public List<Literal[]> rawQueryDisctinct(String selectWhere, String resources[], int limit) {
+		return rawQuery("DISTINCT ", selectWhere, resources, limit);
 	}
 
 	/** Generate a list of various cooked forms of the title for

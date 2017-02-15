@@ -135,14 +135,42 @@ def generate_results(paths, mids, concepts):
     FILTER( LANG(?value) = "" || LANGMATCHES(LANG(?value), "en") )
      }LIMIT 400"""
     url = 'http://freebase.ailao.eu:3030/freebase/query'
-    tmp = generate_query(paths, mids[0], "1", concepts)
+    results = []
+    for m in mids:
+        tmp = generate_query(paths, m, "1", concepts)
+        if (len(tmp) == 0):
+            return []
+        sparql = SPARQLWrapper(url)
+        sparql.setReturnFormat(JSON)
+        query = prefix + " UNION ".join(tmp) + postfix
+        # print(query)
+        sparql.setQuery(query)
+        res = sparql.query().convert()
+        # print("")
+        # print(res)
+        results += list(set([r['value']['value'] for r in res['results']['bindings']]))
+    return results
+
+def mid_by_pageid(pageID):
+    url = 'http://freebase.ailao.eu:3030/freebase/query'
+    query = '''PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ns: <http://rdf.freebase.com/ns/>
+
+    SELECT * WHERE {
+        ?topic <http://rdf.freebase.com/key/wikipedia.en_id> "''' + pageID + '''" .
+        ?topic rdfs:label ?label .
+        FILTER( LANGMATCHES(LANG(?label), "en") )
+    }'''
     sparql = SPARQLWrapper(url)
     sparql.setReturnFormat(JSON)
-    query = prefix + " UNION ".join(tmp) + postfix
     sparql.setQuery(query)
     res = sparql.query().convert()
-    results = list(set([r['value']['value'] for r in res['results']['bindings']]))
-    return results
+    ret = []
+    for r in res['results']['bindings']:
+        ret.append(r['topic']['value'][27:])
+    if (ret == []):
+        return ""
+    return ret[0]
 
 if __name__ == '__main__':
     with open(sys.argv[1], 'r') as f:
@@ -166,11 +194,14 @@ if __name__ == '__main__':
     for i, line in enumerate(full):    
         concepts = line['Concept']
         mids = [c["mid"] for c in line['freebaseMids']]
-        relpaths = [c[0] for c in line['relPaths']]        
+        relpaths = [c[0] for c in line['relPaths']]   
+        mids_from_pageids = [mid_by_pageid(c['pageID']) for c in line['Concept']] 
+        filter(lambda a: a != "", mids_from_pageids)   
         predicted_paths = [lab.split(":")[0].split("|") for lab in check_q(cfier, full_data, i)[2]]
+        # print(predicted_paths)
         try:
             results = generate_results(relpaths, mids, concepts)
-            predicted_results = generate_results(predicted_paths, mids, concepts)
+            predicted_results = generate_results(predicted_paths, mids_from_pageids, concepts)
         except HTTPError:
             error += 1
             continue

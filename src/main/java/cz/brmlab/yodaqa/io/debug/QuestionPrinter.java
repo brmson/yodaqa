@@ -150,7 +150,9 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 			Concepttmp += "\"getBySubject\": " + (c.getBySubject() ? 1 : 0) + ", ";
 			Concepttmp += "\"getByNgram\": " + (c.getByNgram() ? 1 : 0) + ", ";
 			Concepttmp += "\"getByFuzzyLookup\": " + (c.getByFuzzyLookup() ? 1 : 0) + ", ";
-			Concepttmp += "\"getByCWLookup\": " + (c.getByCWLookup() ? 1 : 0) + "";
+			Concepttmp += "\"getByCWLookup\": " + (c.getByCWLookup() ? 1 : 0) + ", ";
+			Concepttmp += "\"begin\": " + c.getBegin() + ", ";
+			Concepttmp += "\"end\": " + c.getEnd() + "";
 			Concepttmp += "}";
 			if (iterator.hasNext()) {
 				//not last, add comma
