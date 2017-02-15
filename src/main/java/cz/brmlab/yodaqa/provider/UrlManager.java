@@ -28,7 +28,7 @@ public class UrlManager {
 	}
 
 	public enum DataBackends {
-		DBPEDIA, FREEBASE, LABEL1, LABEL2, SOLR
+		DBPEDIA, FREEBASE, LABEL1, LABEL2, SOLR, PROPSCORE
 	}
 
 	private static String[][] urlLookUpTable;
@@ -76,6 +76,8 @@ public class UrlManager {
 		stringBuilder.append(System.getProperty("cz.brmlab.yodaqa.label2url"));
 		stringBuilder.append("\nSystem.getProperty(\"cz.brmlab.yodaqa.solrurl\") ");
 		stringBuilder.append(System.getProperty("cz.brmlab.yodaqa.solrurl"));
+		stringBuilder.append("\nSystem.getProperty(\"cz.brmlab.yodaqa.propscoreurl\") ");
+		stringBuilder.append(System.getProperty("cz.brmlab.yodaqa.propscoreurl"));
 		stringBuilder.append("\n\nURL each backend receives:");
 		stringBuilder.append("\nDBpedia: ");
 		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.DBPEDIA.ordinal()));
@@ -87,6 +89,8 @@ public class UrlManager {
 		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.LABEL2.ordinal()));
 		stringBuilder.append("\nSolr: ");
 		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.SOLR.ordinal()));
+		stringBuilder.append("\nProperty Scoring: ");
+		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.PROPSCORE.ordinal()));
 		return stringBuilder.toString();
 	}
 
@@ -186,6 +190,9 @@ public class UrlManager {
 			case 4:
 				return System.getProperty("cz.brmlab.yodaqa.solrurl")!=null?
 					System.getProperty("cz.brmlab.yodaqa.solrurl"):lookUpUrl(currentBackend, fieldId);
+			case 5:
+				return System.getProperty("cz.brmlab.yodaqa.propscoreurl")!=null?
+					System.getProperty("cz.brmlab.yodaqa.propscoreurl"):lookUpUrl(currentBackend, fieldId);
 			default:
 				return null;
 		}

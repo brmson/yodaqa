@@ -5,7 +5,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonReader;
+import cz.brmlab.yodaqa.provider.UrlManager;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.*;
@@ -14,14 +17,16 @@ import java.util.List;
 import java.util.Map;
 
 public class RNNScoring {
+	final static Logger logger = LoggerFactory.getLogger(RNNScoring.class);
 
-	private static final String MODEL_URL = "http://localhost:5050/score";
+	private static final String MODEL_URL = UrlManager.lookUpUrl(UrlManager.DataBackends.PROPSCORE.ordinal());
 	private static final String SEPARATOR = " # ";
 
 	public static List<Double> getScores(String question, List<String> labels, int propertyNumber) {
 		List<Double> res = null;
 		while(true) {
 			try {
+				logger.debug("Before Request");
 				URL url = new URL(MODEL_URL);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setDoOutput(true);
@@ -35,6 +40,7 @@ public class RNNScoring {
 				os.flush();
 
 				res = processResponse(conn.getInputStream());
+				logger.debug("End Request");
 				conn.disconnect();
 				return res;
 			} catch (IOException e) {
