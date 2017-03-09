@@ -33,7 +33,7 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 	/* Number of top non-direct property paths to query.
 	 * It's ok to be liberal since most will likely be
 	 * non-matching. */
-	protected static final int N_TOP_PATHS = 15;
+	protected static final int N_TOP_PATHS = 10;
 
 	protected static FBPathLogistic fbpathLogistic = null;
 

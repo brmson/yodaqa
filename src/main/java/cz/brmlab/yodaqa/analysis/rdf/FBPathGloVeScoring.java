@@ -145,35 +145,37 @@ public class FBPathGloVeScoring {
 			}
 		});
 		List<List<PropertyValue>> pvPaths = new ArrayList<>();
-		FreebaseExploration fbex = new FreebaseExploration();
+//		FreebaseExploration fbex = new FreebaseExploration();
 		List<String> qtoks = questionRepr(questionView);
 		logger.debug("questionRepr: {}", qtoks);
 
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
+		if (concepts.size() > 3) concepts = concepts.subList(0, 3);
+		logger.debug("Concept count: {}", concepts.size());
 		/* Generate pvPaths for the 1-level neighborhood. */
 
-		List<Concept> notFound = new ArrayList<>();
-		Relatedness[] rr = new Relatedness[] {r1, r2, r3};
-		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
-			List<List<PropertyValue>> nei = fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class));
-			if (nei == null || nei.size() == 0) {
-				notFound.add(c);
-			}
-			else {
-				for (List<PropertyValue> path: nei) {
-					for (int i = 0; i < path.size(); i++) {
-						List<String> proptoks = tokenize(path.get(i).getProperty());
-						path.get(i).setScore(rr[i].probability(qtoks, proptoks));
-					}
-				}
-				pvPaths.addAll(nei);
-			}
-
-		}
+//		List<Concept> notFound = new ArrayList<>();
+//		Relatedness[] rr = new Relatedness[] {r1, r2, r3};
+//		for(Concept c: JCasUtil.select(questionView, Concept.class)) {
+//			List<List<PropertyValue>> nei = fbex.getConceptNeighbourhood(c, concepts, JCasUtil.select(questionView, Clue.class));
+//			if (nei == null || nei.size() == 0) {
+//				notFound.add(c);
+//			}
+//			else {
+//				for (List<PropertyValue> path: nei) {
+//					for (int i = 0; i < path.size(); i++) {
+//						List<String> proptoks = tokenize(path.get(i).getProperty());
+//						path.get(i).setScore(rr[i].probability(qtoks, proptoks));
+//					}
+//				}
+//				pvPaths.addAll(nei);
+//			}
+//
+//		}
 
 		List<List<PropertyValue>> pvPaths2 = new ArrayList<>();
-		if (notFound.size() > 0) {
-			for (Concept c : notFound) {
+//		if (notFound.size() > 0) {
+			for (Concept c : concepts) {
 				logger.debug("Concept {} was not found using Freebase API, falling to old approach...", c.getFullLabel());
 				addConceptPVPaths(pvPaths2, qtoks, c);
 			}
@@ -185,7 +187,7 @@ public class FBPathGloVeScoring {
 			pvPaths2.clear();
 
 			for (List<PropertyValue> path : lenOnePaths)
-				addExpandedPVPaths(pvPaths2, path, qtoks, notFound);
+				addExpandedPVPaths(pvPaths2, path, qtoks, concepts);
 
 			List<List<PropertyValue>> lenTwoPaths = new ArrayList<>(pvPaths2);
 
@@ -194,7 +196,7 @@ public class FBPathGloVeScoring {
 			List<List<PropertyValue>> potentialWitnesses = getPotentialWitnesses(concepts, qtoks);
 			for (List<PropertyValue> path : lenTwoPaths)
 				addWitnessPVPaths(pvPaths2, path, potentialWitnesses);
-		}
+//		}
 
 		// Deduplication
 		pathSet.addAll(pvPaths);

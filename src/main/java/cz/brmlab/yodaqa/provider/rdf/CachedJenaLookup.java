@@ -62,6 +62,8 @@ public abstract class CachedJenaLookup {
 	 *
 	 * Example: rawQuery("?lab rdfs:label \"Achilles\"@en", "lab", 0); */
 	public List<Literal[]> rawQuery(String distinct, String selectWhere, String resources[], int limit) {
+		logger.debug("Starting query...");
+		long start = System.currentTimeMillis();
 		ArrayList<String> varNames = new ArrayList<>();
 		for (String r : resources)
 			varNames.add(r.replace("/", ""));
@@ -133,6 +135,11 @@ public abstract class CachedJenaLookup {
 		}
 		qe.close();
 		cache.add(queryExpr,results);
+		long end = System.currentTimeMillis();
+		logger.debug("Query processed. Time:" + (end - start));
+		if (end - start > 200) {
+			logger.debug("SPARQL {}", queryExpr);
+		}
 		return results;
 	}
 

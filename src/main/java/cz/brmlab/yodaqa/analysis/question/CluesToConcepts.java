@@ -112,6 +112,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 
 		/* As a followup, try to generate plain n-gram clues and
 		 * add them for real if we can link them to something. */
+		long start = System.currentTimeMillis();
+		logger.debug("NGRAM start");
 		for (int n = 2; n <= 4; n++) { // bigram, trigram, quadgram
 			for (ClueNgram clue : generateNgramClues(resultView, n)) {
 				String clueLabel = clue.getLabel();
@@ -139,6 +141,8 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				cluesByLen.add(lc);
 			}
 		}
+		long end = System.currentTimeMillis();
+		logger.debug("NGRAM end {}", (end - start));
 
 		/* If our linked clues cover other shorter clues, drop these. */
 		List<LinkedClue> keptClues = new ArrayList<>(); // final list of clues

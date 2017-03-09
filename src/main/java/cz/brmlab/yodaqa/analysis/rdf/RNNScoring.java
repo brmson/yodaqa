@@ -26,6 +26,7 @@ public class RNNScoring {
 		List<Double> res = null;
 		while(true) {
 			try {
+				long start = System.currentTimeMillis();
 				logger.debug("Before Request");
 				URL url = new URL(MODEL_URL);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -41,6 +42,8 @@ public class RNNScoring {
 
 				res = processResponse(conn.getInputStream());
 				logger.debug("End Request");
+				long end = System.currentTimeMillis();
+				logger.debug("Time: {}", (end - start));
 				conn.disconnect();
 				return res;
 			} catch (IOException e) {
