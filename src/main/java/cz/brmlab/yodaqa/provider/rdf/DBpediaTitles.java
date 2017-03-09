@@ -114,7 +114,7 @@ public class DBpediaTitles extends DBpediaLookup {
 			List<Article> crossWikiEntities;
 			while (true) {
 				try {
-					fuzzyLookupEntities = queryFuzzyLookup(titleForm, logger);
+//					fuzzyLookupEntities = queryFuzzyLookup(titleForm, logger);
 					crossWikiEntities = queryCrossWikiLookup(titleForm, logger);
 					break; // Success!
 				} catch (IOException e) {
@@ -127,7 +127,7 @@ public class DBpediaTitles extends DBpediaLookup {
 					}
 				}
 			}
-			List<Article> entities = mergeResults(fuzzyLookupEntities, crossWikiEntities, logger);
+			List<Article> entities = mergeResults(new ArrayList<Article>(), crossWikiEntities, logger);
 			List<Article> results = new ArrayList<>();
 			for (Article a : entities) {
 				results.addAll(queryArticle(a, logger));
