@@ -128,17 +128,10 @@ public class FreebaseOntologyPrimarySearch extends StructuredPrimarySearch {
 			List<Concept> witnessConcepts, List<String> witnessLabels) {
 		List<PropertyValue> properties = new ArrayList<>();
 
-		/* First, get the set of topics covering this concept. */
-		/* (This will be just a single-member set aside of a few
-		 * exceptional cases.) */
-		Set<FreebaseOntology.TitledMid> topics = fbo.queryTopicByPageID(concept.getPageID(), logger);
-
-		for (FreebaseOntology.TitledMid topic : topics) {
-			if (!exploringPaths.isEmpty())
-				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, exploringPaths, witnessConcepts, witnessLabels, logger));
-			if (!aPrioriPaths.isEmpty())
-				properties.addAll(fbo.queryTopicSpecific(topic.title, topic.mid, aPrioriPaths, witnessConcepts, witnessLabels, logger));
-		}
+		if (!exploringPaths.isEmpty())
+			properties.addAll(fbo.queryTopicSpecific(concept.getCookedLabel(), concept.getFreebaseID(), exploringPaths, witnessConcepts, witnessLabels, logger));
+		if (!aPrioriPaths.isEmpty())
+			properties.addAll(fbo.queryTopicSpecific(concept.getCookedLabel(), concept.getFreebaseID(), aPrioriPaths, witnessConcepts, witnessLabels, logger));
 
 		return properties;
 	}

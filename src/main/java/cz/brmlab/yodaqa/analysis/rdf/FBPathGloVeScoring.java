@@ -83,14 +83,8 @@ public class FBPathGloVeScoring {
 		if (path.size() > 2 && path.get(2).getObjRes() != null) entities.add(path.get(2).getObjRes());
 		List<Concept> concepts = new ArrayList<>();
 		for(Concept c: allConcepts) {
-			if (!midCache.containsKey(c.getPageID())) {
-				midCache.put(c.getPageID(), fbo.queryTopicByPageID(c.getPageID(), logger));
-			}
-			for(FreebaseOntology.TitledMid tmid: midCache.get(c.getPageID())) {
-				if (entities.contains(tmid.mid)) {
-					concepts.add(c);
-					break;
-				}
+			if (entities.contains(c.getFreebaseID())) {
+				concepts.add(c);
 			}
 		}
 		Collections.sort(concepts, new Comparator<Concept>() {
@@ -150,7 +144,7 @@ public class FBPathGloVeScoring {
 		logger.debug("questionRepr: {}", qtoks);
 
 		List<Concept> concepts = new ArrayList<>(JCasUtil.select(questionView, Concept.class));
-		if (concepts.size() > 3) concepts = concepts.subList(0, 3);
+//		if (concepts.size() > 3) concepts = concepts.subList(0, 3);
 		logger.debug("Concept count: {}", concepts.size());
 		/* Generate pvPaths for the 1-level neighborhood. */
 
@@ -236,7 +230,7 @@ public class FBPathGloVeScoring {
 
 	/** Score and add all pvpaths of a concept to the pvPaths. */
 	protected void addConceptPVPaths(List<List<PropertyValue>> pvPaths, List<String> qtoks, Concept c) {
-		List<PropertyValue> list = fbo.queryAllRelations(c.getPageID(), null, logger);
+		List<PropertyValue> list = fbo.queryAllRelations(c, null, logger);
 		for(PropertyValue pv: list) {
 			pv.setProperty(fbo.queryPropertyLabel(pv.getPropRes()));
 		}
@@ -309,9 +303,9 @@ public class FBPathGloVeScoring {
 	protected List<List<PropertyValue>> scoreSecondRelation(String prop, List<String> qtoks, List<Concept> concepts) {
 		List<PropertyValue> nextpvs = new ArrayList<>();
 		for (Concept c: concepts) {
-			String metaMid = fbo.preExpand(c.getPageID(), prop);
+			String metaMid = fbo.preExpand(c.getFreebaseID(), prop);
 			if (metaMid == null) continue;
-			List<PropertyValue> results = fbo.queryAllRelations(c.getPageID(), prop, logger);
+			List<PropertyValue> results = fbo.queryAllRelations(c, prop, logger);
 			for(PropertyValue res: results) {
 				res.setProperty(fbo.queryPropertyLabel(res.getPropRes()));
 			}
@@ -338,10 +332,11 @@ public class FBPathGloVeScoring {
 		logger.debug("Number of concepts: " + concepts.size());
 		for(Concept c: concepts) {
 			for (Concept w: concepts) {
-				logger.debug("Page ids " + c.getPageID() + " to " + w.getPageID());
-				if (c.getPageID() == w.getPageID()) continue;
+				logger.debug("Freebase ids " + c.getFreebaseID() + " to " + w.getFreebaseID());
+				if (c.getFreebaseID().equals(w.getFreebaseID()))
+					continue;
 				logger.debug("Witness path from " + c.getFullLabel() + " to " + w.getFullLabel());
-				List<List<PropertyValue>> paths = fbo.queryWitnessRelations(c.getPageID(), c.getFullLabel(), w.getPageID(), logger);
+				List<List<PropertyValue>> paths = fbo.queryWitnessRelations(c.getFreebaseID(), c.getFullLabel(), w.getFreebaseID(), logger);
 				for(List<PropertyValue> path: paths) {
 					path.get(1).setConcept(c);
 				}

@@ -179,6 +179,7 @@ public class CluesToConcepts extends JCasAnnotator_ImplBase {
 				concept.setCookedLabel(cookedLabel);
 				concept.setLabelProbability(a.getProb());
 				concept.setPageID(a.getPageID());
+				concept.setFreebaseID(a.getFreebaseId());
 				concept.setEditDistance(a.getDist());
 				concept.setLogPopularity(a.getPop());
 				concept.setBySubject(c.isBySubject());

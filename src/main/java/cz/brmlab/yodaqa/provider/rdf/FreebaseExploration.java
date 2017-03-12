@@ -67,17 +67,12 @@ public class FreebaseExploration {
 //						logger.debug("ID " + id);
 						boolean match = false;
 						for(Concept w: witnesses) {
-							for(FreebaseOntology.TitledMid m: getMids(w.getPageID())) {
-//								logger.debug("MID {}", m.mid);
-								if (id.equals(m.mid)) {
-									match = true;
-									PropertyValue pv = makePV(e.getKey(), id);
-									pv.setConcept(w);
-									pathSuffixes.add(pv);
-									break;
-								}
+							if (id.equals(w.getFreebaseID())) {
+								PropertyValue pv = makePV(e.getKey(), id);
+								pv.setConcept(w);
+								pathSuffixes.add(pv);
+								break;
 							}
-							if (match) break;
 						}
 					}
 					for(String label: witLabels) {
@@ -118,15 +113,15 @@ public class FreebaseExploration {
 		return relPaths;
 	}
 
-	private Set<FreebaseOntology.TitledMid> getMids(int pageId) {
-		Set<FreebaseOntology.TitledMid> mids;
-		if (midCache.containsKey(pageId)) mids = midCache.get(pageId);
-		else {
-			mids = fbo.queryTopicByPageID(pageId, logger);
-			midCache.put(pageId, mids);
-		}
-		return mids;
-	}
+//	private Set<FreebaseOntology.TitledMid> getMids(int pageId) {
+//		Set<FreebaseOntology.TitledMid> mids;
+//		if (midCache.containsKey(pageId)) mids = midCache.get(pageId);
+//		else {
+//			mids = fbo.queryTopicByPageID(pageId, logger);
+//			midCache.put(pageId, mids);
+//		}
+//		return mids;
+//	}
 
 	private boolean isFiltered(String property) {
 		String[] filters = new String[]{"/type", "/common"};
@@ -155,35 +150,31 @@ public class FreebaseExploration {
 //		logger.debug("API {}", System.getProperty("cz.brmlab.yodaqa.provider.rdf.FreebaseExploration.ApiKey"));
 		InputStream is = null;
 //		logger.debug("Concept {} with page ID {}", c.getFullLabel(), c.getPageID());
-		Set<FreebaseOntology.TitledMid> mids = getMids(c.getPageID());
-//		logger.debug("MIDs {}", mids.size());
-		for(FreebaseOntology.TitledMid mid: mids) {
-			String fullPath = PATH + mid.mid + ".json";
-			try {
+
+		String fullPath = PATH + c.getFreebaseID() + ".json";
+		try {
 //				logger.debug("PATH {}", fullPath);
-				is = new FileInputStream(fullPath);
-			} catch (FileNotFoundException e) {
+			is = new FileInputStream(fullPath);
+		} catch (FileNotFoundException e) {
 //				logger.debug("No such file {}. Querying freebase API...", mid.mid);
-				HttpURLConnection conn = null;
-				try {
-					String urlString = FREEBASE_URL + mid.mid.substring(2, mid.mid.length());
-					String key = System.getProperty("cz.brmlab.yodaqa.provider.rdf.FreebaseExploration.ApiKey");
-					if (key != null && !key.isEmpty()) urlString += "?key=" + key;
+			HttpURLConnection conn = null;
+			try {
+				String urlString = FREEBASE_URL + c.getFreebaseID().substring(2, c.getFreebaseID().length());
+				String key = System.getProperty("cz.brmlab.yodaqa.provider.rdf.FreebaseExploration.ApiKey");
+				if (key != null && !key.isEmpty()) urlString += "?key=" + key;
 //					logger.debug("API {}", System.getProperty("cz.brmlab.yodaqa.provider.rdf.FreebaseExploration.ApiKey"));
 //					logger.debug("URL {}", urlString);
-					URL url = new URL(urlString);
-					conn = (HttpURLConnection) url.openConnection();
-					is = conn.getInputStream();
-					FileUtils.copyInputStreamToFile(is, new File(fullPath));
-					conn.disconnect();
-					logger.debug("Exists " + new File(fullPath).exists());
-					is = new FileInputStream(fullPath);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				URL url = new URL(urlString);
+				conn = (HttpURLConnection) url.openConnection();
+				is = conn.getInputStream();
+				FileUtils.copyInputStreamToFile(is, new File(fullPath));
+				conn.disconnect();
+				logger.debug("Exists " + new File(fullPath).exists());
+				is = new FileInputStream(fullPath);
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-			return is;
 		}
-		return null;
+		return is;
 	}
 }

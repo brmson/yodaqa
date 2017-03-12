@@ -176,6 +176,7 @@ public class FreebaseOntology extends FreebaseLookup {
 
 	/** Query for a given specific title form, returning a set of
 	 * topic MIDs. */
+
 	public Set<String> queryTopicByTitleForm(String title, Logger logger) {
 		/* XXX: Case-insensitive search via SPARQL turns out
 		 * to be surprisingly tricky.  Cover 91% of all cases
@@ -210,6 +211,7 @@ public class FreebaseOntology extends FreebaseLookup {
 	}
 
 	/** Query for a given enwiki pageID, returning a set of topic MIDs. */
+	@Deprecated
 	public Set<TitledMid> queryTopicByPageID(int pageID, Logger logger) {
 		String rawQueryStr =
 			"?topic <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
@@ -231,12 +233,10 @@ public class FreebaseOntology extends FreebaseLookup {
 		return results;
 	}
 
-	public List<PropertyValue> queryAllRelations(int pageId, String prop, Logger logger) {
-		Set<TitledMid> mids = queryTopicByPageID(pageId, logger);
+	public List<PropertyValue> queryAllRelations(Concept c, String prop, Logger logger) {
 		List<PropertyValue> result = new ArrayList<>();
-		for (TitledMid tmid: mids) {
-			result.addAll(queryAllRelations(tmid.mid, tmid.title, prop, logger));
-		}
+
+		result.addAll(queryAllRelations(c.getFreebaseID(), c.getCookedLabel(), prop, logger));
 		return result;
 	}
 
@@ -248,10 +248,9 @@ public class FreebaseOntology extends FreebaseLookup {
 		return rawResults.get(0)[0].getString();
 	}
 
-	public String preExpand(int pageId, String prop) {
+	public String preExpand(String mid, String prop) {
 		String rawQueryStr =
-				"?res <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageId + "\" . \n" +
-				"?res ns:" + prop + " ?val .\n" +
+				"ns:" + mid + " ns:" + prop + " ?val .\n" +
 				"BIND(ns:" + prop + " AS ?prop) .\n" +
 				/* Check if value is not a pointer to another topic
 			 	 * we could resolve to a label. */
@@ -337,15 +336,14 @@ public class FreebaseOntology extends FreebaseLookup {
 
 	}
 
-	public List<List<PropertyValue>> queryWitnessRelations(int pageId, String title, int witnessPageId, Logger logger) {
+	public List<List<PropertyValue>> queryWitnessRelations(String mid, String title, String witMid, Logger logger) {
 		List<List<PropertyValue>> result = new ArrayList<>();
 
 		String rawQueryStr =
 			/* Grab all properties of the topic, for starters. */
-			"?res <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageId + "\".\n" +
-			"?res ?prop ?val .\n" +
-			"?wit <http://rdf.freebase.com/key/wikipedia.en_id> \"" + witnessPageId + "\" .\n" +
-			"?val ?witprop ?wit .\n" +
+			"ns:" + mid + " ?prop ?val .\n" +
+			"?val ?witprop ns:" + witMid + " .\n" +
+			"BIND(ns:" + mid + " AS ?res)\n" +
 			"OPTIONAL {\n" +
 			"  ?witprop ns:type.object.name ?witproplabel .\n" +
 			"  FILTER( LANGMATCHES(LANG(?witproplabel), \"en\") )\n" +
@@ -560,7 +558,7 @@ public class FreebaseOntology extends FreebaseLookup {
 				pathQueries.add(pathQueryStr);
 			} else if (path.size() == 3) {
 				for (Concept c: concepts) {
-					pathQueries.add(getWitnessQuery(mid, ps, c.getFullLabel(), c.getPageID()));
+					pathQueries.add(getWitnessQuery(mid, ps, c.getFullLabel(), c.getFreebaseID()));
 				}
 				for (String w: witnessLabels) {
 					pathQueries.add(getWitnessQuery(mid, ps, w, null));
@@ -634,7 +632,7 @@ public class FreebaseOntology extends FreebaseLookup {
 
 	/** Return a SPARQL select fragment for matching 3-relation path with
 	 * a given witness (connected extra selector clue). */
-	protected String getWitnessQuery(String mid, PathScore ps, String fullLabel, Integer pageID) {
+	protected String getWitnessQuery(String mid, PathScore ps, String fullLabel, String wmid) {
 		PropertyPath path = ps.path;
 		String witnessRel = path.get(2);
 		String quotedTitle = fullLabel.replaceAll("\"", "").replaceAll("\\\\", "").replaceAll("\n", " ");
@@ -642,12 +640,11 @@ public class FreebaseOntology extends FreebaseLookup {
 			"  ns:" + mid + " ns:" + path.get(0) + " ?med .\n" +
 			"  ?med ns:" + path.get(1) + " ?val .\n";
 
-		if (pageID != null) {
+		if (wmid != null) {
 			/* MID witness match */
 			pathQueryStr +=
 				"  {\n" +
-				"    ?med ns:" + witnessRel + " ?concept .\n" +
-				"    ?concept <http://rdf.freebase.com/key/wikipedia.en_id> \"" + pageID + "\" .\n" +
+				"    ?med ns:" + witnessRel + " ns:" + wmid + " .\n" +
 				"    ?concept rdfs:label ?wlabel .\n" +
 				"    FILTER(LANGMATCHES(LANG(?wlabel), \"en\"))\n" +
 				"    BIND(\"" + AF.OriginFreebaseWitnessMid + "\" AS ?witnessAF)\n" +

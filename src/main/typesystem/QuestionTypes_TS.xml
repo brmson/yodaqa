@@ -250,6 +250,11 @@
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>freebaseID</name>
+            <description>The freebase id of the wikipedia page.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>bySubject</name>
             <description>Whether this concept has subdued a ClueSubject.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>

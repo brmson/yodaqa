@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.Gson;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -39,7 +40,10 @@ public class DBpediaTitles extends DBpediaLookup {
 	public class Article implements Cloneable {
 		protected String name;
 		protected int pageID;
+		@SerializedName("freebase_id")
+		protected String freebaseId;
 		protected String matchedLabel;
+		@SerializedName("db_id")
 		protected String canonLabel;
 		protected double dist; // edit dist.
 		protected double pop; // relevance/prominence of the concept (universally or wrt. the question)
@@ -82,6 +86,7 @@ public class DBpediaTitles extends DBpediaLookup {
 
 		public String getName() { return name; }
 		public int getPageID() { return pageID; }
+		public String getFreebaseId() { return freebaseId; }
 		public String getMatchedLabel() { return matchedLabel; }
 		public String getCanonLabel() { return canonLabel; }
 		public double getDist() { return dist; }
@@ -128,24 +133,24 @@ public class DBpediaTitles extends DBpediaLookup {
 				}
 			}
 			List<Article> entities = mergeResults(new ArrayList<Article>(), crossWikiEntities, logger);
-			List<Article> results = new ArrayList<>();
-			for (Article a : entities) {
-				results.addAll(queryArticle(a, logger));
-
-				/* **d/movies specific**: attempt forceful
-				 * topic-specific disambiguation */
-				// lord of the rings
-				Article a2 = a.newRenamed(a.getName() + "_(film_series)");
-				results.addAll(queryArticle(a2, logger));
-				// ender's game etc.
-				a2 = a.newRenamed(a.getName() + "_(film)");
-				results.addAll(queryArticle(a2, logger));
-			}
-			results = deduplicateResults(results);
-			if (!results.isEmpty())
-				return results;
+//			List<Article> results = new ArrayList<>();
+//			for (Article a : entities) {
+//				results.addAll(queryArticle(a, logger));
+//
+//				/* **d/movies specific**: attempt forceful
+//				 * topic-specific disambiguation */
+//				// lord of the rings
+//				Article a2 = a.newRenamed(a.getName() + "_(film_series)");
+//				results.addAll(queryArticle(a2, logger));
+//				// ender's game etc.
+//				a2 = a.newRenamed(a.getName() + "_(film)");
+//				results.addAll(queryArticle(a2, logger));
+//			}
+//			results = deduplicateResults(results);
+			if (!entities.isEmpty())
+				return entities;
 		}
-		return new ArrayList<Article>();
+		return new ArrayList<>();
 	}
 
 	/** Query for a given Article in full DBpedia, returning a set of
@@ -326,12 +331,14 @@ public class DBpediaTitles extends DBpediaLookup {
 		jr.beginObject();
 		jr.nextName(); //results :
 		jr.beginArray();
+		jr.beginArray();
 		while (jr.hasNext()) {
 			Article o = gson.fromJson(jr, Article.class);
 			o.getByCWLookup = true;
 			results.add(o);
-			logger.debug("sqlite-lookup({}) returned: p{} ~{} [{}] {} {}", label, o.getProb(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getPageID());
+			logger.debug("sqlite-lookup({}) returned: p{} ~{} [{}] {} {}", label, o.getProb(), o.getMatchedLabel(), o.getCanonLabel(), o.getName(), o.getFreebaseId());
 		}
+		jr.endArray();
 		jr.endArray();
 		jr.endObject();
 
