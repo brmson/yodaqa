@@ -104,7 +104,7 @@ and ``data/README_DockerCompose.txt`` for details.
 
 It is certainly possible to adapt YodaQA for a particular domain and use
 custom data sources, but this process is not documented in detail yet.
-Please contact ailao@ailao.eu for support and guidance if you are interested
+Please contact yodaqa@ailao.eu for support and guidance if you are interested
 and need help.
 
 ### Fulltext Data Source
