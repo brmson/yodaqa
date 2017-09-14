@@ -1,11 +1,15 @@
 buildscript {
   repositories {
     jcenter()
+     maven {
+      url "https://plugins.gradle.org/m2/"
+    }
   }
   dependencies {
     classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
-    classpath 'com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:+'
+    classpath "gradle.plugin.com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:0.4"
     classpath 'com.tkruse.gradle:gradle-groovysh-plugin:1.0.5'
+    
   }
 }
 
