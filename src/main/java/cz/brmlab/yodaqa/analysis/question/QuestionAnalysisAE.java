@@ -122,17 +122,18 @@ public class QuestionAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(AnalysisEngineFactory.createEngineDescription(LATByWordnet.class,
 					LATByWordnet.PARAM_EXPAND_SYNSET_LATS, false));
 
-		/* Generate clues; the order is less specific to more specific */
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByTokenConstituent.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
-		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySubject.class));
-		/* Convert some syntactic clues to concept clues */
-		builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class));
-		/* Merge any duplicate clues */
-		builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
-
+//		/* Generate clues; the order is less specific to more specific */
+//		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByTokenConstituent.class));
+//		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySV.class));
+//		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByNE.class));
+//		builder.add(AnalysisEngineFactory.createEngineDescription(ClueByLAT.class));
+//		builder.add(AnalysisEngineFactory.createEngineDescription(ClueBySubject.class));
+//		/* Convert some syntactic clues to concept clues */
+//		builder.add(AnalysisEngineFactory.createEngineDescription(CluesToConcepts.class));
+//		/* Merge any duplicate clues */
+//		builder.add(AnalysisEngineFactory.createEngineDescription(CluesMergeByText.class));
+		/* Link entities directly from question representation using Diffbot entity linker */
+		builder.add(AnalysisEngineFactory.createEngineDescription(DiffbotEntities.class));
 
 		builder.add(AnalysisEngineFactory.createEngineDescription(DashboardHook.class));
 		/* Classify question into classes*/

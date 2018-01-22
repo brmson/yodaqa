@@ -28,7 +28,7 @@ public class UrlManager {
 	}
 
 	public enum DataBackends {
-		DBPEDIA, FREEBASE, LABEL1, LABEL2, SOLR
+		DBPEDIA, FREEBASE, LABEL1, LABEL2, SOLR, DIFFBOT_EL, DIFFBOT_KG
 	}
 
 	private static String[][] urlLookUpTable;
@@ -76,6 +76,10 @@ public class UrlManager {
 		stringBuilder.append(System.getProperty("cz.brmlab.yodaqa.label2url"));
 		stringBuilder.append("\nSystem.getProperty(\"cz.brmlab.yodaqa.solrurl\") ");
 		stringBuilder.append(System.getProperty("cz.brmlab.yodaqa.solrurl"));
+		stringBuilder.append("\nSystem.getProperty(\"cz.brmlab.yodaqa.diffbotelurl\") ");
+		stringBuilder.append(System.getProperty("cz.brmlab.yodaqa.diffbotelurl"));
+		stringBuilder.append("\nSystem.getProperty(\"cz.brmlab.yodaqa.diffbotkgurl\") ");
+		stringBuilder.append(System.getProperty("cz.brmlab.yodaqa.diffbotkgurl"));
 		stringBuilder.append("\n\nURL each backend receives:");
 		stringBuilder.append("\nDBpedia: ");
 		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.DBPEDIA.ordinal()));
@@ -87,6 +91,10 @@ public class UrlManager {
 		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.LABEL2.ordinal()));
 		stringBuilder.append("\nSolr: ");
 		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.SOLR.ordinal()));
+		stringBuilder.append("\nDiffbot entity linker: ");
+		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.DIFFBOT_EL.ordinal()));
+		stringBuilder.append("\nDiffbot knowledge graph: ");
+		stringBuilder.append(lookUpUrl(UrlManager.DataBackends.DIFFBOT_KG.ordinal()));
 		return stringBuilder.toString();
 	}
 
@@ -186,6 +194,12 @@ public class UrlManager {
 			case 4:
 				return System.getProperty("cz.brmlab.yodaqa.solrurl")!=null?
 					System.getProperty("cz.brmlab.yodaqa.solrurl"):lookUpUrl(currentBackend, fieldId);
+			case 5:
+				return System.getProperty("cz.brmlab.yodaqa.diffbotelurl")!=null?
+						System.getProperty("cz.brmlab.yodaqa.diffbotelurl"):lookUpUrl(currentBackend, fieldId);
+			case 6:
+				return System.getProperty("cz.brmlab.yodaqa.diffbotkgurl")!=null?
+						System.getProperty("cz.brmlab.yodaqa.diffbotkgurl"):lookUpUrl(currentBackend, fieldId);
 			default:
 				return null;
 		}

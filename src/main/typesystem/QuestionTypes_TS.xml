@@ -250,6 +250,11 @@
             <rangeTypeName>uima.cas.Integer</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>id</name>
+            <description>The id of the diffbot entity.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>bySubject</name>
             <description>Whether this concept has subdued a ClueSubject.</description>
             <rangeTypeName>uima.cas.Boolean</rangeTypeName>
@@ -318,6 +323,11 @@
             <name>labelRr</name>
             <description>The reciprocial rank in a score-sorted list of output labelled concepts.</description>
             <rangeTypeName>uima.cas.Double</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>origin</name>
+            <description>The origin of the diffbot entity (e.g. Diffbot, Wikidata, DBpedia).</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
         </features>
       </typeDescription>

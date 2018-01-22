@@ -1,9 +1,0 @@
-[
-  [
-    "http://yodaqa.felk.cvut.cz/fuseki-dbp/dbpedia/query",
-    "http://yodaqa.felk.cvut.cz/fuseki-fb/freebase/query",
-    "http://yodaqa.felk.cvut.cz/dbp-labels1",
-    "http://yodaqa.felk.cvut.cz/dbp-labels2",
-    "http://yodaqa.felk.cvut.cz/apache/solr/"
-  ]
-]

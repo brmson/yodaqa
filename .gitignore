@@ -28,3 +28,4 @@ build
 #bing api key
 bingapi.properties
 bingresults.db
+conf/backendURLs.json
