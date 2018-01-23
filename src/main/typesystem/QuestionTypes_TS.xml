@@ -46,6 +46,11 @@
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
           <featureDescription>
+            <name>relPath</name>
+            <description>Relation path from question entity to answer entity</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
             <name>answerPattern</name>
             <description>PCRE matching a valid answer; of course, this may be empty if the answer is unknown beforehand</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>

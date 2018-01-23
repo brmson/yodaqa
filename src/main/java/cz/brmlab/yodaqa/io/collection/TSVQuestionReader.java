@@ -79,7 +79,7 @@ public class TSVQuestionReader extends CasCollectionReader_ImplBase {
 		return input != null;
 	}
 
-	protected void initCas(JCas jcas, String id, String type, String text, String answer) {
+	protected void initCas(JCas jcas, String id, String type, String text, String answer, String relPath) {
 		jcas.setDocumentLanguage(language);
 
 		QuestionInfo qInfo = new QuestionInfo(jcas);
@@ -88,6 +88,7 @@ public class TSVQuestionReader extends CasCollectionReader_ImplBase {
 		qInfo.setQuestionType(type);
 		qInfo.setQuestionText(text);
 		qInfo.setAnswerPattern(answer);
+		qInfo.setRelPath(relPath);
 		qInfo.setProcBeginTime(System.currentTimeMillis());
 		qInfo.addToIndexes(jcas);
 	}
@@ -107,7 +108,8 @@ public class TSVQuestionReader extends CasCollectionReader_ImplBase {
 			initCas(jcas, /* id */ fields[0],
 				/* type */ fields[1],
 				/* text */ fields[2],
-				/* answerpcre */ fields[3]);
+				/* answerpcre */ fields[3],
+				/* relPath */ fields[7]	);
 			jcas.setDocumentText(fields[2]);
 		} catch (CASException e) {
 			throw new CollectionException(e);

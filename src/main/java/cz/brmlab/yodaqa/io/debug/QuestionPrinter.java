@@ -160,6 +160,12 @@ public class QuestionPrinter extends JCasConsumer_ImplBase {
 		Concepttmp += "], ";
 		line += Concepttmp;
 
+		line += "\"relPaths\": ";
+		String relPathstmp = "[[[\"";
+		relPathstmp += qi.getRelPath().replaceAll("\\|", "\", \"");
+		relPathstmp += "\"]]],";
+		line += relPathstmp;
+
 		line += "\"Clue\": ";
 		String Cluetmp = "[";
 		boolean first = true;
