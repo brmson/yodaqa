@@ -329,6 +329,11 @@
             <description>The origin of the diffbot entity (e.g. Diffbot, Wikidata, DBpedia).</description>
             <rangeTypeName>uima.cas.String</rangeTypeName>
           </featureDescription>
+          <featureDescription>
+            <name>wikiUrl</name>
+            <description>The url of the wikipedia page (used for Wikidata mapping).</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
         </features>
       </typeDescription>
     </types>
