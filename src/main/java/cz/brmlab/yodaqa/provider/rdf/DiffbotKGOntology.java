@@ -41,8 +41,10 @@ public class DiffbotKGOntology {
 			if (je instanceof JsonObject) {
 				je = ((JsonObject) je).get(ps.path.get(i));
 			} else if (je instanceof JsonArray) {
-				je = ((JsonArray) je).get(0);
+				je = ((JsonArray) je).get(0).getAsJsonObject().get(ps.path.get(i));
 			} else {
+				logger.error("JsonElement is instance of {} which is neither a Object nor an Array."
+						+ " This should not have happened!", je.getClass().getSimpleName());
 				// TODO illegal branch
 			}
 			if (je == null) {
