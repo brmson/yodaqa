@@ -188,10 +188,7 @@ public class FBPathLogistic {
 			scores.add(pathScore);
 		}
 		/* Sort by proba, from highest. */
-		Collections.sort(scores, new Comparator<PathScore>(){ @Override
-			public int compare(PathScore ps1, PathScore ps2){
-				return Double.valueOf(ps2.proba).compareTo(Double.valueOf(ps1.proba));
-			} } );
+		Collections.sort(scores, (ps1, ps2) -> Double.compare(ps2.proba, ps1.proba));
 		return scores;
 	}
 }

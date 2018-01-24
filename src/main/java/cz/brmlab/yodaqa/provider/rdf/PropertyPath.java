@@ -24,7 +24,11 @@ public class PropertyPath {
 		List<String> path = new ArrayList<>();
 		for (String prop : fbPath.split("\\|")) {
 			if (prop.length() == 0) continue;
-			String rdfProp = prop.substring(1).replaceAll("/", "."); /* /x/y -> x.y */
+			String rdfProp;
+			if (prop.charAt(0) == '/')
+				rdfProp = prop.substring(1).replaceAll("/", "."); /* /x/y -> x.y */
+			else
+				rdfProp = prop;
 			path.add(rdfProp);
 		}
 		return new PropertyPath(path);

@@ -54,6 +54,7 @@ public class DiffbotEntities extends JCasAnnotator_ImplBase {
 				concept.getFullLabel(), concept.getCookedLabel(),
 				String.format(Locale.ENGLISH, "%.3f", concept.getScore()),
 				concept.getId(), concept.getOrigin());
+		concept.addToIndexes();
 	}
 
 	/** Produce a pretty label from sometimes-unwieldy enwiki article

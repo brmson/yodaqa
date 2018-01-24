@@ -8,6 +8,8 @@ public class AnswerSourceStructured extends AnswerSource {
 
 	public static final String TYPE_FREEBASE = "freebase";
 	public static final String TYPE_DBPEDIA = "dbpedia";
+	public static final String TYPE_WIKIDATA = "wikidata";
+	public static final String TYPE_DIFFBOT= "diffbot";
 
 	/** This comes from knowledge base ontology.  That means
 	 * a reasonably curated property space. */
