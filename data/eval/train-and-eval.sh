@@ -81,6 +81,7 @@ pushd "$clonedir"
 git checkout "$cid"
 mkdir -p conf
 cp "$baserepo"/conf/bingapi.properties conf/bingapi.properties || :
+cp "$baserepo"/conf/backendURLs.json conf/backendURLs.json || :
 
 if [ -n "$maxheapsize" ]; then
 	sed -i -e 's/maxHeapSize.*/maxHeapSize = "'$maxheapsize'"/' build.gradle
