@@ -75,8 +75,8 @@ public class AnswerAnalysisAE /* XXX: extends AggregateBuilder ? */ {
 		builder.add(createPrimitiveDescription(LATByWnInstance.class),
 			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate DBpedia LATs based on wordnet mappings */
-		builder.add(createPrimitiveDescription(LATByDBpediaWN.class),
-			CAS.NAME_DEFAULT_SOFA, "Answer");
+//		builder.add(createPrimitiveDescription(LATByDBpediaWN.class),
+//			CAS.NAME_DEFAULT_SOFA, "Answer");
 		/* Generate DBpedia LATs based on type properties
 		 * (mostly article category based; noisiest source) */
 		builder.add(createPrimitiveDescription(LATByDBpedia.class),
