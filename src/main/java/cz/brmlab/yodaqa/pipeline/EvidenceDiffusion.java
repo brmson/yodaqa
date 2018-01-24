@@ -66,6 +66,9 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 		Pattern prefix, suffix, substr;
 
 		public Patterns(String text) {
+			// XXX Why is this happening???
+			if (text == null)
+				text = "";
 			String qText = Pattern.quote(text);
 			prefix = Pattern.compile("^" + qText + boundary + ".*");
 			suffix = Pattern.compile(".*" + boundary + qText + "$");
@@ -93,6 +96,9 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 
 		for (Answer a : answers) {
 			String text = a.getCanonText();
+			// XXX Why is this happening???
+			if (text == null)
+				text = "";
 			Patterns ps = patterns.get(a);
 
 			/* XXX: This needs to be somehow cleaned up. */
@@ -108,6 +114,9 @@ public class EvidenceDiffusion extends JCasAnnotator_ImplBase {
 				if (a == a2)
 					continue;
 				String text2 = a2.getCanonText();
+				// XXX Why is this happening???
+				if (text2 == null)
+					text2 = "";
 				Patterns ps2 = patterns.get(a2);
 				if (ps2.prefix.matcher(text).matches()) {
 					logger.debug("prefixed(<<{}>>) += <<{}>>:{}", a.getText(), a2.getText(), a2.getConfidence());
