@@ -4,7 +4,6 @@ import cz.brmlab.yodaqa.analysis.ansscore.AF;
 import cz.brmlab.yodaqa.analysis.ansscore.AnswerFV;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic;
 import cz.brmlab.yodaqa.analysis.rdf.FBPathLogistic.PathScore;
-import cz.brmlab.yodaqa.analysis.rdf.KerasScoring;
 import cz.brmlab.yodaqa.analysis.rdf.WikidataPropertySelection;
 import cz.brmlab.yodaqa.flow.dashboard.AnswerSourceStructured;
 import cz.brmlab.yodaqa.model.Question.Concept;
@@ -50,9 +49,6 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 //		List<PropertyValue> properties = wikiprop.pairScoringBasedProperties(questionView, concept);
 		List<PropertyValue> properties = wikiprop.fbpathBasedProperties(fbpathLogistic, questionView, concept);
 //		List<PropertyValue> properties = wdo.query(concept.getWikiUrl(), concept.getCookedLabel(), logger);
-		for (PropertyValue pv: properties) {
-			pv.setValue(normalizeDate(pv.getValue()));
-		}
 		return properties;
 	}
 
@@ -67,22 +63,5 @@ public class WikidataOntologyPrimarySearch extends StructuredPrimarySearch {
 		// FIXME Wikidata specific features
 		fv.setFeature(AF.LATFBOntology, 1.0);
 		addTypeLAT(jcas, fv, type, new WikidataOntologyLAT(jcas));
-	}
-
-	private String normalizeDate (String text) {
-		HashMap<String, String> months = new HashMap<>();
-		months.put("01", "ledna"); months.put("02", "února"); months.put("03", "března");
-		months.put("04", "dubna"); months.put("05", "května"); months.put("06", "června");
-		months.put("07", "července"); months.put("08", "srpna"); months.put("09", "září");
-		months.put("10", "října"); months.put("11", "listopadu"); months.put("12", "prosince");
-		Pattern pattern = Pattern.compile("(\\d{4,4})-(\\d{2,2})-(\\d{2,2})T00:00:00Z");
-		Matcher m = pattern.matcher(text);
-		if (m.find()) {
-			String day = Integer.valueOf(m.group(3)).toString();
-			String month = months.get(m.group(2));
-			String year = Integer.valueOf(m.group(1)).toString();
-			return day + ". " + month + " " + year;
-		}
-		return text;
 	}
 }

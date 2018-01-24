@@ -35,16 +35,12 @@ public class WikidataPropertySelection {
 		}
 		QuestionInfo qi = JCasUtil.selectSingle(questionView, QuestionInfo.class);
 		String text = qi.getCAS().getDocumentText();
-		List<Double> scores = KerasScoring.getScores(text, labels, 0);
-		for (int i = 0; i < scores.size(); i++) {
-			properties.get(i).setScore(scores.get(i));
-		}
-		Collections.sort(properties, new Comparator<PropertyValue>() {
-			@Override
-			public int compare(PropertyValue o1, PropertyValue o2) {
-				return o2.getScore().compareTo(o1.getScore());
-			}
-		});
+//		List<Double> scores = KerasScoring.getScores(text, labels, 0);
+//		for (int i = 0; i < scores.size(); i++) {
+//			properties.get(i).setScore(scores.get(i));
+//		}
+		Collections.sort(properties, (o1, o2) -> o2.getScore().compareTo(o1.getScore()));
+
 		for(PropertyValue pv: properties) {
 			logger.debug("SORTED {} {} {}", pv.getProperty(), pv.getPropRes(), pv.getScore());
 		}
