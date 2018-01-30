@@ -55,7 +55,9 @@ public class DiffbotKGOntology {
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 			// TODO possible valRes as an answer entity ID/URI
-			PropertyValue pv = new PropertyValue(title, title, ps.path.toString(), je.getAsString(), null,
+			String value = je.getAsString();
+			value = value.replaceAll("[\\r\\n]", "");
+			PropertyValue pv = new PropertyValue(title, title, ps.path.toString(), value, null,
 					null, fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
 			pv.setScore(ps.proba);
 			results.add(pv);
