@@ -16,6 +16,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class DiffbotKGOntology {
 	private static final String ENDPOINT_URL = UrlManager.lookUpUrl(UrlManager.DataBackends.DIFFBOT_KG.ordinal());
@@ -41,6 +42,7 @@ public class DiffbotKGOntology {
 			if (je instanceof JsonObject) {
 				je = ((JsonObject) je).get(ps.path.get(i));
 			} else if (je instanceof JsonArray) {
+				// TODO return all elements of the array
 				je = ((JsonArray) je).get(0).getAsJsonObject().get(ps.path.get(i));
 			} else {
 				logger.error("JsonElement is instance of {} which is neither a Object nor an Array."
@@ -55,7 +57,13 @@ public class DiffbotKGOntology {
 			AnswerFV fv = new AnswerFV();
 			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
 			// TODO possible valRes as an answer entity ID/URI
-			String value = je.getAsString();
+			String value;
+			if (je instanceof JsonArray) {
+				// TODO return all elements of the array
+				value = je.getAsJsonArray().get(0).getAsString();
+			} else {
+				value = je.getAsString();
+			}
 			value = value.replaceAll("[\\r\\n]", "");
 			PropertyValue pv = new PropertyValue(title, title, ps.path.toString(), value, null,
 					null, fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
