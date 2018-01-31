@@ -41,29 +41,34 @@ public class DiffbotKGOntology {
 		JsonElement je = new JsonParser().parse(jr);
 		List<JsonElement> candidates = new ArrayList<>();
 		List<JsonElement> candidatesTmp = new LinkedList<>();
-		candidates.add(je.getAsJsonObject().get("data").getAsJsonArray().get(0).getAsJsonObject());
-		for (int i = 0; i < ps.path.size(); i++) {
-			JsonElement first = candidates.get(0);
-			if (first instanceof JsonObject) {
-				for(JsonElement c: candidates) {
-					candidatesTmp.add(c.getAsJsonObject().get(ps.path.get(i)));
-				}
-			} else if (first instanceof JsonArray) {
-				for(JsonElement c: candidates) {
-					for(JsonElement c2: c.getAsJsonArray()) {
-						candidatesTmp.add(c2.getAsJsonObject().get(ps.path.get(i)));
+		JsonArray data = je.getAsJsonObject().get("data").getAsJsonArray();
+		if (data.size() > 0) {
+			candidates.add(data.get(0).getAsJsonObject());
+		}
+		if (!candidates.isEmpty()) {
+			for (int i = 0; i < ps.path.size(); i++) {
+				JsonElement first = candidates.get(0);
+				if (first instanceof JsonObject) {
+					for (JsonElement c : candidates) {
+						candidatesTmp.add(c.getAsJsonObject().get(ps.path.get(i)));
 					}
+				} else if (first instanceof JsonArray) {
+					for (JsonElement c : candidates) {
+						for (JsonElement c2 : c.getAsJsonArray()) {
+							candidatesTmp.add(c2.getAsJsonObject().get(ps.path.get(i)));
+						}
+					}
+				} else {
+					logger.error("JsonElement is instance of {} which is neither a Object nor an Array."
+							+ " This should not have happened!", je.getClass().getSimpleName());
+					// TODO illegal branch
 				}
-			} else {
-				logger.error("JsonElement is instance of {} which is neither a Object nor an Array."
-						+ " This should not have happened!", je.getClass().getSimpleName());
-				// TODO illegal branch
-			}
-			candidates = new ArrayList<>(candidatesTmp);
-			candidates.removeAll(Collections.singleton(null));
-			candidatesTmp.clear();
-			if (candidates.isEmpty()) {
-				break;
+				candidates = new ArrayList<>(candidatesTmp);
+				candidates.removeAll(Collections.singleton(null));
+				candidatesTmp.clear();
+				if (candidates.isEmpty()) {
+					break;
+				}
 			}
 		}
 		if (!candidates.isEmpty()) {
