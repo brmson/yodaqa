@@ -15,6 +15,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,39 +38,55 @@ public class DiffbotKGOntology {
 		logger.debug("Request URL: {}", requestURL);
 		JsonReader jr = new JsonReader(new InputStreamReader(connection.getInputStream()));
 		JsonElement je = new JsonParser().parse(jr);
-		je = je.getAsJsonObject().get("data").getAsJsonArray().get(0).getAsJsonObject();
+		List<JsonElement> candidates = new ArrayList<>();
+		List<JsonElement> candidatesTmp = new LinkedList<>();
+		candidates.add(je.getAsJsonObject().get("data").getAsJsonArray().get(0).getAsJsonObject());
 		for (int i = 0; i < ps.path.size(); i++) {
-			if (je instanceof JsonObject) {
-				je = ((JsonObject) je).get(ps.path.get(i));
-			} else if (je instanceof JsonArray) {
-				// TODO return all elements of the array
-				je = ((JsonArray) je).get(0).getAsJsonObject().get(ps.path.get(i));
+			JsonElement first = candidates.get(0);
+			if (first instanceof JsonObject) {
+				for(JsonElement c: candidates) {
+					candidatesTmp.add(c.getAsJsonObject().get(ps.path.get(i)));
+				}
+			} else if (first instanceof JsonArray) {
+				for(JsonElement c: candidates) {
+					for(JsonElement c2: c.getAsJsonArray()) {
+						candidatesTmp.add(c2.getAsJsonObject().get(ps.path.get(i)));
+					}
+				}
 			} else {
 				logger.error("JsonElement is instance of {} which is neither a Object nor an Array."
 						+ " This should not have happened!", je.getClass().getSimpleName());
 				// TODO illegal branch
 			}
-			if (je == null) {
+			candidates = new ArrayList<>(candidatesTmp);
+			candidatesTmp.clear();
+			if (candidates.get(0) == null) {
 				break;
 			}
 		}
-		if (je != null) {
-			AnswerFV fv = new AnswerFV();
-			fv.setFeature(AF.OriginFreebaseOntology, 1.0);
+		if (candidates.get(0) != null) {
 			// TODO possible valRes as an answer entity ID/URI
-			String value;
-			if (je instanceof JsonArray) {
-				// TODO return all elements of the array
-				value = je.getAsJsonArray().get(0).getAsString();
-			} else {
-				value = je.getAsString();
+			for (JsonElement c: candidates) {
+				if (c instanceof JsonArray) {
+					for (JsonElement c2: c.getAsJsonArray()) {
+						results.add(createPV(title, ps.path.toString(), c2.getAsString(), ps.proba));
+					}
+				} else {
+					results.add(createPV(title, ps.path.toString(), c.getAsString(), ps.proba));
+				}
 			}
-			value = value.replaceAll("[\\r\\n]", "");
-			PropertyValue pv = new PropertyValue(title, title, ps.path.toString(), value, null,
-					null, fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
-			pv.setScore(ps.proba);
-			results.add(pv);
+
 		}
 		return results;
+	}
+
+	public PropertyValue createPV(String title, String path, String value, double score) {
+		AnswerFV fv = new AnswerFV();
+		fv.setFeature(AF.OriginFreebaseOntology, 1.0);
+		value = value.replaceAll("[\\r\\n]", "");
+		PropertyValue pv = new PropertyValue(title, title, path, value, null,
+				null, fv, AnswerSourceStructured.ORIGIN_ONTOLOGY);
+		pv.setScore(score);
+		return pv;
 	}
 }
