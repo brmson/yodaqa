@@ -15,6 +15,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -59,12 +60,13 @@ public class DiffbotKGOntology {
 				// TODO illegal branch
 			}
 			candidates = new ArrayList<>(candidatesTmp);
+			candidates.removeAll(Collections.singleton(null));
 			candidatesTmp.clear();
-			if (candidates.get(0) == null) {
+			if (candidates.isEmpty()) {
 				break;
 			}
 		}
-		if (candidates.get(0) != null) {
+		if (!candidates.isEmpty()) {
 			// TODO possible valRes as an answer entity ID/URI
 			for (JsonElement c: candidates) {
 				if (c instanceof JsonArray) {
