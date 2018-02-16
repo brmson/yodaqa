@@ -14,7 +14,7 @@ class Template:
     def get_entity_and_value(self, entity_json, path):
         name = entity_json["name"]
         id = entity_json["id"]
-        value = str(self.get_value_from_path(path, entity_json)).replace("\n", "").replace("\r", "")
+        value = str(self.get_value_from_path(path, entity_json)).replace("\n", "").replace("\r", "").replace("\t", "")
 
         if len(path.split("|")) > 1:
             path = "|".join(path.split("|")[:-1])
