@@ -1,0 +1,1178 @@
+[
+  {
+    "entity_type": "person",
+    "attributes": [
+      {
+        "path": "age",
+        "question_templates": [
+          "What is age of #PERSON?",
+          "How old is #PERSON?",
+          "What is #PERSON's age?"
+        ]
+      },
+      {
+        "path": "awards|title",
+        "question_templates": [
+          "What award has the #PERSON received?",
+          "Which award has the #PERSON received?"
+        ]
+      },
+      {
+        "path": "birthDate|str",
+        "question_templates": [
+          "When was #PERSON born?",
+          "When is #PERSONS's birthday?",
+          "When is birthday of #PERSON?"
+        ]
+      },
+      {
+        "path": "children|name",
+        "question_templates": [
+          "Who is the child of #PERSON?",
+          "Who is the #PERSON's child?",
+          "What is the name #PERSON's child?"
+        ]
+      },
+      {
+        "path": "deathDate|str",
+        "question_templates": [
+          "When did #PERSON die?",
+          "What is the #PERSON's date of death?",
+          "What is the day of death of #PERSON?"
+        ]
+      },
+      {
+        "path": "description",
+        "question_templates": [
+          "Who is #PERSON?",
+          "What is description of #PERSON?",
+          "What is #PERSON's description?"
+        ]
+      },
+      {
+        "path": "educations|institution|name",
+        "question_templates": [
+          "Where did #PERSON study?",
+          "What school did #PERSON study?",
+          "What school did #PERSON attended?"
+        ]
+      },
+      {
+        "path": "educations|major|name",
+        "question_templates": [
+          "What did #PERSON study?",
+          "Which field did #PERSON study?",
+          "What field did #PERSON study?"
+        ]
+      },
+      {
+        "path": "emailAddresses|contactString",
+        "question_templates": [
+          "What is #PERSON's email addresses?",
+          "What is #PERSON's email?",
+          "What's the email of the #PERSON?"
+        ]
+      },
+      {
+        "path": "employments|employer|name",
+        "question_templates": [
+          "Where did #PERSON work?",
+          "Who was #PERSON's employer?",
+          "Who was employer of #PERSON?"
+        ]
+      },
+      {
+        "path": "eyeColor|normalizedValue",
+        "question_templates": [
+          "What is eye color of #PERSON?",
+          "What are #PERSON's eye color?",
+          "Which color does #PERSON's eye have?"
+        ]
+      },
+      {
+        "path": "friends|name",
+        "question_templates": [
+          "Who is friend of #PERSON?",
+          "Who is #PERSON's friend?"
+        ]
+      },
+      {
+        "path": "gender|normalizedValue",
+        "question_templates": [
+          "What is #PERSON's gender?",
+          "What is gender of #PERSON?"
+        ]
+      },
+      {
+        "path": "hairColor|normalizedValue",
+        "question_templates": [
+          "What is #PERSON's hair color?",
+          "What is #PERSON's color of hair?",
+          "Which color has #PERSON's hair?",
+          "Which color has hair of #PERSON?"
+        ]
+      },
+      {
+        "path": "height",
+        "question_templates": [
+          "How high is #PERSON?",
+          "What is #PERSON's height?",
+          "What is height of #PERSON?"
+        ]
+      },
+      {
+        "path": "homepageUri",
+        "question_templates": [
+          "What is #PERSON's homepage?",
+          "What is homepage of #PERSON?"
+        ]
+      },
+      {
+        "path": "languages|normalizedValue",
+        "question_templates": [
+          "Which language does #PERSON speak?",
+          "Which language does #PERSON use?",
+          "Which language does #PERSON know?",
+          "What is #PERSON's language?"
+        ]
+      },
+      {
+        "path": "locations|address",
+        "question_templates": [
+          "Where was #PERSON?",
+          "What is location of #PERSON?",
+          "What is #PERSON's location?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is #PERSON's name?"
+        ]
+      },
+      {
+        "path": "nameDetail|firstName",
+        "question_templates": [
+          "What is #PERSON's first name?"
+        ]
+      },
+      {
+        "path": "nameDetail|lastName",
+        "question_templates": [
+          "What is #PERSON's last name?"
+        ]
+      },
+      {
+        "path": "nameDetail|middleName",
+        "question_templates": [
+          "What is #PERSON's middle name?"
+        ]
+      },
+      {
+        "path": "parents|name",
+        "question_templates": [
+          "Who is the #PERSON's parent?",
+          "Who is parent of #PERSON?",
+          "What is the name of #PERSON's parents?"
+        ]
+      },
+      {
+        "path": "phoneNumbers|string",
+        "question_templates": [
+          "What is #PERSON's phone number?",
+          "What is #PERSON's phone number?",
+          "What's phone number of #PERSON?"
+        ]
+      },
+      {
+        "path": "religion|normalizedValue",
+        "question_templates": [
+          "What is #PERSON's religion?",
+          "What is religion of #PERSON?"
+        ]
+      },
+      {
+        "path": "skills|name",
+        "question_templates": [
+          "What is #PERSON's skill?",
+          "What is skill of #PERSON?",
+          "Which skill does #PERSON have?"
+        ]
+      },
+      {
+        "path": "weight",
+        "question_templates": [
+          "What is #PERSON's weight?",
+          "What is weight of #PERSON?",
+          "How heavy is #PERSON?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "corporation",
+    "attributes": [
+      {
+        "path": "boardMembers|name",
+        "question_templates": [
+          "Who is the board member of #CORPORATION?",
+          "Who is #CORPORATION's board member?"
+        ]
+      },
+      {
+        "path": "blogUri",
+        "question_templates": [
+          "What is the blog of #CORPORATION?",
+          "What is #CORPORATION's blog?"
+        ]
+      },
+      {
+        "path": "brands",
+        "question_templates": [
+          "What is the brand of #CORPORATION?",
+          "What is #CORPORATION's brand?"
+        ]
+      },
+      {
+        "path": "categories|name",
+        "question_templates": [
+          "What is the category of #CORPORATION?",
+          "What is #CORPORATION's category?"
+        ]
+      },
+      {
+        "path": "ceo|name",
+        "question_templates": [
+          "Who is the CEO of #CORPORATION?",
+          "Who is #CORPORATION's CEO?"
+        ]
+      },
+      {
+        "path": "description",
+        "question_templates": [
+          "What is #CORPORATION?",
+          "What is #CORPORATION's description?",
+          "What is description of #CORPORATION?"
+        ]
+      },
+      {
+        "path": "descriptors",
+        "question_templates": [
+          "What is #CORPORATION's descriptor?",
+          "What is descriptor of #CORPORATION?"
+        ]
+      },
+      {
+        "path": "founders|name",
+        "question_templates": [
+          "Who is #CORPORATION's founder?",
+          "Who is founder of #CORPORATION?"
+        ]
+      },
+      {
+        "path": "foundingDate|str",
+        "question_templates": [
+          "What is the founding date for the #CORPORATION?",
+          "When was #CORPORATION founded?",
+          "What is the #CORPORATION's founding date?",
+          "When was #CORPORATION's founding date?"
+        ]
+      },
+      {
+        "path": "homepageUri",
+        "question_templates": [
+          "What is #CORPORATION's homepage?",
+          "What is homepage of #CORPORATION?"
+        ]
+      },
+      {
+        "path": "industries",
+        "question_templates": [
+          "What is #CORPORATION's industry?",
+          "What is industry of #CORPORATION?"
+        ]
+      },
+      {
+        "path": "investments|investors|name",
+        "question_templates": [
+          "Who is #CORPORATION's investor?",
+          "Who is investor of #CORPORATION?",
+          "Who invested into #CORPORATION"
+        ]
+      },
+      {
+        "path": "location|address",
+        "question_templates": [
+          "What is the address of #CORPORATION?",
+          "Where is #CORPORATION offices located?",
+          "What's #CORPORATION's address?",
+          "Where is #CORPORATION located?",
+          "What is #CORPORATION headquarters location?",
+          "What is the address for the #CORPORATION?"
+        ]
+      },
+      {
+        "path": "motto",
+        "question_templates": [
+          "What is the motto of #CORPORATION?",
+          "What's #CORPORATION's motto?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is the name of #CORPORATION?",
+          "What's #CORPORATION's name?"
+        ]
+      },
+      {
+        "path": "nbEmployeesMax",
+        "question_templates": [
+          "How many employees are there at #CORPORATION?",
+          "How many people work for #CORPORATION?",
+          "How many employees does #CORPORATION have today?"
+        ]
+      },
+      {
+        "path": "parentCompany|name",
+        "question_templates": [
+          "Which company is parent company of #CORPORATION?",
+          "Which company is #CORPORATION's parent company?"
+        ]
+      },
+      {
+        "path": "phoneNumbers|string",
+        "question_templates": [
+          "What phone number does #CORPORATION have?",
+          "Which phone number does #CORPORATION have?",
+          "What is phone number of #CORPORATION?",
+          "What is #CORPORATION's phone number?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "organization",
+    "attributes": [
+      {
+        "path": "boardMembers|name",
+        "question_templates": [
+          "Who is the board member of #ORGANIZATION?",
+          "Who is #ORGANIZATION's board member?"
+        ]
+      },
+      {
+        "path": "blogUri",
+        "question_templates": [
+          "What is the blog of #ORGANIZATION?",
+          "What is #ORGANIZATION's blog?"
+        ]
+      },
+      {
+        "path": "brands",
+        "question_templates": [
+          "What is the brand of #ORGANIZATION?",
+          "What is #ORGANIZATION's brand?"
+        ]
+      },
+      {
+        "path": "categories|name",
+        "question_templates": [
+          "What is the category of #ORGANIZATION?",
+          "What is #ORGANIZATION's category?"
+        ]
+      },
+      {
+        "path": "ceo|name",
+        "question_templates": [
+          "Who is the CEO of #ORGANIZATION?",
+          "Who is #ORGANIZATION's CEO?"
+        ]
+      },
+      {
+        "path": "description",
+        "question_templates": [
+          "What is #ORGANIZATION?",
+          "What is #ORGANIZATION's description?",
+          "What is description of #ORGANIZATION?"
+        ]
+      },
+      {
+        "path": "descriptors",
+        "question_templates": [
+          "What is #ORGANIZATION's descriptor?",
+          "What is descriptor of #ORGANIZATION?"
+        ]
+      },
+      {
+        "path": "founders|name",
+        "question_templates": [
+          "Who is #ORGANIZATION's founder?",
+          "Who is founder of #ORGANIZATION?"
+        ]
+      },
+      {
+        "path": "foundingDate|str",
+        "question_templates": [
+          "What is the founding date for the #ORGANIZATION?",
+          "When was #ORGANIZATION founded?",
+          "What is the #ORGANIZATION's founding date?",
+          "When was #ORGANIZATION's founding date?"
+        ]
+      },
+      {
+        "path": "homepageUri",
+        "question_templates": [
+          "What is #ORGANIZATION's homepage?",
+          "What is homepage of #ORGANIZATION?"
+        ]
+      },
+      {
+        "path": "industries",
+        "question_templates": [
+          "What is #ORGANIZATION's industry?",
+          "What is industry of #ORGANIZATION?"
+        ]
+      },
+      {
+        "path": "investments|investors|name",
+        "question_templates": [
+          "Who is #ORGANIZATION's investor?",
+          "Who is investor of #ORGANIZATION?",
+          "Who invested into #ORGANIZATION"
+        ]
+      },
+      {
+        "path": "location|address",
+        "question_templates": [
+          "What is the address of #ORGANIZATION?",
+          "Where is #ORGANIZATION offices located?",
+          "What's #ORGANIZATION's address?",
+          "Where is #ORGANIZATION located?",
+          "What is #ORGANIZATION headquarters location?",
+          "What is the address for the #ORGANIZATION?"
+        ]
+      },
+      {
+        "path": "motto",
+        "question_templates": [
+          "What is the motto of #ORGANIZATION?",
+          "What's #ORGANIZATION's motto?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is the name of #ORGANIZATION?",
+          "What's #ORGANIZATION's name?"
+        ]
+      },
+      {
+        "path": "nbEmployeesMax",
+        "question_templates": [
+          "How many employees are there at #ORGANIZATION?",
+          "How many people work for #ORGANIZATION?",
+          "How many employees does #ORGANIZATION have today?"
+        ]
+      },
+      {
+        "path": "parentCompany|name",
+        "question_templates": [
+          "Which company is parent company of #ORGANIZATION?",
+          "Which company is #ORGANIZATION's parent company?"
+        ]
+      },
+      {
+        "path": "phoneNumbers|string",
+        "question_templates": [
+          "What phone number does #ORGANIZATION have?",
+          "Which phone number does #ORGANIZATION have?",
+          "What is phone number of #ORGANIZATION?",
+          "What is #ORGANIZATION's phone number?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "educationalInstitution",
+    "attributes": [
+      {
+        "path": "boardMembers|name",
+        "question_templates": [
+          "Who is the board member of #EDUCATIONALINSTITUTION?",
+          "Who is #EDUCATIONALINSTITUTION's board member?"
+        ]
+      },
+      {
+        "path": "blogUri",
+        "question_templates": [
+          "What is the blog of #EDUCATIONALINSTITUTION?",
+          "What is #EDUCATIONALINSTITUTION's blog?"
+        ]
+      },
+      {
+        "path": "brands",
+        "question_templates": [
+          "What is the brand of #EDUCATIONALINSTITUTION?",
+          "What is #EDUCATIONALINSTITUTION's brand?"
+        ]
+      },
+      {
+        "path": "categories|name",
+        "question_templates": [
+          "What is the category of #EDUCATIONALINSTITUTION?",
+          "What is #EDUCATIONALINSTITUTION's category?"
+        ]
+      },
+      {
+        "path": "ceo|name",
+        "question_templates": [
+          "Who is the CEO of #EDUCATIONALINSTITUTION?",
+          "Who is #EDUCATIONALINSTITUTION's CEO?"
+        ]
+      },
+      {
+        "path": "description",
+        "question_templates": [
+          "What is #EDUCATIONALINSTITUTION?",
+          "What is #EDUCATIONALINSTITUTION's description?",
+          "What is description of #EDUCATIONALINSTITUTION?"
+        ]
+      },
+      {
+        "path": "descriptors",
+        "question_templates": [
+          "What is #EDUCATIONALINSTITUTION's descriptor?",
+          "What is descriptor of #EDUCATIONALINSTITUTION?"
+        ]
+      },
+      {
+        "path": "founders|name",
+        "question_templates": [
+          "Who is #EDUCATIONALINSTITUTION's founder?",
+          "Who is founder of #EDUCATIONALINSTITUTION?"
+        ]
+      },
+      {
+        "path": "foundingDate|str",
+        "question_templates": [
+          "What is the founding date for the #EDUCATIONALINSTITUTION?",
+          "When was #EDUCATIONALINSTITUTION founded?",
+          "What is the #EDUCATIONALINSTITUTION's founding date?",
+          "When was #EDUCATIONALINSTITUTION's founding date?"
+        ]
+      },
+      {
+        "path": "homepageUri",
+        "question_templates": [
+          "What is #EDUCATIONALINSTITUTION's homepage?",
+          "What is homepage of #EDUCATIONALINSTITUTION?"
+        ]
+      },
+      {
+        "path": "industries",
+        "question_templates": [
+          "What is #EDUCATIONALINSTITUTION's industry?",
+          "What is industry of #EDUCATIONALINSTITUTION?"
+        ]
+      },
+      {
+        "path": "investments|investors|name",
+        "question_templates": [
+          "Who is #EDUCATIONALINSTITUTION's investor?",
+          "Who is investor of #EDUCATIONALINSTITUTION?",
+          "Who invested into #EDUCATIONALINSTITUTION"
+        ]
+      },
+      {
+        "path": "location|address",
+        "question_templates": [
+          "What is the address of #EDUCATIONALINSTITUTION?",
+          "Where is #EDUCATIONALINSTITUTION offices located?",
+          "What's #EDUCATIONALINSTITUTION's address?",
+          "Where is #EDUCATIONALINSTITUTION located?",
+          "What is #EDUCATIONALINSTITUTION headquarters location?",
+          "What is the address for the #EDUCATIONALINSTITUTION?"
+        ]
+      },
+      {
+        "path": "motto",
+        "question_templates": [
+          "What is the motto of #EDUCATIONALINSTITUTION?",
+          "What's #EDUCATIONALINSTITUTION's motto?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is the name of #EDUCATIONALINSTITUTION?",
+          "What's #EDUCATIONALINSTITUTION's name?"
+        ]
+      },
+      {
+        "path": "nbEmployeesMax",
+        "question_templates": [
+          "How many employees are there at #EDUCATIONALINSTITUTION?",
+          "How many people work for #EDUCATIONALINSTITUTION?",
+          "How many employees does #EDUCATIONALINSTITUTION have today?"
+        ]
+      },
+      {
+        "path": "parentCompany|name",
+        "question_templates": [
+          "Which company is parent company of #EDUCATIONALINSTITUTION?",
+          "Which company is #EDUCATIONALINSTITUTION's parent company?"
+        ]
+      },
+      {
+        "path": "phoneNumbers|string",
+        "question_templates": [
+          "What phone number does #EDUCATIONALINSTITUTION have?",
+          "Which phone number does #EDUCATIONALINSTITUTION have?",
+          "What is phone number of #EDUCATIONALINSTITUTION?",
+          "What is #EDUCATIONALINSTITUTION's phone number?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "localBusiness",
+    "attributes": [
+      {
+        "path": "boardMembers|name",
+        "question_templates": [
+          "Who is the board member of #LOCALBUSINESS?",
+          "Who is #LOCALBUSINESS's board member?"
+        ]
+      },
+      {
+        "path": "blogUri",
+        "question_templates": [
+          "What is the blog of #LOCALBUSINESS?",
+          "What is #LOCALBUSINESS's blog?"
+        ]
+      },
+      {
+        "path": "brands",
+        "question_templates": [
+          "What is the brand of #LOCALBUSINESS?",
+          "What is #LOCALBUSINESS's brand?"
+        ]
+      },
+      {
+        "path": "categories|name",
+        "question_templates": [
+          "What is the category of #LOCALBUSINESS?",
+          "What is #LOCALBUSINESS's category?"
+        ]
+      },
+      {
+        "path": "ceo|name",
+        "question_templates": [
+          "Who is the CEO of #LOCALBUSINESS?",
+          "Who is #LOCALBUSINESS's CEO?"
+        ]
+      },
+      {
+        "path": "description",
+        "question_templates": [
+          "What is #LOCALBUSINESS?",
+          "What is #LOCALBUSINESS's description?",
+          "What is description of #LOCALBUSINESS?"
+        ]
+      },
+      {
+        "path": "descriptors",
+        "question_templates": [
+          "What is #LOCALBUSINESS's descriptor?",
+          "What is descriptor of #LOCALBUSINESS?"
+        ]
+      },
+      {
+        "path": "founders|name",
+        "question_templates": [
+          "Who is #LOCALBUSINESS's founder?",
+          "Who is founder of #LOCALBUSINESS?"
+        ]
+      },
+      {
+        "path": "foundingDate|str",
+        "question_templates": [
+          "What is the founding date for the #LOCALBUSINESS?",
+          "When was #LOCALBUSINESS founded?",
+          "What is the #LOCALBUSINESS's founding date?",
+          "When was #LOCALBUSINESS's founding date?"
+        ]
+      },
+      {
+        "path": "homepageUri",
+        "question_templates": [
+          "What is #LOCALBUSINESS's homepage?",
+          "What is homepage of #LOCALBUSINESS?"
+        ]
+      },
+      {
+        "path": "industries",
+        "question_templates": [
+          "What is #LOCALBUSINESS's industry?",
+          "What is industry of #LOCALBUSINESS?"
+        ]
+      },
+      {
+        "path": "investments|investors|name",
+        "question_templates": [
+          "Who is #LOCALBUSINESS's investor?",
+          "Who is investor of #LOCALBUSINESS?",
+          "Who invested into #LOCALBUSINESS"
+        ]
+      },
+      {
+        "path": "location|address",
+        "question_templates": [
+          "What is the address of #LOCALBUSINESS?",
+          "Where is #LOCALBUSINESS offices located?",
+          "What's #LOCALBUSINESS's address?",
+          "Where is #LOCALBUSINESS located?",
+          "What is #LOCALBUSINESS headquarters location?",
+          "What is the address for the #LOCALBUSINESS?"
+        ]
+      },
+      {
+        "path": "motto",
+        "question_templates": [
+          "What is the motto of #LOCALBUSINESS?",
+          "What's #LOCALBUSINESS's motto?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is the name of #LOCALBUSINESS?",
+          "What's #LOCALBUSINESS's name?"
+        ]
+      },
+      {
+        "path": "nbEmployeesMax",
+        "question_templates": [
+          "How many employees are there at #LOCALBUSINESS?",
+          "How many people work for #LOCALBUSINESS?",
+          "How many employees does #LOCALBUSINESS have today?"
+        ]
+      },
+      {
+        "path": "parentCompany|name",
+        "question_templates": [
+          "Which company is parent company of #LOCALBUSINESS?",
+          "Which company is #LOCALBUSINESS's parent company?"
+        ]
+      },
+      {
+        "path": "phoneNumbers|string",
+        "question_templates": [
+          "What phone number does #LOCALBUSINESS have?",
+          "Which phone number does #LOCALBUSINESS have?",
+          "What is phone number of #LOCALBUSINESS?",
+          "What is #LOCALBUSINESS's phone number?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "administrativeArea",
+    "attributes": [
+      {
+        "path": "anthem|name",
+        "question_templates": [
+          "What is the name of #ADMINISTRATIVEAREA's anthem?",
+          "What's #ADMINISTRATIVEAREA's anthem's name?"
+        ]
+      },
+      {
+        "path": "area",
+        "question_templates": [
+          "What is the area of #ADMINISTRATIVEAREA?",
+          "What's #ADMINISTRATIVEAREA's area?"
+        ]
+      },
+      {
+        "path": "basicFormOfGovernment",
+        "question_templates": [
+          "What is the form of government in #ADMINISTRATIVEAREA?",
+          "What's #ADMINISTRATIVEAREA's from of government?",
+          "Which form of government has #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "capital|name",
+        "question_templates": [
+          "What is the capital of #ADMINISTRATIVEAREA?",
+          "What's #ADMINISTRATIVEAREA's capital?"
+        ]
+      },
+      {
+        "path": "containsAdministrativeTerritorialEntity|name",
+        "question_templates": [
+          "Which administrative territory does #ADMINISTRATIVEAREA have?",
+          "Which administrative territory does #ADMINISTRATIVEAREA contains?",
+          "Into which administrative territory is #ADMINISTRATIVEAREA divided?"
+        ]
+      },
+      {
+        "path": "continent|name",
+        "question_templates": [
+          "In which continent is #ADMINISTRATIVEAREA located?"
+        ]
+      },
+      {
+        "path": "currency|name",
+        "question_templates": [
+          "What is the currency of #ADMINISTRATIVEAREA?",
+          "What is the #ADMINISTRATIVEAREA's currency?",
+          "Which currency is used in #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "currency|name",
+        "question_templates": [
+          "What is the currency of #ADMINISTRATIVEAREA?",
+          "What is the #ADMINISTRATIVEAREA's currency?",
+          "Which currency is used in #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "drivingSide|name",
+        "question_templates": [
+          "What is the driving side of #ADMINISTRATIVEAREA?",
+          "What is the #ADMINISTRATIVEAREA's driving side?",
+          "On which side does people drive in #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "electricalPlugType|name",
+        "question_templates": [
+          "What is the electrical plug type of #ADMINISTRATIVEAREA?",
+          "What is the #ADMINISTRATIVEAREA's electrical plug type?",
+          "Which electrical plug type does people use in #ADMINISTRATIVEAREA?",
+          "Which electrical plug type is used in #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "emergencyPhoneNumber|name",
+        "question_templates": [
+          "What is the emergency phone number of #ADMINISTRATIVEAREA?",
+          "What is the #ADMINISTRATIVEAREA's emergency phone number?"
+        ]
+      },
+      {
+        "path": "ethnicGroup|name",
+        "question_templates": [
+          "Which ethnic group lives in #ADMINISTRATIVEAREA?",
+          "Which ethnicity lives in #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "executiveBody|name",
+        "question_templates": [
+          "What is the name of executive body of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's name of executive body?"
+        ]
+      },
+      {
+        "path": "headOfGovernment|name",
+        "question_templates": [
+          "Who is head of government of #ADMINISTRATIVEAREA?",
+          "Who is #ADMINISTRATIVEAREA's head of government?"
+        ]
+      },
+      {
+        "path": "highestJudicialAuthority|name",
+        "question_templates": [
+          "Who is highest judicial authority of #ADMINISTRATIVEAREA?",
+          "Who is #ADMINISTRATIVEAREA's highest judicial authority?"
+        ]
+      },
+      {
+        "path": "highestPoint|name",
+        "question_templates": [
+          "What is highest point of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's highest point?",
+          "What is the name of highest point of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's name of the highest point?"
+        ]
+      },
+      {
+        "path": "iocCountryCode|surfaceForm",
+        "question_templates": [
+          "What is country code of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's country code?"
+        ]
+      },
+      {
+        "path": "isPartOf|name",
+        "question_templates": [
+          "Which is #ADMINISTRATIVEAREA part of?",
+          "What is #ADMINISTRATIVEAREA part of?"
+        ]
+      },
+      {
+        "path": "languageUsed|name",
+        "question_templates": [
+          "Which language is used in #ADMINISTRATIVEAREA?",
+          "Which language is spoken in #ADMINISTRATIVEAREA?",
+          "What is language of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's language?"
+        ]
+      },
+      {
+        "path": "legislativeBody|name",
+        "question_templates": [
+          "What is the name of legislative body of #ADMINISTRATIVEAREA?",
+          "What is legislative body of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's legislative body?"
+        ]
+      },
+      {
+        "path": "locatedInTimeZone|name",
+        "question_templates": [
+          "What is the time zone of #ADMINISTRATIVEAREA?",
+          "In which time zone is #ADMINISTRATIVEAREA located?",
+          "What is #ADMINISTRATIVEAREA's time zone?"
+        ]
+      },
+      {
+        "path": "location|address",
+        "question_templates": [
+          "What is the address of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's address?"
+        ]
+      },
+      {
+        "path": "memberOf|name",
+        "question_templates": [
+          "Which is #ADMINISTRATIVEAREA member of?"
+        ]
+      },
+      {
+        "path": "mottoText|surfaceForm",
+        "question_templates": [
+          "What is motto of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's motto?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is name of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's name?"
+        ]
+      },
+      {
+        "path": "namedAfter|name",
+        "question_templates": [
+          "After who is #ADMINISTRATIVEAREA named?",
+          "After what is #ADMINISTRATIVEAREA named?"
+        ]
+      },
+      {
+        "path": "officialLanguage|name",
+        "question_templates": [
+          "What is official #ADMINISTRATIVEAREA's language?",
+          "What is #ADMINISTRATIVEAREA's official language?"
+        ]
+      },
+      {
+        "path": "officialSymbol|name",
+        "question_templates": [
+          "What is #ADMINISTRATIVEAREA's official symbol?",
+          "What is official symbol of #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "officialWebsite|surfaceForm",
+        "question_templates": [
+          "What is #ADMINISTRATIVEAREA's official website?",
+          "What is official website of #ADMINISTRATIVEAREA?",
+          "What is #ADMINISTRATIVEAREA's website?",
+          "What is website of #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "partOf|name",
+        "question_templates": [
+          "What is #ADMINISTRATIVEAREA part of?",
+          "Which is #ADMINISTRATIVEAREA part of?"
+        ]
+      },
+      {
+        "path": "population",
+        "question_templates": [
+          "What is #ADMINISTRATIVEAREA's population?",
+          "What is population of #ADMINISTRATIVEAREA?",
+          "How many people live in #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "publicHoliday",
+        "question_templates": [
+          "What is #ADMINISTRATIVEAREA's public holiday?",
+          "What is public holiday of #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "sharesBorderWith|name",
+        "question_templates": [
+          "With which #ADMINISTRATIVEAREA shares border?",
+          "Who is neighbor of #ADMINISTRATIVEAREA?",
+          "Which is neighbor of #ADMINISTRATIVEAREA?"
+        ]
+      },
+      {
+        "path": "top-levelInternetDomain|name",
+        "question_templates": [
+          "What is top level internet domain of #ADMINISTRATIVEAREA?",
+          "What is internet domain of #ADMINISTRATIVEAREA?",
+          "Which internet domain does #ADMINISTRATIVEAREA use?",
+          "What is #ADMINISTRATIVEAREA's internet domain?",
+          "What is #ADMINISTRATIVEAREA's top level internet domain?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "landmark",
+    "attributes": [
+      {
+        "path": "description",
+        "question_templates": [
+          "What is the description of #LANDMARK?",
+          "What is #LANDMARK's description?",
+          "What is #LANDMARK?"
+        ]
+      },
+      {
+        "path": "isPartOf|name",
+        "question_templates": [
+          "What is the #LANDMARK part of?"
+        ]
+      },
+      {
+        "path": "location|address",
+        "question_templates": [
+          "What is the #LANDMARK's location?",
+          "What is location of #LANDMARK?",
+          "Where is #LANDMARK located?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is the #LANDMARK's name?",
+          "What is name of #LANDMARK?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "place",
+    "attributes": [
+      {
+        "path": "description",
+        "question_templates": [
+          "What is the description of #PLACE?",
+          "What is #PLACE's description?",
+          "What is #PLACE?"
+        ]
+      },
+      {
+        "path": "isPartOf|name",
+        "question_templates": [
+          "What is the #PLACE part of?"
+        ]
+      },
+      {
+        "path": "location|address",
+        "question_templates": [
+          "What is the #PLACE's location?",
+          "What is location of #PLACE?",
+          "Where is #PLACE located?"
+        ]
+      },
+      {
+        "path": "name",
+        "question_templates": [
+          "What is the #PLACE's name?",
+          "What is name of #PLACE?"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "product",
+    "attributes": [
+      {
+        "path": "brand",
+        "question_templates": [
+          "What is the brand of #PRODUCT?",
+          "What is #PRODUCT's brand?",
+          "Who creates #PRODUCT?"
+        ]
+      },
+      {
+        "path": "normalizedSpecs|color|cleanLiteral",
+        "question_templates": [
+          "What is the color of #PRODUCT?",
+          "What is #PRODUCT's color?"
+        ]
+      },
+      {
+        "path": "normalizedSpecs|depth|cleanLiteral",
+        "question_templates": [
+          "What is the depth of #PRODUCT?",
+          "What is #PRODUCT's depth?"
+        ]
+      },
+      {
+        "path": "normalizedSpecs|height|cleanLiteral",
+        "question_templates": [
+          "What is the height of #PRODUCT?",
+          "What is #PRODUCT's height?"
+        ]
+      },
+      {
+        "path": "normalizedSpecs|inputVoltage|cleanLiteral",
+        "question_templates": [
+          "What is the input voltage of #PRODUCT?",
+          "What is #PRODUCT's input voltage?"
+        ]
+      },
+      {
+        "path": "normalizedSpecs|length|cleanLiteral",
+        "question_templates": [
+          "What is the length of #PRODUCT?",
+          "What is #PRODUCT's length?"
+        ]
+      },
+      {
+        "path": "normalizedSpecs|weight|cleanLiteral",
+        "question_templates": [
+          "What is the weight of #PRODUCT?",
+          "What is #PRODUCT's weight?"
+        ]
+      },
+      {
+        "path": "normalizedSpecs|width|cleanLiteral",
+        "question_templates": [
+          "What is the width of #PRODUCT?",
+          "What is #PRODUCT's width?"
+        ]
+      },
+      {
+        "path": "offerPrice",
+        "question_templates": [
+          "What is the price of #PRODUCT?",
+          "What is #PRODUCT's price?"
+        ]
+      }
+    ]
+  }
+]
