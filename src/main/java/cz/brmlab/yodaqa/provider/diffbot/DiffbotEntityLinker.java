@@ -19,7 +19,7 @@ import java.util.List;
 public class DiffbotEntityLinker {
 	private static final Logger logger = LoggerFactory.getLogger(DiffbotEntityLinker.class);
 	private static final String ENDPOINT_URL = UrlManager.lookUpUrl(UrlManager.DataBackends.DIFFBOT_EL.ordinal());
-	private static final double CONFIDENCE = 0.5;
+	private static final double CONFIDENCE = 0.0;
 	private static final int MAX_TAGS = 100;
 
 	public static class Article {
