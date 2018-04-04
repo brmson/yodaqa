@@ -43,7 +43,8 @@ public class DiffbotEntityLinker {
 
 	public List<Article> entityLookup(String query) throws IOException {
 		String encodedQuery = URLEncoder.encode(query, "UTF-8");
-		String requestURL = ENDPOINT_URL + "?confidence=" + CONFIDENCE+ "&includeKG&maxTags=" + MAX_TAGS
+		String token = System.getProperty("cz.brmlab.yodaqa.provider.rdf.DiffbotToken");
+		String requestURL = ENDPOINT_URL + "?token=" + token + "&confidence=" + CONFIDENCE+ "&includeKG&maxTags=" + MAX_TAGS
 				+ "&lang=en&text=&title=" + encodedQuery;
 		logger.debug("Diffbot EL request URL: {}", requestURL);
 		URL request = new URL(requestURL);
