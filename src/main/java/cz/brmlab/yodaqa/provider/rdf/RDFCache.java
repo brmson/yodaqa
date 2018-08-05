@@ -1,6 +1,6 @@
 package cz.brmlab.yodaqa.provider.rdf;
 
-import com.hp.hpl.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Literal;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
