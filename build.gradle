@@ -133,7 +133,7 @@ dependencies {
   compile 'org.apache.httpcomponents:httpclient:4.2.1'
   compile 'org.slf4j:slf4j-api:1.7.7'
   compile 'org.slf4j:slf4j-simple:1.7.7'
-  compile 'org.apache.jena:apache-jena-libs:2.11.2'
+  compile 'org.apache.jena:apache-jena-libs:3.8.0'
   compile 'net.sf.extjwnl:extjwnl:1.8.0'
   compile 'net.sf.extjwnl:extjwnl-data-wn31:1.2'
   compile 'org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016'

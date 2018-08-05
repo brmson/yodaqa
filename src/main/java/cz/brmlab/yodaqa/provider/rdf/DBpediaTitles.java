@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.Gson;
-import com.hp.hpl.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Literal;
 
 import cz.brmlab.yodaqa.provider.UrlManager;
 import org.slf4j.Logger;
